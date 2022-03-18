@@ -9,12 +9,12 @@ export function setUrlModifier(f: FUrlModifier) {
   urlModifier = f;
 }
 
-export async function restapilist(list: string) {
+export async function restapilist(list: string, pars?: Record<string, string>) {
   const url: string = '/restapi/' + list;
   const para: any = urlModifier == undefined ? {} : urlModifier(list)
   return request<Record<string, any>>(url, {
     method: 'GET',
-    ...{ params: para },
+    ...{ params: { ...para, ...pars } },
   });
 }
 

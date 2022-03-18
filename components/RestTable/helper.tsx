@@ -109,7 +109,7 @@ function isRenderable(c: Column): boolean {
 }
 
 function transformOneColumn(c: Column, r: TableHookParam): ProColumns {
-  const mess: string = c.field
+  const mess: string = c.coltitle ? c.coltitle : c.field
   const e: ProColumns = {
     title: (
       <div>{lstring(mess)}</div>
@@ -211,7 +211,7 @@ export function makeMessage(m: FormMessage, row?: Row, vars?: any): string | und
     // recursive !
     return makeMessage(res as FormMessage, row, vars)
   }
-  if (m.message) return lstring(m.message);
+  if (m.message) return lstring(m.message, m.params);
   log('makeMessage - incorrect FomrMessage parameter')
   return undefined
 

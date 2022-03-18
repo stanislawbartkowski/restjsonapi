@@ -3,20 +3,20 @@ import React, { useState, useRef } from 'react';
 
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { PageContainer } from '@ant-design/pro-layout';
 import { Drawer } from 'antd';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import lstring from '../..//ts/localize'
-import { isObject, log } from '../../ts/j'
+import { isObject } from '../../ts/j'
 
 
 import type { RestTableParam } from '../../ts/typing';
-import type { ColumnList, Column, SortFilter, Row, PageParams, JsonTableResult, ShowDetails, FShowDetails, FActionResult, ClickResult } from './types';
-import { Status, emptyColumnList } from './types';
+import type { ListState, ColumnList, Column, SortFilter, Row, PageParams, JsonTableResult, ShowDetails, FShowDetails, FActionResult, ClickResult, ModalListProps } from './types';
+import { emptyModalListProps, Status, emptyColumnList } from './types';
 import { restapilist, restapilistdef, restapijs } from '../../services/api';
 import { transformColumns, analyzeSortFilter, dataSortFilter, makeMessage } from './helper'
 import InLine from '../../ts/inline'
+import ModalList from './ModalList'
 
 
 const RestTableError: React.FC = () => {
@@ -51,14 +51,25 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
 
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<Row>();
+  const [modalProps, setIsModalVisible] = useState<ModalListProps>(emptyModalListProps);
 
   const f: FShowDetails = (entity: Row) => {
     setCurrentRow(entity);
     setShowDetail(true);
   }
 
+  const fmodalhook = () => {
+    setIsModalVisible(emptyModalListProps);
+  }
+
   const fresult: FActionResult = (entity: Row, r: ClickResult) => {
-    log(r.result)
+    setIsModalVisible({
+      visible: true,
+      closehook: fmodalhook,
+      vars: entity,
+      ...r
+    }
+    )
   }
 
   //  const intl = useIntl();
@@ -66,7 +77,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
   const actionRef = useRef<ActionType>();
 
   //  const title: string | undefined = props.header != undefined ? props.header : 'empty'
-  const title: string | undefined = props.header ? makeMessage(props.header) : lstring('empty')
+  const title: string | undefined = props.header ? makeMessage(props.header, {}, props.vars) : lstring('empty')
 
   async function getlist(
     params: PageParams,
@@ -74,8 +85,8 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
 
     const sf: SortFilter | undefined = analyzeSortFilter(props, params, options);
 
-    if (sf == undefined) return restapilist(props.list)
-    return restapilist(props.list).then(
+    if (sf == undefined) return restapilist(props.list, props.params)
+    return restapilist(props.list, props.params).then(
       res => dataSortFilter(props, res as JsonTableResult, sf)
     ).catch(err => { throw (err) })
 
@@ -83,8 +94,9 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
 
 
   return (
-    <PageContainer>
+    <React.Fragment>
       <ProTable<PageParams>
+        tableStyle={props.style}
         headerTitle={title}
         actionRef={actionRef}
         rowKey={props.key}
@@ -97,7 +109,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
           onClick: () => { if (props.onRowClick != undefined) props.onRowClick(r); }
         })}
       />
-
+      <ModalList {...modalProps} />
       <Drawer
         width={600}
         visible={showDetail}
@@ -120,8 +132,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
         />
 
       </Drawer>
-
-    </PageContainer>
+    </React.Fragment>
 
 
   );
@@ -129,16 +140,16 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
 
 const RestTableList: React.FC<RestTableParam> = (props) => {
 
-  const dispmess: string | undefined = props.canDisplay == undefined ? undefined : props.canDisplay(props);
-
-  if (dispmess != undefined) return <RestTableCannotDisplay errmess={dispmess} />;
-
-  const [state, setState] = useState({ status: Status.PENDING, cols: emptyColumnList })
+  const [state, setState] = useState<ListState>({ status: Status.PENDING, cols: emptyColumnList })
   const [statejs, setStateJs] = useState({ status: Status.PENDING, js: undefined })
+
+  const dispmess: string | undefined = props.canDisplay ? props.canDisplay(props) : undefined;
+
+  if (dispmess) return <RestTableCannotDisplay errmess={dispmess} />;
 
   if (state.status == Status.PENDING) {
 
-    restapilistdef(props.listdef).then((response: any) => {
+    restapilistdef(props.listdef ? props.listdef : props.list).then((response: any) => {
       setState({ status: Status.READY, cols: { ...response } })
     }).catch(() => {
       setState({ status: Status.ERROR, cols: emptyColumnList })
@@ -152,7 +163,7 @@ const RestTableList: React.FC<RestTableParam> = (props) => {
           setStateJs({ status: Status.READY, js: undefined })
         }
         else
-          restapijs(state.cols.js).then((response: any) => {
+          restapijs(state.cols.js as string).then((response: any) => {
             setStateJs({ status: Status.READY, js: response })
           }).catch(() => {
             setState({ status: Status.ERROR, cols: emptyColumnList })

@@ -1,5 +1,7 @@
+import type { RestTableParam } from '@/restjsonapi/ts/typing';
 import type { ProColumns } from '@ant-design/pro-table';
 import type { TagProps } from 'antd';
+import type { ModalProps } from 'antd'
 
 import type CSS from 'csstype';
 
@@ -17,9 +19,7 @@ type JSSupportedType = {
   js?: string
 }
 
-export type ClickResult = {
-  result: string
-}
+export type ClickResult = RestTableParam;
 
 export type ClickAction = ClickResult & {
   jsclick?: string
@@ -31,6 +31,7 @@ export type TAction = JSSupportedType & FormMessage & ClickAction
 export type FormMessage = JSSupportedType & {
   messagedirect?: string
   message?: string
+  params?: string[]
 }
 
 export type ShowDetails = {
@@ -56,6 +57,7 @@ export type TActions = JSSupportedType & TAction[]
 
 export type Column = {
   field: string;
+  coltitle?: string;
   props?: ProColumns;
   showdetails?: ShowDetails | boolean;
   ident?: string
@@ -69,13 +71,14 @@ export type ColumnList = JSSupportedType & {
   key: string
   header?: FormMessage;
   columns: Column[];
+  style?: CSS.Properties
 };
 
 export const emptyColumnList: ColumnList = { columns: [], key: "" };
 
 export type ListState = {
   status: Status;
-  cols: ColumnList | undefined;
+  cols: ColumnList;
 };
 
 export type Row = any;
@@ -112,4 +115,11 @@ export type JsonTableResult = {
   data: RowData;
 }
 
+export const emptyModalListProps: ModalListProps = { visible: false, list: '' };
+
+export type ModalListProps = RestTableParam & {
+  visible: boolean
+  closehook?: () => void
+  props?: ModalProps
+}
 
