@@ -4,6 +4,8 @@ import type { ColumnType } from 'antd/lib/table';
 import type { ModalProps } from 'antd'
 
 import type CSS from 'csstype';
+import type { ReactNode } from 'react';
+import type { FilterDropdownProps } from 'antd/lib/table/interface';
 
 export enum Status {
   PENDING,
@@ -19,14 +21,13 @@ type JSSupportedType = {
   js?: string
 }
 
-export type ClickResult = RestTableParam;
+export type ClickResult = RestTableParam
 
 export type ClickAction = ClickResult & {
   jsclick?: string
 }
 
-export type TAction = JSSupportedType & FormMessage & ClickAction
-
+export type TAction = JSSupportedType & ClickAction & FormMessage
 
 export type FormMessage = JSSupportedType & {
   messagedirect?: string
@@ -58,7 +59,7 @@ export type TActions = JSSupportedType & TAction[]
 export const TYPENUMBER = 'number'
 export const TYPESTRING = 'string'
 export const TYPEDATE = 'date'
-export const TYPEBOOL = 'boolean'
+export const TYPEBOOLEAN = 'boolean'
 
 
 export type TColumn = {
@@ -72,13 +73,15 @@ export type TColumn = {
   value?: ColumnValue
   tags?: TTags
   actions?: TActions
-
+  nofilter?: boolean
+  nosort?: boolean
 };
 
 export type ColumnList = JSSupportedType & {
-  rowkey: string
+  rowkey: string;
   header?: FormMessage;
   columns: TColumn[];
+  extendable?: TAction;
 };
 
 export const emptyColumnList: ColumnList = { columns: [], rowkey: "" };
@@ -131,3 +134,14 @@ export type ModalListProps = RestTableParam & {
   props?: ModalProps
 }
 
+export type ColumnFilterSearch = {
+  filterDropdown: (props: FilterDropdownProps) => ReactNode
+  filterIcon: (filtered: boolean) => ReactNode
+  onFilter: (value: string, record: Row) => boolean;
+  onFilterDropdownVisibleChange?: (visible: boolean) => void
+}
+
+export type TExtendable = {
+  expandedRowRender: (record: Row) => ReactNode;
+  rowExpandable?: (record: Row) => boolean
+}

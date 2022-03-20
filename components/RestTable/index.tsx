@@ -9,13 +9,14 @@ import { log } from '../../ts/j'
 
 
 import type { RestTableParam } from '../../ts/typing';
-import type { ListState, ColumnList, SortFilter, Row, PageParams, JsonTableResult, FShowDetails, FActionResult, ClickResult, ModalListProps, RowData } from './types';
+import type { TExtendable, ListState, ColumnList, Row, FShowDetails, FActionResult, ClickResult, ModalListProps, RowData } from './types';
 import { emptyModalListProps, Status, emptyColumnList } from './types';
 import { restapilist, restapilistdef, restapijs } from '../../services/api';
-import { transformColumns, analyzeSortFilter, dataSortFilter, makeMessage } from './helper'
+import { transformColumns, makeMessage } from './helper'
 import InLine from '../../ts/inline'
 import ModalList from './ModalList'
 import DescriptionsDetails from './RowDescription'
+import getExtendableProps from './Expendable'
 
 
 const RestTableError: React.FC = () => {
@@ -62,26 +63,13 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
 
   const title: string | undefined = props.header ? makeMessage(props.header, {}, props.vars) : lstring('empty')
 
-
-  async function getlist(
-    params: PageParams,
-    options?: { [key: string]: any }) {
-
-    const sf: SortFilter | undefined = analyzeSortFilter(props, params, options);
-
-    if (sf == undefined) return restapilist(props.list, props.params)
-    return restapilist(props.list, props.params).then(
-      res => dataSortFilter(props, res as JsonTableResult, sf)
-    ).catch(err => { throw (err) })
-
-  }
-
   useEffect(() => {
     restapilist(props.list, props.params).then(
       res => setDataSource({ status: Status.READY, tabledata: res.data })
     )
   }, []);
 
+  const extend: TExtendable | undefined = props.extendable ? getExtendableProps(props) : undefined
 
   return (
     <React.Fragment>
@@ -90,23 +78,19 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
         rowKey={props.rowkey}
         dataSource={datasource.tabledata}
         size='small'
-        //        search={{
-        //          labelWidth: 120,
-        //        }}
-        //        request={getlist}
         loading={datasource.status == Status.PENDING}
         columns={columns}
+        pagination={props.nopaging ? false : undefined}
+        {...extend}
         onRow={(r) => ({
-          onClick: () => { if (props.onRowClick != undefined) props.onRowClick(r); }
+          onClick: () => { if (props.onRowClick) props.onRowClick(r); }
         })}
       />
       <ModalList {...modalProps} />
       <Drawer
         width={600}
         visible={showDetail}
-        onClose={() => {
-          setShowDetail(false);
-        }}
+        onClose={() => setShowDetail(false)}
         closable={false}
       >
         <DescriptionsDetails r={currentRow} cols={columns} {...props} />

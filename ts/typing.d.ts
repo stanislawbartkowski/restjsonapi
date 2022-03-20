@@ -7,6 +7,7 @@ export type RestTableParam = {
   onRowClick?: (r: any) => void;
   canDisplay?: FCanDisplay;
   vars?: Record<string, string>;
+  nopaging?: boolean;
 };
 
 export type FUrlModifier = (list: string) => undefined | Record<string, string>;
