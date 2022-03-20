@@ -1,22 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import type { ProColumns, ActionType } from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
+import type { ColumnType } from 'antd/lib/table';
+import { Table } from 'antd'
 import { Drawer } from 'antd';
-import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
-import ProDescriptions from '@ant-design/pro-descriptions';
 import lstring from '../..//ts/localize'
-import { isObject } from '../../ts/j'
+import { log } from '../../ts/j'
 
 
 import type { RestTableParam } from '../../ts/typing';
-import type { ListState, ColumnList, Column, SortFilter, Row, PageParams, JsonTableResult, ShowDetails, FShowDetails, FActionResult, ClickResult, ModalListProps } from './types';
+import type { ListState, ColumnList, SortFilter, Row, PageParams, JsonTableResult, FShowDetails, FActionResult, ClickResult, ModalListProps, RowData } from './types';
 import { emptyModalListProps, Status, emptyColumnList } from './types';
 import { restapilist, restapilistdef, restapijs } from '../../services/api';
 import { transformColumns, analyzeSortFilter, dataSortFilter, makeMessage } from './helper'
 import InLine from '../../ts/inline'
 import ModalList from './ModalList'
+import DescriptionsDetails from './RowDescription'
 
 
 const RestTableError: React.FC = () => {
@@ -27,31 +26,18 @@ const RestTableCannotDisplay: React.FC<{ errmess: string }> = (props) => {
   return <div> {lstring(props.errmess)}</div>
 }
 
-function findColDetails(c: ColumnList): Column | undefined {
-  return c.columns.find(x => x.showdetails);
-}
-
-
-function findKeyDetails(c: ColumnList): string | undefined {
-  const C: Column | undefined = findColDetails(c)
-  return C == undefined ? undefined : C.field
-}
-
-function detailsTitle(c: ColumnList, row: Row): string | undefined {
-
-  const C: Column | undefined = findColDetails(c)
-  if (C == undefined) return undefined;
-  if (!isObject(C.showdetails)) return undefined
-  const s: ShowDetails = C.showdetails as ShowDetails
-  if (s.jstitle == undefined) return undefined;
-  return makeMessage(s.jstitle, row)
+type DataSourceState = {
+  status: Status;
+  tabledata: RowData;
 }
 
 const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
 
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<Row>();
+
   const [modalProps, setIsModalVisible] = useState<ModalListProps>(emptyModalListProps);
+  const [datasource, setDataSource] = useState<DataSourceState>({ status: Status.PENDING, tabledata: [] })
 
   const f: FShowDetails = (entity: Row) => {
     setCurrentRow(entity);
@@ -72,12 +58,10 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
     )
   }
 
-  //  const intl = useIntl();
-  const columns: ProColumns[] = transformColumns(props, { fdetails: f, fresult: fresult });
-  const actionRef = useRef<ActionType>();
+  const columns: ColumnType<any>[] = transformColumns(props, { fdetails: f, fresult: fresult });
 
-  //  const title: string | undefined = props.header != undefined ? props.header : 'empty'
   const title: string | undefined = props.header ? makeMessage(props.header, {}, props.vars) : lstring('empty')
+
 
   async function getlist(
     params: PageParams,
@@ -92,18 +76,25 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
 
   }
 
+  useEffect(() => {
+    restapilist(props.list, props.params).then(
+      res => setDataSource({ status: Status.READY, tabledata: res.data })
+    )
+  }, []);
+
 
   return (
     <React.Fragment>
-      <ProTable<PageParams>
-        tableStyle={props.style}
-        headerTitle={title}
-        actionRef={actionRef}
-        rowKey={props.key}
-        search={{
-          labelWidth: 120,
-        }}
-        request={getlist}
+      <Table
+        title={() => title}
+        rowKey={props.rowkey}
+        dataSource={datasource.tabledata}
+        size='small'
+        //        search={{
+        //          labelWidth: 120,
+        //        }}
+        //        request={getlist}
+        loading={datasource.status == Status.PENDING}
         columns={columns}
         onRow={(r) => ({
           onClick: () => { if (props.onRowClick != undefined) props.onRowClick(r); }
@@ -114,24 +105,14 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
         width={600}
         visible={showDetail}
         onClose={() => {
-          setCurrentRow(undefined);
           setShowDetail(false);
         }}
         closable={false}
       >
-        <ProDescriptions<Row>
-          column={2}
-          title={detailsTitle(props, currentRow || {})}
-          request={async () => ({
-            data: currentRow || {},
-          })}
-          params={{
-            id: (currentRow || {})[findKeyDetails(props) as string]
-          }}
-          columns={columns as ProDescriptionsItemProps[]}
-        />
-
+        <DescriptionsDetails r={currentRow} cols={columns} {...props} />
       </Drawer>
+
+
     </React.Fragment>
 
 
@@ -141,40 +122,45 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
 const RestTableList: React.FC<RestTableParam> = (props) => {
 
   const [state, setState] = useState<ListState>({ status: Status.PENDING, cols: emptyColumnList })
-  const [statejs, setStateJs] = useState({ status: Status.PENDING, js: undefined })
 
   const dispmess: string | undefined = props.canDisplay ? props.canDisplay(props) : undefined;
 
   if (dispmess) return <RestTableCannotDisplay errmess={dispmess} />;
 
-  if (state.status == Status.PENDING) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(
+    () => {
 
-    restapilistdef(props.listdef ? props.listdef : props.list).then((response: any) => {
-      setState({ status: Status.READY, cols: { ...response } })
-    }).catch(() => {
-      setState({ status: Status.ERROR, cols: emptyColumnList })
-    })
-  }
 
-  if (state.status == Status.READY) {
-    switch (statejs.status) {
-      case Status.PENDING:
-        if (state.cols.js == undefined) {
-          setStateJs({ status: Status.READY, js: undefined })
-        }
-        else
-          restapijs(state.cols.js as string).then((response: any) => {
-            setStateJs({ status: Status.READY, js: response })
+      let lisstjsready: boolean = false;
+      let js: string | undefined = undefined
+      let idef: ColumnList | undefined = undefined
+
+      log("RestTableList " + props.list);
+
+      function setstatus() {
+        if (lisstjsready && idef != undefined) setState({ status: Status.READY, cols: idef, js: js });
+      }
+
+      restapilistdef(props.listdef ? props.listdef : props.list).then((response: any) => {
+        idef = response;
+        if ((idef as ColumnList).js) {
+          restapijs((idef as ColumnList).js as string).then((jsresponse: any) => {
+            js = jsresponse;
+            lisstjsready = true;
+            setstatus();
           }).catch(() => {
             setState({ status: Status.ERROR, cols: emptyColumnList })
           })
-        break;
-      case Status.ERROR:
-        setState({ status: Status.ERROR, cols: emptyColumnList });
-        break;
-      default: break;
-    }
-  }
+        } else {
+          lisstjsready = true;
+          setstatus();
+        }
+      }).catch(() => {
+        setState({ status: Status.ERROR, cols: emptyColumnList })
+      })
+    }, []);
+
 
   switch (state.status) {
     case Status.PENDING: { return null; }
@@ -182,9 +168,9 @@ const RestTableList: React.FC<RestTableParam> = (props) => {
     case Status.ERROR: { return <RestTableError /> }
 
     default:
-      if (statejs.status == Status.READY) {
+      if (state.status == Status.READY) {
         return <React.Fragment>
-          <InLine js={statejs.js} />
+          <InLine js={state.js} />
           <RestTableView {...state.cols} {...props} />
         </React.Fragment>
       }

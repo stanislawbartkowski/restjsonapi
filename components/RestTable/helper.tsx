@@ -1,8 +1,10 @@
-import type { ProColumns } from '@ant-design/pro-table';
+//import type { ProColumns } from '@ant-design/pro-table';
+import type { ColumnType } from 'antd/lib/table';
 import { Tag, Space } from 'antd'
 import lstring from '../..//ts/localize'
-import type { ColumnList, Column, PageParams, SortFilter, FilterElem, Row, RowData, JsonTableResult, TableHookParam } from './types';
+import { ColumnList, TColumn, PageParams, SortFilter, FilterElem, Row, RowData, JsonTableResult, TableHookParam, TYPEBOOL } from './types';
 import type { TAction, TActions, TTag, TTags, FieldValue, ColumnValue, AddStyle, FormMessage, ClickResult } from './types';
+import { TYPESTRING, TYPENUMBER } from './types';
 import { callJSFunction } from '../../ts/j'
 import { log } from '../../ts/j'
 import type { ReactElement } from 'react';
@@ -74,10 +76,10 @@ function constructTags(tag: TTags, row: Row): ReactElement {
     }
 
   </React.Fragment>
-
 }
 
-function constructRenderCell(c: Column, r: TableHookParam) {
+
+function constructRenderCell(c: TColumn, r: TableHookParam) {
   return (dom: any, entity: any): ReactElement => {
     const style: CSS.Properties = {}
     let rendered = dom
@@ -87,13 +89,13 @@ function constructRenderCell(c: Column, r: TableHookParam) {
     if (c.ident) {
       const ident: number = callJSFunction(c.ident, entity) * 12;
       style.paddingLeft = `${ident}px`;
-      //style.fontWeight = 'bold';
     }
     if (c.addstyle) {
       const a: CSS.Properties | undefined = getAddStyle(c.addstyle, entity);
       // can be undefined
       if (a) for (const k in a) style[k] = a[k]
     }
+
     if (c.ident || c.addstyle)
       rendered = <span style={style}>{dom}</span>
 
@@ -104,18 +106,56 @@ function constructRenderCell(c: Column, r: TableHookParam) {
   }
 }
 
-function isRenderable(c: Column): boolean {
+function isRenderable(c: TColumn): boolean {
   return c.showdetails != undefined || c.ident != undefined || c.value != undefined || c.tags != undefined || c.actions != undefined
 }
 
-function transformOneColumn(c: Column, r: TableHookParam): ProColumns {
+function sortinc(a: Row, b: Row, field: string): number {
+  const fielda: string | undefined = (a[field] as string | undefined)
+  if (fielda == undefined) return 1
+  const fieldb: string = (b[field] as string)
+  return fielda.localeCompare(fieldb)
+}
+
+function sortnumberinc(a: Row, b: Row, field: string): number {
+  const fielda: number | undefined = (a[field] as number | undefined)
+  if (fielda == undefined) return 1
+  const fieldb: number = (b[field] as number)
+  if (fieldb == undefined) return -1
+  return fielda - fieldb
+}
+
+function sortboolinc(a: Row, b: Row, field: string): number {
+  const fielda: boolean | undefined = (a[field] as boolean | undefined)
+  if (fielda == undefined) return 1
+  const fieldb: boolean = (b[field] as boolean)
+  if (fieldb == undefined) return -1
+  if (fielda && fieldb) return 0
+  if (fielda) return 1
+  return -1
+}
+
+
+function transformOneColumn(c: TColumn, r: TableHookParam): ColumnType<any> {
   const mess: string = c.coltitle ? c.coltitle : c.field
-  const e: ProColumns = {
+  const fieldtype: string = c.fieldtype ? c.fieldtype : TYPESTRING
+  const p: ColumnType<any> = {}
+
+  if (fieldtype == TYPENUMBER) p.align = 'right';
+  if (c.props?.sorter)
+    switch (fieldtype) {
+      case TYPENUMBER: c.props.sorter = (a: Row, b: Row) => sortnumberinc(a, b, c.field); break;
+      case TYPEBOOL: c.props.sorter = (a: Row, b: Row) => sortboolinc(a, b, c.field); break;
+      default: c.props.sorter = (a: Row, b: Row) => sortinc(a, b, c.field); break;
+    }
+
+  const e: ColumnType<any> = {
     title: (
       <div>{lstring(mess)}</div>
     ),
     dataIndex: c.field,
-    ...c.props
+    ...c.props,
+    ...p
   }
   if (isRenderable(c)) {
     e.render = constructRenderCell(c, r);
@@ -125,7 +165,7 @@ function transformOneColumn(c: Column, r: TableHookParam): ProColumns {
 }
 
 
-export function transformColumns(cols: ColumnList, r: TableHookParam): ProColumns[] {
+export function transformColumns(cols: ColumnList, r: TableHookParam): ColumnType<any>[] {
 
   return (cols.columns.map(c => transformOneColumn(c, r)));
 }
@@ -179,13 +219,6 @@ function filterRowMatch(cols: ColumnList, row: Row, sf: SortFilter): boolean {
   return true;
 }
 
-function sortinc(a: Row, b: Row, field: string): number {
-  const fielda: string | undefined = (a[field] as string | undefined)
-  if (fielda == undefined) return 1
-  const fieldb: string = (b[field] as string)
-  return fielda.localeCompare(fieldb)
-}
-
 export function dataSortFilter(cols: ColumnList, data: JsonTableResult, sf: SortFilter): JsonTableResult {
 
   const filteredD: RowData = sf.filter == undefined ? data.data : data.data.filter(r => filterRowMatch(cols, r, sf))
@@ -214,5 +247,11 @@ export function makeMessage(m: FormMessage, row?: Row, vars?: any): string | und
   if (m.message) return lstring(m.message, m.params);
   log('makeMessage - incorrect FomrMessage parameter')
   return undefined
+}
 
+// ======================
+// find details columns
+// ======================
+export function findColDetails(c: ColumnList): TColumn | undefined {
+  return c.columns.find(x => x.showdetails);
 }

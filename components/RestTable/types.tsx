@@ -1,6 +1,6 @@
 import type { RestTableParam } from '@/restjsonapi/ts/typing';
-import type { ProColumns } from '@ant-design/pro-table';
 import type { TagProps } from 'antd';
+import type { ColumnType } from 'antd/lib/table';
 import type { ModalProps } from 'antd'
 
 import type CSS from 'csstype';
@@ -35,7 +35,7 @@ export type FormMessage = JSSupportedType & {
 }
 
 export type ShowDetails = {
-  jstitle: FormMessage
+  title: FormMessage
 }
 
 export type AddStyle = JSSupportedType & {
@@ -55,30 +55,38 @@ export type TTags = JSSupportedType & TTag[]
 
 export type TActions = JSSupportedType & TAction[]
 
-export type Column = {
+export const TYPENUMBER = 'number'
+export const TYPESTRING = 'string'
+export const TYPEDATE = 'date'
+export const TYPEBOOL = 'boolean'
+
+
+export type TColumn = {
   field: string;
+  fieldtype?: string;
   coltitle?: string;
-  props?: ProColumns;
+  props?: ColumnType<any>;
   showdetails?: ShowDetails | boolean;
   ident?: string
   addstyle?: AddStyle
   value?: ColumnValue
   tags?: TTags
   actions?: TActions
+
 };
 
 export type ColumnList = JSSupportedType & {
-  key: string
+  rowkey: string
   header?: FormMessage;
-  columns: Column[];
-  style?: CSS.Properties
+  columns: TColumn[];
 };
 
-export const emptyColumnList: ColumnList = { columns: [], key: "" };
+export const emptyColumnList: ColumnList = { columns: [], rowkey: "" };
 
 export type ListState = {
   status: Status;
   cols: ColumnList;
+  js?: string;
 };
 
 export type Row = any;
