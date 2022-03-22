@@ -1,89 +1,108 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import type { ColumnType } from 'antd/lib/table';
-import { Table } from 'antd'
-import { Drawer } from 'antd';
-import lstring from '../..//ts/localize'
-import { log } from '../../ts/j'
+import type { ColumnType } from "antd/lib/table";
+import { Table } from "antd";
+import { Drawer } from "antd";
+import lstring from "../..//ts/localize";
 
-
-import type { RestTableParam } from '../../ts/typing';
-import type { TExtendable, ColumnList, Row, FShowDetails, FActionResult, ClickResult, ModalListProps, RowData, JsonTableResult } from './types';
-import { emptyModalListProps, Status, emptyColumnList } from './types';
-import { restapilist, restapilistdef, restapijs } from '../../services/api';
-import { transformColumns, makeMessage } from './helper'
-import InLine from '../../ts/inline'
-import ModalList from './ModalList'
-import DescriptionsDetails from './RowDescription'
-import getExtendableProps from './Expendable'
-
+import type { RestTableParam } from "../../ts/typing";
+import type {
+  TExtendable,
+  ColumnList,
+  TRow,
+  FShowDetails,
+  FActionResult,
+  ClickResult,
+  ModalListProps,
+  RowData,
+} from "./typing";
+import { emptyModalListProps, Status, emptyColumnList } from "./typing";
+import { restapilist } from "../../services/api";
+import { transformColumns, makeMessage } from "./helper";
+import InLine from "../../ts/inline";
+import ModalList from "./ModalList";
+import DescriptionsDetails from "./RowDescription";
+import getExtendableProps from "./Expendable";
+import HeaderTable from "./HeaderTable";
+import readdefs, { ReadDefsResult } from "./readdefs";
 
 const RestTableError: React.FC = () => {
-  return <div>Bład podczas czytania definicji z serwera</div>
-}
+  return <div>Bład podczas czytania definicji z serwera</div>;
+};
 
 const RestTableCannotDisplay: React.FC<{ errmess: string }> = (props) => {
-  return <div> {lstring(props.errmess)}</div>
-}
+  return <div> {lstring(props.errmess)}</div>;
+};
 
 type DataSourceState = {
   status: Status;
   tabledata: RowData;
-}
+};
 
 const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
-
   const [showDetail, setShowDetail] = useState<boolean>(false);
-  const [currentRow, setCurrentRow] = useState<Row>();
+  const [currentRow, setCurrentRow] = useState<TRow>();
 
   const [modalProps, setIsModalVisible] = useState<ModalListProps>(emptyModalListProps);
-  const [datasource, setDataSource] = useState<DataSourceState>({ status: Status.PENDING, tabledata: [] })
+  const [datasource, setDataSource] = useState<DataSourceState>({
+    status: Status.PENDING,
+    tabledata: [],
+  });
 
-  const f: FShowDetails = (entity: Row) => {
+  const f: FShowDetails = (entity: TRow) => {
     setCurrentRow(entity);
     setShowDetail(true);
-  }
+  };
 
-  const fmodalhook = () => {
+  const fmodalhook = (e: React.MouseEvent<HTMLElement>) => {
     setIsModalVisible(emptyModalListProps);
-  }
+  };
 
-  const fresult: FActionResult = (entity: Row, r: ClickResult) => {
+  const fresult: FActionResult = (entity: TRow, r: ClickResult) => {
     setIsModalVisible({
       visible: true,
       closehook: fmodalhook,
       vars: entity,
-      ...r
-    }
-    )
-  }
+      ...r,
+    });
+  };
 
-  const columns: ColumnType<any>[] = transformColumns(props, { fdetails: f, fresult: fresult });
+  const columns: ColumnType<any>[] = transformColumns(props, {
+    fdetails: f,
+    fresult: fresult,
+  });
 
-  const title: string | undefined = props.header ? makeMessage(props.header, {}, props.vars) : lstring('empty')
+  const title: string | undefined = props.header
+    ? makeMessage(props.header, {}, props.vars)
+    : lstring("empty");
 
   useEffect(() => {
-    restapilist(props.list, props.params).then(
-      res => setDataSource({ status: Status.READY, tabledata: res.res })
-    )
+    restapilist(props.list, props.params).then((res) =>
+      setDataSource({ status: Status.READY, tabledata: res.res })
+    );
   }, [props.list, props.listdef]);
 
-  const extend: TExtendable | undefined = props.extendable ? getExtendableProps(props) : undefined
+  const extend: TExtendable | undefined = props.extendable
+    ? getExtendableProps(props)
+    : undefined;
 
   return (
     <React.Fragment>
+      {props.toolbar ? <HeaderTable {...props} /> : undefined}
       <Table
         title={() => title}
         rowKey={props.rowkey}
         dataSource={datasource.tabledata}
-        size='small'
+        size="small"
         loading={datasource.status === Status.PENDING}
         columns={columns}
         pagination={props.nopaging ? false : undefined}
         {...extend}
         onRow={(r) => ({
-          onClick: () => { if (props.onRowClick) props.onRowClick(r); }
+          onClick: () => {
+            if (props.onRowClick) props.onRowClick(r);
+          },
         })}
       />
       <ModalList {...modalProps} />
@@ -95,13 +114,9 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
       >
         <DescriptionsDetails r={currentRow} cols={columns} {...props} />
       </Drawer>
-
-
     </React.Fragment>
-
-
   );
-}
+};
 
 type ListState = {
   list: string;
@@ -110,71 +125,71 @@ type ListState = {
   js?: string;
 };
 
-
-
 const RestTableList: React.FC<RestTableParam> = (props) => {
+  const [state, setState] = useState<ListState>({
+    status: Status.PENDING,
+    cols: emptyColumnList,
+    list: props.list,
+  });
 
-  const [state, setState] = useState<ListState>({ status: Status.PENDING, cols: emptyColumnList, list:props.list })
-
-  const dispmess: string | undefined = props.canDisplay ? props.canDisplay(props) : undefined;
+  const dispmess: string | undefined = props.canDisplay
+    ? props.canDisplay(props)
+    : undefined;
 
   if (dispmess) return <RestTableCannotDisplay errmess={dispmess} />;
 
   if (state.status === Status.READY && state.list !== props.list) {
-    setState({ status: Status.PENDING, cols: emptyColumnList, list:props.list })
-    return null
+    setState({
+      status: Status.PENDING,
+      cols: emptyColumnList,
+      list: props.list,
+    });
+    return null;
   }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(
-    () => {
+  useEffect(() => {
 
+    function setS(d: ReadDefsResult) {
 
-      let lisstjsready: boolean = false;
-      let js: string | undefined = undefined
-      let idef: ColumnList | undefined = undefined
-
-      log("RestTableList " + props.list);
-
-      function setstatus() {
-        if (lisstjsready && idef !== undefined) setState({ status: Status.READY, cols: {...idef}, js: js, list:props.list });
-      }
-
-      restapilistdef(props.listdef ? props.listdef : props.list).then((response: any) => {
-        idef = response;
-        if ((idef as ColumnList).js) {
-          restapijs((idef as ColumnList).js as string).then((jsresponse: any) => {
-            js = jsresponse;
-            lisstjsready = true;
-            setstatus();
-          }).catch(() => {
-            setState({ status: Status.ERROR, cols: emptyColumnList, list:props.list })
-          })
-        } else {
-          lisstjsready = true;
-          setstatus();
-        }
-      }).catch(() => {
-        setState({ status: Status.ERROR, cols: emptyColumnList, list: props.list })
+      if (d.status === Status.READY)
+        setState({
+          status: Status.READY,
+          cols: { ...(d.res as ColumnList) },
+          js: d.js,
+          list: props.list,
+        })
+      else setState({
+        status: Status.ERROR,
+        cols: emptyColumnList,
+        list: props.list,
       })
-    }, [props.list, props.listdef]);
 
+    }
+
+    readdefs(props, setS)
+
+  }, [props.list, props.listdef]);
 
   switch (state.status) {
-    case Status.PENDING: { return null; }
+    case Status.PENDING: {
+      return null;
+    }
 
-    case Status.ERROR: { return <RestTableError /> }
+    case Status.ERROR: {
+      return <RestTableError />;
+    }
 
     default:
       if (state.status === Status.READY) {
-        return <React.Fragment>
-          <InLine js={state.js} />
-          <RestTableView {...state.cols} {...props} />
-        </React.Fragment>
-      }
-      else return null;
+        return (
+          <React.Fragment>
+            <InLine js={state.js} />
+            <RestTableView {...state.cols} {...props} />
+          </React.Fragment>
+        );
+      } else return null;
   }
-}
+};
 
-export default RestTableList
-
+export default RestTableList;

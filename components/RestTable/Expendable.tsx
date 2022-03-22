@@ -1,15 +1,14 @@
 import type { ReactNode } from "react";
 
-import type { TExtendable, Row, ColumnList, ClickResult, TAction } from "./types";
+import type { TExtendable, TRow, ColumnList, ClickResult, TAction } from "./typing";
 import { clickAction } from './helper'
 import RestTableList from '../RestTable'
 
 function getExtendableProps(cols: ColumnList): TExtendable {
 
-  function expand(r: Row): ReactNode {
+  function expand(r: TRow): ReactNode {
     const res: ClickResult = clickAction(cols.extendable as TAction, r);
     return <RestTableList {...res} vars={r} />
-    //    return <p style={{ margin: 0 }}>Hello</p>
   }
 
   return {

@@ -1,9 +1,9 @@
-import type { RestTableParam } from '../../ts/typing';
+import type { RestTableParam, ButtonElem } from '../../ts/typing';
 import type { TagProps } from 'antd';
 import type { ColumnType } from 'antd/lib/table';
 import type { ModalProps } from 'antd'
 
-import type CSS from 'csstype';
+import type CSS from 'csstype'; 
 import type { ReactNode } from 'react';
 import type { FilterDropdownProps } from 'antd/lib/table/interface';
 
@@ -13,8 +13,9 @@ export enum Status {
   ERROR,
 }
 
-
 export type FieldValue = string | number | boolean | undefined;
+
+export const TOOLADD = "ADD"
 
 
 type JSSupportedType = {
@@ -26,6 +27,10 @@ export type ClickResult = RestTableParam
 export type ClickAction = ClickResult & {
   jsclick?: string
 }
+
+export type TableToolBarElem =  ButtonElem & TAction
+
+export type TableToolBar = TableToolBarElem[]
 
 export type TAction = JSSupportedType & ClickAction & FormMessage
 
@@ -82,16 +87,17 @@ export type ColumnList = JSSupportedType & {
   header?: FormMessage;
   columns: TColumn[];
   extendable?: TAction;
+  toolbar?: TableToolBar;
 };
 
 export const emptyColumnList: ColumnList = { columns: [], rowkey: "" };
 
-export type Row = any;
+export type TRow = any;
 
-export type RowData = Row[];
+export type RowData = TRow[];
 
-export type FShowDetails = (entity: Row) => void
-export type FActionResult = (entity: Row, r: ClickResult) => void
+export type FShowDetails = (entity: TRow) => void
+export type FActionResult = (entity: TRow, r: ClickResult) => void
 
 export type TableHookParam = {
   fdetails: FShowDetails;
@@ -124,18 +130,28 @@ export const emptyModalListProps: ModalListProps = { visible: false, list: '' };
 
 export type ModalListProps = RestTableParam & {
   visible: boolean
-  closehook?: () => void
+  closehook?: (e: React.MouseEvent<HTMLElement>) => void,
   props?: ModalProps
 }
 
 export type ColumnFilterSearch = {
   filterDropdown: (props: FilterDropdownProps) => ReactNode
   filterIcon: (filtered: boolean) => ReactNode
-  onFilter: (value: string|number|boolean, record: Row) => boolean;
+  onFilter: (value: string|number|boolean, record: TRow) => boolean;
   onFilterDropdownVisibleChange?: (visible: boolean) => void
 }
 
 export type TExtendable = {
-  expandedRowRender: (record: Row) => ReactNode;
-  rowExpandable?: (record: Row) => boolean
+  expandedRowRender: (record: TRow) => ReactNode;
+  rowExpandable?: (record: TRow) => boolean
+}
+
+export type TField = {
+  field: string;
+  fieldtype?: string;
+  coltitle?: string;
+}
+
+export type TForm = JSSupportedType & {
+  fields: TField[]
 }

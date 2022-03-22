@@ -5,7 +5,7 @@ import type { ColumnType } from "antd/lib/table";
 import { Tag, Space } from "antd";
 
 import lstring from "../..//ts/localize";
-import type { ColumnList, TColumn, Row, TableHookParam } from "./types";
+import type { ColumnList, TColumn, TRow, TableHookParam } from "./typing";
 import type {
   TAction,
   TActions,
@@ -17,8 +17,8 @@ import type {
   FormMessage,
   ClickResult,
   ColumnFilterSearch,
-} from "./types";
-import { TYPESTRING, TYPENUMBER, TYPEBOOLEAN } from "./types";
+} from "./typing";
+import { TYPESTRING, TYPENUMBER, TYPEBOOLEAN } from "./typing";
 import { callJSFunction } from "../../ts/j";
 import { log } from "../../ts/j";
 import TableFilterProps from "./TableFilter";
@@ -27,22 +27,18 @@ import TableFilterProps from "./TableFilter";
 // create ProColumns from columns
 // =================================
 
-export function clickAction(t: TAction, row: Row): ClickResult {
+export function clickAction(t: TAction, row: TRow): ClickResult {
   let res: ClickResult = t;
   if (t.jsclick) res = callJSFunction(t.jsclick as string, row);
   return res;
 }
 
-function clickActionHook(t: TAction, row: Row, r: TableHookParam) {
+function clickActionHook(t: TAction, row: TRow, r: TableHookParam) {
   const res: ClickResult = clickAction(t, row);
   r.fresult(row, res);
 }
 
-function constructAction(
-  t: TAction,
-  row: Row,
-  r: TableHookParam
-): ReactElement {
+function constructAction(t: TAction, row: TRow, r: TableHookParam): ReactElement {
   return (
     <a onClick={() => clickActionHook(t, row, r)}>{makeMessage(t, row)}</a>
   );
@@ -50,7 +46,7 @@ function constructAction(
 
 function constructactionsCol(
   a: TActions,
-  row: Row,
+  row: TRow,
   r: TableHookParam
 ): ReactElement {
   let act: TAction[] = a;
@@ -60,13 +56,13 @@ function constructactionsCol(
   );
 }
 
-function getAddStyle(a: AddStyle, row: Row): CSS.Properties {
+function getAddStyle(a: AddStyle, row: TRow): CSS.Properties {
   if (a.style) return a.style;
   const s: CSS.Properties = callJSFunction(a.js as string, row);
   return s;
 }
 
-function getValue(a: ColumnValue, row: Row): FieldValue {
+function getValue(a: ColumnValue, row: TRow): FieldValue {
   if (a.js) {
     const v: ColumnValue | undefined = callJSFunction(a.js as string, row);
     if (v === undefined) return undefined;
@@ -77,12 +73,12 @@ function getValue(a: ColumnValue, row: Row): FieldValue {
   return makeMessage(a, row);
 }
 
-function constructSingleTag(tag: TTag, row: Row): ReactElement {
+function constructSingleTag(tag: TTag, row: TRow): ReactElement {
   const value: FieldValue = getValue(tag.value, row);
   return <Tag {...tag.props}>{value}</Tag>;
 }
 
-function constructTags(tag: TTags, row: Row): ReactElement {
+function constructTags(tag: TTags, row: TRow): ReactElement {
   let tags: TTag[] = [];
   if (tag.js) tags = callJSFunction(tag.js, row) as TTag[];
   else tags = tag;
@@ -128,14 +124,14 @@ function isRenderable(c: TColumn): boolean {
   );
 }
 
-function sortinc(a: Row, b: Row, field: string): number {
+function sortinc(a: TRow, b: TRow, field: string): number {
   const fielda: string | undefined = a[field] as string | undefined;
   if (fielda === undefined) return 1;
   const fieldb: string = b[field] as string;
   return fielda.localeCompare(fieldb);
 }
 
-function sortnumberinc(a: Row, b: Row, field: string): number {
+function sortnumberinc(a: TRow, b: TRow, field: string): number {
   const fielda: number | undefined = a[field] as number | undefined;
   if (fielda === undefined) return 1;
   const fieldb: number = b[field] as number;
@@ -143,7 +139,7 @@ function sortnumberinc(a: Row, b: Row, field: string): number {
   return fielda - fieldb;
 }
 
-function sortboolinc(a: Row, b: Row, field: string): number {
+function sortboolinc(a: TRow, b: TRow, field: string): number {
   const fielda: boolean | undefined = a[field] as boolean | undefined;
   if (fielda === undefined) return 1;
   const fieldb: boolean = b[field] as boolean;
@@ -174,13 +170,13 @@ function transformOneColumn(c: TColumn, r: TableHookParam): ColumnType<any> {
     if (c.props === undefined) c.props = {};
     switch (fieldtype) {
       case TYPENUMBER:
-        c.props.sorter = (a: Row, b: Row) => sortnumberinc(a, b, c.field);
+        c.props.sorter = (a: TRow, b: TRow) => sortnumberinc(a, b, c.field);
         break;
       case TYPEBOOLEAN:
-        c.props.sorter = (a: Row, b: Row) => sortboolinc(a, b, c.field);
+        c.props.sorter = (a: TRow, b: TRow) => sortboolinc(a, b, c.field);
         break;
       default:
-        c.props.sorter = (a: Row, b: Row) => sortinc(a, b, c.field);
+        c.props.sorter = (a: TRow, b: TRow) => sortinc(a, b, c.field);
         break;
     }
   }
@@ -203,10 +199,7 @@ function transformOneColumn(c: TColumn, r: TableHookParam): ColumnType<any> {
   return e;
 }
 
-export function transformColumns(
-  cols: ColumnList,
-  r: TableHookParam
-): ColumnType<any>[] {
+export function transformColumns(cols: ColumnList, r: TableHookParam): ColumnType<any>[] {
   return cols.columns.map((c) => transformOneColumn(c, r));
 }
 
@@ -216,7 +209,7 @@ export function transformColumns(
 
 export function makeMessage(
   m: FormMessage,
-  row?: Row,
+  row?: TRow,
   vars?: any
 ): string | undefined {
   if (m.messagedirect) return m.messagedirect;
@@ -236,4 +229,12 @@ export function makeMessage(
 // ======================
 export function findColDetails(c: ColumnList): TColumn | undefined {
   return c.columns.find((x) => x.showdetails);
+}
+
+// ======================
+// is mask clicked
+// ======================
+export function ismaskClicked(e: React.MouseEvent<HTMLElement>): boolean {
+  const t: string = e.currentTarget.className
+  return t === 'ant-modal-wrap'
 }

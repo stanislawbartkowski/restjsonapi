@@ -8,7 +8,8 @@ const embedded = {
     search: 'Szukaj',
     reset: 'Wyzeruj',
     filter: 'Filtruj',
-    actions: 'Działania'
+    actions: 'Działania',
+    addaction: 'Dodaj'
   },
   en: {
     empty: '',
@@ -16,7 +17,8 @@ const embedded = {
     search: 'Search',
     reset: 'Reset',
     filter: 'Filter',
-    actions: 'Actions'
+    actions: 'Actions',
+    addaction: 'Add'
   }
 };
 

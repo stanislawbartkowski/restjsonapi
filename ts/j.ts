@@ -14,13 +14,13 @@ export function erralert(mess: string) {
 }
 
 export function internalerrorlog(mess: string, alert: boolean = true) {
-  const emess: string = 'Internal error :' + mess;
+  const emess: string = `Internal error : ${mess}`;
   log(emess);
   if (alert) erralert(emess);
 }
 
 export function internalinfoerrorlog(info: string, errmess: string, alert: boolean = true) {
-  const emess: string = info + '   Internal error :' + errmess;
+  const emess: string = `${info}  Internal error : ${errmess}`;
   log(emess);
   if (alert) erralert(emess);
 }

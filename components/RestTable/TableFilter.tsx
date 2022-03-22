@@ -1,18 +1,18 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space } from "antd";
 
-import type { ColumnFilterSearch, Row, TColumn } from './types'
-import { TYPENUMBER } from './types'
+import type { ColumnFilterSearch, TRow, TColumn } from './typing'
+import { TYPENUMBER } from './typing'
 import lstring from '../..//ts/localize'
 import { FilterConfirmProps } from "antd/lib/table/interface";
 
 
-function eqString(row: Row, field: string, filter: string): boolean {
+function eqString(row: TRow, field: string, filter: string): boolean {
   if (row === undefined || row[field] === undefined) return false
   return row[field].toString().toUpperCase().indexOf(filter.toUpperCase()) !== -1;
 }
 
-function eqNumber(row: Row, field: string, filter: string): boolean {
+function eqNumber(row: TRow, field: string, filter: string): boolean {
   if (row === undefined || row[field] === undefined) return false
   const fieldnum : number =  +row[field]
   const res: boolean = fieldnum === +filter
@@ -71,8 +71,8 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
 
     onFilter:
-      c.fieldtype === TYPENUMBER ? (value: string|number|boolean, record: Row) => eqNumber(record, c.field, value as string) :
-        (value: string|number|boolean, record: Row) => eqString(record, c.field, value as string)
+      c.fieldtype === TYPENUMBER ? (value: string|number|boolean, record: TRow) => eqNumber(record, c.field, value as string) :
+        (value: string|number|boolean, record: TRow) => eqString(record, c.field, value as string)
 
   }
 };
