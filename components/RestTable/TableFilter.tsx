@@ -4,16 +4,19 @@ import { Button, Input, Space } from "antd";
 import type { ColumnFilterSearch, Row, TColumn } from './types'
 import { TYPENUMBER } from './types'
 import lstring from '../..//ts/localize'
+import { FilterConfirmProps } from "antd/lib/table/interface";
 
 
 function eqString(row: Row, field: string, filter: string): boolean {
-  if (row == undefined || row[field] == undefined) return false
-  return row[field].toString().toUpperCase().indexOf(filter.toUpperCase()) != -1;
+  if (row === undefined || row[field] === undefined) return false
+  return row[field].toString().toUpperCase().indexOf(filter.toUpperCase()) !== -1;
 }
 
 function eqNumber(row: Row, field: string, filter: string): boolean {
-  if (row == undefined || row[field] == undefined) return false
-  return row[field] as number == +filter
+  if (row === undefined || row[field] === undefined) return false
+  const fieldnum : number =  +row[field]
+  const res: boolean = fieldnum === +filter
+  return res
 }
 
 
@@ -27,14 +30,14 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
     state.searchText = statep.searchText;
   }
 
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+  const handleSearch = (selectedKeys: any[], confirm: { (param?: FilterConfirmProps | undefined): void; (param?: FilterConfirmProps | undefined): void; (param?: FilterConfirmProps | undefined): void; (): void; }, dataIndex: string) => {
     confirm();
     setState({
       searchText: selectedKeys[0],
     });
   }
 
-  const handleReset = clearFilters => {
+  const handleReset = (clearFilters: (() => void)) => {
     clearFilters();
     setState({ searchText: '' });
   };
@@ -59,7 +62,7 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
           >
             {lstring('search')}
           </Button>
-          <Button onClick={() => { handleReset(clearFilters); handleSearch(selectedKeys, confirm, c.field) }} size="small" style={{ width: 90 }}>
+          <Button onClick={() => { handleReset(clearFilters as () => {}); handleSearch(selectedKeys, confirm, c.field) }} size="small" style={{ width: 90 }}>
             {lstring('reset')}
           </Button>
         </Space>
@@ -68,8 +71,8 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
 
     onFilter:
-      c.fieldtype == TYPENUMBER ? (value: string, record: Row) => eqNumber(record, c.field, value) :
-        (value: string, record: Row) => eqString(record, c.field, value)
+      c.fieldtype === TYPENUMBER ? (value: string|number|boolean, record: Row) => eqNumber(record, c.field, value as string) :
+        (value: string|number|boolean, record: Row) => eqString(record, c.field, value as string)
 
   }
 };

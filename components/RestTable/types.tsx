@@ -1,4 +1,4 @@
-import type { RestTableParam } from '@/restjsonapi/ts/typing';
+import type { RestTableParam } from '../../ts/typing';
 import type { TagProps } from 'antd';
 import type { ColumnType } from 'antd/lib/table';
 import type { ModalProps } from 'antd'
@@ -86,12 +86,6 @@ export type ColumnList = JSSupportedType & {
 
 export const emptyColumnList: ColumnList = { columns: [], rowkey: "" };
 
-export type ListState = {
-  status: Status;
-  cols: ColumnList;
-  js?: string;
-};
-
 export type Row = any;
 
 export type RowData = Row[];
@@ -123,7 +117,7 @@ export type SortFilter = {
 }
 
 export type JsonTableResult = {
-  data: RowData;
+  res: RowData;
 }
 
 export const emptyModalListProps: ModalListProps = { visible: false, list: '' };
@@ -137,7 +131,7 @@ export type ModalListProps = RestTableParam & {
 export type ColumnFilterSearch = {
   filterDropdown: (props: FilterDropdownProps) => ReactNode
   filterIcon: (filtered: boolean) => ReactNode
-  onFilter: (value: string, record: Row) => boolean;
+  onFilter: (value: string|number|boolean, record: Row) => boolean;
   onFilterDropdownVisibleChange?: (visible: boolean) => void
 }
 

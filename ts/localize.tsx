@@ -3,10 +3,20 @@ import LocalizedStrings from 'react-localization';
 
 const embedded = {
   pl: {
-    empty: ''
+    empty: '',
+    searchprompt: 'Szukaj {0}',
+    search: 'Szukaj',
+    reset: 'Wyzeruj',
+    filter: 'Filtruj',
+    actions: 'Działania'
   },
   en: {
-    empty: ''
+    empty: '',
+    searchprompt: 'Search {0}',
+    search: 'Search',
+    reset: 'Reset',
+    filter: 'Filter',
+    actions: 'Actions'
   }
 };
 

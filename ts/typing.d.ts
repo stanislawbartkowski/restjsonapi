@@ -11,3 +11,13 @@ export type RestTableParam = {
 };
 
 export type FUrlModifier = (list: string) => undefined | Record<string, string>;
+
+export type MenuElem = {
+  id: string
+  restid: string
+}
+
+export type MenuLeft = {
+  menu: MenuElem[]
+}
+

@@ -4,7 +4,7 @@ import React from 'react';
 
 import type { TColumn, ColumnList, Row, ShowDetails } from './types';
 import { findColDetails, makeMessage } from './helper'
-import { isObject } from '@/restjsonapi/ts/j';
+import { isObject } from '../../ts/j';
 
 
 type DescriptionDetailsType = ColumnList & {
