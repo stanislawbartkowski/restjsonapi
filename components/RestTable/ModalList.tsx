@@ -6,8 +6,12 @@ import RestTable from '../RestTable'
 
 const ModalList: React.FC<ModalListProps> = (props) => {
 
+  function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>) : void {
+    if (props.closeModal) props.closeModal()
+  }
+
   return <Modal destroyOnClose visible={props.visible} maskClosable={false}
-    onOk={props.closehook} onCancel={props.closehook} {...props.props} footer={null} >
+    onOk={onClose} onCancel={onClose} footer={null} >
     <RestTable {...props} />
   </Modal >
 }

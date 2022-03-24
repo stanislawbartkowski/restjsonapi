@@ -2,6 +2,13 @@ import { ButtonProps } from "antd";
 
 type FCanDisplay = (p: RestTableParam) => undefined | string;
 
+export enum HTTPMETHOD {
+  GET = "GET",
+  DELETE = "DELETE",
+  PUT = "PUT",
+  POST = "POST",
+}
+
 export type RestTableParam = {
   list: string;
   params?: Record<string, string>;
@@ -10,6 +17,7 @@ export type RestTableParam = {
   canDisplay?: FCanDisplay;
   vars?: Record<string, string>;
   nopaging?: boolean;
+  method?: HTTPMETHOD;
 };
 
 export type FUrlModifier = (list: string) => undefined | Record<string, string>;

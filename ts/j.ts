@@ -1,30 +1,3 @@
-// ===================================
-// Some simple command procedures
-// ===================================
-export function log(s: string) {
-  console.log(s);
-}
-
-export function trace(module: string, mess: string) {
-  console.log('[' + module + '] ' + mess);
-}
-
-export function erralert(mess: string) {
-  alert(mess);
-}
-
-export function internalerrorlog(mess: string, alert: boolean = true) {
-  const emess: string = `Internal error : ${mess}`;
-  log(emess);
-  if (alert) erralert(emess);
-}
-
-export function internalinfoerrorlog(info: string, errmess: string, alert: boolean = true) {
-  const emess: string = `${info}  Internal error : ${errmess}`;
-  log(emess);
-  if (alert) erralert(emess);
-}
-
 // ====================
 // call JS function
 // ====================

@@ -17,7 +17,7 @@ import type {
   ModalListProps,
   RowData,
 } from "./typing";
-import { emptyModalListProps, Status, emptyColumnList } from "./typing";
+import { emptyModalListProps, Status } from "./typing";
 import { restapilist } from "../../services/api";
 import { transformColumns, makeMessage } from "./helper";
 import InLine from "../../ts/inline";
@@ -27,6 +27,14 @@ import getExtendableProps from "./Expendable";
 import HeaderTable from "./HeaderTable";
 import readdefs, { ReadDefsResult } from "./readdefs";
 
+const emptyColumnList: ColumnList = { columns: [], rowkey: "" };
+
+type DataSourceState = {
+  status: Status;
+  tabledata: RowData;
+};
+
+
 const RestTableError: React.FC = () => {
   return <div>Bład podczas czytania definicji z serwera</div>;
 };
@@ -35,10 +43,6 @@ const RestTableCannotDisplay: React.FC<{ errmess: string }> = (props) => {
   return <div> {lstring(props.errmess)}</div>;
 };
 
-type DataSourceState = {
-  status: Status;
-  tabledata: RowData;
-};
 
 const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
@@ -55,14 +59,14 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
     setShowDetail(true);
   };
 
-  const fmodalhook = (e: React.MouseEvent<HTMLElement>) => {
+  const fmodalhook = (): void => {
     setIsModalVisible(emptyModalListProps);
   };
 
   const fresult: FActionResult = (entity: TRow, r: ClickResult) => {
     setIsModalVisible({
       visible: true,
-      closehook: fmodalhook,
+      closeModal: fmodalhook,
       vars: entity,
       ...r,
     });

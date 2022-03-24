@@ -5,7 +5,7 @@ import type { ColumnType } from "antd/lib/table";
 import { Tag, Space } from "antd";
 
 import lstring from "../..//ts/localize";
-import type { ColumnList, TColumn, TRow, TableHookParam } from "./typing";
+import type { ColumnList, TColumn, TRow, TableHookParam, TFieldBase } from "./typing";
 import type {
   TAction,
   TActions,
@@ -18,9 +18,9 @@ import type {
   ClickResult,
   ColumnFilterSearch,
 } from "./typing";
-import { TYPESTRING, TYPENUMBER, TYPEBOOLEAN } from "./typing";
+import { FIELDTYPE } from "./typing";
 import { callJSFunction } from "../../ts/j";
-import { log } from "../../ts/j";
+import { log } from "../../ts/l";
 import TableFilterProps from "./TableFilter";
 
 // =================================
@@ -150,7 +150,7 @@ function sortboolinc(a: TRow, b: TRow, field: string): number {
 }
 function filter(c: TColumn): boolean {
   if (c.nofilter) return false;
-  if (c.fieldtype === TYPEBOOLEAN) return false;
+  if (c.fieldtype === FIELDTYPE.BOOLEAN) return false;
   if (c.actions) return false;
   if (c.tags) return false;
   return true;
@@ -161,18 +161,18 @@ function sort(c: TColumn): boolean {
 }
 
 function transformOneColumn(c: TColumn, r: TableHookParam): ColumnType<any> {
-  const mess: string = lstring(c.coltitle ? c.coltitle : c.field);
-  const fieldtype: string = c.fieldtype ? c.fieldtype : TYPESTRING;
+  const mess: string = fieldTitle(c)
+  const fieldtype: FIELDTYPE = fieldType(c)
   const p: ColumnType<any> = {};
 
-  if (fieldtype === TYPENUMBER) p.align = "right";
+  if (fieldtype === FIELDTYPE.NUMBER) p.align = "right";
   if (sort(c)) {
     if (c.props === undefined) c.props = {};
     switch (fieldtype) {
-      case TYPENUMBER:
+      case FIELDTYPE.NUMBER:
         c.props.sorter = (a: TRow, b: TRow) => sortnumberinc(a, b, c.field);
         break;
-      case TYPEBOOLEAN:
+      case FIELDTYPE.BOOLEAN:
         c.props.sorter = (a: TRow, b: TRow) => sortboolinc(a, b, c.field);
         break;
       default:
@@ -237,4 +237,16 @@ export function findColDetails(c: ColumnList): TColumn | undefined {
 export function ismaskClicked(e: React.MouseEvent<HTMLElement>): boolean {
   const t: string = e.currentTarget.className
   return t === 'ant-modal-wrap'
+}
+
+// =====================
+// field methods
+// =====================
+
+export function fieldType(t: TFieldBase): FIELDTYPE {
+  return t.fieldtype ? t.fieldtype : FIELDTYPE.STRING
+}
+
+export function fieldTitle(t: TFieldBase): string {
+  return lstring(t.coltitle ? t.coltitle : t.field);
 }

@@ -1,38 +1,15 @@
 import React, { useState } from "react";
-import { Button, PageHeader } from "antd";
+import { PageHeader } from "antd";
 
-import type { TableToolBar, ColumnList, ModalListProps, ClickResult, TableToolBarElem } from './typing'
-import { TOOLADD, emptyModalListProps } from "./typing";
-import lstring from "../../ts/localize";
-import getIcon from "../../ts/icons";
+import type { TCloseFunction, TableToolBar, ColumnList, ModalListProps, ClickResult, ButtonAction, TRow } from './typing'
+import { emptyModalListProps } from "./typing";
 import ModalForm from "./ModalForm";
-import { log } from "../../ts/j";
-import { clickAction, ismaskClicked } from './helper'
+import { trace } from "../../ts/l";
+import { clickAction } from './helper'
+import constructButton from "./constructbutton";
 
-type FClickButton = (b: TableToolBarElem) => void;
-
-function constructButton(b: TableToolBarElem, onclick: FClickButton): React.ReactNode {
-  let messid = "";
-  let iconid: string | undefined = b.icon;
-
-  switch (b.id) {
-    case TOOLADD:
-      messid = "addaction";
-      iconid = "pluscircleoutlined";
-      break;
-  }
-
-  const icon: React.ReactNode | undefined = iconid
-    ? getIcon(iconid)
-    : undefined;
-
-  const bu = (
-    <Button key={b.id} icon={icon} {...b.props} onClick={() => onclick(b)}>
-      {lstring(messid)}
-    </Button>
-  );
-
-  return bu;
+function ltrace(mess: string) {
+  trace('HeaderTable', mess)
 }
 
 const HeaderTable: React.FC<ColumnList> = (props) => {
@@ -40,19 +17,26 @@ const HeaderTable: React.FC<ColumnList> = (props) => {
 
   const h: TableToolBar = props.toolbar as TableToolBar;
 
-  const fmodalhook = (e: React.MouseEvent<HTMLElement>) => {
-    if (!ismaskClicked(e)) setIsModalVisible(emptyModalListProps);
+  const fmodalhook: TCloseFunction = (button?: ButtonAction, r?: TRow) => {
+    ltrace(`Form button clicked ${button?.id}`)
+    if (button === undefined) {
+      setIsModalVisible(emptyModalListProps);
+      return;
+    }
+    const res: ClickResult = clickAction(button, r)
+    if (res.close) setIsModalVisible(emptyModalListProps);
   };
 
 
-  function clickButton(b: TableToolBarElem) {
-    log(b.id);
+  function clickButton(b: ButtonAction) {
+    ltrace(b.id)
     const res: ClickResult = clickAction(b, {})
-    setIsModalVisible({ ...res, visible: true, closehook: fmodalhook })
+    setIsModalVisible({ ...res, visible: true, closeModal: fmodalhook })
   }
+
   return (
     <React.Fragment>
-      <PageHeader extra={h.map((e: TableToolBarElem) => constructButton(e, clickButton))} />
+      <PageHeader extra={h.map((e: ButtonAction) => constructButton(e, clickButton))} />
       <ModalForm {...modalProps} />
     </React.Fragment>
   );

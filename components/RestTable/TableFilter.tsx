@@ -2,7 +2,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space } from "antd";
 
 import type { ColumnFilterSearch, TRow, TColumn } from './typing'
-import { TYPENUMBER } from './typing'
+import { FIELDTYPE } from './typing'
 import lstring from '../..//ts/localize'
 import { FilterConfirmProps } from "antd/lib/table/interface";
 
@@ -71,7 +71,7 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
 
     onFilter:
-      c.fieldtype === TYPENUMBER ? (value: string|number|boolean, record: TRow) => eqNumber(record, c.field, value as string) :
+      c.fieldtype === FIELDTYPE.NUMBER ? (value: string|number|boolean, record: TRow) => eqNumber(record, c.field, value as string) :
         (value: string|number|boolean, record: TRow) => eqString(record, c.field, value as string)
 
   }

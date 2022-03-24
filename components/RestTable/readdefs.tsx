@@ -1,5 +1,5 @@
 import type { ColumnList, TForm } from "./typing";
-import { log } from "../../ts/j";
+import { log } from "../../ts/l";
 import type { RestTableParam } from "../../ts/typing";
 import { restapilistdef, restapijs } from "../../services/api";
 import { Status } from "./typing";

@@ -1,11 +1,12 @@
-import type { RestTableParam, ButtonElem } from '../../ts/typing';
 import type { TagProps } from 'antd';
 import type { ColumnType } from 'antd/lib/table';
 import type { ModalProps } from 'antd'
-
-import type CSS from 'csstype'; 
+import type CSS from 'csstype';
 import type { ReactNode } from 'react';
+import { FormItemProps } from 'antd';
 import type { FilterDropdownProps } from 'antd/lib/table/interface';
+
+import type { RestTableParam, ButtonElem } from '../../ts/typing';
 
 export enum Status {
   PENDING,
@@ -15,24 +16,32 @@ export enum Status {
 
 export type FieldValue = string | number | boolean | undefined;
 
-export const TOOLADD = "ADD"
-
+export enum BUTTONACTION {
+  ADD = "ADD",
+  ACCEPT = "ACCEPT",
+  CANCEL = 'CANCEL'
+}
 
 type JSSupportedType = {
   js?: string
 }
 
-export type ClickResult = RestTableParam
+export type ClickResult = RestTableParam & {
+  close?: boolean
+}
 
 export type ClickAction = ClickResult & {
   jsclick?: string
 }
 
-export type TableToolBarElem =  ButtonElem & TAction
+export type TAction = ClickAction & FormMessage
 
-export type TableToolBar = TableToolBarElem[]
+export type ButtonAction = ButtonElem & TAction & {
+  validate?: boolean
+}
 
-export type TAction = JSSupportedType & ClickAction & FormMessage
+export type TableToolBar = ButtonAction[]
+
 
 export type FormMessage = JSSupportedType & {
   messagedirect?: string
@@ -61,20 +70,24 @@ export type TTags = JSSupportedType & TTag[]
 
 export type TActions = JSSupportedType & TAction[]
 
-export const TYPENUMBER = 'number'
-export const TYPESTRING = 'string'
-export const TYPEDATE = 'date'
-export const TYPEBOOLEAN = 'boolean'
+export enum FIELDTYPE {
+  NUMBER = 'number',
+  STRING = 'string',
+  DATE = 'date',
+  BOOLEAN = 'boolean'
+}
 
-
-export type TColumn = {
+export type TFieldBase = {
   field: string;
-  fieldtype?: string;
+  fieldtype?: FIELDTYPE,
   coltitle?: string;
+  addstyle?: AddStyle
+}
+
+export type TColumn = TFieldBase & {
   props?: ColumnType<any>;
   showdetails?: ShowDetails | boolean;
   ident?: string
-  addstyle?: AddStyle
   value?: ColumnValue
   tags?: TTags
   actions?: TActions
@@ -89,8 +102,6 @@ export type ColumnList = JSSupportedType & {
   extendable?: TAction;
   toolbar?: TableToolBar;
 };
-
-export const emptyColumnList: ColumnList = { columns: [], rowkey: "" };
 
 export type TRow = any;
 
@@ -128,16 +139,18 @@ export type JsonTableResult = {
 
 export const emptyModalListProps: ModalListProps = { visible: false, list: '' };
 
+export type TCloseFunction = (closebutton?: ButtonAction, row?: TRow) => void
+
 export type ModalListProps = RestTableParam & {
   visible: boolean
-  closehook?: (e: React.MouseEvent<HTMLElement>) => void,
+  closeModal?: TCloseFunction,
   props?: ModalProps
 }
 
 export type ColumnFilterSearch = {
   filterDropdown: (props: FilterDropdownProps) => ReactNode
   filterIcon: (filtered: boolean) => ReactNode
-  onFilter: (value: string|number|boolean, record: TRow) => boolean;
+  onFilter: (value: string | number | boolean, record: TRow) => boolean;
   onFilterDropdownVisibleChange?: (visible: boolean) => void
 }
 
@@ -146,12 +159,11 @@ export type TExtendable = {
   rowExpandable?: (record: TRow) => boolean
 }
 
-export type TField = {
-  field: string;
-  fieldtype?: string;
-  coltitle?: string;
+export type TField = TFieldBase & {
+  props?: FormItemProps
 }
 
 export type TForm = JSSupportedType & {
   fields: TField[]
+  buttons: ButtonAction[]
 }

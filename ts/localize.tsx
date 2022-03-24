@@ -1,4 +1,4 @@
-import LocalizedStrings from 'react-localization';
+import LocalizedStrings, { LocalizedStringsMethods } from 'react-localization';
 
 
 const embedded = {
@@ -9,7 +9,9 @@ const embedded = {
     reset: 'Wyzeruj',
     filter: 'Filtruj',
     actions: 'Działania',
-    addaction: 'Dodaj'
+    addaction: 'Dodaj',
+    acceptaction: 'Akceptujesz',
+    cancelaction: 'Rezygnujesz'
   },
   en: {
     empty: '',
@@ -18,22 +20,25 @@ const embedded = {
     reset: 'Reset',
     filter: 'Filter',
     actions: 'Actions',
-    addaction: 'Add'
+    addaction: 'Add',
+    acceptaction: 'Confirm',
+    cancelaction: 'Cancel'
   }
 };
 
-const strings = new LocalizedStrings({
+const strings: LocalizedStringsMethods = new LocalizedStrings({
   en: {
   },
   pl: {
   }
 });
 
-export function setStrings(s: any) {
+export function setStrings(s: any, l: string | undefined) {
   //    strings.setContent({ ...embedded, ...s });
   if (s == null) return;
   const o = { pl: { ...embedded.pl, ...s.pl }, en: { ...embedded.en, ...s.en } };
   strings.setContent(o);
+  if (l) strings.setLanguage(l)
 }
 
 const lstring = (id: string, ...args: any[]): string => {

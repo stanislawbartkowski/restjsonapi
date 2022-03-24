@@ -4,7 +4,7 @@
 import request, { extend, ResponseError } from "umi-request";
 
 import type { FUrlModifier } from "../ts/typing";
-import { internalerrorlog } from '../ts/j'
+import { internalerrorlog, logG } from '../ts/l'
 
 const rrequest = request;
 let prefix : string = "/"
@@ -17,8 +17,8 @@ export function setPrefix(p : string) {
 
 export function setHost(prefix: string) {
   function errorHandler(error: ResponseError) {
-    console.log(error)
     internalerrorlog(error.message);
+    logG.error(error.message,error)
     throw new Error(error.message)
   }
   rrequest.extendOptions({ prefix: prefix, errorHandler: errorHandler });
