@@ -26,8 +26,13 @@ type JSSupportedType = {
   js?: string
 }
 
-export type ClickResult = RestTableParam & {
-  close?: boolean
+export type ActionResult = {
+  success : boolean
+}
+
+export type ClickResult = RestTableParam & ActionResult & {
+  close?: boolean,
+  upload?: boolean
 }
 
 export type ClickAction = ClickResult & {

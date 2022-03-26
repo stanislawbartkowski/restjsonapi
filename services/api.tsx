@@ -5,20 +5,21 @@ import request, { extend, ResponseError } from "umi-request";
 
 import type { FUrlModifier } from "../ts/typing";
 import { internalerrorlog, logG } from '../ts/l'
+import { HTTPMETHOD } from "../ts/typing";
 
 const rrequest = request;
-let prefix : string = "/"
+let prefix: string = "/"
 
 // /restapi
 
-export function setPrefix(p : string) {
+export function setPrefix(p: string) {
   prefix = p
 }
 
 export function setHost(prefix: string) {
   function errorHandler(error: ResponseError) {
     internalerrorlog(error.message);
-    logG.error(error.message,error)
+    logG.error(error.message, error)
     throw new Error(error.message)
   }
   rrequest.extendOptions({ prefix: prefix, errorHandler: errorHandler });
@@ -54,5 +55,14 @@ export async function restapijs(resource: string) {
   return rrequest<Record<string, any>>(`${prefix}getjs`, {
     method: "GET",
     ...{ params: { resource: resource } },
+  });
+}
+
+export async function restaction(method: HTTPMETHOD, restaction: string, pars?: Record<string, string>, data?: any) {
+  const para: any = urlModifier == undefined ? {} : urlModifier(restaction);
+  return rrequest<Record<string, any>>(`${prefix}${restaction}`, {
+    method: method,
+    data: data,
+    ...{ params: { ...para, ...pars } },
   });
 }

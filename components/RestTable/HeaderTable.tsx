@@ -7,6 +7,8 @@ import ModalForm from "./ModalForm";
 import { trace } from "../../ts/l";
 import { clickAction } from './helper'
 import constructButton from "./constructbutton";
+import {restaction} from '../../services/api'
+import { HTTPMETHOD } from "../../ts/typing";
 
 function ltrace(mess: string) {
   trace('HeaderTable', mess)
@@ -25,6 +27,14 @@ const HeaderTable: React.FC<ColumnList> = (props) => {
     }
     const res: ClickResult = clickAction(button, r)
     if (res.close) setIsModalVisible(emptyModalListProps);
+    if (res.restaction) {
+      restaction(res.method as HTTPMETHOD,res.restaction,res.params,r).then(
+        (res) => {
+          let x = 1
+        }
+      )
+
+    }
   };
 
 

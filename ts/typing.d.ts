@@ -17,7 +17,9 @@ export type RestTableParam = {
   canDisplay?: FCanDisplay;
   vars?: Record<string, string>;
   nopaging?: boolean;
+  restaction?: string;
   method?: HTTPMETHOD;
+  upload?: boolean
 };
 
 export type FUrlModifier = (list: string) => undefined | Record<string, string>;
