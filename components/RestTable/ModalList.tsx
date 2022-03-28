@@ -1,10 +1,11 @@
 import React from 'react';
 import { Modal } from 'antd';
 
-import type { ModalListProps } from './typing'
-import RestTable from '../RestTable'
+import type { ModalListProps ,ModalDialogProps } from './typing'
+import RestTable from '.'
+import ModalDialog from './ModalDialog'
 
-const ModalList: React.FC<ModalListProps> = (props) => {
+const ModalTableList: React.FC<ModalListProps> = (props) => {
 
   function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>) : void {
     if (props.closeModal) props.closeModal()
@@ -14,6 +15,13 @@ const ModalList: React.FC<ModalListProps> = (props) => {
     onOk={onClose} onCancel={onClose} footer={null} >
     <RestTable {...props} />
   </Modal >
+}
+
+
+const ModalList: React.FC<ModalDialogProps> = (props) => {
+
+  if (props.list) return <ModalTableList {...props} />
+  return <ModalDialog {...props} />
 }
 
 export default ModalList

@@ -1,42 +1,26 @@
 import React, { useState } from "react";
 import { PageHeader } from "antd";
 
-import type { TCloseFunction, TableToolBar, ColumnList, ModalListProps, ClickResult, ButtonAction, TRow } from './typing'
+import type { FRefresh, TCloseFunction, TableToolBar, ModalDialogProps, ModalListProps, ClickResult, ButtonAction, TRow, FieldError, ColumnList } from './typing'
 import { emptyModalListProps } from "./typing";
-import ModalForm from "./ModalForm";
 import { trace } from "../../ts/l";
-import { clickAction } from './helper'
-import constructButton from "./constructbutton";
-import {restaction} from '../../services/api'
-import { HTTPMETHOD } from "../../ts/typing";
+import { clickAction } from './js/helper'
+import constructButton from "./js/constructbutton";
+import ModalDialog from './ModalDialog'
 
 function ltrace(mess: string) {
   trace('HeaderTable', mess)
 }
 
-const HeaderTable: React.FC<ColumnList> = (props) => {
+
+const HeaderTable: React.FC<ColumnList & { refresh: FRefresh }> = (props) => {
   const [modalProps, setIsModalVisible] = useState<ModalListProps>(emptyModalListProps);
 
   const h: TableToolBar = props.toolbar as TableToolBar;
 
-  const fmodalhook: TCloseFunction = (button?: ButtonAction, r?: TRow) => {
-    ltrace(`Form button clicked ${button?.id}`)
-    if (button === undefined) {
-      setIsModalVisible(emptyModalListProps);
-      return;
-    }
-    const res: ClickResult = clickAction(button, r)
-    if (res.close) setIsModalVisible(emptyModalListProps);
-    if (res.restaction) {
-      restaction(res.method as HTTPMETHOD,res.restaction,res.params,r).then(
-        (res) => {
-          let x = 1
-        }
-      )
-
-    }
+  const fmodalhook: TCloseFunction = (button?: ButtonAction, t?: TRow) => {
+    setIsModalVisible(emptyModalListProps);
   };
-
 
   function clickButton(b: ButtonAction) {
     ltrace(b.id)
@@ -47,7 +31,7 @@ const HeaderTable: React.FC<ColumnList> = (props) => {
   return (
     <React.Fragment>
       <PageHeader extra={h.map((e: ButtonAction) => constructButton(e, clickButton))} />
-      <ModalForm {...modalProps} />
+      <ModalDialog {...modalProps} refresh={props.refresh} />
     </React.Fragment>
   );
 };

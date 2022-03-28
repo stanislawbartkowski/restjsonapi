@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import { FormItemProps } from 'antd';
 import type { FilterDropdownProps } from 'antd/lib/table/interface';
 
-import type { RestTableParam, ButtonElem } from '../../ts/typing';
+import type { RestTableParam, ButtonElem, FIELDTYPE } from '../../ts/typing';
 
 export enum Status {
   PENDING,
@@ -26,8 +26,14 @@ type JSSupportedType = {
   js?: string
 }
 
+export type FieldError = {
+  field: string
+  err: FormMessage
+}
+
 export type ActionResult = {
   success : boolean
+  error?: FieldError[]
 }
 
 export type ClickResult = RestTableParam & ActionResult & {
@@ -43,6 +49,7 @@ export type TAction = ClickAction & FormMessage
 
 export type ButtonAction = ButtonElem & TAction & {
   validate?: boolean
+  confirm?: FormMessage | boolean
 }
 
 export type TableToolBar = ButtonAction[]
@@ -74,13 +81,6 @@ export type TTag = {
 export type TTags = JSSupportedType & TTag[]
 
 export type TActions = JSSupportedType & TAction[]
-
-export enum FIELDTYPE {
-  NUMBER = 'number',
-  STRING = 'string',
-  DATE = 'date',
-  BOOLEAN = 'boolean'
-}
 
 export type TFieldBase = {
   field: string;
@@ -125,19 +125,6 @@ export type PageParams = {
   pageSize?: number;
 }
 
-export type FilterElem = {
-  field: string;
-  value: FieldValue
-  uppercase: string
-
-}
-
-export type SortFilter = {
-  filter?: FilterElem[];
-  sortinc?: string;
-  sortdec?: string;
-}
-
 export type JsonTableResult = {
   res: RowData;
 }
@@ -172,3 +159,10 @@ export type TForm = JSSupportedType & {
   fields: TField[]
   buttons: ButtonAction[]
 }
+
+export type FRefresh = () => void
+
+export type ModalDialogProps = ModalListProps & {
+    refresh: FRefresh
+}
+

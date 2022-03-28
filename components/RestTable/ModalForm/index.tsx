@@ -1,20 +1,28 @@
-import React, { useState, useEffect, MutableRefObject, useRef } from 'react';
-import { Modal } from 'antd';
+import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle } from 'react';
+import { Modal, Popconfirm } from 'antd';
 
 import { ModalListProps, TForm, ButtonAction, TRow } from '../typing'
 import { Status } from '../typing'
-import readdefs, { ReadDefsResult } from "../readdefs";
+import readdefs, { ReadDefsResult } from "../js//readdefs";
 import InLine from '../../../ts/inline';
-import constructButton, { FClickButton } from '../constructbutton';
-import ModalFormView, { IRefCall } from './ModalFormView';
-import { ismaskClicked } from '../helper'
+import constructButton, { FClickButton } from '../js/constructbutton';
+import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
+import { ismaskClicked } from '../js/helper'
 import { trace } from '../../../ts/l'
+export type { ErrorMessage, ErrorMessages } from './ModalFormView';
 
+
+export interface IIRefCall {
+    setErrorMessage: (errors: ErrorMessages) => void
+    setLoadingMode: (loading: boolean) => void
+}
 
 type DataFormState = {
     status: Status;
     tabledata?: TForm;
-    js?: any
+    js?: any,
+    err: ErrorMessages
+    loading?: boolean
 };
 
 const emptyTForm: TForm = {
@@ -26,14 +34,25 @@ function ltrace(mess: string) {
     trace('ModalForm', mess)
 }
 
-const ModalForm: React.FC<ModalListProps> = (props) => {
+const ModalForm = forwardRef<IIRefCall, ModalListProps>((props, iref) => {
 
     const buttonclicked = useRef<ButtonAction | undefined>(undefined);
 
     const [formdef, setState] = useState<DataFormState>({
         status: Status.PENDING,
-        tabledata: emptyTForm
+        tabledata: emptyTForm,
+        err: []
     });
+
+    useImperativeHandle(iref, () => ({
+        setErrorMessage: (errors: ErrorMessages) => {
+            setState({ ...formdef, err: errors })
+        },
+        setLoadingMode(loading: boolean) {
+            setState({ ...formdef, loading: loading })
+        }
+    })
+    )
 
     const ref: MutableRefObject<any> = useRef<IRefCall>();
 
@@ -70,9 +89,11 @@ const ModalForm: React.FC<ModalListProps> = (props) => {
                     status: Status.READY,
                     tabledata: { ...(d.res as TForm) },
                     js: d.js,
-                })
+                    err: []
+                });
+
             else setState({
-                status: Status.ERROR,
+                status: Status.ERROR, err: []
             })
 
         }
@@ -83,8 +104,20 @@ const ModalForm: React.FC<ModalListProps> = (props) => {
 
     if (formdef.status === Status.PENDING) return null
 
+    function onValuesChange(changedFields: Record<string, any>, _: any) {
+
+        if (formdef.err.length === 0) return;
+        const remove: Set<string> = new Set<string>()
+        for (const e of Object.keys(changedFields))
+            if (findErrField(e, formdef.err)) remove.add(e)
+
+        if (remove.size === 0) return
+        const err: ErrorMessages = formdef.err.filter(e => !remove.has(e.field))
+        setState({ ...formdef, err: err })
+    }
+
     const buttons: React.ReactNode | undefined = formdef.tabledata?.buttons ?
-        formdef.tabledata.buttons.map(e => constructButton(e, fclick)) :
+        formdef.tabledata.buttons.map(e => constructButton(e, fclick, formdef.loading, formdef.loading && e.id === buttonclicked.current?.id)) :
         undefined
 
     return <React.Fragment>
@@ -92,9 +125,9 @@ const ModalForm: React.FC<ModalListProps> = (props) => {
         <Modal destroyOnClose visible={props.visible}
             onCancel={onClose} {...props.props} footer={buttons}>
             {formdef.status === Status.READY ?
-                <ModalFormView ref={ref} {...(formdef.tabledata as TForm)} buttonClicked={onButtonClicked} /> : undefined}
+                <ModalFormView ref={ref} err={formdef.err} {...(formdef.tabledata as TForm)} buttonClicked={onButtonClicked} onValuesChanges={onValuesChange} /> : undefined}
         </Modal >
     </React.Fragment>
-}
+})
 
 export default ModalForm

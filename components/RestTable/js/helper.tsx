@@ -4,8 +4,8 @@ import React from "react";
 import type { ColumnType } from "antd/lib/table";
 import { Tag, Space } from "antd";
 
-import lstring from "../..//ts/localize";
-import type { ColumnList, TColumn, TRow, TableHookParam, TFieldBase } from "./typing";
+import lstring from "../../../ts/localize";
+import type { ColumnList, TColumn, TRow, TableHookParam, TFieldBase } from "../typing";
 import type {
   TAction,
   TActions,
@@ -17,11 +17,13 @@ import type {
   FormMessage,
   ClickResult,
   ColumnFilterSearch,
-} from "./typing";
-import { FIELDTYPE } from "./typing";
-import { callJSFunction } from "../../ts/j";
-import { log } from "../../ts/l";
-import TableFilterProps from "./TableFilter";
+} from "../typing";
+import { FIELDTYPE } from '../../../ts/typing'
+import { callJSFunction } from "../../../ts/j";
+import { log } from "../../../ts/l";
+import TableFilterProps from "../TableFilter";
+import validateObject, { ObjectType } from "./validateobject";
+import defaults from '../../../ts/defaults'
 
 // =================================
 // create ProColumns from columns
@@ -102,7 +104,7 @@ function constructRenderCell(c: TColumn, r: TableHookParam) {
     if (c.tags) rendered = constructTags(c.tags, entity);
     if (c.actions) rendered = constructactionsCol(c.actions, entity, r);
     if (c.ident) {
-      const ident: number = callJSFunction(c.ident, entity) * 12;
+      const ident: number = callJSFunction(c.ident, entity) * defaults.identmul;
       style.paddingLeft = `${ident}px`;
     }
 
@@ -217,6 +219,7 @@ export function makeMessage(
   if (m.js) {
     const res: any = callJSFunction(m.js, row, vars);
     // recursive !
+    validateObject(ObjectType.FORMMESSAGE, `js: ${m.js}`, res)
     return makeMessage(res as FormMessage, row, vars);
   }
   if (m.message) return lstring(m.message, m.params);

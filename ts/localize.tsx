@@ -11,7 +11,9 @@ const embedded = {
     actions: 'Działania',
     addaction: 'Dodaj',
     acceptaction: 'Akceptujesz',
-    cancelaction: 'Rezygnujesz'
+    cancelaction: 'Rezygnujesz',
+    areyousure: 'Na pewno?',
+    delete: 'Usuń'
   },
   en: {
     empty: '',
@@ -22,7 +24,9 @@ const embedded = {
     actions: 'Actions',
     addaction: 'Add',
     acceptaction: 'Confirm',
-    cancelaction: 'Cancel'
+    cancelaction: 'Cancel',
+    areyousure: 'Are you sure?',
+    delete: 'Delete'
   }
 };
 

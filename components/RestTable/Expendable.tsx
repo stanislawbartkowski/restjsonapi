@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { TExtendable, TRow, ColumnList, ClickResult, TAction } from "./typing";
-import { clickAction } from './helper'
+import { clickAction } from './js/helper'
 import RestTableList from '../RestTable'
 
 function getExtendableProps(cols: ColumnList): TExtendable {

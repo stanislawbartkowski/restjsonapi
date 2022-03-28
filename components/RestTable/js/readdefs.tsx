@@ -1,8 +1,8 @@
-import type { ColumnList, TForm } from "./typing";
-import { log } from "../../ts/l";
-import type { RestTableParam } from "../../ts/typing";
-import { restapilistdef, restapijs } from "../../services/api";
-import { Status } from "./typing";
+import type { ColumnList, TForm } from "../typing";
+import { log } from "../../../ts/l";
+import type { RestTableParam } from "../../../ts/typing";
+import { restapilistdef, restapijs } from "../../../services/api";
+import { Status } from "../typing";
 
 export type ReadDefsResult = {
     status: Status

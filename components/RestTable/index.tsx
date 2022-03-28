@@ -19,13 +19,14 @@ import type {
 } from "./typing";
 import { emptyModalListProps, Status } from "./typing";
 import { restapilist } from "../../services/api";
-import { transformColumns, makeMessage } from "./helper";
+import { transformColumns, makeMessage } from "./js/helper";
 import InLine from "../../ts/inline";
 import ModalList from "./ModalList";
+import ModalForm from './ModalForm';
 import DescriptionsDetails from "./RowDescription";
 import getExtendableProps from "./Expendable";
 import HeaderTable from "./HeaderTable";
-import readdefs, { ReadDefsResult } from "./readdefs";
+import readdefs, { ReadDefsResult } from "./js/readdefs";
 
 const emptyColumnList: ColumnList = { columns: [], rowkey: "" };
 
@@ -53,6 +54,9 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
     status: Status.PENDING,
     tabledata: [],
   });
+
+  const [refreshnumber, setRefreshNumber] = useState<number>(0);
+
 
   const f: FShowDetails = (entity: TRow) => {
     setCurrentRow(entity);
@@ -85,15 +89,19 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
     restapilist(props.list, props.params).then((res) =>
       setDataSource({ status: Status.READY, tabledata: res.res })
     );
-  }, [props.list, props.listdef]);
+  }, [props.list, props.listdef, refreshnumber]);
 
   const extend: TExtendable | undefined = props.extendable
     ? getExtendableProps(props)
     : undefined;
 
+  function refreshtable() {
+    setRefreshNumber(refreshnumber+1)
+  }
+
   return (
     <React.Fragment>
-      {props.toolbar ? <HeaderTable {...props} /> : undefined}
+      {props.toolbar ? <HeaderTable {...props} refresh={refreshtable} /> : undefined}
       <Table
         title={() => title}
         rowKey={props.rowkey}
@@ -109,7 +117,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
           },
         })}
       />
-      <ModalList {...modalProps} />
+      <ModalList {...modalProps}  refresh={refreshtable}  />
       <Drawer
         width={600}
         visible={showDetail}

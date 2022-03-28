@@ -3,7 +3,7 @@ import type { ColumnType } from 'antd/lib/table/interface';
 import React from 'react';
 
 import type { TColumn, ColumnList, TRow, ShowDetails } from './typing';
-import { findColDetails, makeMessage } from './helper'
+import { findColDetails, makeMessage } from './js/helper'
 import { isObject } from '../../ts/j';
 
 

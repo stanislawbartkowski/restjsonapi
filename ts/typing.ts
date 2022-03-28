@@ -19,7 +19,7 @@ export type RestTableParam = {
   nopaging?: boolean;
   restaction?: string;
   method?: HTTPMETHOD;
-  upload?: boolean
+  upload?: boolean;
 };
 
 export type FUrlModifier = (list: string) => undefined | Record<string, string>;
@@ -35,3 +35,14 @@ export type MenuElem = ButtonElem & RestTableParam;
 export type MenuLeft = {
   menu: MenuElem[];
 };
+
+export enum FIELDTYPE {
+  NUMBER = "number",
+  STRING = "string",
+  DATE = "date",
+  BOOLEAN = "boolean",
+  FUNCTION = "function",
+  OBJECT = "object",
+  UNDEFINED = 'undefined',
+  ARRAY = 'array'
+}
