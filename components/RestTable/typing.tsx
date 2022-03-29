@@ -1,4 +1,4 @@
-import type { TagProps } from 'antd';
+import type { FormProps, TagProps } from 'antd';
 import type { ColumnType } from 'antd/lib/table';
 import type { ModalProps } from 'antd'
 import type CSS from 'csstype';
@@ -7,6 +7,20 @@ import { FormItemProps } from 'antd';
 import type { FilterDropdownProps } from 'antd/lib/table/interface';
 
 import type { RestTableParam, ButtonElem, FIELDTYPE } from '../../ts/typing';
+
+export enum NotificationKind {
+  SUCCESS = 'success',
+  ERROR = 'error',
+  INFO = 'info',
+  WARNING = 'warning',
+  WARN = 'warn',
+}
+
+export type TNotification = {
+  kind?: NotificationKind,
+  title: FormMessage,
+  description: FormMessage
+}
 
 export enum Status {
   PENDING,
@@ -19,7 +33,9 @@ export type FieldValue = string | number | boolean | undefined;
 export enum BUTTONACTION {
   ADD = "ADD",
   ACCEPT = "ACCEPT",
-  CANCEL = 'CANCEL'
+  CANCEL = 'CANCEL',
+  DEL = 'DEL',
+  UPDATE = 'UPDATE'
 }
 
 type JSSupportedType = {
@@ -32,8 +48,8 @@ export type FieldError = {
 }
 
 export type ActionResult = {
-  success : boolean
   error?: FieldError[]
+  notification?: TNotification
 }
 
 export type ClickResult = RestTableParam & ActionResult & {
@@ -137,6 +153,7 @@ export type ModalListProps = RestTableParam & {
   visible: boolean
   closeModal?: TCloseFunction,
   props?: ModalProps
+  formprops?: FormProps
 }
 
 export type ColumnFilterSearch = {
@@ -153,6 +170,7 @@ export type TExtendable = {
 
 export type TField = TFieldBase & {
   props?: FormItemProps
+  iprops?: Record<string, any>
 }
 
 export type TForm = JSSupportedType & {
@@ -163,6 +181,6 @@ export type TForm = JSSupportedType & {
 export type FRefresh = () => void
 
 export type ModalDialogProps = ModalListProps & {
-    refresh: FRefresh
+  refresh: FRefresh
 }
 

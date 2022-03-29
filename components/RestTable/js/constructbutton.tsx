@@ -4,7 +4,7 @@ import getIcon from "../../../ts/icons";
 import lstring from "../../../ts/localize";
 import { BUTTONACTION, ButtonAction, FormMessage } from "../typing";
 import { makeMessage } from "./helper";
-import {isBool} from '../../../ts/j'
+import { isBool } from '../../../ts/j'
 
 export type FClickButton = (b: ButtonAction) => void;
 
@@ -24,6 +24,14 @@ function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: bool
     case BUTTONACTION.CANCEL:
       messid = 'cancelaction';
       break;
+    case BUTTONACTION.DEL:
+      messid = 'delete';
+      iconid = 'deleteoutlined';
+      break;
+    case BUTTONACTION.UPDATE :
+      messid = 'update'
+      iconid = 'editoutlines'
+      break
   }
 
   const loadingprop: Record<string, any> = loading ? { loading: true } : {}

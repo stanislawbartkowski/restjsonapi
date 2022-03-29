@@ -13,7 +13,8 @@ const embedded = {
     acceptaction: 'Akceptujesz',
     cancelaction: 'Rezygnujesz',
     areyousure: 'Na pewno?',
-    delete: 'Usuń'
+    delete: 'Usuń',
+    update: 'Zmień',
   },
   en: {
     empty: '',
@@ -26,7 +27,8 @@ const embedded = {
     acceptaction: 'Confirm',
     cancelaction: 'Cancel',
     areyousure: 'Are you sure?',
-    delete: 'Delete'
+    delete: 'Delete',
+    update: 'Update'
   }
 };
 

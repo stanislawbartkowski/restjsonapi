@@ -5,6 +5,7 @@ import {
     Input,
     DatePicker,
     InputNumber,
+    FormProps,
 } from 'antd';
 
 import { FormInstance } from 'antd/es/form';
@@ -35,19 +36,21 @@ export interface IRefCall {
     validate: () => void
     setValue: (field: string, value: FieldValue) => void
     scrollFocus: (field: string) => void
+    getValues: () => TRow
 }
 
 type TFormView = TForm & {
     buttonClicked: (row: TRow) => void
+    formprops?: FormProps
 }
 
 function produceElem(t: TField): React.ReactNode {
     const fieldtype: FIELDTYPE = fieldType(t)
     switch (fieldtype) {
-        case FIELDTYPE.NUMBER: return <InputNumber placeholder={t.field} />
+        case FIELDTYPE.NUMBER: return <InputNumber {...t.iprops} />
         case FIELDTYPE.DATE: return <DatePicker />
     }
-    return <Input placeholder={t.field} />
+    return <Input {...t.iprops} />
 }
 
 export function findErrField(field: string, err: ErrorMessages): ErrorMessage | undefined {
@@ -78,6 +81,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
     };
 
     useImperativeHandle(ref, () => ({
+        getValues: () => {
+            const r: TRow = f.getFieldsValue()
+            return r
+        },
         validate: () => {
             ltrace('submit');
             f.submit()
@@ -101,7 +108,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     const form = <Form labelCol={{ span: 4 }}
         wrapperCol={{ span: 14 }} form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges}
-        layout="horizontal" scrollToFirstError >
+        layout="horizontal" scrollToFirstError {...props.formprops} >
 
         {props.fields.map(e => produceItem(e, props.err))}
 

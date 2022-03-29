@@ -1,8 +1,8 @@
 import { FIELDTYPE } from './typing'
-import { isObject, isArray } from './j'
+import { isObject, isOArray } from './j'
 import { internalinfoerrorlog } from './l'
 
-export type validateContent = (o:any) => undefined | string
+export type validateContent = (o: any) => undefined | string
 
 type TypeArrayDescr = {
     isArray?: boolean
@@ -21,12 +21,12 @@ type AttrDescr = {
 export type ObjectDescr = {
     attrs: AttrDescr[] | AttrDescr
     objectname: string
-    validateC? : validateContent
+    validateC?: validateContent
 }
 
 function prepareTypes(des: AttrDescr): TypeDescr[] {
     if (des.type)
-        return (isArray(des.type)) ? des.type as TypeDescr[] : [des.type as TypeDescr]
+        return (isOArray(des.type)) ? des.type as TypeDescr[] : [des.type as TypeDescr]
     return [FIELDTYPE.STRING]
 }
 
@@ -41,10 +41,11 @@ function createErrType(o: any, d: AttrDescr): string {
 
 function oktype(o: any, d: TypeDescr): [boolean, string?] {
 
-    if ((d as TypeArrayDescr).isArray && isArray(o)) {
+    if ((d as TypeArrayDescr).isArray && isOArray(o)) {
         const a: any[] = o as any[]
         for (const e of a) {
-            const [ok, notvalid] = oktype(e, ((d as TypeArrayDescr).arraytype as TypeDescr))
+            const ty: TypeDescr = (d as TypeArrayDescr).arraytype ? ((d as TypeArrayDescr).arraytype as TypeDescr) : FIELDTYPE.STRING
+            const [ok, notvalid] = oktype(e, ty)
             if (!ok) return [false, ` Array elem ${notvalid}`]
         }
         return [true]
@@ -54,6 +55,7 @@ function oktype(o: any, d: TypeDescr): [boolean, string?] {
         const notvalid: string | undefined = objectValidator(o, d as ObjectDescr)
         return notvalid ? [false, `${(d as ObjectDescr).objectname}:${notvalid}`] : [true]
     }
+    if ((d as FIELDTYPE) === FIELDTYPE.ANY) return [true]
     return [typeof (o) === (d as FIELDTYPE)]
 }
 
@@ -71,7 +73,7 @@ function attrValidator(o: any, d: AttrDescr): string | undefined {
 
 function objectValidator(oo: object, descr: ObjectDescr): string | undefined {
 
-    const attrs: [AttrDescr] = isArray(descr.attrs) ? (descr.attrs as [AttrDescr]) : [descr.attrs as AttrDescr]
+    const attrs: [AttrDescr] = isOArray(descr.attrs) ? (descr.attrs as [AttrDescr]) : [descr.attrs as AttrDescr]
 
     let fields: Set<string> = new Set<string>()
     for (const a of attrs) fields.add(a.attr)
@@ -92,7 +94,7 @@ function objectValidator(oo: object, descr: ObjectDescr): string | undefined {
         if (a.required) return `${descr.objectname} attribute ${f} required`
     }
     if (descr.validateC) {
-        const notvalid : string|undefined = descr.validateC(oo)
+        const notvalid: string | undefined = descr.validateC(oo)
         if (notvalid) return notvalid
     }
     return undefined

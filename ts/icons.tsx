@@ -7,6 +7,8 @@ import {
   QuestionOutlined,
   TableOutlined,
   PlusCircleOutlined,
+  DeleteOutlined,
+  EditOutlined
 } from "@ant-design/icons";
 
 import { ReactNode } from "react";
@@ -17,7 +19,9 @@ const map = new Map<string, ReactNode>([
   ["uploadoutlined", <UploadOutlined/>],
   ["questionoutlined", <QuestionOutlined/>],
   ["tableoutlined", <TableOutlined/>],
-  ["pluscircleoutlined",<PlusCircleOutlined />]
+  ["pluscircleoutlined",<PlusCircleOutlined />],
+  ['deleteoutlined',<DeleteOutlined />],
+  ['editoutlines',<EditOutlined />]
 ]);
 
 function getIcon(id?: string, defaultid?: string): ReactNode {

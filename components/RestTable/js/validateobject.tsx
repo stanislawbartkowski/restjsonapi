@@ -4,7 +4,7 @@ import type { FormMessage } from '../typing'
 
 export enum ObjectType {
 
-    ACTIONRESULT, FORMMESSAGE
+    ACTIONRESULT, FORMMESSAGE, TNOTIFICATION
 }
 
 function checkUndefined(o: any, ...args: string[]): string | undefined {
@@ -25,10 +25,21 @@ const FormMessageV: ObjectDescr = {
         { attr: 'js' },
         { attr: 'messagedirect' },
         { attr: 'message' },
-        { attr: 'params', type: { isArray: true } }
+        { attr: 'params', type: { isArray: true, arraytype: FIELDTYPE.ANY } }
     ],
     validateC: validateFormMessage
 }
+
+// type: TNotification
+const TNotificationV: ObjectDescr = { 
+    objectname: "TNotification",
+    attrs: [
+        { attr: 'kind'},
+        { attr: 'title', required: true, type: FormMessageV },
+        { attr: 'description', required: true, type: FormMessageV }
+    ]
+}
+
 
 // type: FieldError
 const FieldErrorV: ObjectDescr = {
@@ -44,17 +55,19 @@ const FieldErrorV: ObjectDescr = {
 const ActionResultV: ObjectDescr = {
     objectname: 'ActionResult',
     attrs: [
-        { attr: 'success', required: true, type: FIELDTYPE.BOOLEAN },
-        { attr: 'error', type: { isArray: true, arraytype: FieldErrorV } }
+        { attr: 'error', type: { isArray: true, arraytype: FieldErrorV } },
+        { attr: 'notification', type: TNotificationV}
     ]
 
 }
+
 
 function validateObject(t: ObjectType, mess: string, o: object) {
     let v: ObjectDescr | undefined = undefined
     switch (t) {
         case ObjectType.ACTIONRESULT: v = ActionResultV; break;
         case ObjectType.FORMMESSAGE: v = FormMessageV; break;
+        case ObjectType.TNOTIFICATION: v = TNotificationV; break;
     }
     if (v === undefined) return
     validateTypeObject(mess, o, v)

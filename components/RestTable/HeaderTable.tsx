@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { PageHeader } from "antd";
 
-import type { FRefresh, TCloseFunction, TableToolBar, ModalDialogProps, ModalListProps, ClickResult, ButtonAction, TRow, FieldError, ColumnList } from './typing'
+import type { FRefresh, TCloseFunction, TableToolBar, ModalListProps, ClickResult, ButtonAction, TRow, ColumnList } from './typing'
 import { emptyModalListProps } from "./typing";
 import { trace } from "../../ts/l";
 import { clickAction } from './js/helper'

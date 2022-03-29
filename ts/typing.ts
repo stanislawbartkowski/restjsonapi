@@ -44,5 +44,6 @@ export enum FIELDTYPE {
   FUNCTION = "function",
   OBJECT = "object",
   UNDEFINED = 'undefined',
-  ARRAY = 'array'
+  ARRAY = 'array',
+  ANY = 'any'
 }

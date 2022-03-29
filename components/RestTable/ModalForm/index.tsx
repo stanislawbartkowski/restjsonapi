@@ -1,5 +1,5 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle } from 'react';
-import { Modal, Popconfirm } from 'antd';
+import { Modal}  from 'antd';
 
 import { ModalListProps, TForm, ButtonAction, TRow } from '../typing'
 import { Status } from '../typing'
@@ -54,7 +54,7 @@ const ModalForm = forwardRef<IIRefCall, ModalListProps>((props, iref) => {
     })
     )
 
-    const ref: MutableRefObject<any> = useRef<IRefCall>();
+    const ref: MutableRefObject<IRefCall> = useRef<IRefCall>() as MutableRefObject<IRefCall>
 
     const fclick: FClickButton = (b: ButtonAction) => {
         ltrace(`Button clicked: ${b.id}`)
@@ -65,7 +65,7 @@ const ModalForm = forwardRef<IIRefCall, ModalListProps>((props, iref) => {
             iref.validate()
         }
         else {
-            if (props.closeModal) props.closeModal(b);
+            if (props.closeModal) props.closeModal(b,ref.current.getValues());
         }
     }
 
@@ -125,7 +125,7 @@ const ModalForm = forwardRef<IIRefCall, ModalListProps>((props, iref) => {
         <Modal destroyOnClose visible={props.visible}
             onCancel={onClose} {...props.props} footer={buttons}>
             {formdef.status === Status.READY ?
-                <ModalFormView ref={ref} err={formdef.err} {...(formdef.tabledata as TForm)} buttonClicked={onButtonClicked} onValuesChanges={onValuesChange} /> : undefined}
+                <ModalFormView formprops={props.formprops} ref={ref}  err={formdef.err} {...(formdef.tabledata as TForm)} buttonClicked={onButtonClicked} onValuesChanges={onValuesChange} /> : undefined}
         </Modal >
     </React.Fragment>
 })
