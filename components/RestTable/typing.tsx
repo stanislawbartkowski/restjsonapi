@@ -3,7 +3,7 @@ import type { ColumnType } from 'antd/lib/table';
 import type { ModalProps } from 'antd'
 import type CSS from 'csstype';
 import type { ReactNode } from 'react';
-import { FormItemProps } from 'antd';
+import type { FormItemProps } from 'antd';
 import type { FilterDropdownProps } from 'antd/lib/table/interface';
 
 import type { RestTableParam, ButtonElem, FIELDTYPE } from '../../ts/typing';

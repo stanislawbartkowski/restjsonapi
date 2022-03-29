@@ -1,7 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 //import request, {extend} from 'umi-request';
-import request, { extend, ResponseError } from "umi-request";
+import request, { ResponseError } from "umi-request";
 
 import type { FUrlModifier } from "../ts/typing";
 import { internalerrorlog, logG } from '../ts/l'
@@ -26,6 +26,10 @@ export function setHost(prefix: string) {
 }
 
 let urlModifier: FUrlModifier | undefined = undefined;
+
+export function setUrlModifier(u: FUrlModifier) {
+  urlModifier = u
+}
 
 export async function restapilist(list: string, pars?: Record<string, string>) {
   const url: string = `${prefix}${list}`;

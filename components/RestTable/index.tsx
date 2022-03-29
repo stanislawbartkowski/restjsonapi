@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import type { ColumnType } from "antd/lib/table";
 import { Table } from "antd";
 import { Drawer } from "antd";
-import lstring from "../..//ts/localize";
 
+import lstring from "../..//ts/localize";
 import type { RestTableParam } from "../../ts/typing";
 import type {
   TExtendable,
@@ -19,14 +19,14 @@ import type {
 } from "./typing";
 import { emptyModalListProps, Status } from "./typing";
 import { restapilist } from "../../services/api";
-import { transformColumns, makeMessage } from "./js/helper";
+import { transformColumns, makeMessage, transformList } from "./js/helper";
 import InLine from "../../ts/inline";
 import ModalList from "./ModalList";
-import ModalForm from './ModalForm';
 import DescriptionsDetails from "./RowDescription";
 import getExtendableProps from "./Expendable";
 import HeaderTable from "./HeaderTable";
-import readdefs, { ReadDefsResult } from "./js/readdefs";
+import type { ReadDefsResult } from "./js/readdefs";
+import readdefs from "./js/readdefs";
 
 const emptyColumnList: ColumnList = { columns: [], rowkey: "" };
 
@@ -86,9 +86,10 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
     : lstring("empty");
 
   useEffect(() => {
-    restapilist(props.list, props.params).then((res) =>
+    restapilist(props.list, props.params).then((res) => {
+      transformList(res.res, props.columns)
       setDataSource({ status: Status.READY, tabledata: res.res })
-    );
+    });
   }, [props.list, props.listdef, refreshnumber]);
 
   const extend: TExtendable | undefined = props.extendable
@@ -96,7 +97,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
     : undefined;
 
   function refreshtable() {
-    setRefreshNumber(refreshnumber+1)
+    setRefreshNumber(refreshnumber + 1)
   }
 
   return (
@@ -117,7 +118,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
           },
         })}
       />
-      <ModalList {...modalProps}  refresh={refreshtable}  />
+      <ModalList {...modalProps} refresh={refreshtable} />
       <Drawer
         width={600}
         visible={showDetail}

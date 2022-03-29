@@ -33,6 +33,14 @@ function detailsTitle(c: ColumnList, row: TRow): string | undefined {
 
 const DescriptionsDetails: React.FC<DescriptionDetailsType> = (props) => {
   const title: string | undefined = detailsTitle(props, props.r)
+
+  // to remove action column
+  function isAction(field: string): boolean {
+    const c: TColumn | undefined = props.columns.find(e => e.field == field)
+    if (c === undefined) return false
+    return c.actions !== undefined
+  }
+
   return (
     < Descriptions
       column={1}
@@ -40,7 +48,7 @@ const DescriptionsDetails: React.FC<DescriptionDetailsType> = (props) => {
       bordered
     >
       {
-        props.cols.map(c => toDescritionItem(c, props.r))
+        props.cols.filter(c => !isAction(c.dataIndex as string)).map(c => toDescritionItem(c, props.r))
       }
     </Descriptions>
   )

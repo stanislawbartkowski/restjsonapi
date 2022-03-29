@@ -5,7 +5,7 @@ import type { ColumnType } from "antd/lib/table";
 import { Tag, Space } from "antd";
 
 import lstring from "../../../ts/localize";
-import type { ColumnList, TColumn, TRow, TableHookParam, TFieldBase } from "../typing";
+import type { ColumnList, TColumn, TRow, TableHookParam, TFieldBase, RowData } from "../typing";
 import type {
   TAction,
   TActions,
@@ -29,6 +29,18 @@ import defaults from '../../../ts/defaults'
 // create ProColumns from columns
 // =================================
 
+function getValue(a: ColumnValue, row: TRow): FieldValue {
+  if (a.js) {
+    const v: ColumnValue | undefined = callJSFunction(a.js as string, row);
+    if (v === undefined) return undefined;
+    // recursive
+    return getValue(v, row);
+  }
+  if (a.value) return a.value;
+  return makeMessage(a, row);
+}
+
+
 export function clickAction(t: TAction, row: TRow): ClickResult {
   let res: ClickResult = t;
   if (t.jsclick) res = callJSFunction(t.jsclick as string, row);
@@ -46,11 +58,7 @@ function constructAction(t: TAction, row: TRow, r: TableHookParam): ReactElement
   );
 }
 
-function constructactionsCol(
-  a: TActions,
-  row: TRow,
-  r: TableHookParam
-): ReactElement {
+function constructactionsCol(a: TActions, row: TRow, r: TableHookParam): ReactElement {
   let act: TAction[] = a;
   if (a.js) act = callJSFunction(a.js as string, row);
   return (
@@ -61,18 +69,7 @@ function constructactionsCol(
 function getAddStyle(a: AddStyle, row: TRow): CSS.Properties {
   if (a.style) return a.style;
   const s: CSS.Properties = callJSFunction(a.js as string, row);
-  return s;
-}
-
-function getValue(a: ColumnValue, row: TRow): FieldValue {
-  if (a.js) {
-    const v: ColumnValue | undefined = callJSFunction(a.js as string, row);
-    if (v === undefined) return undefined;
-    // recursive
-    return getValue(v, row);
-  }
-  if (a.value) return a.value;
-  return makeMessage(a, row);
+  return s ? s : {}
 }
 
 function constructSingleTag(tag: TTag, row: TRow): ReactElement {
@@ -100,7 +97,6 @@ function constructRenderCell(c: TColumn, r: TableHookParam) {
       style = getAddStyle(c.addstyle, entity);
     }
 
-    if (c.value) rendered = getValue(c.value, entity);
     if (c.tags) rendered = constructTags(c.tags, entity);
     if (c.actions) rendered = constructactionsCol(c.actions, entity, r);
     if (c.ident) {
@@ -120,7 +116,6 @@ function isRenderable(c: TColumn): boolean {
   return (
     c.showdetails !== undefined ||
     c.ident !== undefined ||
-    c.value !== undefined ||
     c.tags !== undefined ||
     c.actions !== undefined
   );
@@ -252,4 +247,26 @@ export function fieldType(t: TFieldBase): FIELDTYPE {
 
 export function fieldTitle(t: TFieldBase): string {
   return lstring(t.coltitle ? t.coltitle : t.field);
+}
+
+// ======================================
+// transform list using getvalue
+// ======================================
+
+
+export function transformList(t: RowData, columns: TColumn[]) {
+
+  // if there exists value column
+
+  const filterCols: TColumn[] = columns.filter(e => e.value)
+
+  // if there exists value col
+  if (filterCols.length === 0) return
+
+  t.forEach((r: TRow) => {
+    filterCols.forEach((c: TColumn) => {
+      const val: FieldValue = getValue(c.value as ColumnValue, r)
+      r[c.field] = val
+    })
+  })
 }
