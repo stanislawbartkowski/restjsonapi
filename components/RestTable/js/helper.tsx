@@ -5,7 +5,7 @@ import type { ColumnType } from "antd/lib/table";
 import { Tag, Space } from "antd";
 
 import lstring from "../../../ts/localize";
-import type { ColumnList, TColumn, TRow, TableHookParam, TFieldBase, RowData } from "../typing";
+import type { ColumnList, TColumn, TRow, TableHookParam, TFieldBase, RowData, ShowDetails } from "../typing";
 import type {
   TAction,
   TActions,
@@ -19,7 +19,7 @@ import type {
   ColumnFilterSearch,
 } from "../typing";
 import { FIELDTYPE } from '../../../ts/typing'
-import { callJSFunction } from "../../../ts/j";
+import { callJSFunction, isObject } from "../../../ts/j";
 import { log } from "../../../ts/l";
 import TableFilterProps from "../TableFilter";
 import validateObject, { ObjectType } from "./validateobject";
@@ -197,18 +197,14 @@ function transformOneColumn(c: TColumn, r: TableHookParam): ColumnType<any> {
 }
 
 export function transformColumns(cols: ColumnList, r: TableHookParam): ColumnType<any>[] {
-  return cols.columns.map((c) => transformOneColumn(c, r));
+  return (cols.columns as TColumn[]).map((c) => transformOneColumn(c, r));
 }
 
 // =========================================
 // message from object
 // =========================================
 
-export function makeMessage(
-  m: FormMessage,
-  row?: TRow,
-  vars?: any
-): string | undefined {
+export function makeMessage(m: FormMessage, row?: TRow, vars?: any): string | undefined {
   if (m.messagedirect) return m.messagedirect;
 
   if (m.js) {
@@ -222,11 +218,37 @@ export function makeMessage(
   return undefined;
 }
 
+// =================
+// header
+// =================
+export function makeHeader(p: ColumnList, unheader:string|undefined, vars?: any): string | undefined {
+
+  const title: string | undefined = p.header
+    ? makeMessage(p.header, {}, vars)
+    : unheader
+
+  return title
+}
+
+
 // ======================
 // find details columns
 // ======================
 export function findColDetails(c: ColumnList): TColumn | undefined {
-  return c.columns.find((x) => x.showdetails);
+
+  const cols: TColumn[] = (isCard(c) ? c.cards : c.columns) as TColumn[]
+  return cols.find((x) => x.showdetails);
+}
+
+export function detailsTitle(c: ColumnList, row: TRow): string | undefined {
+
+  const C: TColumn | undefined = findColDetails(c)
+  if (C === undefined) return undefined;
+  if (!isObject(C.showdetails))
+    return c.rowkey ? row[c.rowkey] : undefined
+  const s: ShowDetails = C.showdetails as ShowDetails
+  if (s.title === undefined) return undefined;
+  return makeMessage(s.title, row)
 }
 
 // ======================
@@ -247,6 +269,10 @@ export function fieldType(t: TFieldBase): FIELDTYPE {
 
 export function fieldTitle(t: TFieldBase): string {
   return lstring(t.coltitle ? t.coltitle : t.field);
+}
+
+export function isCard(c: ColumnList): boolean {
+  return c.cards !== undefined
 }
 
 // ======================================

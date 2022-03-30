@@ -119,7 +119,8 @@ export type TColumn = TFieldBase & {
 export type ColumnList = JSSupportedType & {
   rowkey: string;
   header?: FormMessage;
-  columns: TColumn[];
+  columns?: TColumn[];
+  cards?: TColumn[];
   extendable?: TAction;
   toolbar?: TableToolBar;
 };

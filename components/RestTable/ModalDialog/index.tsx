@@ -7,7 +7,7 @@ import { restaction } from '../../../services/api'
 import { HTTPMETHOD } from "../../../ts/typing";
 import validateObject, { ObjectType } from '../js/validateobject'
 import openNotification from "../Notification";
-import { trace,internalinfoerrorlog, logG } from '../../../ts/l'
+import { trace, fatalexceptionerror } from '../../../ts/l'
 import {isEmpty} from '../../../ts/j'
 
 function ltrace(mess: string) {
@@ -60,8 +60,7 @@ const ModalDialog: React.FC<ModalDialogProps> = (props) => {
                     }
                 }
             ).catch(((e) => {
-                logG.fatal(e.toString(), e)
-                internalinfoerrorlog(`Error while running ${res.restaction})`, e.toString())
+                fatalexceptionerror(`Error while running ${res.restaction}`,e)
             })
 
             )
