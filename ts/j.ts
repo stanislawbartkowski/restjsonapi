@@ -40,3 +40,5 @@ export function isBool(p: any): boolean {
 export function isObject(p: any): boolean {
   return typeof p === "object";
 }
+
+

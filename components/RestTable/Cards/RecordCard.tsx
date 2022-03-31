@@ -1,9 +1,9 @@
-import React, { Props } from "react";
-import { Button, Card } from 'antd'
+import React from "react";
+import { Card } from 'antd'
 
 import { ColumnList, TColumn, TRow } from "../typing"
 import { detailsTitle, findColDetails } from '../js/helper'
-import { RestTableParam } from "@/restjsonapi/ts/typing";
+import { RestTableParam } from "../../../ts/typing"
 
 type CardData = RestTableParam & {
     cards: ColumnList,

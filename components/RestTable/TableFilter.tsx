@@ -1,10 +1,13 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space } from "antd";
+import { Button, DatePicker, Input, InputNumber, Space } from "antd";
+import type { Moment } from 'moment'
 
 import type { ColumnFilterSearch, TRow, TColumn } from './typing'
 import { FIELDTYPE } from '../../ts/typing'
 import lstring from '../..//ts/localize'
-import { FilterConfirmProps } from "antd/lib/table/interface";
+import { FilterConfirmProps, FilterDropdownProps } from "antd/lib/table/interface";
+import defaults from '../../ts/defaults'
+import { datetoS, dateparseS } from '../../ts/d'
 
 
 function eqString(row: TRow, field: string, filter: string): boolean {
@@ -42,16 +45,47 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
     setState({ searchText: '' });
   };
 
+
+  const SearchInput: React.FC<FilterDropdownProps> = ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => {
+    switch (c.fieldtype) {
+      case FIELDTYPE.DATE: {
+        const d: Moment | undefined = selectedKeys[0] ? dateparseS(selectedKeys[0].toString()) : undefined
+        return <DatePicker mode='date' format={defaults.dateformat}
+          placeholder={lstring('searchprompt', coltitle)}
+          value={d}
+          onChange={
+            e => {
+              const s:string|undefined = datetoS(e as Moment)
+              setSelectedKeys(e ? [s as string] : [])
+            }
+          }
+          style={{ marginBottom: 8, display: 'block' }}
+        />
+      }
+
+      case FIELDTYPE.NUMBER:
+        return <InputNumber
+          placeholder={lstring('searchprompt', coltitle)}
+          value={selectedKeys[0]}
+          onChange={e => setSelectedKeys(e ? [e] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, c.field)}
+          style={{ marginBottom: 8, display: 'block', width: '90%' }}
+        />
+      default: break;
+    }
+    return <Input
+      placeholder={lstring('searchprompt', coltitle)}
+      value={selectedKeys[0]}
+      onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+      onPressEnter={() => handleSearch(selectedKeys, confirm, c.field)}
+      style={{ marginBottom: 8, display: 'block' }}
+    />
+  }
+
   return {
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
-        <Input
-          placeholder={lstring('searchprompt', coltitle)}
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, c.field)}
-          style={{ marginBottom: 8, display: 'block' }}
-        />
+        <SearchInput visible prefixCls='' setSelectedKeys={setSelectedKeys} selectedKeys={selectedKeys} confirm={confirm} clearFilters={clearFilters} />
         <Space>
           <Button
             type="primary"
@@ -60,7 +94,7 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
             size="small"
             style={{ width: 90 }}
           >
-            {lstring('search')}
+            {lstring('filter')}
           </Button>
           <Button onClick={() => { handleReset(clearFilters as () => {}); handleSearch(selectedKeys, confirm, c.field) }} size="small" style={{ width: 90 }}>
             {lstring('reset')}

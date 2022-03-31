@@ -2,10 +2,10 @@ import type { ReactElement } from "react";
 import type CSS from "csstype";
 import React from "react";
 import type { ColumnType } from "antd/lib/table";
-import { Tag, Space } from "antd";
+import { Tag, Space, Badge } from "antd";
 
 import lstring from "../../../ts/localize";
-import type { ColumnList, TColumn, TRow, TableHookParam, TFieldBase, RowData, ShowDetails } from "../typing";
+import type { ColumnList, TColumn, TRow, TableHookParam, TFieldBase, RowData, ShowDetails, TBadge } from "../typing";
 import type {
   TAction,
   TActions,
@@ -89,6 +89,12 @@ function constructTags(tag: TTags, row: TRow): ReactElement {
   );
 }
 
+function constructBadge(badge: TBadge, row: TRow): ReactElement {
+  const ba: TBadge = badge.js ? callJSFunction(badge.js, row) : badge
+  const title: string | undefined = ba.title ? makeMessage(ba.title, row) : undefined
+  return <Badge title={title} {...ba.props} />
+}
+
 function constructRenderCell(c: TColumn, r: TableHookParam) {
   return (dom: any, entity: any): ReactElement => {
     let style: CSS.Properties = {};
@@ -104,7 +110,9 @@ function constructRenderCell(c: TColumn, r: TableHookParam) {
       style.paddingLeft = `${ident}px`;
     }
 
-    if (c.ident || c.addstyle) rendered = <span style={style}>{dom}</span>;
+    const badgeC: ReactElement | undefined = c.badge ? constructBadge(c.badge, entity) : undefined
+
+    if (c.ident || c.addstyle || c.badge) rendered = <span style={style}>{badgeC} {dom}</span>;
 
     if (c.showdetails)
       return <a onClick={() => r.fdetails(entity)}>{rendered}</a>;
@@ -117,7 +125,8 @@ function isRenderable(c: TColumn): boolean {
     c.showdetails !== undefined ||
     c.ident !== undefined ||
     c.tags !== undefined ||
-    c.actions !== undefined
+    c.actions !== undefined ||
+    c.badge !== undefined
   );
 }
 
@@ -221,7 +230,7 @@ export function makeMessage(m: FormMessage, row?: TRow, vars?: any): string | un
 // =================
 // header
 // =================
-export function makeHeader(p: ColumnList, unheader:string|undefined, vars?: any): string | undefined {
+export function makeHeader(p: ColumnList, unheader: string | undefined, vars?: any): string | undefined {
 
   const title: string | undefined = p.header
     ? makeMessage(p.header, {}, vars)

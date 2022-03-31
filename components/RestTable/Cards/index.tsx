@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Card } from 'antd'
 
-import { RestTableParam } from "@/restjsonapi/ts/typing";
+import { RestTableParam } from "../../../ts/typing"
 import readlist, { DataSourceState } from "../js/readlist";
 import { ColumnList, Status, TRow } from "../typing";
 import ReadListError from "../errors/ReadListError";

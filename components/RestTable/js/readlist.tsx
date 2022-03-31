@@ -1,5 +1,5 @@
-import { restapilist } from "@/restjsonapi/services/api"
-import { RestTableParam } from "@/restjsonapi/ts/typing"
+import { restapilist } from "../../../services/api"
+import { RestTableParam } from "../../../ts/typing"
 import { ColumnList, RowData, Status, TColumn } from "../typing"
 import { transformList } from "./helper"
 import { isCard } from './helper'

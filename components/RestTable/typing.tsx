@@ -38,6 +38,8 @@ export enum BUTTONACTION {
   UPDATE = 'UPDATE'
 }
 
+type PropsType = Record<string,any>
+
 type JSSupportedType = {
   js?: string
 }
@@ -89,6 +91,11 @@ export type ColumnValue = JSSupportedType & FormMessage & {
   value?: FieldValue
 }
 
+export type TBadge = JSSupportedType & {
+  title?: FormMessage
+  props: PropsType
+}
+
 export type TTag = {
   value: ColumnValue;
   props?: TagProps
@@ -114,6 +121,7 @@ export type TColumn = TFieldBase & {
   actions?: TActions
   nofilter?: boolean
   nosort?: boolean
+  badge?: TBadge
 };
 
 export type ColumnList = JSSupportedType & {
