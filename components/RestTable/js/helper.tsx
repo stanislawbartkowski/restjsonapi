@@ -24,12 +24,13 @@ import { log } from "../../../ts/l";
 import TableFilterProps from "../TableFilter";
 import validateObject, { ObjectType } from "./validateobject";
 import defaults from '../../../ts/defaults'
+import { isString } from "lodash";
 
 // =================================
 // create ProColumns from columns
 // =================================
 
-function getValue(a: ColumnValue, row: TRow): FieldValue {
+export function getValue(a: ColumnValue, row: TRow | RowData): FieldValue {
   if (a.js) {
     const v: ColumnValue | undefined = callJSFunction(a.js as string, row);
     if (v === undefined) return undefined;
@@ -171,11 +172,12 @@ function transformOneColumn(c: TColumn, r: TableHookParam): ColumnType<any> {
   const fieldtype: FIELDTYPE = fieldType(c)
   const p: ColumnType<any> = {};
 
-  if (fieldtype === FIELDTYPE.NUMBER) p.align = "right";
+  if (fieldtype === FIELDTYPE.NUMBER || fieldtype === FIELDTYPE.MONEY) p.align = "right";
   if (sort(c)) {
     if (c.props === undefined) c.props = {};
     switch (fieldtype) {
       case FIELDTYPE.NUMBER:
+      case FIELDTYPE.MONEY:
         c.props.sorter = (a: TRow, b: TRow) => sortnumberinc(a, b, c.field);
         break;
       case FIELDTYPE.BOOLEAN:
@@ -293,15 +295,30 @@ export function transformList(t: RowData, columns: TColumn[]) {
 
   // if there exists value column
 
-  const filterCols: TColumn[] = columns.filter(e => e.value)
+  const filterCols: TColumn[] = columns.filter(e => (e.value || fieldType(e) === FIELDTYPE.MONEY))
 
   // if there exists value col
   if (filterCols.length === 0) return
 
   t.forEach((r: TRow) => {
     filterCols.forEach((c: TColumn) => {
-      const val: FieldValue = getValue(c.value as ColumnValue, r)
-      r[c.field] = val
+      const val: FieldValue = c.value ? getValue(c.value as ColumnValue, r) : r[c.field]
+      r[c.field] = fieldType(c) === FIELDTYPE.MONEY ? tomoney(val as string | number) : val
     })
   })
+}
+
+// =============================
+// sum elements
+// =============================
+
+export function sumnumbers(t: RowData, f: string): string {
+  const s: number = t.reduce((a: number, b: TRow) => a + (b[f] ? +b[f] : 0), 0)
+  return tomoney(s) as string
+}
+
+export function tomoney(t: string | number | undefined): undefined | string {
+  if (t === undefined || t == null) return undefined
+  if (isString(t)) return (+t).toFixed(defaults.moneydot)
+  return t.toFixed(defaults.moneydot)
 }

@@ -1,16 +1,39 @@
+import { ReactNode } from "react";
 import { restapiresource } from "../services/api";
 import { log } from "../ts/l";
 import { setStrings } from "./localize";
-import type { MenuLeft } from "./typing";
+import type { MenuElem, MenuLeft, RestTableParam } from "./typing";
+import RestTable from '../components/RestTable'
 
-let leftmenu: MenuLeft = { menu: [] };
+export type LeftMenuElem = MenuElem & {
+  id: string
+  elem: ReactNode
+}
 
-export function getLeftMenu(): MenuLeft {
+//const leftmenu: MenuLeft = { menu: [] };
+
+const leftmenu: LeftMenuElem[] = []
+
+export function getLeftMenu(): LeftMenuElem[] {
   return leftmenu;
 }
 
+export function addLeftMenuElem(t: LeftMenuElem) {
+  leftmenu.push(t)
+}
+
+function toLeftMenuElem(e: MenuElem): LeftMenuElem {
+
+  return { ...e, elem: <RestTable list={e.list ? e.list : e.id} /> }
+}
+
 async function readResource() {
-  leftmenu = (await restapiresource("leftmenu")) as MenuLeft;
+  const lm: MenuLeft = (await restapiresource("leftmenu")) as MenuLeft;
+  //  leftmenu.menu.concat(lm.menu)
+  lm.menu.forEach((e: MenuElem) => {
+    leftmenu.push(toLeftMenuElem(e))
+  })
+
   log("Resource leftmenu read");
   const appdata: any = await restapiresource("appdata");
   log("Resource appdata read");

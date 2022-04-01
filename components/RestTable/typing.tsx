@@ -1,5 +1,4 @@
 import type { FormProps, TagProps } from 'antd';
-import type { ColumnType } from 'antd/lib/table';
 import type { ModalProps } from 'antd'
 import type CSS from 'csstype';
 import type { ReactNode } from 'react';
@@ -38,7 +37,7 @@ export enum BUTTONACTION {
   UPDATE = 'UPDATE'
 }
 
-type PropsType = Record<string,any>
+type PropsType = Record<string, any>
 
 type JSSupportedType = {
   js?: string
@@ -112,8 +111,9 @@ export type TFieldBase = {
   addstyle?: AddStyle
 }
 
+
 export type TColumn = TFieldBase & {
-  props?: ColumnType<any>;
+  props?: PropsType;
   showdetails?: ShowDetails | boolean;
   ident?: string
   value?: ColumnValue
@@ -122,16 +122,23 @@ export type TColumn = TFieldBase & {
   nofilter?: boolean
   nosort?: boolean
   badge?: TBadge
+  sum?: boolean
 };
+
+export type TColumns = TColumn[]
 
 export type ColumnList = JSSupportedType & {
   rowkey: string;
   header?: FormMessage;
-  columns?: TColumn[];
+  columns?: TColumns
   cards?: TColumn[];
   extendable?: TAction;
   toolbar?: TableToolBar;
+  summary?: TSummary
 };
+
+export type TSummary = ColumnList
+
 
 export type TRow = any;
 

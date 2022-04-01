@@ -23,6 +23,7 @@ import getExtendableProps from "../Expendable";
 import HeaderTable from "../HeaderTable";
 import readlist, { DataSourceState } from '../js/readlist'
 import ReadListError from '../errors/ReadListError'
+import SummaryTable from '../SummaryTable'
 
 
 const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
@@ -77,6 +78,10 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
 
     if (datasource.status === Status.ERROR) return <ReadListError />
 
+    function isSummary(): boolean {
+        return props.summary !== undefined
+    }
+
     return (
         <React.Fragment>
             {props.toolbar ? <HeaderTable {...props} refresh={refreshtable} /> : undefined}
@@ -89,6 +94,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
                 columns={columns}
                 pagination={props.nopaging ? false : undefined}
                 {...extend}
+                summary={isSummary() ? () => (<SummaryTable {...props} list={datasource.tabledata} />) : undefined}
                 onRow={(r) => ({
                     onClick: () => {
                         if (props.onRowClick) props.onRowClick(r);

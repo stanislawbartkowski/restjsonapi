@@ -3,8 +3,8 @@ import { useState } from "react";
 import "antd/dist/antd.css";
 import { Layout } from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
-import LeftMenu from "./LeftMenu";
 import AppContent from "./AppContent";
+import LeftMenu from "./LeftMenu";
 const { Header, Sider, Content } = Layout;
 
 const AppLayout: React.FC = () => {
