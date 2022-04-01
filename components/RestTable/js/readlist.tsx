@@ -15,7 +15,7 @@ type FSetState = (s: DataSourceState) => void
 
 function readlist(props: RestTableParam & ColumnList, f: FSetState) {
 
-    restapilist(props.list, props.params).then((res) => {
+    restapilist(props.list as string, props.params).then((res) => {
         transformList(res.res, isCard(props) ? props.cards as TColumn[] : props.columns as TColumn[])
         f({ status: Status.READY, tabledata: res.res })
     }).catch((e) => {

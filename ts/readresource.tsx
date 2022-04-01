@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 import { restapiresource } from "../services/api";
 import { log } from "../ts/l";
 import { setStrings } from "./localize";
@@ -10,9 +10,44 @@ export type LeftMenuElem = MenuElem & {
   elem: ReactNode
 }
 
-//const leftmenu: MenuLeft = { menu: [] };
+type MenuRoute = {
+  rootredirect: string
+}
+
+let resttableProps: RestTableParam = {}
+
+let menuroute: MenuRoute | undefined = undefined
+
+let headerLine: ReactNode | undefined = undefined
+
+export function setHeaderLine(h: ReactNode) {
+  headerLine = h
+}
+
+export function getHeaderLine(): ReactNode | undefined {
+  return headerLine
+}
+
+export function setMenuRoute(p: MenuRoute) {
+  menuroute = p
+}
+
+export function getMenuRoute(): MenuRoute | undefined {
+  return menuroute
+}
+
+export function setRestTableProps(p: RestTableParam) {
+  resttableProps = p
+}
+
 
 const leftmenu: LeftMenuElem[] = []
+
+let appdata: any | undefined = undefined
+
+export function getAppData(): any | undefined {
+  return appdata
+}
 
 export function getLeftMenu(): LeftMenuElem[] {
   return leftmenu;
@@ -24,7 +59,7 @@ export function addLeftMenuElem(t: LeftMenuElem) {
 
 function toLeftMenuElem(e: MenuElem): LeftMenuElem {
 
-  return { ...e, elem: <RestTable list={e.list ? e.list : e.id} /> }
+  return { ...e, elem: <RestTable list={e.list ? e.list : e.id} {...resttableProps} /> }
 }
 
 async function readResource() {
@@ -35,7 +70,7 @@ async function readResource() {
   })
 
   log("Resource leftmenu read");
-  const appdata: any = await restapiresource("appdata");
+  appdata = await restapiresource("appdata");
   log("Resource appdata read");
 
   const language: string | undefined = appdata.language

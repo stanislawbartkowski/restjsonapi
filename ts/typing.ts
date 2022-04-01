@@ -10,7 +10,7 @@ export enum HTTPMETHOD {
 }
 
 export type RestTableParam = {
-  list: string;
+  list?: string;
   params?: Record<string, string>;
   listdef?: string;
   onRowClick?: (r: any) => void;

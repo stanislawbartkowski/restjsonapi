@@ -5,6 +5,9 @@ import { Layout } from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import AppContent from "./AppContent";
 import LeftMenu from "./LeftMenu";
+import HeaderLine from './HeaderLine'
+
+
 const { Header, Sider, Content } = Layout;
 
 const AppLayout: React.FC = () => {
@@ -30,6 +33,7 @@ const AppLayout: React.FC = () => {
               onClick: () => setCollapsed(!collapsed),
             }
           )}
+          <HeaderLine />
         </Header>
         <Content
           className="site-layout-background"

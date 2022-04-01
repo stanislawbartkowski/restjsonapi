@@ -9,6 +9,7 @@ import type { LeftMenuElem } from "./readresource";
 import defaults from "./defaults";
 import getIcon from "./icons";
 
+
 function provideMenu() {
   function icon(e: LeftMenuElem): React.ReactNode {
     return getIcon(e.icon, defaults.defaultmenuicon);

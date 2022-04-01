@@ -30,7 +30,7 @@ function readdefs(props: RestTableParam, f: FSetState) {
             });
     }
 
-    restapilistdef(props.listdef ? props.listdef : props.list)
+    restapilistdef(props.listdef ? props.listdef : props.list as string)
         .then((response: any) => {
             idef = response;
             if ((idef as ColumnList | TForm).js) {

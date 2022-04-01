@@ -19,12 +19,11 @@ import type {
   ColumnFilterSearch,
 } from "../typing";
 import { FIELDTYPE } from '../../../ts/typing'
-import { callJSFunction, isObject } from "../../../ts/j";
+import { callJSFunction, isObject, isString } from "../../../ts/j";
 import { log } from "../../../ts/l";
 import TableFilterProps from "../TableFilter";
 import validateObject, { ObjectType } from "./validateobject";
 import defaults from '../../../ts/defaults'
-import { isString } from "lodash";
 
 // =================================
 // create ProColumns from columns
@@ -320,5 +319,5 @@ export function sumnumbers(t: RowData, f: string): string {
 export function tomoney(t: string | number | undefined): undefined | string {
   if (t === undefined || t == null) return undefined
   if (isString(t)) return (+t).toFixed(defaults.moneydot)
-  return t.toFixed(defaults.moneydot)
+  return (t as number).toFixed(defaults.moneydot)
 }

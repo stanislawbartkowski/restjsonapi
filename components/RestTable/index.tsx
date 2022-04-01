@@ -29,7 +29,7 @@ const RestTableList: React.FC<RestTableParam> = (props) => {
   const [state, setState] = useState<ListState>({
     status: Status.PENDING,
     cols: emptyColumnList,
-    list: props.list,
+    list: props.list as string,
   });
 
   const dispmess: string | undefined = props.canDisplay
@@ -42,7 +42,7 @@ const RestTableList: React.FC<RestTableParam> = (props) => {
     setState({
       status: Status.PENDING,
       cols: emptyColumnList,
-      list: props.list,
+      list: props.list as string,
     });
     return null;
   }
@@ -57,12 +57,12 @@ const RestTableList: React.FC<RestTableParam> = (props) => {
           status: Status.READY,
           cols: { ...(d.res as ColumnList) },
           js: d.js,
-          list: props.list,
+          list: props.list as string,
         })
       else setState({
         status: Status.ERROR,
         cols: emptyColumnList,
-        list: props.list,
+        list: props.list as string,
       })
 
     }
