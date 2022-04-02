@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import type { FormItemProps } from 'antd';
 import type { FilterDropdownProps } from 'antd/lib/table/interface';
 
-import type { RestTableParam, ButtonElem, FIELDTYPE } from '../../ts/typing';
+import type { RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, RowData } from '../../ts/typing';
 
 export enum NotificationKind {
   SUCCESS = 'success',
@@ -27,7 +27,7 @@ export enum Status {
   ERROR,
 }
 
-export type FieldValue = string | number | boolean | undefined;
+// export type FieldValue = string | number | boolean | undefined;
 
 export enum BUTTONACTION {
   ADD = "ADD",
@@ -140,9 +140,9 @@ export type ColumnList = JSSupportedType & {
 export type TSummary = ColumnList
 
 
-export type TRow = any;
+// export type TRow = any;
 
-export type RowData = TRow[];
+// export type RowData = TRow[];
 
 export type FShowDetails = (entity: TRow) => void
 export type FActionResult = (entity: TRow, r: ClickResult) => void

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Card } from 'antd'
 
-import { RestTableParam } from "../../../ts/typing"
+import { RestTableParam, TRow } from "../../../ts/typing"
 import readlist, { DataSourceState } from "../js/readlist";
-import { ColumnList, Status, TRow } from "../typing";
+import { ColumnList, Status  } from "../typing";
 import ReadListError from "../errors/ReadListError";
 import RecordCard from './RecordCard'
 import { makeHeader } from "../js/helper";
@@ -25,10 +25,10 @@ const CardList: React.FC<RestTableParam & ColumnList> = (props) => {
     return props.rowkey ? { key: r[props.rowkey] } : {}
   }
 
-    return <Card title={makeHeader(props, undefined)}><Row gutter={[8, 8]}>
-      {datasource.tabledata.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} cards={props} /> </Col>)}
-    </Row>
-    </Card>
+  return <Card title={makeHeader(props, undefined)}><Row gutter={[8, 8]}>
+    {datasource.tabledata.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isCurrentDB={props.isCurrentDB} cards={props} /> </Col>)}
+  </Row>
+  </Card>
 }
 
 export default CardList

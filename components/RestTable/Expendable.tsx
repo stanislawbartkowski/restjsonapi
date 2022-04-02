@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
-import type { TExtendable, TRow, ColumnList, ClickResult, TAction } from "./typing";
+import type { TExtendable, ColumnList, ClickResult, TAction } from "./typing";
 import { clickAction } from './js/helper'
 import RestTableList from '../RestTable'
+import type { TRow} from '../../ts/typing'
 
 function getExtendableProps(cols: ColumnList): TExtendable {
 

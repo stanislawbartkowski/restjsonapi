@@ -1,14 +1,16 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Modal}  from 'antd';
 
-import { ModalListProps, TForm, ButtonAction, TRow } from '../typing'
+import type { ModalListProps, TForm, ButtonAction } from '../typing'
 import { Status } from '../typing'
-import readdefs, { ReadDefsResult } from "../js//readdefs";
+import readdefs, { ReadDefsResult } from "../js/readdefs";
 import InLine from '../../../ts/inline';
 import constructButton, { FClickButton } from '../js/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
 import { ismaskClicked } from '../js/helper'
 import { trace } from '../../../ts/l'
+import { TRow} from '../../../ts/typing'
+
 export type { ErrorMessage, ErrorMessages } from './ModalFormView';
 
 

@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { PageHeader } from "antd";
 
-import type { FRefresh, TCloseFunction, TableToolBar, ModalListProps, ClickResult, ButtonAction, TRow, ColumnList } from './typing'
+import type { FRefresh, TCloseFunction, TableToolBar, ModalListProps, ClickResult, ButtonAction, ColumnList } from './typing'
 import { emptyModalListProps } from "./typing";
 import { trace } from "../../ts/l";
 import { clickAction } from './js/helper'
 import constructButton from "./js/constructbutton";
 import ModalDialog from './ModalDialog'
+import type { TRow} from '../../ts/typing'
+
 
 function ltrace(mess: string) {
   trace('HeaderTable', mess)

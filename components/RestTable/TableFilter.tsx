@@ -2,22 +2,24 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Button, DatePicker, Input, InputNumber, Space } from "antd";
 import type { Moment } from 'moment'
 
-import type { ColumnFilterSearch, TRow, TColumn } from './typing'
+import type { ColumnFilterSearch, TColumn } from './typing'
 import { FIELDTYPE } from '../../ts/typing'
 import lstring from '../..//ts/localize'
 import { FilterConfirmProps, FilterDropdownProps } from "antd/lib/table/interface";
 import defaults from '../../ts/defaults'
 import { datetoS, dateparseS } from '../../ts/d'
+import type { TRow } from '../../ts/typing'
+
 
 
 function eqString(row: TRow, field: string, filter: string): boolean {
   if (row === undefined || row[field] === undefined) return false
-  return row[field].toString().toUpperCase().indexOf(filter.toUpperCase()) !== -1;
+  return (row[field] as string).toString().toUpperCase().indexOf(filter.toUpperCase()) !== -1;
 }
 
 function eqNumber(row: TRow, field: string, filter: string): boolean {
   if (row === undefined || row[field] === undefined) return false
-  const fieldnum: number = +row[field]
+  const fieldnum: number = +(row[field] as string | number)
   const res: boolean = fieldnum === +filter
   return res
 }
@@ -55,7 +57,7 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
           value={d}
           onChange={
             e => {
-              const s:string|undefined = datetoS(e as Moment)
+              const s: string | undefined = datetoS(e as Moment)
               setSelectedKeys(e ? [s as string] : [])
             }
           }

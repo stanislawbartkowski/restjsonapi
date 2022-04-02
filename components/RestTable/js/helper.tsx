@@ -5,20 +5,19 @@ import type { ColumnType } from "antd/lib/table";
 import { Tag, Space, Badge } from "antd";
 
 import lstring from "../../../ts/localize";
-import type { ColumnList, TColumn, TRow, TableHookParam, TFieldBase, RowData, ShowDetails, TBadge } from "../typing";
+import type { ColumnList, TColumn, TableHookParam, TFieldBase, ShowDetails, TBadge } from "../typing";
 import type {
   TAction,
   TActions,
   TTag,
   TTags,
-  FieldValue,
   ColumnValue,
   AddStyle,
   FormMessage,
   ClickResult,
   ColumnFilterSearch,
 } from "../typing";
-import { FIELDTYPE } from '../../../ts/typing'
+import { FIELDTYPE, FieldValue, TRow, RowData } from '../../../ts/typing'
 import { callJSFunction, isObject, isString } from "../../../ts/j";
 import { log } from "../../../ts/l";
 import TableFilterProps from "../TableFilter";
@@ -37,7 +36,7 @@ export function getValue(a: ColumnValue, row: TRow | RowData): FieldValue {
     return getValue(v, row);
   }
   if (a.value) return a.value;
-  return makeMessage(a, row);
+  return makeMessage(a, row as TRow);
 }
 
 
@@ -255,7 +254,7 @@ export function detailsTitle(c: ColumnList, row: TRow): string | undefined {
   const C: TColumn | undefined = findColDetails(c)
   if (C === undefined) return undefined;
   if (!isObject(C.showdetails))
-    return c.rowkey ? row[c.rowkey] : undefined
+    return c.rowkey ? (row[c.rowkey] as string|undefined) : undefined
   const s: ShowDetails = C.showdetails as ShowDetails
   if (s.title === undefined) return undefined;
   return makeMessage(s.title, row)
@@ -312,7 +311,7 @@ export function transformList(t: RowData, columns: TColumn[]) {
 // =============================
 
 export function sumnumbers(t: RowData, f: string): string {
-  const s: number = t.reduce((a: number, b: TRow) => a + (b[f] ? +b[f] : 0), 0)
+  const s: number = t.reduce((a: number, b: TRow) => a + (b[f] ? +(b[f] as string|number) : 0), 0)
   return tomoney(s) as string
 }
 

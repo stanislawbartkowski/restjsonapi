@@ -2,8 +2,10 @@ import { Descriptions } from 'antd';
 import type { ColumnType } from 'antd/lib/table/interface';
 import React from 'react';
 
-import type { TColumn, ColumnList, TRow } from './typing';
+import type { TColumn, ColumnList } from './typing';
 import { detailsTitle } from './js/helper'
+import type { TRow} from '../../ts/typing'
+
 
 
 type DescriptionDetailsType = ColumnList & {

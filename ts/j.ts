@@ -2,11 +2,9 @@
 // call JS function
 // ====================
 
-export function callJSFunction(
-  jsAction: string,
-  data: object,
-  vars?: object
-): any {
+import type { RowData, TRow } from "./typing";
+
+export function callJSFunction(jsAction: string, data?: TRow| RowData, vars?: TRow): any {
   const clickaction = new Function("p,vars", "return " + jsAction + "(p,vars)");
   const res = clickaction(data, vars);
   return res;
@@ -40,5 +38,3 @@ export function isBool(p: any): boolean {
 export function isObject(p: any): boolean {
   return typeof p === "object";
 }
-
-

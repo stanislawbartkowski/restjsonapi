@@ -5,11 +5,10 @@ import { Table } from "antd";
 import { Drawer } from "antd";
 
 import lstring from "../../../ts/localize";
-import type { RestTableParam } from "../../../ts/typing";
+import type { RestTableParam, TRow } from "../../../ts/typing";
 import type {
     TExtendable,
     ColumnList,
-    TRow,
     FShowDetails,
     FActionResult,
     ClickResult,
@@ -108,7 +107,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
                 onClose={() => setShowDetail(false)}
                 closable={false}
             >
-                <DescriptionsDetails r={currentRow} cols={columns} {...props} />
+                <DescriptionsDetails r={currentRow as TRow} cols={columns} {...props} />
             </Drawer>
         </React.Fragment>
     );

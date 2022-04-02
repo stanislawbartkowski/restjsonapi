@@ -1,6 +1,6 @@
 import { restapilist } from "../../../services/api"
-import { RestTableParam } from "../../../ts/typing"
-import { ColumnList, RowData, Status, TColumn } from "../typing"
+import { RestTableParam, RowData } from "../../../ts/typing"
+import { ColumnList, Status, TColumn } from "../typing"
 import { transformList } from "./helper"
 import { isCard } from './helper'
 import { fatalexceptionerror } from '../../../ts/l'

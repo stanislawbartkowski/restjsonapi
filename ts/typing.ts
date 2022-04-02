@@ -1,6 +1,7 @@
 import { ButtonProps } from "antd";
 
 type FCanDisplay = (p: RestTableParam) => undefined | string;
+export type FIsCurrentDB = (t: TRow) => boolean;
 
 export enum HTTPMETHOD {
   GET = "GET",
@@ -15,7 +16,8 @@ export type RestTableParam = {
   listdef?: string;
   onRowClick?: (r: any) => void;
   canDisplay?: FCanDisplay;
-  vars?: Record<string, string>;
+  isCurrentDB?: FIsCurrentDB;
+  vars?: TRow;
   nopaging?: boolean;
   restaction?: string;
   method?: HTTPMETHOD;
@@ -36,6 +38,12 @@ export type MenuLeft = {
   menu: MenuElem[];
 };
 
+export type FieldValue = string | number | boolean | undefined;
+
+export type TRow = Record<string, FieldValue>;
+
+export type RowData = TRow[];
+
 export enum FIELDTYPE {
   NUMBER = "number",
   STRING = "string",
@@ -43,8 +51,8 @@ export enum FIELDTYPE {
   BOOLEAN = "boolean",
   FUNCTION = "function",
   OBJECT = "object",
-  UNDEFINED = 'undefined',
-  ARRAY = 'array',
-  ANY = 'any',
-  MONEY = 'money'
+  UNDEFINED = "undefined",
+  ARRAY = "array",
+  ANY = "any",
+  MONEY = "money",
 }

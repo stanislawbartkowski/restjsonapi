@@ -1,7 +1,8 @@
 import { Table } from "antd"
 import React, { ReactElement } from "react"
-import { ColumnList, FieldValue, RowData, TColumn } from "../typing"
+import { ColumnList, TColumn } from "../typing"
 import { sumnumbers, getValue } from '../js/helper'
+import {FieldValue, RowData} from '../../../ts/typing'
 
 type TSummaryTable = ColumnList & {
   list: RowData,

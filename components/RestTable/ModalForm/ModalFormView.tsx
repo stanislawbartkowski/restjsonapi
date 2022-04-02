@@ -13,9 +13,9 @@ import { FormInstance } from 'antd/es/form';
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 
 
-import { FieldValue, TField, TForm, TRow } from '../typing'
+import { TField, TForm } from '../typing'
 import { trace } from '../../../ts/l'
-import { FIELDTYPE } from '../../../ts/typing'
+import { FIELDTYPE, FieldValue, TRow } from '../../../ts/typing'
 
 import { fieldTitle, fieldType } from '../js/helper';
 
