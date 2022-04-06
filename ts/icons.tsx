@@ -1,4 +1,4 @@
-import { internalinfoerrorlog } from "../ts/l";
+import { internalinfoerrorlog } from "./l";
 
 import {
   UserOutlined,

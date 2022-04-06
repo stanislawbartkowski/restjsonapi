@@ -51,17 +51,18 @@ function clickActionHook(t: TAction, row: TRow, r: TableHookParam) {
   r.fresult(row, res);
 }
 
-function constructAction(t: TAction, row: TRow, r: TableHookParam): ReactElement {
+function constructAction(key: number, t: TAction, row: TRow, r: TableHookParam): ReactElement {
   return (
-    <a onClick={() => clickActionHook(t, row, r)}>{makeMessage(t, row)}</a>
+    <a key={key} onClick={() => clickActionHook(t, row, r)}>{makeMessage(t, row)}</a>
   );
 }
 
 function constructactionsCol(a: TActions, row: TRow, r: TableHookParam): ReactElement {
   let act: TAction[] = a;
+  let numb : number = 0
   if (a.js) act = callJSFunction(a.js as string, row);
   return (
-    <Space size="middle">{act.map((t) => constructAction(t, row, r))}</Space>
+    <Space size="middle">{act.map((t) => constructAction(numb++,t, row, r))}</Space>
   );
 }
 
@@ -71,19 +72,20 @@ function getAddStyle(a: AddStyle, row: TRow): CSS.Properties {
   return s ? s : {}
 }
 
-function constructSingleTag(tag: TTag, row: TRow): ReactElement {
+function constructSingleTag(key:number, tag: TTag, row: TRow): ReactElement {
   const value: FieldValue = getValue(tag.value, row);
-  return <Tag {...tag.props}>{value}</Tag>;
+  return <Tag key={key} {...tag.props}>{value}</Tag>;
 }
 
 function constructTags(tag: TTags, row: TRow): ReactElement {
   let tags: TTag[] = [];
   if (tag.js) tags = callJSFunction(tag.js, row) as TTag[];
   else tags = tag;
+  let key: number = 0
 
   return (
     <React.Fragment>
-      {tags.map((t) => constructSingleTag(t, row))}
+      {tags.map((t) => constructSingleTag(key++,t, row))}
     </React.Fragment>
   );
 }

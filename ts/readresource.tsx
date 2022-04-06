@@ -1,6 +1,6 @@
-import { ReactElement, ReactNode } from "react";
+import { ReactNode } from "react";
 import { restapiresource } from "../services/api";
-import { log } from "../ts/l";
+import { log } from "./l";
 import { setStrings } from "./localize";
 import type { MenuElem, MenuLeft, RestTableParam } from "./typing";
 import RestTable from '../components/RestTable'

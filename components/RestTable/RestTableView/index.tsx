@@ -23,6 +23,7 @@ import HeaderTable from "../HeaderTable";
 import readlist, { DataSourceState } from '../js/readlist'
 import ReadListError from '../errors/ReadListError'
 import SummaryTable from '../SummaryTable'
+import defaults from "../../../ts/defaults";
 
 
 const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
@@ -91,7 +92,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
                 size="small"
                 loading={datasource.status === Status.PENDING}
                 columns={columns}
-                pagination={props.nopaging ? false : undefined}
+                pagination={props.nopaging ? false : { pageSize: defaults.defpageSize }}
                 {...extend}
                 summary={isSummary() ? () => (<SummaryTable {...props} list={datasource.tabledata} />) : undefined}
                 onRow={(r) => ({
