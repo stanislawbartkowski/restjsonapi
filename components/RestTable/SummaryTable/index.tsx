@@ -2,7 +2,7 @@ import { Table } from "antd"
 import React, { ReactElement } from "react"
 import { ColumnList, TColumn } from "../typing"
 import { sumnumbers, getValue } from '../js/helper'
-import {FieldValue, RowData} from '../../../ts/typing'
+import { FieldValue, RowData } from '../../../ts/typing'
 
 type TSummaryTable = ColumnList & {
   list: RowData,
@@ -21,7 +21,7 @@ function produceCell(i: number, c: TColumn, p: TSummaryTable): ReactElement {
 
   const v: FieldValue = h ? getSummaryValue(h, p) : undefined
 
-  return <Table.Summary.Cell {...h?.props} index={i}>{v}</Table.Summary.Cell>
+  return <Table.Summary.Cell key={i} {...h?.props} index={i}>{v}</Table.Summary.Cell>
 }
 
 const SummaryTable: React.FC<TSummaryTable> = (props) => {
@@ -30,6 +30,7 @@ const SummaryTable: React.FC<TSummaryTable> = (props) => {
 
   return <Table.Summary fixed>
     <Table.Summary.Row>
+      {props.extendable ? <Table.Summary.Cell index={i++}></Table.Summary.Cell> : undefined}
       {props.columns?.map(e => produceCell(i++, e, props))}
     </Table.Summary.Row>
   </Table.Summary>
