@@ -98,6 +98,7 @@ export type TBadge = JSSupportedType & {
 export type TTag = {
   value: ColumnValue;
   props?: TagProps
+  action?: TAction
 }
 
 export type TTags = JSSupportedType & TTag[]

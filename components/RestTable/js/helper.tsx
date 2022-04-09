@@ -1,8 +1,8 @@
-import type { ReactElement } from "react";
+import type { CSSProperties, ReactElement } from "react";
 import type CSS from "csstype";
 import React from "react";
 import type { ColumnType } from "antd/lib/table";
-import { Tag, Space, Badge } from "antd";
+import { Tag, Space, Badge, Button } from "antd";
 
 import lstring from "../../../ts/localize";
 import type { ColumnList, TColumn, TableHookParam, TFieldBase, ShowDetails, TBadge } from "../typing";
@@ -23,6 +23,7 @@ import { log } from "../../../ts/l";
 import TableFilterProps from "../TableFilter";
 import validateObject, { ObjectType } from "./validateobject";
 import defaults from '../../../ts/defaults'
+import './styles.css'
 
 // =================================
 // create ProColumns from columns
@@ -74,7 +75,10 @@ function getAddStyle(a: AddStyle, row: TRow): CSS.Properties {
 
 function constructSingleTag(key:number, tag: TTag, row: TRow): ReactElement {
   const value: FieldValue = getValue(tag.value, row);
-  return <Tag key={key} {...tag.props}>{value}</Tag>;
+
+  const p = tag.action ? {className:'tagbutton'} : {}
+
+  return <Tag key={key} {...p} {...tag.props} >{value}</Tag>;
 }
 
 function constructTags(tag: TTags, row: TRow): ReactElement {

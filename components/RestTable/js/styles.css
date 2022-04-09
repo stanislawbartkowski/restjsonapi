@@ -1,0 +1,8 @@
+.tagbutton {
+  cursor: pointer;
+}
+
+.tagbutton:hover {
+    filter: brightness(93%);
+    border-radius: 5px;
+}
