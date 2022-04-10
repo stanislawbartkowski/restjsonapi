@@ -22,9 +22,12 @@ function provideMenu() {
   ));
 }
 
-export function getDefaultMenu() : string[]{
-    const m: LeftMenuElem[] = getLeftMenu()
-    return [m[0].id]
+export function getDefaultMenu(currpath: string): string[] {
+  const m: LeftMenuElem[] = getLeftMenu()
+  if (currpath === undefined || currpath === "/") return [m[0].id]
+  const mm: LeftMenuElem | undefined = m.find(e => "/" + e.id === currpath)
+  if (mm === undefined) return [m[0].id]
+  return [mm.id]
 }
 
 export default provideMenu

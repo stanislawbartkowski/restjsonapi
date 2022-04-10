@@ -1,8 +1,8 @@
-import type { CSSProperties, ReactElement } from "react";
+import type { ReactElement } from "react";
 import type CSS from "csstype";
 import React from "react";
 import type { ColumnType } from "antd/lib/table";
-import { Tag, Space, Badge, Button } from "antd";
+import { Tag, Space, Badge, Anchor, Button } from "antd";
 
 import lstring from "../../../ts/localize";
 import type { ColumnList, TColumn, TableHookParam, TFieldBase, ShowDetails, TBadge } from "../typing";
@@ -54,16 +54,16 @@ function clickActionHook(t: TAction, row: TRow, r: TableHookParam) {
 
 function constructAction(key: number, t: TAction, row: TRow, r: TableHookParam): ReactElement {
   return (
-    <a key={key} onClick={() => clickActionHook(t, row, r)}>{makeMessage(t, row)}</a>
+    <Button style={{ padding: 0 }} type="link" key={key} onClick={() => clickActionHook(t, row, r)}>{makeMessage(t, row)}</Button>
   );
 }
 
 function constructactionsCol(a: TActions, row: TRow, r: TableHookParam): ReactElement {
   let act: TAction[] = a;
-  let numb : number = 0
+  let numb: number = 0
   if (a.js) act = callJSFunction(a.js as string, row);
   return (
-    <Space size="middle">{act.map((t) => constructAction(numb++,t, row, r))}</Space>
+    <Space size="middle">{act.map((t) => constructAction(numb++, t, row, r))}</Space>
   );
 }
 
@@ -73,15 +73,17 @@ function getAddStyle(a: AddStyle, row: TRow): CSS.Properties {
   return s ? s : {}
 }
 
-function constructSingleTag(key:number, tag: TTag, row: TRow): ReactElement {
+function constructSingleTag(key: number, tag: TTag, row: TRow, r: TableHookParam): ReactElement {
   const value: FieldValue = getValue(tag.value, row);
 
-  const p = tag.action ? {className:'tagbutton'} : {}
+  const p = tag.action ? { className: 'tagbutton' } : {}
 
-  return <Tag key={key} {...p} {...tag.props} >{value}</Tag>;
+  return <Tag key={key}
+    onClick={() => { if (tag.action) clickActionHook(tag.action, row, r) }}
+    {...p} {...tag.props} >{value}</Tag>;
 }
 
-function constructTags(tag: TTags, row: TRow): ReactElement {
+function constructTags(tag: TTags, row: TRow, r: TableHookParam): ReactElement {
   let tags: TTag[] = [];
   if (tag.js) tags = callJSFunction(tag.js, row) as TTag[];
   else tags = tag;
@@ -89,7 +91,7 @@ function constructTags(tag: TTags, row: TRow): ReactElement {
 
   return (
     <React.Fragment>
-      {tags.map((t) => constructSingleTag(key++,t, row))}
+      {tags.map((t) => constructSingleTag(key++, t, row, r))}
     </React.Fragment>
   );
 }
@@ -108,7 +110,7 @@ function constructRenderCell(c: TColumn, r: TableHookParam) {
       style = getAddStyle(c.addstyle, entity);
     }
 
-    if (c.tags) rendered = constructTags(c.tags, entity);
+    if (c.tags) rendered = constructTags(c.tags, entity, r);
     if (c.actions) rendered = constructactionsCol(c.actions, entity, r);
     if (c.ident) {
       const ident: number = callJSFunction(c.ident, entity) * defaults.identmul;
@@ -120,7 +122,7 @@ function constructRenderCell(c: TColumn, r: TableHookParam) {
     if (c.ident || c.addstyle || c.badge) rendered = <span style={style}>{badgeC} {dom}</span>;
 
     if (c.showdetails)
-      return <a onClick={() => r.fdetails(entity)}>{rendered}</a>;
+      return <Button type="link" onClick={() => r.fdetails(entity)}>{rendered}</Button>;
     else return rendered;
   };
 }
@@ -171,12 +173,18 @@ function sort(c: TColumn): boolean {
   return filter(c);
 }
 
+export function modifyColProps(c: TColumn, p: ColumnType<any>) {
+  const fieldtype: FIELDTYPE = fieldType(c)
+  if (fieldtype === FIELDTYPE.NUMBER || fieldtype === FIELDTYPE.MONEY) p.align = "right";
+}
+
 function transformOneColumn(c: TColumn, r: TableHookParam): ColumnType<any> {
   const mess: string = fieldTitle(c)
   const fieldtype: FIELDTYPE = fieldType(c)
   const p: ColumnType<any> = {};
 
-  if (fieldtype === FIELDTYPE.NUMBER || fieldtype === FIELDTYPE.MONEY) p.align = "right";
+  //  if (fieldtype === FIELDTYPE.NUMBER || fieldtype === FIELDTYPE.MONEY) p.align = "right";
+  modifyColProps(c, p);
   if (sort(c)) {
     if (c.props === undefined) c.props = {};
     switch (fieldtype) {
@@ -260,7 +268,7 @@ export function detailsTitle(c: ColumnList, row: TRow): string | undefined {
   const C: TColumn | undefined = findColDetails(c)
   if (C === undefined) return undefined;
   if (!isObject(C.showdetails))
-    return c.rowkey ? (row[c.rowkey] as string|undefined) : undefined
+    return c.rowkey ? (row[c.rowkey] as string | undefined) : undefined
   const s: ShowDetails = C.showdetails as ShowDetails
   if (s.title === undefined) return undefined;
   return makeMessage(s.title, row)
@@ -317,7 +325,7 @@ export function transformList(t: RowData, columns: TColumn[]) {
 // =============================
 
 export function sumnumbers(t: RowData, f: string): string {
-  const s: number = t.reduce((a: number, b: TRow) => a + (b[f] ? +(b[f] as string|number) : 0), 0)
+  const s: number = t.reduce((a: number, b: TRow) => a + (b[f] ? +(b[f] as string | number) : 0), 0)
   return tomoney(s) as string
 }
 

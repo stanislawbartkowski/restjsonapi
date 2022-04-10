@@ -1,7 +1,8 @@
 import { Table } from "antd"
+import type { ColumnType } from "antd/lib/table";
 import React, { ReactElement } from "react"
 import { ColumnList, TColumn } from "../typing"
-import { sumnumbers, getValue } from '../js/helper'
+import { sumnumbers, getValue, modifyColProps } from '../js/helper'
 import { FieldValue, RowData } from '../../../ts/typing'
 
 type TSummaryTable = ColumnList & {
@@ -21,7 +22,11 @@ function produceCell(i: number, c: TColumn, p: TSummaryTable): ReactElement {
 
   const v: FieldValue = h ? getSummaryValue(h, p) : undefined
 
-  return <Table.Summary.Cell key={i} {...h?.props} index={i}>{v}</Table.Summary.Cell>
+  const tprops: ColumnType<any> = h?.props ? h.props as ColumnType<any> : {}
+  modifyColProps(c, tprops);
+
+
+  return <Table.Summary.Cell key={i} {...tprops} index={i}>{v}</Table.Summary.Cell>
 }
 
 const SummaryTable: React.FC<TSummaryTable> = (props) => {
