@@ -3,7 +3,7 @@
 //import request, {extend} from 'umi-request';
 import request, { ResponseError } from "umi-request";
 
-import type { FUrlModifier } from "../ts/typing";
+import type { FieldValue, FUrlModifier } from "../ts/typing";
 import { internalerrorlog, logG } from '../ts/l'
 import { HTTPMETHOD } from "../ts/typing";
 
@@ -31,7 +31,7 @@ export function setUrlModifier(u: FUrlModifier) {
   urlModifier = u
 }
 
-export async function restapilist(list: string, pars?: Record<string, string>) {
+export async function restapilist(list: string, pars?: Record<string, FieldValue>) {
   const url: string = `${prefix}${list}`;
   const para: any = urlModifier == undefined ? {} : urlModifier(list);
   return rrequest<Record<string, any>>(url, {
@@ -62,7 +62,7 @@ export async function restapijs(resource: string) {
   });
 }
 
-export async function restaction(method: HTTPMETHOD, restaction: string, pars?: Record<string, string>, data?: any) {
+export async function restaction(method: HTTPMETHOD, restaction: string, pars?: Record<string, FieldValue>, data?: any) {
   const para: any = urlModifier == undefined ? {} : urlModifier(restaction);
   return rrequest<Record<string, any>>(`${prefix}${restaction}`, {
     method: method,

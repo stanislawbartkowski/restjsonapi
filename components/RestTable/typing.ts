@@ -1,5 +1,3 @@
-import type { FormProps, TagProps } from 'antd';
-import type { ModalProps } from 'antd'
 import type CSS from 'csstype';
 import type { ReactNode } from 'react';
 import type { FormItemProps } from 'antd';
@@ -51,6 +49,7 @@ export type FieldError = {
 export type ActionResult = {
   error?: FieldError[]
   notification?: TNotification
+  component? : string  
 }
 
 export type ClickResult = RestTableParam & ActionResult & {
@@ -97,7 +96,7 @@ export type TBadge = JSSupportedType & {
 
 export type TTag = {
   value: ColumnValue;
-  props?: TagProps
+  props?: PropsType
   action?: TAction
 }
 
@@ -140,11 +139,6 @@ export type ColumnList = JSSupportedType & {
 
 export type TSummary = ColumnList
 
-
-// export type TRow = any;
-
-// export type RowData = TRow[];
-
 export type FShowDetails = (entity: TRow) => void
 export type FActionResult = (entity: TRow, r: ClickResult) => void
 
@@ -169,8 +163,8 @@ export type TCloseFunction = (closebutton?: ButtonAction, row?: TRow) => void
 export type ModalListProps = RestTableParam & {
   visible: boolean
   closeModal?: TCloseFunction,
-  props?: ModalProps
-  formprops?: FormProps
+  props?: PropsType
+  formprops?: PropsType
 }
 
 export type ColumnFilterSearch = {

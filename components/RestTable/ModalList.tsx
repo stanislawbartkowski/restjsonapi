@@ -4,6 +4,7 @@ import { Modal } from 'antd';
 import type { ModalListProps, ModalDialogProps } from './typing'
 import RestTable from '.'
 import ModalDialog from './ModalDialog'
+import { getComponent } from './complist';
 
 const ModalTableList: React.FC<ModalListProps> = (props) => {
 
@@ -20,6 +21,10 @@ const ModalTableList: React.FC<ModalListProps> = (props) => {
 
 const ModalList: React.FC<ModalDialogProps> = (props) => {
 
+  if (props.component) {
+    const comp: React.FC<ModalDialogProps> = getComponent(props.component)
+    return comp({ ...props })
+  }
   if (props.list) return <ModalTableList {...props} />
   return <ModalDialog {...props} />
 }

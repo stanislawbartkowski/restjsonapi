@@ -12,7 +12,7 @@ export enum HTTPMETHOD {
 
 export type RestTableParam = {
   list?: string;
-  params?: Record<string, string>;
+  params?: Record<string, FieldValue>;
   listdef?: string;
   onRowClick?: (r: any) => void;
   canDisplay?: FCanDisplay;
@@ -22,6 +22,7 @@ export type RestTableParam = {
   restaction?: string;
   method?: HTTPMETHOD;
   upload?: boolean;
+  component?: string
 };
 
 export type FUrlModifier = (list: string) => undefined | Record<string, string>;
