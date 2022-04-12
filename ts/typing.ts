@@ -18,7 +18,6 @@ export type RestTableParam = {
   canDisplay?: FCanDisplay;
   isCurrentDB?: FIsCurrentDB;
   vars?: TRow;
-  nopaging?: boolean;
   restaction?: string;
   method?: HTTPMETHOD;
   upload?: boolean;

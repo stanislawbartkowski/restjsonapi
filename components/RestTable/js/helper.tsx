@@ -161,16 +161,23 @@ function sortboolinc(a: TRow, b: TRow, field: string): number {
   if (fielda) return 1;
   return -1;
 }
-function filter(c: TColumn): boolean {
-  if (c.nofilter) return false;
+
+function sortfilter(c: TColumn): boolean {
   if (c.fieldtype === FIELDTYPE.BOOLEAN) return false;
   if (c.actions) return false;
   if (c.tags) return false;
   return true;
 }
 
-function sort(c: TColumn): boolean {
-  return filter(c);
+
+function filter(c: TColumn, cols: ColumnList): boolean {
+  if (cols.nofilter || c.nofilter) return false;
+  return sortfilter(c)
+}
+
+function sort(c: TColumn, cols: ColumnList): boolean {
+  if (cols.nosort || c.nosort) return false;
+  return sortfilter(c)
 }
 
 export function modifyColProps(c: TColumn, p: ColumnType<any>) {
@@ -178,14 +185,13 @@ export function modifyColProps(c: TColumn, p: ColumnType<any>) {
   if (fieldtype === FIELDTYPE.NUMBER || fieldtype === FIELDTYPE.MONEY) p.align = "right";
 }
 
-function transformOneColumn(c: TColumn, r: TableHookParam): ColumnType<any> {
+function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnList): ColumnType<any> {
   const mess: string = fieldTitle(c)
   const fieldtype: FIELDTYPE = fieldType(c)
   const p: ColumnType<any> = {};
 
-  //  if (fieldtype === FIELDTYPE.NUMBER || fieldtype === FIELDTYPE.MONEY) p.align = "right";
   modifyColProps(c, p);
-  if (sort(c)) {
+  if (sort(c, cols)) {
     if (c.props === undefined) c.props = {};
     switch (fieldtype) {
       case FIELDTYPE.NUMBER:
@@ -201,7 +207,7 @@ function transformOneColumn(c: TColumn, r: TableHookParam): ColumnType<any> {
     }
   }
 
-  const filterprops: ColumnFilterSearch | undefined = filter(c)
+  const filterprops: ColumnFilterSearch | undefined = filter(c, cols)
     ? TableFilterProps(c, mess)
     : undefined;
 
@@ -220,7 +226,7 @@ function transformOneColumn(c: TColumn, r: TableHookParam): ColumnType<any> {
 }
 
 export function transformColumns(cols: ColumnList, r: TableHookParam): ColumnType<any>[] {
-  return (cols.columns as TColumn[]).map((c) => transformOneColumn(c, r));
+  return (cols.columns as TColumn[]).map((c) => transformOneColumn(c, r, cols));
 }
 
 // =========================================

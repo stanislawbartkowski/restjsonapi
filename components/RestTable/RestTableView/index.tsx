@@ -100,6 +100,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
                         if (props.onRowClick) props.onRowClick(r);
                     },
                 })}
+                {...props.props}
             />
             <ModalList {...modalProps} refresh={refreshtable} />
             <Drawer

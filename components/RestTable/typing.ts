@@ -122,7 +122,7 @@ export type TColumn = TFieldBase & {
   nofilter?: boolean
   nosort?: boolean
   badge?: TBadge
-  sum?: boolean
+  sum?: boolean  
 };
 
 export type TColumns = TColumn[]
@@ -134,7 +134,11 @@ export type ColumnList = JSSupportedType & {
   cards?: TColumn[];
   extendable?: TAction;
   toolbar?: TableToolBar;
-  summary?: TSummary
+  summary?: TSummary;
+  nopaging?: boolean,
+  nofilter?: boolean
+  nosort?: boolean
+  props?: PropsType  
 };
 
 export type TSummary = ColumnList
