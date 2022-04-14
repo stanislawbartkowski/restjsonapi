@@ -5,7 +5,7 @@ import { Table } from "antd";
 import { Drawer } from "antd";
 
 import lstring from "../../../ts/localize";
-import type { RestTableParam, TRow } from "../../../ts/typing";
+import type { PropsType, RestTableParam, TRow } from "../../../ts/typing";
 import type {
     TExtendable,
     ColumnList,
@@ -24,6 +24,22 @@ import readlist, { DataSourceState } from '../js/readlist'
 import ReadListError from '../errors/ReadListError'
 import SummaryTable from '../SummaryTable'
 import defaults from "../../../ts/defaults";
+import { isNumber } from "../../../ts/j";
+
+function propsPaging(props: RestTableParam & ColumnList, dsize: number): PropsType {
+    let pageSize: number = props.pageSize ? props.pageSize : defaults.defpageSize
+    let nopaging: boolean = false;
+    if (props.nopaging) {
+        if (isNumber(props.nopaging)) {
+            const ps : number = props.nopaging as number
+            if (dsize <= ps) nopaging = true
+            else pageSize = ps
+        }
+        else nopaging = true;
+    }
+
+    return nopaging ? { pagination: false } : { pagination: { pageSize: pageSize } }
+}
 
 
 const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
@@ -82,6 +98,8 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
         return props.summary !== undefined
     }
 
+
+
     return (
         <React.Fragment>
             {props.toolbar ? <HeaderTable {...props} refresh={refreshtable} /> : undefined}
@@ -92,7 +110,8 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
                 size="small"
                 loading={datasource.status === Status.PENDING}
                 columns={columns}
-                pagination={props.nopaging ? false : { pageSize: defaults.defpageSize }}
+                //pagination={props.nopaging ? false : { pageSize: defaults.defpageSize }}
+                {...propsPaging(props, datasource.tabledata.length)}
                 {...extend}
                 summary={isSummary() ? () => (<SummaryTable {...props} list={datasource.tabledata} />) : undefined}
                 onRow={(r) => ({

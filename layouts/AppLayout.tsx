@@ -3,6 +3,7 @@ import { useState } from "react";
 import "antd/dist/antd.css";
 import { Layout } from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
+
 import AppContent from "./AppContent";
 import LeftMenu from "./LeftMenu";
 import HeaderLine from './HeaderLine'
@@ -39,7 +40,7 @@ const AppLayout: React.FC = () => {
           className="site-layout-background"
           style={{
             margin: "24px 16px",
-            padding: 12,
+            padding: 2,
           }}
         >
           <AppContent />

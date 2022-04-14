@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { FormItemProps } from 'antd';
 import type { FilterDropdownProps } from 'antd/lib/table/interface';
 
-import type { RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, RowData } from '../../ts/typing';
+import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, RowData } from '../../ts/typing';
 
 export enum NotificationKind {
   SUCCESS = 'success',
@@ -34,8 +34,6 @@ export enum BUTTONACTION {
   DEL = 'DEL',
   UPDATE = 'UPDATE'
 }
-
-type PropsType = Record<string, any>
 
 type JSSupportedType = {
   js?: string
@@ -135,9 +133,10 @@ export type ColumnList = JSSupportedType & {
   extendable?: TAction;
   toolbar?: TableToolBar;
   summary?: TSummary;
-  nopaging?: boolean,
+  nopaging?: boolean|number,
   nofilter?: boolean
   nosort?: boolean
+  pageSize?: number
   props?: PropsType  
 };
 

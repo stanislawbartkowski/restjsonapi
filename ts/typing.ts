@@ -1,7 +1,8 @@
-import { ButtonProps } from "antd";
-
 type FCanDisplay = (p: RestTableParam) => undefined | string;
 export type FIsCurrentDB = (t: TRow) => boolean;
+
+export type PropsType = Record<string, any>
+
 
 export enum HTTPMETHOD {
   GET = "GET",
@@ -29,13 +30,21 @@ export type FUrlModifier = (list: string) => undefined | Record<string, string>;
 export type ButtonElem = {
   id: string;
   icon?: string;
-  props?: ButtonProps;
+  props?: PropsType;
 };
 
 export type MenuElem = ButtonElem & RestTableParam;
+export type TMenuNode = MenuElem | TSubMenu
+
+export type TSubMenu = {
+  icon?: string
+  props?: PropsType
+  title: string
+  menus: TMenuNode[]  
+}
 
 export type MenuLeft = {
-  menu: MenuElem[];
+  menu: TMenuNode[];
 };
 
 export type FieldValue = string | number | boolean | undefined;
