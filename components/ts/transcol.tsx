@@ -1,0 +1,225 @@
+import { ColumnType } from "antd/lib/table";
+import React from "react";
+import { Badge, Button, Space, Tag } from "antd";
+import { CSSProperties, ReactElement } from "react";
+
+import lstring from "../../ts/localize";
+import { FIELDTYPE, FieldValue, TRow } from "../../ts/typing";
+import { AddStyle, ClickResult, ColumnList, TableHookParam, TAction, TActions, TBadge, TColumn, TFieldBase, TTag, TTags } from "./typing";
+import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
+import { clickAction, getValue, makeMessage } from "./helper";
+import { callJSFunction } from "../../ts/j";
+import defaults from "../../ts/defaults";
+
+
+// =====================
+// field methods
+// =====================
+
+
+export function fieldType(t: TFieldBase): FIELDTYPE {
+    return t.fieldtype ? t.fieldtype : FIELDTYPE.STRING
+}
+
+export function fieldTitle(t: TFieldBase): string {
+    return lstring(t.coltitle ? t.coltitle : t.field);
+}
+
+
+// ====================================
+// sort filter procs
+// ====================================
+
+function sortinc(a: TRow, b: TRow, field: string): number {
+    const fielda: string | undefined = a[field] as string | undefined;
+    if (fielda === undefined) return 1;
+    const fieldb: string = b[field] as string;
+    return fielda.localeCompare(fieldb);
+}
+
+function sortnumberinc(a: TRow, b: TRow, field: string): number {
+    const fielda: number | undefined = a[field] as number | undefined;
+    if (fielda === undefined) return 1;
+    const fieldb: number = b[field] as number;
+    if (fieldb === undefined) return -1;
+    return fielda - fieldb;
+}
+
+function sortboolinc(a: TRow, b: TRow, field: string): number {
+    const fielda: boolean | undefined = a[field] as boolean | undefined;
+    if (fielda === undefined) return 1;
+    const fieldb: boolean = b[field] as boolean;
+    if (fieldb === undefined) return -1;
+    if (fielda && fieldb) return 0;
+    if (fielda) return 1;
+    return -1;
+}
+
+function sortfilter(c: TColumn): boolean {
+    if (c.fieldtype === FIELDTYPE.BOOLEAN) return false;
+    if (c.actions) return false;
+    if (c.tags) return false;
+    return true;
+}
+
+function filter(c: TColumn, cols: ColumnList): boolean {
+    if (cols.nofilter || c.nofilter) return false;
+    return sortfilter(c)
+}
+
+function sort(c: TColumn, cols: ColumnList): boolean {
+    if (cols.nosort || c.nosort) return false;
+    return sortfilter(c)
+}
+
+// ==============================
+// render cell
+// ==============================
+
+function clickActionHook(t: TAction, row: TRow, r: TableHookParam) {
+    const res: ClickResult = clickAction(t, row);
+    r.fresult(row, res);
+  }
+    
+
+function constructAction(key: number, t: TAction, row: TRow, r: TableHookParam): ReactElement {
+    return (
+        <Button style={{ padding: 0 }} type="link" key={key} onClick={() => clickActionHook(t, row, r)}>{makeMessage(t, row)}</Button>
+    );
+}
+
+
+function constructactionsCol(a: TActions, row: TRow, r: TableHookParam): ReactElement {
+    let act: TAction[] = a;
+    let numb: number = 0
+    if (a.js) act = callJSFunction(a.js as string, row);
+    return (
+        <Space size="middle">{act.map((t) => constructAction(numb++, t, row, r))}</Space>
+    );
+}
+
+function getAddStyle(a: AddStyle, row: TRow): CSSProperties {
+    if (a.style) return a.style;
+    const s: CSSProperties = callJSFunction(a.js as string, row);
+    return s ? s : {}
+}
+
+function constructSingleTag(key: number, tag: TTag, row: TRow, r: TableHookParam): ReactElement {
+    const value: FieldValue = getValue(tag.value, row);
+
+    const p = tag.action ? { className: 'tagbutton' } : {}
+
+    return <Tag key={key}
+        onClick={() => { if (tag.action) clickActionHook(tag.action, row, r) }}
+        {...p} {...tag.props} >{value}</Tag>;
+}
+
+
+
+function constructTags(tag: TTags, row: TRow, r: TableHookParam): ReactElement {
+    let tags: TTag[] = [];
+    if (tag.js) tags = callJSFunction(tag.js, row) as TTag[];
+    else tags = tag;
+    let key: number = 0
+
+    return (
+        <React.Fragment>
+            {tags.map((t) => constructSingleTag(key++, t, row, r))}
+        </React.Fragment>
+    );
+}
+
+
+function constructBadge(badge: TBadge, row: TRow): ReactElement {
+    const ba: TBadge = badge.js ? callJSFunction(badge.js, row) : badge
+    const title: string | undefined = ba.title ? makeMessage(ba.title, row) : undefined
+    return <Badge title={title} {...ba.props} />
+}
+
+
+function constructRenderCell(c: TColumn, r: TableHookParam) {
+    return (dom: any, entity: any): ReactElement => {
+        let style: CSSProperties = {};
+        let rendered = dom;
+        if (c.addstyle) {
+            style = getAddStyle(c.addstyle, entity);
+        }
+
+        if (c.tags) rendered = constructTags(c.tags, entity, r);
+        if (c.actions) rendered = constructactionsCol(c.actions, entity, r);
+        if (c.ident) {
+            const ident: number = callJSFunction(c.ident, entity) * defaults.identmul;
+            style.paddingLeft = `${ident}px`;
+        }
+
+        const badgeC: ReactElement | undefined = c.badge ? constructBadge(c.badge, entity) : undefined
+
+        if (c.ident || c.addstyle || c.badge) rendered = <span style={style}>{badgeC} {dom}</span>;
+
+        if (c.showdetails)
+            return <Button type="link" onClick={() => r.fdetails(entity)}>{rendered}</Button>;
+        else return rendered;
+    };
+}
+
+
+// =============================  
+
+export function modifyColProps(c: TColumn, p: ColumnType<any>) {
+    const fieldtype: FIELDTYPE = fieldType(c)
+    if (fieldtype === FIELDTYPE.NUMBER || fieldtype === FIELDTYPE.MONEY) p.align = "right";
+}
+
+function isRenderable(c: TColumn): boolean {
+    return (
+        c.showdetails !== undefined ||
+        c.ident !== undefined ||
+        c.tags !== undefined ||
+        c.actions !== undefined ||
+        c.badge !== undefined
+    );
+}
+
+// ====================
+// transform column
+// ====================
+
+export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnList): ColumnType<any> {
+    const mess: string = fieldTitle(c)
+    const fieldtype: FIELDTYPE = fieldType(c)
+    const p: ColumnType<any> = {};
+
+    modifyColProps(c, p);
+    if (sort(c, cols)) {
+        if (c.props === undefined) c.props = {};
+        switch (fieldtype) {
+            case FIELDTYPE.NUMBER:
+            case FIELDTYPE.MONEY:
+                c.props.sorter = (a: TRow, b: TRow) => sortnumberinc(a, b, c.field);
+                break;
+            case FIELDTYPE.BOOLEAN:
+                c.props.sorter = (a: TRow, b: TRow) => sortboolinc(a, b, c.field);
+                break;
+            default:
+                c.props.sorter = (a: TRow, b: TRow) => sortinc(a, b, c.field);
+                break;
+        }
+    }
+
+    const filterprops: ColumnFilterSearch | undefined = filter(c, cols)
+        ? TableFilterProps(c, mess)
+        : undefined;
+
+    const e: ColumnType<any> = {
+        title: <div>{mess}</div>,
+        dataIndex: c.field,
+        ...p,
+        ...c.props,
+        ...filterprops,
+    };
+    if (isRenderable(c)) {
+        e.render = constructRenderCell(c, r);
+    }
+
+    return e;
+}

@@ -3,6 +3,8 @@ export type FIsCurrentDB = (t: TRow) => boolean;
 
 export type PropsType = Record<string, any>
 
+export type OnRowClick = (r : TRow) => void
+
 
 export enum HTTPMETHOD {
   GET = "GET",
@@ -15,7 +17,7 @@ export type RestTableParam = {
   list?: string;
   params?: Record<string, FieldValue>;
   listdef?: string;
-  onRowClick?: (r: any) => void;
+  onRowClick?: OnRowClick;
   canDisplay?: FCanDisplay;
   isCurrentDB?: FIsCurrentDB;
   vars?: TRow;
