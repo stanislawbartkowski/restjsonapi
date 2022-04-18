@@ -1,14 +1,14 @@
 import { notification } from 'antd'
 import { NotificationKind, TNotification } from '../ts/typing'
 
-import type { TRow } from '../../ts/typing'
+import type { OneRowData } from '../../ts/typing'
 import { makeMessage } from '../ts/helper'
 
 
-const openNotification = (t: TNotification, r: TRow) => {
+const openNotification = (t: TNotification, pars: OneRowData) => {
     const content = {
-        message: makeMessage(t.title, r),
-        description: makeMessage(t.description, r)
+        message: makeMessage(t.title, pars),
+        description: makeMessage(t.description, pars)
 
     }
     if (t.kind)

@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-import { RestTableParam, TRow } from '../../ts/typing';
+import { OneRowData, RestTableParam } from '../../ts/typing';
 import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import { ColumnList, Status } from '../ts/typing';
 import RestTableDefError from "../errors/ReadDefError";
-import RowDescription from './RowDescription'
-import RecordCard from '../Cards/RecordCard'
-import { copyAndTransform } from '../ts/tranformlist'
+import OneRowTable from './OneRowTable';
 
-type TShowRowDetails = RestTableParam & {
-  r: TRow
-}
+type TShowRowDetails = RestTableParam & OneRowData
 
 const ShowDetails: React.FC<TShowRowDetails> = (props) => {
 
@@ -30,7 +26,8 @@ const ShowDetails: React.FC<TShowRowDetails> = (props) => {
 
   const col: ColumnList = state.res as ColumnList
 
-  return col.iscard ? <RecordCard {...col} {...props} /> : <RowDescription {...col} r={copyAndTransform(props.r, col.columns)} />
+
+  return <OneRowTable {...col} r={props.r} vars={props.vars}></OneRowTable>
 
 }
 

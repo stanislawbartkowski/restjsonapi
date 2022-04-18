@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import type { PropsType, RestTableParam, TRow, RowData } from '../../ts/typing';
+import type { PropsType, RestTableParam, TRow } from '../../ts/typing';
 import { ButtonAction, JSSupportedType, TFieldBase } from '../ts/typing';
 
 export enum BUTTONACTION {
@@ -14,10 +14,6 @@ export enum BUTTONACTION {
 export type PageParams = {
   current?: number;
   pageSize?: number;
-}
-
-export type JsonTableResult = {
-  res: RowData;
 }
 
 export const emptyModalListProps: ModalListProps = { visible: false, list: '' };

@@ -12,7 +12,7 @@ const CardList: React.FC<RestTableParam & ColumnList> = (props) => {
 
   const [datasource, setDataSource] = useState<DataSourceState>({
     status: Status.PENDING,
-    tabledata: [],
+    res: [],
   });
 
   useEffect(() => readlist(props, (s: DataSourceState) => { setDataSource({ ...s }) })
@@ -25,8 +25,8 @@ const CardList: React.FC<RestTableParam & ColumnList> = (props) => {
     return props.rowkey ? { key: r[props.rowkey] } : {}
   }
 
-  return <Card title={makeHeader(props, undefined)}><Row gutter={[8, 8]}>
-    {datasource.tabledata.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isCurrentDB={props.isCurrentDB} onRowClick={props.onRowClick} /> </Col>)}
+  return <Card title={makeHeader(props, undefined, { vars: props.vars, r: {} })}><Row gutter={[8, 8]}>
+    {datasource.res.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isCurrentDB={props.isCurrentDB} onRowClick={props.onRowClick} /> </Col>)}
   </Row>
   </Card>
 }

@@ -2,11 +2,11 @@
 // call JS function
 // ====================
 
-import type { RowData, TRow } from "./typing";
+import type { OneRowData } from "./typing";
 
-export function callJSFunction(jsAction: string, data?: TRow| RowData, vars?: TRow): any {
+export function callJSFunction(jsAction: string, par: OneRowData): any {
   const clickaction = new Function("p,vars", "return " + jsAction + "(p,vars)");
-  const res = clickaction(data, vars);
+  const res = clickaction(par.r, par.vars);
   return res;
 }
 

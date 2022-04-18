@@ -69,7 +69,7 @@ const RestTableList: React.FC<RestTableParam> = (props) => {
                 return (
                     <React.Fragment>
                         <InLine js={state.js} />
-                        {isCard(state.res as ColumnList) ?
+                        {isCard(state.res as ColumnList) && (state.res as ColumnList).onerow === undefined ?
                             <Cards {...(state.res as ColumnList)} {...props}></Cards> :
                             <RestTableView {...(state.res as ColumnList)} {...props} />}
                     </React.Fragment>

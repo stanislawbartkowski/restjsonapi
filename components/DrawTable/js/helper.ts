@@ -1,20 +1,19 @@
 import React from "react";
 import type { ColumnType } from "antd/lib/table";
 
-import type { ColumnValue, ColumnList, TableHookParam, TColumn } from "../../ts/typing";
-import { FIELDTYPE, FieldValue, TRow, RowData } from '../../../ts/typing'
+import type { ColumnList, TableHookParam, TColumn } from "../../ts/typing";
+import { TRow, RowData, OneRowData } from '../../../ts/typing'
 import { callJSFunction, isString } from "../../../ts/j";
 import defaults from '../../../ts/defaults'
 import './styles.css'
-import { fieldType, transformOneColumn } from "../../ts/transcol";
-import { getValue } from "../../ts/helper";
+import { transformOneColumn } from "../../ts/transcol";
 
 // =================================
 // create ProColumns from columns
 // =================================
 
-export function transformColumns(cols: ColumnList, r: TableHookParam): ColumnType<any>[] {
-  return (cols.columns as TColumn[]).map((c) => transformOneColumn(c, r, cols));
+export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRow): ColumnType<any>[] {
+  return (cols.columns as TColumn[]).map((c) => transformOneColumn(c, r, cols, vars));
 }
 
 // ======================
@@ -44,11 +43,11 @@ export function tomoney(t: string | number | undefined): undefined | string {
 // filter datasource
 // ===================================
 
-function okfilter(p: ColumnList, r: TRow): boolean {
-  const res: boolean = callJSFunction(p.filterJS as string, r);
+function okfilter(p: ColumnList, pars: OneRowData): boolean {
+  const res: boolean = callJSFunction(p.filterJS as string, pars);
   return res
 }
 
-export function filterDataSource(p: ColumnList, t: RowData) {
-  return t.filter((e: TRow) => okfilter(p, e))
+export function filterDataSource(p: ColumnList, pars: OneRowData): RowData {
+  return pars.t?.filter((e: TRow) => okfilter(p, { r: e, t: pars.t, vars: pars.vars })) as RowData
 }

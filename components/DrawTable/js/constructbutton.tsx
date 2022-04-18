@@ -51,7 +51,7 @@ function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: bool
 
   if (!b.confirm) return bu
 
-  const title: string = isBool(b.confirm) ? lstring('areyousure') : makeMessage(b.confirm as FormMessage) as string
+  const title: string = isBool(b.confirm) ? lstring('areyousure') : makeMessage(b.confirm as FormMessage, {r: {}}) as string
 
   return <Popconfirm title={title} onConfirm={() => onclick(b)} > {bu} </Popconfirm>
 }

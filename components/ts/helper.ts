@@ -1,7 +1,7 @@
 import { callJSFunction, isObject } from "../../ts/j";
 import { log } from "../../ts/l";
 import lstring from "../../ts/localize";
-import { FieldValue, PropsType, RowData, TRow } from "../../ts/typing";
+import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
 import validateObject, { ObjectType } from "./validateobject";
 import { ClickResult, ColumnList, ColumnValue, FormMessage, ShowDetails, TAction, TColumn } from "./typing";
 import { CSSProperties } from "react";
@@ -9,10 +9,10 @@ import { CSSProperties } from "react";
 // =================
 // header
 // =================
-export function makeHeader(p: ColumnList, unheader: string | undefined, vars?: any): string | undefined {
+export function makeHeader(p: ColumnList, unheader: string | undefined, pars: OneRowData): string | undefined {
 
     const title: string | undefined = p.header
-        ? makeMessage(p.header, {}, vars)
+        ? makeMessage(p.header, pars)
         : unheader
 
     return title
@@ -22,14 +22,14 @@ export function makeHeader(p: ColumnList, unheader: string | undefined, vars?: a
 // message from object
 // =========================================
 
-export function makeMessage(m: FormMessage, row?: TRow, vars?: any): string | undefined {
+export function makeMessage(m: FormMessage, pars: OneRowData): string | undefined {
     if (m.messagedirect) return m.messagedirect;
 
     if (m.js) {
-        const res: any = callJSFunction(m.js, row, vars);
+        const res: any = callJSFunction(m.js, pars);
         // recursive !
         validateObject(ObjectType.FORMMESSAGE, `js: ${m.js}`, res)
-        return makeMessage(res as FormMessage, row, vars);
+        return makeMessage(res as FormMessage, pars);
     }
     if (m.message) return lstring(m.message, m.params);
     log("makeMessage - incorrect FomrMessage parameter");
@@ -50,24 +50,24 @@ export function findColDetails(c: ColumnList): TColumn | undefined {
     return c.columns.find((x) => x.showdetails);
 }
 
-export function detailsTitle(c: ColumnList, row: TRow): [boolean,string | undefined, PropsType|undefined] {
+export function detailsTitle(c: ColumnList, pars: OneRowData): [boolean, string | undefined, PropsType | undefined] {
 
     const C: TColumn | undefined = findColDetails(c)
-    if (C === undefined) return [false,undefined, undefined]
+    if (C === undefined) return [false, undefined, undefined]
     if (!isObject(C.showdetails))
-        return c.rowkey ? [true, row[c.rowkey] as string ,undefined] : [false,undefined, undefined]
+        return c.rowkey ? [true, (pars.r as TRow)[c.rowkey] as string, undefined] : [false, undefined, undefined]
     const s: ShowDetails = C.showdetails as ShowDetails
-    if (s.title === undefined) return [false,undefined,s.props]
-    return [false,makeMessage(s.title, row),s.props]
+    if (s.title === undefined) return [false, undefined, s.props]
+    return [false, makeMessage(s.title, pars), s.props]
 }
 
 
 // =================
 // action
 // =================
-export function clickAction(t: TAction, row: TRow): ClickResult {
+export function clickAction(t: TAction, pars: OneRowData): ClickResult {
     let res: ClickResult = t;
-    if (t.jsclick) res = callJSFunction(t.jsclick as string, row);
+    if (t.jsclick) res = callJSFunction(t.jsclick as string, pars);
     return res;
 }
 
@@ -75,15 +75,15 @@ export function clickAction(t: TAction, row: TRow): ClickResult {
 //  custom value
 // ================
 
-export function getValue(a: ColumnValue, row: TRow | RowData): FieldValue {
+export function getValue(a: ColumnValue, pars: OneRowData): FieldValue {
     if (a.js) {
-        const v: ColumnValue | undefined = callJSFunction(a.js as string, row);
+        const v: ColumnValue | undefined = callJSFunction(a.js as string, pars);
         if (v === undefined) return undefined;
         // recursive
-        return getValue(v, row);
+        return getValue(v, pars);
     }
     if (a.value) return a.value;
-    return makeMessage(a, row as TRow);
+    return makeMessage(a, pars);
 }
 
 // =============================

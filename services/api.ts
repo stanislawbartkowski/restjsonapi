@@ -1,6 +1,3 @@
-// @ts-ignore
-/* eslint-disable */
-//import request, {extend} from 'umi-request';
 import request, { ResponseError } from "umi-request";
 
 import type { FieldValue, FUrlModifier } from "../ts/typing";

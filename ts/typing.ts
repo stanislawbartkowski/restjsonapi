@@ -5,12 +5,24 @@ export type PropsType = Record<string, any>
 
 export type OnRowClick = (r : TRow) => void
 
+export type OnTableRead = (r : JsonTableResult) => void
 
 export enum HTTPMETHOD {
   GET = "GET",
   DELETE = "DELETE",
   PUT = "PUT",
   POST = "POST",
+}
+
+export type JsonTableResult = {
+  res: RowData;
+  vars?: PropsType
+}
+
+export type OneRowData = {
+  r: TRow,
+  t?: RowData
+  vars?: TRow
 }
 
 export type RestTableParam = {
@@ -20,6 +32,7 @@ export type RestTableParam = {
   onRowClick?: OnRowClick;
   canDisplay?: FCanDisplay;
   isCurrentDB?: FIsCurrentDB;
+  onTableRead?: OnTableRead;
   vars?: TRow;
   restaction?: string;
   method?: HTTPMETHOD;

@@ -16,7 +16,7 @@ function ltrace(mess: string) {
 }
 
 
-const HeaderTable: React.FC<ColumnList & { refresh: FRefresh }> = (props) => {
+const HeaderTable: React.FC<ColumnList & { refresh: FRefresh, vars?: TRow }> = (props) => {
   const [modalProps, setIsModalVisible] = useState<ModalListProps>(emptyModalListProps);
 
   const h: TableToolBar = props.toolbar as TableToolBar;
@@ -27,7 +27,7 @@ const HeaderTable: React.FC<ColumnList & { refresh: FRefresh }> = (props) => {
 
   function clickButton(b: ButtonAction) {
     ltrace(b.id)
-    const res: ClickResult = clickAction(b, {})
+    const res: ClickResult = clickAction(b, {r: {}, vars: props.vars})
     setIsModalVisible({ ...res, visible: true, closeModal: fmodalhook })
   }
 

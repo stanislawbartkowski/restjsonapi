@@ -61,7 +61,7 @@ function errorMessage(t: TField, err: ErrorMessages): {} | { validateStatus: Val
 
 function produceItem(t: TField, err: ErrorMessages): React.ReactNode {
 
-    const mess: string = fieldTitle(t);
+    const mess: string = fieldTitle(t, {r:{}});
     return <Form.Item {...t.props} id={t.field} name={t.field} key={t.field} label={mess} {...errorMessage(t, err)}>
         {produceElem(t)}
     </Form.Item>

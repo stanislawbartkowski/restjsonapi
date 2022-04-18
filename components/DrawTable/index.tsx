@@ -4,7 +4,7 @@ import type { ColumnType } from "antd/lib/table";
 import { Table, Drawer } from "antd";
 
 import lstring from "../../ts/localize";
-import type { PropsType, RestTableParam, TRow } from "../../ts/typing";
+import type { OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, ModalListProps } from "./typing";
 import type { ClickResult, ColumnList, FActionResult, FShowDetails } from "../ts/typing";
 import { emptyModalListProps } from "./typing";
@@ -20,6 +20,7 @@ import ReadListError from '../errors/ReadListError'
 import SummaryTable from './SummaryTable'
 import defaults from "../../ts/defaults";
 import { isNumber } from "../../ts/j";
+import OneRowTable from "../ShowDetails/OneRowTable"
 
 function propsPaging(props: RestTableParam & ColumnList, dsize: number): PropsType {
     let pageSize: number = props.pageSize ? props.pageSize : defaults.defpageSize
@@ -44,7 +45,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
     const [modalProps, setIsModalVisible] = useState<ModalListProps>(emptyModalListProps);
     const [datasource, setDataSource] = useState<DataSourceState>({
         status: Status.PENDING,
-        tabledata: [],
+        res: [],
     });
 
     const [refreshnumber, setRefreshNumber] = useState<number>(0);
@@ -71,16 +72,20 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
     const columns: ColumnType<any>[] = transformColumns(props, {
         fdetails: f,
         fresult: fresult,
-    });
+    }, props.vars);
 
-    const title = makeHeader(props, lstring("empty"), props.vars)
+    function toPars(): OneRowData {
+        return { vars: props.vars, r: {}, t: datasource.res }
+    }
+
+    const title = makeHeader(props, lstring("empty"), toPars())
 
     useEffect(() => readlist(props, (s: DataSourceState) => { setDataSource({ ...s }) })
         , [props.list, props.listdef, refreshnumber]);
 
 
     const extend: TExtendable | undefined = props.extendable
-        ? getExtendableProps(props)
+        ? getExtendableProps(props, props.vars)
         : undefined;
 
     function refreshtable() {
@@ -93,22 +98,27 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
         return props.summary !== undefined
     }
 
+    if (props.onerow) {
+        return <OneRowTable {...props} r={datasource.res.length === 0 ? {} : datasource.res[0]} />
+    }
 
+    const dsource: RowData = props.filterJS ? filterDataSource(props, { r:{}, t: datasource.res, vars: props.vars}) : datasource.res
+
+    if (props.onTableRead) props.onTableRead({ res: dsource, vars: datasource.vars });
 
     return (
         <React.Fragment>
-            {props.toolbar ? <HeaderTable {...props} refresh={refreshtable} /> : undefined}
+            {props.toolbar ? <HeaderTable {...props} vars={props.vars} refresh={refreshtable} /> : undefined}
             <Table
                 title={() => title}
                 rowKey={props.rowkey}
-                dataSource={props.filterJS ? filterDataSource(props, datasource.tabledata) : datasource.tabledata}
+                dataSource={dsource}
                 size="small"
                 loading={datasource.status === Status.PENDING}
                 columns={columns}
-                //pagination={props.nopaging ? false : { pageSize: defaults.defpageSize }}
-                {...propsPaging(props, datasource.tabledata.length)}
+                {...propsPaging(props, dsource.length)}
                 {...extend}
-                summary={isSummary() ? () => (<SummaryTable {...props} list={datasource.tabledata} />) : undefined}
+                summary={isSummary() ? () => (<SummaryTable {...props} list={datasource.res} />) : undefined}
                 onRow={(r) => ({
                     onClick: () => {
                         if (props.onRowClick) props.onRowClick(r);

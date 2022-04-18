@@ -15,9 +15,9 @@ function icon(e: TMenuNode): React.ReactNode {
   return getIcon(e.icon, defaults.defaultmenuicon);
 }
 
-function createMenu(e: TMenuNode): ReactNode {
-  return isSubMenu(e) ? <SubMenu title={lstring((e as TSubMenu).title)} >
-    {(e as TSubMenu).menus.map(e => createMenu(e))}
+function createMenu(e: TMenuNode, keynumber: number): ReactNode {
+  return isSubMenu(e) ? <SubMenu key={keynumber} title={lstring((e as TSubMenu).title)} >
+    {(e as TSubMenu).menus.map(e => createMenu(e, keynumber + 1))}
   </SubMenu> :
     <Menu.Item key={(e as MenuElem).id} icon={icon(e)}>
       <Link to={"/" + (e as MenuElem).id}>{lstring((e as MenuElem).id)}</Link>
@@ -25,7 +25,7 @@ function createMenu(e: TMenuNode): ReactNode {
 }
 
 function provideMenu() {
-  return getLeftMenu().menu.map((e: TMenuNode) => createMenu(e))
+  return getLeftMenu().menu.map((e: TMenuNode) => createMenu(e, 0))
 }
 
 export function getDefaultMenu(currpath: string): string[] {

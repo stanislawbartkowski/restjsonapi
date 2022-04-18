@@ -4,11 +4,11 @@ import { Badge, Button, Space, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
-import { FIELDTYPE, FieldValue, TRow } from "../../ts/typing";
-import { AddStyle, ClickResult, ColumnList, TableHookParam, TAction, TActions, TBadge, TColumn, TFieldBase, TTag, TTags } from "./typing";
+import { FIELDTYPE, FieldValue, OneRowData, TRow } from "../../ts/typing";
+import { AddStyle, ClickResult, ColumnList, FormMessage, TableHookParam, TAction, TActions, TBadge, TColumn, TFieldBase, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue, makeMessage } from "./helper";
-import { callJSFunction } from "../../ts/j";
+import { callJSFunction, isString } from "../../ts/j";
 import defaults from "../../ts/defaults";
 
 
@@ -21,8 +21,12 @@ export function fieldType(t: TFieldBase): FIELDTYPE {
     return t.fieldtype ? t.fieldtype : FIELDTYPE.STRING
 }
 
-export function fieldTitle(t: TFieldBase): string {
-    return lstring(t.coltitle ? t.coltitle : t.field);
+export function fieldTitle(t: TFieldBase, pars: OneRowData): string {
+    if (t.coltitle === undefined) return lstring(t.field);
+    if (isString(t.coltitle)) return lstring(t.coltitle as string)
+    const m: FormMessage = t.coltitle as FormMessage
+    return makeMessage(m, pars) as string
+
 }
 
 
@@ -76,83 +80,85 @@ function sort(c: TColumn, cols: ColumnList): boolean {
 // render cell
 // ==============================
 
-function clickActionHook(t: TAction, row: TRow, r: TableHookParam) {
-    const res: ClickResult = clickAction(t, row);
-    r.fresult(row, res);
-  }
-    
+function clickActionHook(t: TAction, r: TableHookParam, pars: OneRowData) {
+    const res: ClickResult = clickAction(t, pars);
+    r.fresult(pars.r, res);
+}
 
-function constructAction(key: number, t: TAction, row: TRow, r: TableHookParam): ReactElement {
+
+function constructAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ReactElement {
     return (
-        <Button style={{ padding: 0 }} type="link" key={key} onClick={() => clickActionHook(t, row, r)}>{makeMessage(t, row)}</Button>
+        <Button style={{ padding: 0 }} type="link" key={key} onClick={() => clickActionHook(t, r, pars)}>{makeMessage(t, pars)}</Button>
     );
 }
 
 
-function constructactionsCol(a: TActions, row: TRow, r: TableHookParam): ReactElement {
+function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRowData): ReactElement {
     let act: TAction[] = a;
     let numb: number = 0
-    if (a.js) act = callJSFunction(a.js as string, row);
+    if (a.js) act = callJSFunction(a.js as string, pars);
     return (
-        <Space size="middle">{act.map((t) => constructAction(numb++, t, row, r))}</Space>
+        <Space size="middle">{act.map((t) => constructAction(numb++, t, r, pars))}</Space>
     );
 }
 
-function getAddStyle(a: AddStyle, row: TRow): CSSProperties {
+function getAddStyle(a: AddStyle, pars: OneRowData): CSSProperties {
     if (a.style) return a.style;
-    const s: CSSProperties = callJSFunction(a.js as string, row);
+    const s: CSSProperties = callJSFunction(a.js as string, pars);
     return s ? s : {}
 }
 
-function constructSingleTag(key: number, tag: TTag, row: TRow, r: TableHookParam): ReactElement {
-    const value: FieldValue = getValue(tag.value, row);
+function constructSingleTag(key: number, tag: TTag, r: TableHookParam, pars: OneRowData): ReactElement {
+    const value: FieldValue = getValue(tag.value, pars);
 
     const p = tag.action ? { className: 'tagbutton' } : {}
 
     return <Tag key={key}
-        onClick={() => { if (tag.action) clickActionHook(tag.action, row, r) }}
+        onClick={() => { if (tag.action) clickActionHook(tag.action, r, pars) }}
         {...p} {...tag.props} >{value}</Tag>;
 }
 
 
 
-function constructTags(tag: TTags, row: TRow, r: TableHookParam): ReactElement {
+function constructTags(tag: TTags, r: TableHookParam, pars: OneRowData): ReactElement {
     let tags: TTag[] = [];
-    if (tag.js) tags = callJSFunction(tag.js, row) as TTag[];
+    if (tag.js) tags = callJSFunction(tag.js, pars) as TTag[];
     else tags = tag;
     let key: number = 0
 
     return (
         <React.Fragment>
-            {tags.map((t) => constructSingleTag(key++, t, row, r))}
+            {tags.map((t) => constructSingleTag(key++, t, r, pars))}
         </React.Fragment>
     );
 }
 
 
-function constructBadge(badge: TBadge, row: TRow): ReactElement {
-    const ba: TBadge = badge.js ? callJSFunction(badge.js, row) : badge
-    const title: string | undefined = ba.title ? makeMessage(ba.title, row) : undefined
+function constructBadge(badge: TBadge, pars: OneRowData): ReactElement {
+    const ba: TBadge = badge.js ? callJSFunction(badge.js, pars) : badge
+    const title: string | undefined = ba.title ? makeMessage(ba.title, pars) : undefined
     return <Badge title={title} {...ba.props} />
 }
 
 
-function constructRenderCell(c: TColumn, r: TableHookParam) {
-    return (dom: any, entity: any): ReactElement => {
+function constructRenderCell(c: TColumn, r: TableHookParam, vars?: TRow) {
+    return (dom: any, entity: TRow): ReactElement => {
         let style: CSSProperties = {};
         let rendered = dom;
+        const parms = { r: entity, vars: vars }
         if (c.addstyle) {
-            style = getAddStyle(c.addstyle, entity);
+            style = getAddStyle(c.addstyle, parms);
         }
 
-        if (c.tags) rendered = constructTags(c.tags, entity, r);
-        if (c.actions) rendered = constructactionsCol(c.actions, entity, r);
+
+        if (c.tags) rendered = constructTags(c.tags, r, parms);
+        if (c.actions) rendered = constructactionsCol(c.actions, r, parms);
         if (c.ident) {
-            const ident: number = callJSFunction(c.ident, entity) * defaults.identmul;
+            const ident: number = callJSFunction(c.ident, parms) * defaults.identmul;
             style.paddingLeft = `${ident}px`;
         }
 
-        const badgeC: ReactElement | undefined = c.badge ? constructBadge(c.badge, entity) : undefined
+        const badgeC: ReactElement | undefined = c.badge ? constructBadge(c.badge, parms) : undefined
 
         if (c.ident || c.addstyle || c.badge) rendered = <span style={style}>{badgeC} {dom}</span>;
 
@@ -184,8 +190,8 @@ function isRenderable(c: TColumn): boolean {
 // transform column
 // ====================
 
-export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnList): ColumnType<any> {
-    const mess: string = fieldTitle(c)
+export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnList, vars?: TRow): ColumnType<any> {
+    const mess: string = fieldTitle(c, { r: {}, vars:vars})
     const fieldtype: FIELDTYPE = fieldType(c)
     const p: ColumnType<any> = {};
 
@@ -218,7 +224,7 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
         ...filterprops,
     };
     if (isRenderable(c)) {
-        e.render = constructRenderCell(c, r);
+        e.render = constructRenderCell(c, r, vars);
     }
 
     return e;

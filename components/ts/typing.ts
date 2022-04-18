@@ -1,5 +1,4 @@
-import { Props } from 'react';
-import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsCurrentDB, OnRowClick } from '../../ts/typing';
+import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsCurrentDB, OnRowClick, OneRowData } from '../../ts/typing';
 
 // =========================
 // status for async reading
@@ -52,7 +51,7 @@ export type TSummary = ColumnList
 export type TFieldBase = {
     field: string;
     fieldtype?: FIELDTYPE,
-    coltitle?: string;
+    coltitle?: string | FormMessage
     addstyle?: AddStyle
 }
 
@@ -209,6 +208,7 @@ export type ColumnList = JSSupportedType & {
     cardprops?: PropsType
     rowprops?: PropsType
     filterJS?: string
+    onerow?: boolean
 };
 
 
@@ -216,8 +216,7 @@ export type ColumnList = JSSupportedType & {
 // details card/description
 // ===========================
 
-export type TDetailsCard = ColumnList & {
-    r: TRow,
+export type TDetailsCard = ColumnList & OneRowData & {
     isCurrentDB?: FIsCurrentDB
     onRowClick?: OnRowClick
 }
