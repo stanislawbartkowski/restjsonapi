@@ -1,6 +1,6 @@
 import { ColumnType } from "antd/lib/table";
 import React from "react";
-import { Badge, Button, Space, Tag } from "antd";
+import { Badge, Button, Dropdown, Menu, Space, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
@@ -10,6 +10,7 @@ import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue, makeMessage } from "./helper";
 import { callJSFunction, isString } from "../../ts/j";
 import defaults from "../../ts/defaults";
+import { UserOutlined } from "@ant-design/icons";
 
 
 // =====================
@@ -85,7 +86,6 @@ function clickActionHook(t: TAction, r: TableHookParam, pars: OneRowData) {
     r.fresult(pars.r, res);
 }
 
-
 function constructAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ReactElement {
     return (
         <Button style={{ padding: 0 }} type="link" key={key} onClick={() => clickActionHook(t, r, pars)}>{makeMessage(t, pars)}</Button>
@@ -93,14 +93,37 @@ function constructAction(key: number, t: TAction, r: TableHookParam, pars: OneRo
 }
 
 
-function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRowData): ReactElement {
-    let act: TAction[] = a;
-    let numb: number = 0
-    if (a.js) act = callJSFunction(a.js as string, pars);
+function constructMenuAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ReactElement {
     return (
-        <Space size="middle">{act.map((t) => constructAction(numb++, t, r, pars))}</Space>
+        <Menu.Item key={key} onClick={() => clickActionHook(t, r, pars)}>{makeMessage(t, pars)}</Menu.Item>
     );
 }
+
+function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRowData): ReactElement | undefined {
+    let act: TActions = a
+    let numb: number = 0
+    if (a.js) act = callJSFunction(a.js as string, pars);
+    if (act === undefined) return undefined
+    const actions : TAction[] = act.actions as TAction[]
+    if (actions === undefined) return undefined
+    if (act.dropdown) {
+    const menu = (
+        <Menu>
+            { actions.map(e => constructMenuAction(numb++,e,r,pars)) }           
+        </Menu>
+      );
+    return (
+        <Dropdown.Button overlay={menu}>
+        </Dropdown.Button>
+    )
+    }
+    return (
+        <Space size="middle">{actions.map((t) => constructAction(numb++, t, r, pars))}</Space>
+    );
+
+
+}
+
 
 function getAddStyle(a: AddStyle, pars: OneRowData): CSSProperties {
     if (a.style) return a.style;
@@ -191,7 +214,7 @@ function isRenderable(c: TColumn): boolean {
 // ====================
 
 export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnList, vars?: TRow): ColumnType<any> {
-    const mess: string = fieldTitle(c, { r: {}, vars:vars})
+    const mess: string = fieldTitle(c, { r: {}, vars: vars })
     const fieldtype: FIELDTYPE = fieldType(c)
     const p: ColumnType<any> = {};
 

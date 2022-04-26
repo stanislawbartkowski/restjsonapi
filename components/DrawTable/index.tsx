@@ -34,7 +34,7 @@ function propsPaging(props: RestTableParam & ColumnList, dsize: number): PropsTy
         else nopaging = true;
     }
 
-    return nopaging ? { pagination: false } : { pagination: { pageSize: pageSize } }
+    return nopaging ? { pagination: false } : { pagination: { defaultPageSize: pageSize } }
 }
 
 
@@ -102,7 +102,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
         return <OneRowTable {...props} r={datasource.res.length === 0 ? {} : datasource.res[0]} />
     }
 
-    const dsource: RowData = props.filterJS ? filterDataSource(props, { r:{}, t: datasource.res, vars: props.vars}) : datasource.res
+    const dsource: RowData = props.filterJS ? filterDataSource(props, { r: {}, t: datasource.res, vars: props.vars }) : datasource.res
 
     if (props.onTableRead) props.onTableRead({ res: dsource, vars: datasource.vars });
 
@@ -111,7 +111,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
             {props.toolbar ? <HeaderTable {...props} vars={props.vars} refresh={refreshtable} /> : undefined}
             <Table
                 title={() => title}
-                rowKey={props.rowkey}
+                rowKey={datasource.rowkey}
                 dataSource={dsource}
                 size="small"
                 loading={datasource.status === Status.PENDING}

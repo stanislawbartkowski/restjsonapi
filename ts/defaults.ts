@@ -4,6 +4,7 @@ interface Defaults {
   dateformat: string,
   moneydot: number,
   defpageSize: number,
+  rowkeyS: string
 };
 
 const defaults: Defaults = {
@@ -11,7 +12,8 @@ const defaults: Defaults = {
   identmul: 12,
   dateformat: 'YYYY-MM-DD',
   moneydot: 2,
-  defpageSize: 20
+  defpageSize: 20,
+  rowkeyS: "rowkey"
 };
 
 export default defaults;

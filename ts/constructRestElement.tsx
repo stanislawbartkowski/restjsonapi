@@ -15,7 +15,7 @@ export function addMenuElement(id: string, e: ReactNode) {
 }
 
 export function addMenuRestElement(p: MenuElem) {
-    const e: ReactNode = <RestTable list={p.list ? p.list : p.id} {...resttableProps} />
+    const e: ReactNode = <RestTable {...p} list={p.list ? p.list : p.id} {...resttableProps} />
     addMenuElement(p.id, e)
 }
 
