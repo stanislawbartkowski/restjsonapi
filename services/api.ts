@@ -1,7 +1,7 @@
 import request, { ResponseError } from "umi-request";
 
 import type { FieldValue, FUrlModifier } from "../ts/typing";
-import { internalerrorlog, logG } from '../ts/l'
+import { log, internalerrorlog, logG } from '../ts/l'
 import { HTTPMETHOD } from "../ts/typing";
 
 const rrequest = request;
@@ -14,6 +14,8 @@ export function setPrefix(p: string) {
 }
 
 export function setHost(prefix: string) {
+
+  log(`setHost ${prefix}`);
   function errorHandler(error: ResponseError) {
     internalerrorlog(error.message);
     logG.error(error.message, error)

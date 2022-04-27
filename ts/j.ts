@@ -38,3 +38,16 @@ export function isBool(p: any): boolean {
 export function isObject(p: any): boolean {
   return typeof p === "object";
 }
+
+// ===============================
+// origin
+// ===============================
+
+export function getOrigin() : [string,string] {
+   return [window.location.hostname,window.location.port]
+}
+
+export function isDev() : boolean {
+  return process.env.NODE_ENV !== 'production'
+}
+
