@@ -11,8 +11,8 @@ import { CSSProperties } from "react";
 // =================
 export function makeHeader(p: ColumnList, unheader: string | undefined, pars: OneRowData): string | undefined {
 
-    const title: string | undefined = p.header
-        ? makeMessage(p.header, pars)
+    const title: string | undefined = p.headertitle
+        ? makeMessage(p.headertitle, pars)
         : unheader
 
     return title

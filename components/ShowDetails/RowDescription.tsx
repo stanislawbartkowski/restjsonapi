@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Descriptions, DescriptionsProps } from 'antd';
 
 import { OneRowData, TRow } from '../../ts/typing';
 import { detailsTitle } from '../ts/helper';
-import { TColumn, TDetailsCard } from '../ts/typing';
+import { TableHookParam, TColumn, TDetailsCard } from '../ts/typing';
 import { fieldTitle } from '../ts/transcol';
+import { renderCell } from '../ts/transcol'
 
 
 function toDescritionItem(c: TColumn, pars: OneRowData) {
-  return <Descriptions.Item key={c.field} label={fieldTitle(c, pars)}>
-    {pars.r[c.field]}
+  const f: TableHookParam = { fdetails: undefined, fresult: undefined }
+  const elem: ReactElement = renderCell(c, <div>{pars.r[c.field]}</div>, pars.r, f, pars.vars)
+  return <Descriptions.Item key={c.field} label={fieldTitle(c, pars)} {...c.props}>
+    {elem}
   </Descriptions.Item>
 
 }

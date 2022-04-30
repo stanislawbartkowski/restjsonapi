@@ -10,7 +10,8 @@ import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue, makeMessage } from "./helper";
 import { callJSFunction, isString } from "../../ts/j";
 import defaults from "../../ts/defaults";
-import { UserOutlined } from "@ant-design/icons";
+import {MoreOutlined} from "@ant-design/icons";
+import getIcon from '../../ts/icons'
 
 
 // =====================
@@ -83,7 +84,7 @@ function sort(c: TColumn, cols: ColumnList): boolean {
 
 function clickActionHook(t: TAction, r: TableHookParam, pars: OneRowData) {
     const res: ClickResult = clickAction(t, pars);
-    r.fresult(pars.r, res);
+    if (r.fresult) r.fresult(pars.r, res);
 }
 
 function constructAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ReactElement {
@@ -104,18 +105,18 @@ function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRowData): 
     let numb: number = 0
     if (a.js) act = callJSFunction(a.js as string, pars);
     if (act === undefined) return undefined
-    const actions : TAction[] = act.actions as TAction[]
+    const actions: TAction[] = act.actions as TAction[]
     if (actions === undefined) return undefined
     if (act.dropdown) {
-    const menu = (
-        <Menu>
-            { actions.map(e => constructMenuAction(numb++,e,r,pars)) }           
-        </Menu>
-      );
-    return (
-        <Dropdown.Button overlay={menu}>
-        </Dropdown.Button>
-    )
+        const menu = (
+            <Menu>
+                {actions.map(e => constructMenuAction(numb++, e, r, pars))}
+            </Menu>
+        );
+        return (
+            <Dropdown.Button icon={getIcon('moreoutlined')} overlay={menu}>
+            </Dropdown.Button>
+        )
     }
     return (
         <Space size="middle">{actions.map((t) => constructAction(numb++, t, r, pars))}</Space>
@@ -134,7 +135,7 @@ function getAddStyle(a: AddStyle, pars: OneRowData): CSSProperties {
 function constructSingleTag(key: number, tag: TTag, r: TableHookParam, pars: OneRowData): ReactElement {
     const value: FieldValue = getValue(tag.value, pars);
 
-    const p = tag.action ? { className: 'tagbutton' } : {}
+    const p = (tag.action && r.fresult !== undefined) ? { className: 'tagbutton' } : {}
 
     return <Tag key={key}
         onClick={() => { if (tag.action) clickActionHook(tag.action, r, pars) }}
@@ -163,34 +164,36 @@ function constructBadge(badge: TBadge, pars: OneRowData): ReactElement {
     return <Badge title={title} {...ba.props} />
 }
 
-
-function constructRenderCell(c: TColumn, r: TableHookParam, vars?: TRow) {
-    return (dom: any, entity: TRow): ReactElement => {
-        let style: CSSProperties = {};
-        let rendered = dom;
-        const parms = { r: entity, vars: vars }
-        if (c.addstyle) {
-            style = getAddStyle(c.addstyle, parms);
-        }
+export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam, vars?: TRow): ReactElement {
+    let style: CSSProperties = {};
+    let rendered = dom;
+    const parms = { r: r, vars: vars }
+    if (c.addstyle) {
+        style = getAddStyle(c.addstyle, parms);
+    }
 
 
-        if (c.tags) rendered = constructTags(c.tags, r, parms);
-        if (c.actions) rendered = constructactionsCol(c.actions, r, parms);
-        if (c.ident) {
-            const ident: number = callJSFunction(c.ident, parms) * defaults.identmul;
-            style.paddingLeft = `${ident}px`;
-        }
+    if (c.tags) rendered = constructTags(c.tags, rhook, parms);
+    if (c.actions && rhook.fresult) rendered = constructactionsCol(c.actions, rhook, parms);
+    if (c.ident) {
+        const ident: number = callJSFunction(c.ident, parms) * defaults.identmul;
+        style.paddingLeft = `${ident}px`;
+    }
 
-        const badgeC: ReactElement | undefined = c.badge ? constructBadge(c.badge, parms) : undefined
+    const badgeC: ReactElement | undefined = c.badge ? constructBadge(c.badge, parms) : undefined
 
-        if (c.ident || c.addstyle || c.badge) rendered = <span style={style}>{badgeC} {dom}</span>;
+    if (c.ident || c.addstyle || c.badge) rendered = <span style={style}>{badgeC} {dom}</span>;
 
-        if (c.showdetails)
-            return <Button type="link" onClick={() => r.fdetails(entity)}>{rendered}</Button>;
-        else return rendered;
-    };
+    if (c.showdetails && rhook.fdetails !== undefined)
+        return <Button type="link" onClick={() => { if (rhook.fdetails) rhook.fdetails(r) }}>{rendered}</Button>;
+    else return rendered;
+
 }
 
+
+function constructRenderCell(c: TColumn, r: TableHookParam, vars?: TRow) {
+    return (dom: any, entity: TRow): ReactElement => { return renderCell(c, dom, entity, r, vars) }
+};
 
 // =============================  
 

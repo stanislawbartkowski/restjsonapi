@@ -79,4 +79,5 @@ export enum FIELDTYPE {
   ARRAY = "array",
   ANY = "any",
   MONEY = "money",
+  TIME = "time"
 }

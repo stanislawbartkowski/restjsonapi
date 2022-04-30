@@ -18,8 +18,8 @@ export type FShowDetails = (entity: TRow) => void
 export type FActionResult = (entity: TRow, r: ClickResult) => void
 
 export type TableHookParam = {
-    fdetails: FShowDetails;
-    fresult: FActionResult;
+    fdetails?: FShowDetails;
+    fresult?: FActionResult;
 }
 
 
@@ -28,6 +28,10 @@ export type TableHookParam = {
 // =========================
 export type JSSupportedType = {
     js?: string
+}
+
+type ReadDefType = JSSupportedType & {
+    def?: string
 }
 
 // ===========================
@@ -55,13 +59,26 @@ export type TFieldBase = {
     addstyle?: AddStyle
 }
 
+// ===============================
+// toolbar/buttons feature
+// ===============================
+
+export type ButtonAction = ButtonElem & TAction & {
+    validate?: boolean
+    confirm?: FormMessage | boolean
+}
+
+export type TableToolBar = ButtonAction[]
+
+
 // =======================
 // show details feature
 // =======================
-export type ShowDetails = {
-    title: FormMessage
-    columns: TColumns
-    props: PropsType
+export type ShowDetails = ReadDefType & {
+    title?: FormMessage
+    props?: PropsType
+    toolbar?: TableToolBar
+    collist: ColumnList
 }
 
 // =============================  
@@ -151,18 +168,6 @@ export type TBadge = JSSupportedType & {
     props: PropsType
 }
 
-// ===============================
-// toolbar/buttons feature
-// ===============================
-
-export type ButtonAction = ButtonElem & TAction & {
-    validate?: boolean
-    confirm?: FormMessage | boolean
-}
-
-
-export type TableToolBar = ButtonAction[]
-
 // =================================
 // divider
 // =================================
@@ -187,6 +192,7 @@ export type TColumn = TFieldBase & {
     badge?: TBadge
     sum?: boolean
     divider?: TDivider
+    tablenodef?: boolean
 };
 
 // ===============================
@@ -196,12 +202,12 @@ export type TColumn = TFieldBase & {
 export type TColumns = TColumn[]
 
 export type ColumnList = JSSupportedType & {
-    rowkey: string;
-    header?: FormMessage;
+    rowkey?: string;
+    header?: ShowDetails;
+    headertitle?: FormMessage;
     columns: TColumns
     iscard?: boolean
     extendable?: TAction;
-    toolbar?: TableToolBar;
     summary?: TSummary;
     nopaging?: boolean | number,
     nofilter?: boolean

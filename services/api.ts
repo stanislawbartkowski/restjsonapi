@@ -32,11 +32,15 @@ export function setUrlModifier(u: FUrlModifier) {
 
 export async function restapilist(list: string, pars?: Record<string, FieldValue>) {
   const url: string = `${prefix}${list}`;
-  const para: any = urlModifier == undefined ? {} : urlModifier(list);
+  const para: any = urlModifier === undefined ? {} : urlModifier(list);
   return rrequest<Record<string, any>>(url, {
     method: "GET",
     ...{ params: { ...para, ...pars } },
   });
+}
+
+export async function restapishowdetils(resource: string) {
+  return restapilistdef(resource);
 }
 
 export async function restapilistdef(resource: string) {
@@ -55,14 +59,14 @@ export async function restapiresource(resource: string) {
 }
 
 export async function restapijs(resource: string) {
-  return rrequest<Record<string, any>>(`${prefix}getjs`, {
+  return rrequest<string>(`${prefix}getjs`, {
     method: "GET",
     ...{ params: { resource: resource } },
   });
 }
 
 export async function restaction(method: HTTPMETHOD, restaction: string, pars?: Record<string, FieldValue>, data?: any) {
-  const para: any = urlModifier == undefined ? {} : urlModifier(restaction);
+  const para: any = urlModifier === undefined ? {} : urlModifier(restaction);
   return rrequest<Record<string, any>>(`${prefix}${restaction}`, {
     method: method,
     data: data,

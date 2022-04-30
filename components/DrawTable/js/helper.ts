@@ -1,7 +1,7 @@
 import React from "react";
 import type { ColumnType } from "antd/lib/table";
 
-import type { ColumnList, TableHookParam, TColumn } from "../../ts/typing";
+import type { ColumnList, TableHookParam, TColumn, TColumns } from "../../ts/typing";
 import { TRow, RowData, OneRowData } from '../../../ts/typing'
 import { callJSFunction, isString } from "../../../ts/j";
 import defaults from '../../../ts/defaults'
@@ -12,8 +12,19 @@ import { transformOneColumn } from "../../ts/transcol";
 // create ProColumns from columns
 // =================================
 
+function includeColumn(col: TColumn): boolean {
+  return col.tablenodef === undefined || !col.tablenodef
+}
+
+export function visibleColumns(cols: TColumns) : TColumns {
+  return cols.filter(e => includeColumn(e))
+}
+
 export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRow): ColumnType<any>[] {
-  return (cols.columns as TColumn[]).map((c) => transformOneColumn(c, r, cols, vars));
+
+  const clist : TColumns = visibleColumns(cols.columns);
+
+  return clist.map((c) => transformOneColumn(c, r, cols, vars));
 }
 
 // ======================

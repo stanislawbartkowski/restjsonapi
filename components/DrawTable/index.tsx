@@ -22,8 +22,8 @@ import defaults from "../../ts/defaults";
 import { isNumber } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 
-function propsPaging(props: RestTableParam & ColumnList, dsize: number): PropsType {
-    let pageSize: number = props.pageSize ? props.pageSize : defaults.defpageSize
+function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefined|PropsType {
+    let pageSize: number|undefined = props.pageSize ? props.pageSize : defaults.defpageSize
     let nopaging: boolean = false;
     if (props.nopaging) {
         if (isNumber(props.nopaging)) {
@@ -106,9 +106,11 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
 
     if (props.onTableRead) props.onTableRead({ res: dsource, vars: datasource.vars });
 
+    const paging = propsPaging(props, dsource.length)
+
     return (
         <React.Fragment>
-            {props.toolbar ? <HeaderTable {...props} vars={props.vars} refresh={refreshtable} /> : undefined}
+            {props.header ? <HeaderTable {...props.header} vars={props.vars} refresh={refreshtable} /> : undefined}
             <Table
                 title={() => title}
                 rowKey={datasource.rowkey}
@@ -116,7 +118,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
                 size="small"
                 loading={datasource.status === Status.PENDING}
                 columns={columns}
-                {...propsPaging(props, dsource.length)}
+                {...paging}
                 {...extend}
                 summary={isSummary() ? () => (<SummaryTable {...props} list={datasource.res} />) : undefined}
                 onRow={(r) => ({
