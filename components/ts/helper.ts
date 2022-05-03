@@ -95,5 +95,13 @@ export function appendStyle(props: PropsType | undefined, c: CSSProperties): Pro
     return { ...props, style: { ...styleC, ...c } }
 }
 
+// ======================
+// is mask clicked
+// ======================
+export function ismaskClicked(e: React.MouseEvent<HTMLElement>): boolean {
+    const t: string = e.currentTarget.className
+    return t === 'ant-modal-wrap'
+  }
+
 
 

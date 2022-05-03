@@ -10,7 +10,6 @@ import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue, makeMessage } from "./helper";
 import { callJSFunction, isString } from "../../ts/j";
 import defaults from "../../ts/defaults";
-import {MoreOutlined} from "@ant-design/icons";
 import getIcon from '../../ts/icons'
 
 

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import RestTable from "../components/RestTable";
 import { MenuElem, RestTableParam } from "./typing";
+import ModalForm from '../components/ModalForm'
 
 const menuF: Map<String, ReactNode> = new Map<String, ReactNode>()
 
@@ -14,8 +15,14 @@ export function addMenuElement(id: string, e: ReactNode) {
     menuF.set(id, e)
 }
 
+
+function isForm(p: MenuElem): boolean {
+    return (p.listdef !== undefined && p.list === undefined)
+}
+
 export function addMenuRestElement(p: MenuElem) {
-    const e: ReactNode = <RestTable {...p} list={p.list ? p.list : p.id} {...resttableProps} />
+    const e: ReactNode = isForm(p) ? <ModalForm {...p} ispage visible /> :
+        <RestTable {...p} list={p.list ? p.list : p.id} {...resttableProps} />
     addMenuElement(p.id, e)
 }
 

@@ -1,7 +1,7 @@
 import React, { MutableRefObject, useRef } from "react";
 
-import type { ModalDialogProps, TCloseFunction } from '../typing'
-import ModalForm, { IIRefCall, ErrorMessages, ErrorMessage } from "../ModalForm";
+import type { ModalDialogProps, TCloseFunction } from '../../ts/typing'
+import ModalForm, { IIRefCall, ErrorMessages, ErrorMessage } from "../../ModalForm";
 import { restaction } from '../../../services/api'
 import { HTTPMETHOD, OneRowData, TRow } from "../../../ts/typing";
 import openNotification from "../Notification";

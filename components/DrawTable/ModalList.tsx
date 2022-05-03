@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal } from 'antd';
 
-import type { ModalListProps, ModalDialogProps } from './typing'
+import type { ModalListProps, ModalDialogProps } from '../ts/typing'
 import RestTable from '../RestTable'
 import ModalDialog from './ModalDialog'
 import { getComponent } from './complist';

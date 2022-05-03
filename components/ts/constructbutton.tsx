@@ -1,11 +1,11 @@
 import { Button, Popconfirm } from "antd";
 
-import getIcon from "../../../ts/icons";
-import lstring from "../../../ts/localize";
-import { BUTTONACTION } from "../typing";
-import { isBool } from '../../../ts/j'
-import { makeMessage } from "../../ts/helper";
-import { ButtonAction, FormMessage } from "../../ts/typing";
+import getIcon from "../../ts/icons";
+import lstring from "../../ts/localize";
+import { BUTTONACTION } from "../DrawTable/typing";
+import { isBool } from '../../ts/j'
+import { makeMessage } from "./helper";
+import { ButtonAction, FormMessage } from "./typing";
 
 export type FClickButton = (b: ButtonAction) => void;
 
@@ -29,9 +29,13 @@ function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: bool
       messid = 'delete';
       iconid = 'deleteoutlined';
       break;
-    case BUTTONACTION.UPDATE :
+    case BUTTONACTION.UPDATE:
       messid = 'update'
       iconid = 'editoutlines'
+      break
+    case BUTTONACTION.PRINT:
+      messid = 'print'
+      iconid = 'printoutlined'
       break
   }
 
@@ -51,7 +55,7 @@ function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: bool
 
   if (!b.confirm) return bu
 
-  const title: string = isBool(b.confirm) ? lstring('areyousure') : makeMessage(b.confirm as FormMessage, {r: {}}) as string
+  const title: string = isBool(b.confirm) ? lstring('areyousure') : makeMessage(b.confirm as FormMessage, { r: {} }) as string
 
   return <Popconfirm title={title} onConfirm={() => onclick(b)} > {bu} </Popconfirm>
 }

@@ -15,7 +15,8 @@ const embedded = {
     areyousure: 'Na pewno?',
     delete: 'Usuń',
     update: 'Zmień',
-    errorreadinglist: "Błąd podczas czytania danych z servera"
+    errorreadinglist: "Błąd podczas czytania danych z servera",
+    print: "Drukuj"
   },
   en: {
     empty: '',
@@ -30,7 +31,8 @@ const embedded = {
     areyousure: 'Are you sure?',
     delete: 'Delete',
     update: 'Update',
-    errorreadinglist: "Error while reading data from server"
+    errorreadinglist: "Error while reading data from server",
+    print: "Print"
   }
 };
 

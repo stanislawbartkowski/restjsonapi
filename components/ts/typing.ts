@@ -240,3 +240,40 @@ export type FormMessage = JSSupportedType & {
     message?: string
     params?: string[]
 }
+
+
+// ==========================
+// form
+// ==========================
+
+export type TField = TFieldBase & {
+    props?: PropsType
+    iprops?: PropsType
+  }
+  
+  export type TForm = JSSupportedType & {
+    fields: TField[]
+    formprops?: PropsType
+    buttons: ButtonAction[]
+  }
+
+  // ==============================
+  // modal props
+  // ==============================
+
+export const emptyModalListProps: ModalListProps = { visible: false, list: '' };
+
+export type TCloseFunction = (closebutton?: ButtonAction, row?: TRow) => void
+
+export type ModalListProps = RestTableParam & {
+  visible: boolean
+  closeModal?: TCloseFunction,
+  props?: PropsType
+}
+
+export type FRefresh = () => void
+
+export type ModalDialogProps = ModalListProps & {
+  refresh: FRefresh
+}
+  

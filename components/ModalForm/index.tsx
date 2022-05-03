@@ -1,16 +1,17 @@
-import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle } from 'react';
-import { Modal } from 'antd';
+import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
+import { Col, Modal, Row } from 'antd';
 
-import type { TForm, ModalListProps } from '../typing'
-import type { ButtonAction } from '../../ts/typing'
-import { Status } from '../../ts/typing'
-import readdefs, { ReadDefsResult } from "../../ts/readdefs";
-import InLine from '../../../ts/inline';
-import constructButton, { FClickButton } from '../js/constructbutton';
+import type { ModalListProps } from '../ts/typing'
+import type { TForm } from '../ts/typing'
+import type { ButtonAction } from '../ts/typing'
+import { Status } from '../ts/typing'
+import readdefs, { ReadDefsResult } from "../ts/readdefs";
+import InLine from '../../ts/inline';
+import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
-import { ismaskClicked } from '../js/helper'
-import { trace } from '../../../ts/l'
-import { TRow } from '../../../ts/typing'
+import { ismaskClicked } from '../ts/helper'
+import { trace } from '../../ts/l'
+import { TRow } from '../../ts/typing'
 
 export type { ErrorMessage, ErrorMessages } from './ModalFormView';
 
@@ -37,7 +38,12 @@ function ltrace(mess: string) {
     trace('ModalForm', mess)
 }
 
-const ModalForm = forwardRef<IIRefCall, ModalListProps>((props, iref) => {
+
+type ModalFormProps = ModalListProps & {
+    ispage?: boolean
+}
+
+const ModalForm = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
 
     const buttonclicked = useRef<ButtonAction | undefined>(undefined);
 
@@ -123,13 +129,30 @@ const ModalForm = forwardRef<IIRefCall, ModalListProps>((props, iref) => {
         formdef.tabledata.buttons.map(e => constructButton(e, fclick, formdef.loading, formdef.loading && e.id === buttonclicked.current?.id)) :
         undefined
 
+    const modaldialog: ReactNode = <Modal destroyOnClose visible={props.visible}
+        onCancel={onClose} {...props.props} footer={buttons}>
+        {formdef.status === Status.READY ?
+            <ModalFormView ref={ref} err={formdef.err} {...(formdef.tabledata as TForm)} buttonClicked={onButtonClicked} onValuesChanges={onValuesChange} /> : undefined}
+    </Modal >
+
+    const pagedialog: ReactNode = <React.Fragment>
+        <Row>
+            <Col>
+                {formdef.status === Status.READY ?
+                    <ModalFormView 
+                        ref={ref} err={formdef.err}
+                        {...(formdef.tabledata as TForm)}
+                        buttonClicked={onButtonClicked}
+                        buttonsextra={buttons}
+                        onValuesChanges={onValuesChange} /> : undefined}
+
+            </Col>
+        </Row>
+    </React.Fragment>
+
     return <React.Fragment>
         <InLine js={formdef.js} />
-        <Modal destroyOnClose visible={props.visible}
-            onCancel={onClose} {...props.props} footer={buttons}>
-            {formdef.status === Status.READY ?
-                <ModalFormView formprops={props.formprops} ref={ref} err={formdef.err} {...(formdef.tabledata as TForm)} buttonClicked={onButtonClicked} onValuesChanges={onValuesChange} /> : undefined}
-        </Modal >
+        {props.ispage ? pagedialog : modaldialog}
     </React.Fragment>
 })
 

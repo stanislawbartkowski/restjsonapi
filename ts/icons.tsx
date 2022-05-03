@@ -10,7 +10,8 @@ import {
   DeleteOutlined,
   EditOutlined,
   SmileOutlined,
-  MoreOutlined
+  MoreOutlined,
+  PrinterOutlined
 } from "@ant-design/icons";
 
 import { ReactNode } from "react";
@@ -25,7 +26,9 @@ const map = new Map<string, ReactNode>([
   ['deleteoutlined',<DeleteOutlined />],
   ['editoutlines',<EditOutlined />],
   ['smileoutlined',<SmileOutlined />],
-  ['moreoutlined',<MoreOutlined />]
+  ['moreoutlined',<MoreOutlined />],
+  ['printoutlined',<PrinterOutlined />]
+
 ]);
 
 function getIcon(id?: string, defaultid?: string): ReactNode {

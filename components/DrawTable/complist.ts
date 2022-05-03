@@ -1,5 +1,5 @@
 import React from "react";
-import { ModalDialogProps } from "./typing";
+import { ModalDialogProps } from "../ts/typing";
 
 const list: Map<string, React.FC<ModalDialogProps>> = new Map()
 

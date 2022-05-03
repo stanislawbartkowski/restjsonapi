@@ -1,4 +1,3 @@
-import React from "react";
 import type { ColumnType } from "antd/lib/table";
 
 import type { ColumnList, TableHookParam, TColumn, TColumns } from "../../ts/typing";
@@ -25,14 +24,6 @@ export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRo
   const clist : TColumns = visibleColumns(cols.columns);
 
   return clist.map((c) => transformOneColumn(c, r, cols, vars));
-}
-
-// ======================
-// is mask clicked
-// ======================
-export function ismaskClicked(e: React.MouseEvent<HTMLElement>): boolean {
-  const t: string = e.currentTarget.className
-  return t === 'ant-modal-wrap'
 }
 
 // =============================

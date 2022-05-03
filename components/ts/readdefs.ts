@@ -1,4 +1,4 @@
-import type { TForm } from "../DrawTable/typing";
+import type { TForm } from "./typing";
 import { log } from "../../ts/l";
 import { callJSFunction } from "../../ts/j";
 import type { RestTableParam } from "../../ts/typing";
@@ -10,7 +10,6 @@ export type ReadDefsResult = {
     res?: ColumnList | TForm
     js?: any
 }
-
 
 type FSetState = (res: ReadDefsResult) => void
 

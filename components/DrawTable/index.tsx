@@ -5,9 +5,10 @@ import { Table, Drawer } from "antd";
 
 import lstring from "../../ts/localize";
 import type { OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
-import type { TExtendable, ModalListProps } from "./typing";
+import type { TExtendable, } from "./typing";
+import type { ModalListProps } from "../ts/typing";
 import type { ClickResult, ColumnList, FActionResult, FShowDetails } from "../ts/typing";
-import { emptyModalListProps } from "./typing";
+import { emptyModalListProps } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource } from "./js/helper";
 import { makeHeader } from "../ts/helper";

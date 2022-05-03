@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { PageHeader } from "antd";
 
-import type { FRefresh, TCloseFunction, ModalListProps } from './typing'
-import { emptyModalListProps } from "./typing";
+import type { FRefresh, TCloseFunction, ModalListProps } from '../ts/typing'
+import { emptyModalListProps } from "../ts/typing";
 import { trace } from "../../ts/l";
-import constructButton from "./js/constructbutton";
+import constructButton from "../ts/constructbutton";
 import ModalDialog from './ModalDialog'
 import type { TRow } from '../../ts/typing'
 import { TableToolBar, ButtonAction, ClickResult, ShowDetails } from "../ts/typing";

@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, ReactNode, useImperativeHandle } from 'react';
 
 import {
     Form,
@@ -6,14 +6,16 @@ import {
     DatePicker,
     InputNumber,
     FormProps,
+    Space,
+    Divider,
 } from 'antd';
 import { FormInstance } from 'antd/es/form';
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 
-import { TField, TForm } from '../typing'
-import { trace } from '../../../ts/l'
-import { FIELDTYPE, FieldValue, TRow } from '../../../ts/typing'
-import { fieldTitle, fieldType } from '../../ts/transcol';
+import { TField, TForm } from '../ts/typing'
+import { trace } from '../../ts/l'
+import { FIELDTYPE, FieldValue, TRow } from '../../ts/typing'
+import { fieldTitle, fieldType } from '../ts/transcol';
 
 export type ErrorMessage = {
     field: string,
@@ -37,7 +39,7 @@ export interface IRefCall {
 
 type TFormView = TForm & {
     buttonClicked: (row: TRow) => void
-    formprops?: FormProps
+    buttonsextra?: ReactNode
 }
 
 function produceElem(t: TField): React.ReactNode {
@@ -61,7 +63,7 @@ function errorMessage(t: TField, err: ErrorMessages): {} | { validateStatus: Val
 
 function produceItem(t: TField, err: ErrorMessages): React.ReactNode {
 
-    const mess: string = fieldTitle(t, {r:{}});
+    const mess: string = fieldTitle(t, { r: {} });
     return <Form.Item {...t.props} id={t.field} name={t.field} key={t.field} label={mess} {...errorMessage(t, err)}>
         {produceElem(t)}
     </Form.Item>
@@ -102,11 +104,15 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
         }
     }));
 
+    const buttons: ReactNode = props.buttonsextra ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextra}</Space></Form.Item></React.Fragment> : undefined
+
     const form = <Form labelCol={{ span: 4 }}
         wrapperCol={{ span: 14 }} form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges}
         layout="horizontal" scrollToFirstError {...props.formprops} >
 
         {props.fields.map(e => produceItem(e, props.err))}
+
+        {buttons}
 
     </Form>
 
