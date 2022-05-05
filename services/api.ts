@@ -68,8 +68,9 @@ export async function restapijs(resource: string) {
 export async function restaction(method: HTTPMETHOD, restaction: string, pars?: Record<string, FieldValue>, data?: any) {
   const para: any = urlModifier === undefined ? {} : urlModifier(restaction);
   return rrequest<Record<string, any>>(`${prefix}${restaction}`, {
+    
     method: method,
     data: data,
-    ...{ params: { ...para, ...pars } },
+    ...{ getResponse: true, params: { ...para, ...pars } },
   });
 }

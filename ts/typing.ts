@@ -1,11 +1,25 @@
-type FCanDisplay = (p: RestTableParam) => undefined | string;
-export type FIsCurrentDB = (t: TRow) => boolean;
+// ============================================================
+// general types
+// ==========================================================
 
 export type PropsType = Record<string, any>
 
-export type OnRowClick = (r : TRow) => void
+// =============================================================
+// some customizable functions
+// ==============================================================
 
-export type OnTableRead = (r : JsonTableResult) => void
+type FCanDisplay = (p: RestTableParam) => undefined | string;
+
+export type FIsCurrentDB = (t: TRow) => boolean;
+
+export type OnRowClick = (r: TRow) => void
+
+export type FUrlModifier = (list: string) => undefined | Record<string, string>;
+
+
+// ============================================================
+//  REST/API call
+// ==========================================================
 
 export enum HTTPMETHOD {
   GET = "GET",
@@ -14,16 +28,28 @@ export enum HTTPMETHOD {
   POST = "POST",
 }
 
+export type OnTableRead = (r: JsonTableResult) => void
+
 export type JsonTableResult = {
   res: RowData;
   vars?: PropsType
 }
 
-export type OneRowData = {
-  r: TRow,
-  t?: RowData
-  vars?: TRow
-}
+
+// =====================
+// common button
+// =====================
+
+export type ButtonElem = {
+  id: string;
+  icon?: string;
+  props?: PropsType;
+};
+
+
+// ===========================
+// table props
+// ===========================
 
 export type RestTableParam = {
   list?: string;
@@ -38,35 +64,65 @@ export type RestTableParam = {
   method?: HTTPMETHOD;
   upload?: boolean;
   component?: string
+  modalprops?: PropsType
 };
 
-export type FUrlModifier = (list: string) => undefined | Record<string, string>;
+// ==============================
+// modal props
+// ==============================
 
-export type ButtonElem = {
-  id: string;
-  icon?: string;
-  props?: PropsType;
-};
 
-export type MenuElem = ButtonElem & RestTableParam;
+export type FAction = () => void
+
+export interface ClickActionProps {
+  closeAction?: FAction
+  refresh?: FAction
+}
+
+export type ModalFormProps = ClickActionProps & {
+  visible?: boolean
+  ispage?: boolean
+}
+
+// ==================================
+// general component props
+// ==================================
+
+export type TComponentProps = RestTableParam & ModalFormProps
+
+// ========================================
+// menu
+// ========================================
+
+export type MenuElem = ButtonElem & TComponentProps;
 export type TMenuNode = MenuElem | TSubMenu
 
 export type TSubMenu = {
   icon?: string
   props?: PropsType
   title: string
-  menus: TMenuNode[]  
+  menus: TMenuNode[]
 }
 
 export type MenuLeft = {
   menu: TMenuNode[];
 };
 
+// =================================
+// data, row, types
+// =================================
+
 export type FieldValue = string | number | boolean | undefined;
 
 export type TRow = Record<string, FieldValue>;
 
 export type RowData = TRow[];
+
+export type OneRowData = {
+  r: TRow,
+  t?: RowData
+  vars?: TRow
+}
 
 export enum FIELDTYPE {
   NUMBER = "number",
@@ -81,3 +137,4 @@ export enum FIELDTYPE {
   MONEY = "money",
   TIME = "time"
 }
+

@@ -5,17 +5,20 @@ import {
     Input,
     DatePicker,
     InputNumber,
-    FormProps,
     Space,
     Divider,
+    Switch
 } from 'antd';
 import { FormInstance } from 'antd/es/form';
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
+import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
+
 
 import { TField, TForm } from '../ts/typing'
 import { trace } from '../../ts/l'
 import { FIELDTYPE, FieldValue, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType } from '../ts/transcol';
+import { dateremoveT } from '../../ts/d'
 
 export type ErrorMessage = {
     field: string,
@@ -40,13 +43,18 @@ export interface IRefCall {
 type TFormView = TForm & {
     buttonClicked: (row: TRow) => void
     buttonsextra?: ReactNode
+    initvals?: TRow
 }
 
 function produceElem(t: TField): React.ReactNode {
     const fieldtype: FIELDTYPE = fieldType(t)
     switch (fieldtype) {
         case FIELDTYPE.NUMBER: return <InputNumber {...t.iprops} />
-        case FIELDTYPE.DATE: return <DatePicker />
+        case FIELDTYPE.DATE: return <DatePicker {...t.iprops} />
+        case FIELDTYPE.BOOLEAN: return <Switch {...t.iprops}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+        />
     }
     return <Input {...t.iprops} />
 }
@@ -69,19 +77,39 @@ function produceItem(t: TField, err: ErrorMessages): React.ReactNode {
     </Form.Item>
 }
 
+function getValue(v: any, t: TField) {
+
+    const tt: FIELDTYPE = fieldType(t);
+    if (tt !== FIELDTYPE.DATE) return v;
+    return dateremoveT(v)
+}
+
+function transformValues(row: TRow, tf: TField[]): TRow {
+    const res: TRow = {}
+    tf.forEach((t: TField) => {
+        const fieldtype: FIELDTYPE = fieldType(t)
+        if (row[t.field] !== undefined) {
+            res[t.field] = getValue(row[t.field], t)
+        } else
+            // undefined for boolean is false
+            if (fieldtype === FIELDTYPE.BOOLEAN) res[t.field] = false
+    })
+    return res;
+}
+
 const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged }>((props, ref) => {
 
     const [f]: [FormInstance] = Form.useForm()
 
     const onFinish = (values: TRow) => {
         ltrace('Success, data validated')
-        props.buttonClicked(values)
+        props.buttonClicked(transformValues(values, props.fields))
     };
 
     useImperativeHandle(ref, () => ({
         getValues: () => {
             const r: TRow = f.getFieldsValue()
-            return r
+            return transformValues(r, props.fields)
         },
         validate: () => {
             ltrace('submit');
@@ -106,9 +134,12 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     const buttons: ReactNode = props.buttonsextra ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextra}</Space></Form.Item></React.Fragment> : undefined
 
+
+
     const form = <Form labelCol={{ span: 4 }}
         wrapperCol={{ span: 14 }} form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges}
-        layout="horizontal" scrollToFirstError {...props.formprops} >
+        layout="horizontal" scrollToFirstError {...props.formprops} initialValues={props.initvals}>
+
 
         {props.fields.map(e => produceItem(e, props.err))}
 

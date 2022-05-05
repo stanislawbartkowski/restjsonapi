@@ -2,13 +2,12 @@ import { Button, Popconfirm } from "antd";
 
 import getIcon from "../../ts/icons";
 import lstring from "../../ts/localize";
-import { BUTTONACTION } from "../DrawTable/typing";
+import { BUTTONACTION } from "./typing";
 import { isBool } from '../../ts/j'
 import { makeMessage } from "./helper";
 import { ButtonAction, FormMessage } from "./typing";
 
 export type FClickButton = (b: ButtonAction) => void;
-
 
 function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
   let messid = "";

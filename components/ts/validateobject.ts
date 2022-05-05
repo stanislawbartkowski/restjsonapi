@@ -1,5 +1,6 @@
 import validateTypeObject, { ObjectDescr, validateContent } from '../../ts/checktype'
 import { FIELDTYPE } from '../../ts/typing'
+import { fieldType } from './transcol'
 import type { FormMessage } from './typing'
 
 export enum ObjectType {
@@ -56,7 +57,8 @@ const ActionResultV: ObjectDescr = {
     objectname: 'ActionResult',
     attrs: [
         { attr: 'error', type: { isArray: true, arraytype: FieldErrorV } },
-        { attr: 'notification', type: TNotificationV}
+        { attr: 'notification', type: TNotificationV},
+        { attr: 'content'}
     ]
 
 }

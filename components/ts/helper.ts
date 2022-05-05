@@ -3,7 +3,7 @@ import { log } from "../../ts/l";
 import lstring from "../../ts/localize";
 import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
 import validateObject, { ObjectType } from "./validateobject";
-import { ClickResult, ColumnList, ColumnValue, FormMessage, ShowDetails, TAction, TColumn } from "./typing";
+import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, FormMessage, ShowDetails, TAction, TColumn } from "./typing";
 import { CSSProperties } from "react";
 
 // =================
@@ -101,7 +101,28 @@ export function appendStyle(props: PropsType | undefined, c: CSSProperties): Pro
 export function ismaskClicked(e: React.MouseEvent<HTMLElement>): boolean {
     const t: string = e.currentTarget.className
     return t === 'ant-modal-wrap'
-  }
+}
+
+// ==============================
+// space for print content
+// ==============================
+
+type PrintResult = {
+    result: ActionResult, 
+    content: string
+    button: ButtonAction
+}
+
+let content: PrintResult|undefined = undefined
+
+export function setPrintContent(c: PrintResult) {
+    content = c;
+}
+
+export function getPrintContent(): PrintResult {
+    return content as PrintResult
+}
+
 
 
 

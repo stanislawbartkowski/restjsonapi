@@ -26,9 +26,9 @@ export function isSubMenu(m: TMenuNode): boolean {
     return (m as TSubMenu).menus !== undefined
 }
 
+const addroute: string[] = []
 
 const leftmenu: MenuLeft = { menu: [] }
-
 
 export function getLeftMenu(): MenuLeft {
     return leftmenu;
@@ -53,13 +53,19 @@ function getMenuElems(menu: TMenuNode[]): MenuElem[] {
 }
 
 
-export function getMenuElemsOnly(): MenuElem[] {
-    return getMenuElems(leftmenu.menu)
+export function getMenuElemsOnly(): string[] {
+    const menulist : MenuElem[] = getMenuElems(leftmenu.menu)
+    return menulist.map( e => e.id).concat(addroute)
 }
 
 export function addLeftMenuElem(menu: MenuElem, elem: ReactNode) {
     leftmenu.menu.push(menu)
     addMenuElement(menu.id, elem)
+}
+
+export function addRouterElem(id: string, elem: ReactNode) {
+    addroute.push(id)
+    addMenuElement(id, elem)
 }
 
 export function setLeftMenu(lm: MenuLeft) {

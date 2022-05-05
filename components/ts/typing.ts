@@ -121,7 +121,6 @@ export type FieldError = {
 export type ActionResult = {
     error?: FieldError[]
     notification?: TNotification
-    component?: string
 }
 
 
@@ -129,6 +128,7 @@ export type ActionResult = {
 export type ClickResult = RestTableParam & ActionResult & {
     close?: boolean,
     upload?: boolean
+    print?: boolean
 }
 
 
@@ -249,31 +249,30 @@ export type FormMessage = JSSupportedType & {
 export type TField = TFieldBase & {
     props?: PropsType
     iprops?: PropsType
-  }
-  
-  export type TForm = JSSupportedType & {
+}
+
+export type TForm = JSSupportedType & {
     fields: TField[]
     formprops?: PropsType
     buttons: ButtonAction[]
-  }
-
-  // ==============================
-  // modal props
-  // ==============================
-
-export const emptyModalListProps: ModalListProps = { visible: false, list: '' };
-
-export type TCloseFunction = (closebutton?: ButtonAction, row?: TRow) => void
-
-export type ModalListProps = RestTableParam & {
-  visible: boolean
-  closeModal?: TCloseFunction,
-  props?: PropsType
 }
 
-export type FRefresh = () => void
+// ==============================
+// modal props
+// ==============================
 
-export type ModalDialogProps = ModalListProps & {
-  refresh: FRefresh
+
+export type TClickButton = (clickbutton?: ButtonAction, row?: TRow) => void
+
+// ============================
+// standard buttons 
+// ============================
+export enum BUTTONACTION {
+    ADD = "ADD",
+    ACCEPT = "ACCEPT",
+    CANCEL = 'CANCEL',
+    DEL = 'DEL',
+    UPDATE = 'UPDATE',
+    PRINT = 'PRINT'
 }
-  
+

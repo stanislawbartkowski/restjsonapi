@@ -6,13 +6,11 @@ import { Table, Drawer } from "antd";
 import lstring from "../../ts/localize";
 import type { OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
-import type { ModalListProps } from "../ts/typing";
 import type { ClickResult, ColumnList, FActionResult, FShowDetails } from "../ts/typing";
-import { emptyModalListProps } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource } from "./js/helper";
 import { makeHeader } from "../ts/helper";
-import ModalList from "./ModalList";
+import ModalList from "../RestComponent";
 import RowDescription from "../ShowDetails/RowDescription";
 import getExtendableProps from "./Expendable";
 import HeaderTable from "./HeaderTable";
@@ -22,9 +20,11 @@ import SummaryTable from './SummaryTable'
 import defaults from "../../ts/defaults";
 import { isNumber } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
+import { ModalFormProps } from '../../components/ModalForm'
+import {emptyModalListProps} from './typing'
 
-function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefined|PropsType {
-    let pageSize: number|undefined = props.pageSize ? props.pageSize : defaults.defpageSize
+function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefined | PropsType {
+    let pageSize: number | undefined = props.pageSize ? props.pageSize : defaults.defpageSize
     let nopaging: boolean = false;
     if (props.nopaging) {
         if (isNumber(props.nopaging)) {
@@ -43,7 +43,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [currentRow, setCurrentRow] = useState<TRow>();
 
-    const [modalProps, setIsModalVisible] = useState<ModalListProps>(emptyModalListProps);
+    const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
     const [datasource, setDataSource] = useState<DataSourceState>({
         status: Status.PENDING,
         res: [],
@@ -58,13 +58,13 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
     };
 
     const fmodalhook = (): void => {
-        setIsModalVisible(emptyModalListProps);
+        setIsModalVisible({ visible: false });
     };
 
     const fresult: FActionResult = (entity: TRow, r: ClickResult) => {
         setIsModalVisible({
             visible: true,
-            closeModal: fmodalhook,
+            closeAction: fmodalhook,
             vars: entity,
             ...r,
         });

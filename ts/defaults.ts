@@ -5,6 +5,7 @@ interface Defaults {
   moneydot: number,
   defpageSize: number,
   rowkeyS: string
+  displayprintrouterid: string
 };
 
 const defaults: Defaults = {
@@ -13,7 +14,8 @@ const defaults: Defaults = {
   dateformat: 'YYYY-MM-DD',
   moneydot: 2,
   defpageSize: 20,
-  rowkeyS: "rowkey"
+  rowkeyS: "rowkey",
+  displayprintrouterid: "printingdisplayer"
 };
 
 export default defaults;

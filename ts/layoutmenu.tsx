@@ -15,12 +15,43 @@ function icon(e: TMenuNode): React.ReactNode {
   return getIcon(e.icon, defaults.defaultmenuicon);
 }
 
+
+function getMenuName(e: MenuElem): string {
+  return lstring(e.id)
+}
+
+
+function flattenMenu(m : TMenuNode[] ) : MenuElem[] {
+
+  let e : MenuElem[] = []
+
+  m.forEach(ee => {
+    if (isSubMenu(ee)) e = e.concat(flattenMenu((ee as TSubMenu).menus))
+    else e.push(ee as MenuElem)
+  })
+
+  return e
+
+}
+
+export function getMenuNameByLocation(id : string) : string {
+  const i : string = id.substring(1); // remove leading /
+  const el : MenuElem[] = flattenMenu(getLeftMenu().menu)
+  const e: TMenuNode|undefined = el.find(e => (e as MenuElem).id === i)
+
+  if (e === undefined) return "????"
+
+  return getMenuName(e as MenuElem)
+}
+
 function createMenu(e: TMenuNode, keynumber: number): ReactNode {
+
   return isSubMenu(e) ? <SubMenu key={keynumber} title={lstring((e as TSubMenu).title)} >
     {(e as TSubMenu).menus.map(e => createMenu(e, keynumber + 1))}
   </SubMenu> :
+
     <Menu.Item key={(e as MenuElem).id} icon={icon(e)}>
-      <Link to={"/" + (e as MenuElem).id}>{lstring((e as MenuElem).id)}</Link>
+      <Link to={"/" + (e as MenuElem).id}>{getMenuName(e as MenuElem)}</Link>
     </Menu.Item>;
 }
 
@@ -29,11 +60,11 @@ function provideMenu() {
 }
 
 export function getDefaultMenu(currpath: string): string[] {
-  const m: MenuElem[] = getMenuElemsOnly()
-  if (currpath === undefined || currpath === "/") return [m[0].id]
-  const mm: MenuElem | undefined = m.find(e => "/" + e.id === currpath)
-  if (mm === undefined) return [m[0].id]
-  return [mm.id]
+  const m: string[] = getMenuElemsOnly()
+  if (currpath === undefined || currpath === "/") return [m[0]]
+  const mm: string | undefined = m.find(e => "/" + e === currpath)
+  if (mm === undefined) return [m[0]]
+  return [mm]
 }
 
 export default provideMenu

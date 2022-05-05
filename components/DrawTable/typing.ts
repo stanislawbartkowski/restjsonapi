@@ -1,15 +1,6 @@
 import type { ReactNode } from 'react';
 
-import type { TRow } from '../../ts/typing';
-
-export enum BUTTONACTION {
-  ADD = "ADD",
-  ACCEPT = "ACCEPT",
-  CANCEL = 'CANCEL',
-  DEL = 'DEL',
-  UPDATE = 'UPDATE',
-  PRINT = 'PRINT'
-}
+import type { ModalFormProps, TRow } from '../../ts/typing';
 
 export type PageParams = {
   current?: number;
@@ -21,3 +12,4 @@ export type TExtendable = {
   rowExpandable?: (record: TRow) => boolean
 }
 
+export const emptyModalListProps : ModalFormProps = { visible : false}

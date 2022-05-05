@@ -9,3 +9,7 @@ export function datetoS(m: Moment | undefined): string | undefined {
 export function dateparseS(s: string | undefined): Moment | undefined {
   return s ? moment(s, defaults.dateformat) : undefined;
 }
+
+export function dateremoveT(s: Moment): string {
+  return datetoS(s) as string
+}
