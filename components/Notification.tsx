@@ -2,7 +2,7 @@ import { notification } from 'antd'
 import { NotificationKind, TNotification } from './ts/typing'
 
 import type { OneRowData } from '../ts/typing'
-import { makeMessage } from './ts/helper'
+import { makeMessage } from '../ts/j'
 
 
 const openNotification = (t: TNotification, pars: OneRowData) => {

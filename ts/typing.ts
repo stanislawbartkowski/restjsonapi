@@ -4,6 +4,10 @@
 
 export type PropsType = Record<string, any>
 
+export type JSSupportedType = {
+  js?: string
+}
+
 // =============================================================
 // some customizable functions
 // ==============================================================
@@ -44,6 +48,7 @@ export type ButtonElem = {
   id: string;
   icon?: string;
   props?: PropsType;
+  name? : FormMessage
 };
 
 
@@ -138,3 +143,12 @@ export enum FIELDTYPE {
   TIME = "time"
 }
 
+// ==============================
+// Localized message
+// ==============================
+
+export type FormMessage = JSSupportedType & {
+  messagedirect?: string
+  message?: string
+  params?: string[]
+}

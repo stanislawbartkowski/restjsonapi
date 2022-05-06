@@ -1,7 +1,5 @@
 import validateTypeObject, { ObjectDescr, validateContent } from '../../ts/checktype'
-import { FIELDTYPE } from '../../ts/typing'
-import { fieldType } from './transcol'
-import type { FormMessage } from './typing'
+import { FIELDTYPE, FormMessage } from '../../ts/typing'
 
 export enum ObjectType {
 

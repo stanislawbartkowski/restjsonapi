@@ -1,4 +1,4 @@
-import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsCurrentDB, OnRowClick, OneRowData } from '../../ts/typing';
+import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsCurrentDB, OnRowClick, OneRowData,JSSupportedType, FormMessage } from '../../ts/typing';
 
 // =========================
 // status for async reading
@@ -26,9 +26,6 @@ export type TableHookParam = {
 // =========================
 // common for many types
 // =========================
-export type JSSupportedType = {
-    js?: string
-}
 
 type ReadDefType = JSSupportedType & {
     def?: string
@@ -228,17 +225,6 @@ export type ColumnList = JSSupportedType & {
 export type TDetailsCard = ColumnList & OneRowData & {
     isCurrentDB?: FIsCurrentDB
     onRowClick?: OnRowClick
-}
-
-
-// ========================
-// message
-// ========================
-
-export type FormMessage = JSSupportedType & {
-    messagedirect?: string
-    message?: string
-    params?: string[]
 }
 
 

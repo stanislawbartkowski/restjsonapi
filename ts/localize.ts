@@ -16,7 +16,8 @@ const embedded = {
     delete: 'Usuń',
     update: 'Zmień',
     errorreadinglist: "Błąd podczas czytania danych z servera",
-    print: "Drukuj"
+    print: "Drukuj",
+    done: "Zrobione"
   },
   en: {
     empty: '',
@@ -32,7 +33,8 @@ const embedded = {
     delete: 'Delete',
     update: 'Update',
     errorreadinglist: "Error while reading data from server",
-    print: "Print"
+    print: "Print",
+    done: "Done"
   }
 };
 

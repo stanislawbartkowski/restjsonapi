@@ -9,15 +9,11 @@ import { getLeftMenu, getMenuElemsOnly, isSubMenu } from "./leftmenu";
 import defaults from "./defaults";
 import getIcon from "./icons";
 import { MenuElem, TMenuNode, TSubMenu } from "./typing";
+import { getButtonName } from "./j";
 
 
 function icon(e: TMenuNode): React.ReactNode {
   return getIcon(e.icon, defaults.defaultmenuicon);
-}
-
-
-function getMenuName(e: MenuElem): string {
-  return lstring(e.id)
 }
 
 
@@ -41,7 +37,7 @@ export function getMenuNameByLocation(id : string) : string {
 
   if (e === undefined) return "????"
 
-  return getMenuName(e as MenuElem)
+  return getButtonName(e as MenuElem)
 }
 
 function createMenu(e: TMenuNode, keynumber: number): ReactNode {
@@ -51,7 +47,7 @@ function createMenu(e: TMenuNode, keynumber: number): ReactNode {
   </SubMenu> :
 
     <Menu.Item key={(e as MenuElem).id} icon={icon(e)}>
-      <Link to={"/" + (e as MenuElem).id}>{getMenuName(e as MenuElem)}</Link>
+      <Link to={"/" + (e as MenuElem).id}>{getButtonName(e as MenuElem)}</Link>
     </Menu.Item>;
 }
 

@@ -3,9 +3,9 @@ import { Button, Popconfirm } from "antd";
 import getIcon from "../../ts/icons";
 import lstring from "../../ts/localize";
 import { BUTTONACTION } from "./typing";
-import { isBool } from '../../ts/j'
-import { makeMessage } from "./helper";
-import { ButtonAction, FormMessage } from "./typing";
+import { getButtonName, isBool, makeMessage } from '../../ts/j'
+import { ButtonAction } from "./typing";
+import { FormMessage } from "../../ts/typing";
 
 export type FClickButton = (b: ButtonAction) => void;
 
@@ -38,6 +38,8 @@ function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: bool
       break
   }
 
+  const bname: String = messid !== "" ? lstring(messid) : getButtonName(b)
+
   const loadingprop: Record<string, any> = loading ? { loading: true } : {}
   const disabledprop: Record<string, any> = disabled ? { disabled: true } : {}
   const onclickprops: Record<string, any> = b.confirm ? {} : { onClick: () => onclick(b) }
@@ -48,7 +50,7 @@ function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: bool
 
   const bu =
     <Button key={b.id} icon={icon} {...b.props} {...loadingprop} {...disabledprop} {...onclickprops}>
-      {lstring(messid)}
+      {bname}
     </Button>
     ;
 

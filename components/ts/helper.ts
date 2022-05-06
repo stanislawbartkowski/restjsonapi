@@ -1,9 +1,6 @@
-import { callJSFunction, isObject } from "../../ts/j";
-import { log } from "../../ts/l";
-import lstring from "../../ts/localize";
+import { callJSFunction, isObject, makeMessage } from "../../ts/j";
 import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
-import validateObject, { ObjectType } from "./validateobject";
-import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, FormMessage, ShowDetails, TAction, TColumn } from "./typing";
+import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, ShowDetails, TAction, TColumn } from "./typing";
 import { CSSProperties } from "react";
 
 // =================
@@ -16,24 +13,6 @@ export function makeHeader(p: ColumnList, unheader: string | undefined, pars: On
         : unheader
 
     return title
-}
-
-// =========================================
-// message from object
-// =========================================
-
-export function makeMessage(m: FormMessage, pars: OneRowData): string | undefined {
-    if (m.messagedirect) return m.messagedirect;
-
-    if (m.js) {
-        const res: any = callJSFunction(m.js, pars);
-        // recursive !
-        validateObject(ObjectType.FORMMESSAGE, `js: ${m.js}`, res)
-        return makeMessage(res as FormMessage, pars);
-    }
-    if (m.message) return lstring(m.message, m.params);
-    log("makeMessage - incorrect FomrMessage parameter");
-    return undefined;
 }
 
 // =====================

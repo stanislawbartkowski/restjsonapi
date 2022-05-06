@@ -4,11 +4,11 @@ import { Badge, Button, Dropdown, Menu, Space, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
-import { FIELDTYPE, FieldValue, OneRowData, TRow } from "../../ts/typing";
-import { AddStyle, ClickResult, ColumnList, FormMessage, TableHookParam, TAction, TActions, TBadge, TColumn, TFieldBase, TTag, TTags } from "./typing";
+import { FIELDTYPE, FieldValue, FormMessage, OneRowData, TRow } from "../../ts/typing";
+import { AddStyle, ClickResult, ColumnList, TableHookParam, TAction, TActions, TBadge, TColumn, TFieldBase, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
-import { clickAction, getValue, makeMessage } from "./helper";
-import { callJSFunction, isString } from "../../ts/j";
+import { clickAction, getValue } from "./helper";
+import { callJSFunction, isString, makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 

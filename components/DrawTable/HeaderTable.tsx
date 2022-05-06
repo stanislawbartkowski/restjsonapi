@@ -6,9 +6,10 @@ import { trace } from "../../ts/l";
 import constructButton from "../ts/constructbutton";
 import type { FAction, ModalFormProps, TRow } from '../../ts/typing'
 import { TableToolBar, ButtonAction, ClickResult, ShowDetails } from "../ts/typing";
-import { clickAction, makeMessage } from "../ts/helper";
+import { clickAction} from "../ts/helper";
 import OneRowTable from '../ShowDetails/OneRowTable'
 import RestComponent from "../RestComponent";
+import { makeMessage } from "../../ts/j";
 
 
 function ltrace(mess: string) {

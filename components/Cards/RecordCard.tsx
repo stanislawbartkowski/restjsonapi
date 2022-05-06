@@ -2,10 +2,11 @@ import React, { CSSProperties, ReactNode } from "react";
 import { Card, Col, Divider, Row } from 'antd'
 import { blue } from '@ant-design/colors';
 
-import { FormMessage, TColumn, TDetailsCard } from "../ts/typing"
-import { detailsTitle, findColDetails, appendStyle, makeMessage } from "../ts/helper";
+import { TColumn, TDetailsCard } from "../ts/typing"
+import { detailsTitle, findColDetails, appendStyle } from "../ts/helper";
 import { fieldTitle } from '../ts/transcol';
-import { OneRowData } from "../../ts/typing";
+import { FormMessage, OneRowData } from "../../ts/typing";
+import { makeMessage } from "../../ts/j";
 
 function toCardRow(e: TColumn, t: TDetailsCard, pars: OneRowData): ReactNode {
     return <Row key={e.field} {...t.rowprops}>
