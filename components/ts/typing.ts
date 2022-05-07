@@ -1,4 +1,4 @@
-import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsCurrentDB, OnRowClick, OneRowData,JSSupportedType, FormMessage } from '../../ts/typing';
+import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsCurrentDB, OnRowClick, OneRowData,JSSupportedType, FormMessage, PropSupportedType } from '../../ts/typing';
 
 // =========================
 // status for async reading
@@ -71,9 +71,8 @@ export type TableToolBar = ButtonAction[]
 // =======================
 // show details feature
 // =======================
-export type ShowDetails = ReadDefType & {
+export type ShowDetails = ReadDefType & PropSupportedType & {
     title?: FormMessage
-    props?: PropsType
     toolbar?: TableToolBar
     collist: ColumnList
 }
@@ -148,9 +147,8 @@ export type TActions = JSSupportedType & {
 // tags feature
 // ==========================
 
-export type TTag = {
+export type TTag = PropSupportedType & {
     value: ColumnValue;
-    props?: PropsType
     action?: TAction
 }
 
@@ -160,9 +158,8 @@ export type TTags = JSSupportedType & TTag[]
 // badge feature
 // =============================
 
-export type TBadge = JSSupportedType & {
+export type TBadge = JSSupportedType & PropSupportedType & {
     title?: FormMessage
-    props: PropsType
 }
 
 // =================================
@@ -177,8 +174,7 @@ export type TDivider = FormMessage & {
 // single column/field type
 // =============================  
 
-export type TColumn = TFieldBase & {
-    props?: PropsType;
+export type TColumn = TFieldBase & PropSupportedType & {
     showdetails?: ShowDetails | boolean;
     ident?: string
     value?: ColumnValue
@@ -198,7 +194,7 @@ export type TColumn = TFieldBase & {
 
 export type TColumns = TColumn[]
 
-export type ColumnList = JSSupportedType & {
+export type ColumnList = JSSupportedType & PropSupportedType & {
     rowkey?: string;
     header?: ShowDetails;
     headertitle?: FormMessage;
@@ -210,7 +206,6 @@ export type ColumnList = JSSupportedType & {
     nofilter?: boolean
     nosort?: boolean
     pageSize?: number
-    props?: PropsType
     cardprops?: PropsType
     rowprops?: PropsType
     filterJS?: string
@@ -227,15 +222,58 @@ export type TDetailsCard = ColumnList & OneRowData & {
     onRowClick?: OnRowClick
 }
 
+// =========================
+// Card
+// =========================
+
+type TCard = PropSupportedType & {
+    title?: FormMessage
+}
 
 // ==========================
 // form
 // ==========================
 
-export type TField = TFieldBase & {
-    props?: PropsType
-    iprops?: PropsType
+// ratio 
+
+export type TRadioItem = PropSupportedType & {
+    value: string,
+    label: FormMessage
 }
+
+export type TRadio = PropSupportedType & {
+    items: TRadioItem[]
+    button?: boolean
+    select?: boolean
+}
+
+// check
+
+export type TCheckItem = TRadioItem
+
+
+export type TCheckBox = PropSupportedType & {
+    items: TCheckItem[]
+    select?: boolean
+}
+
+// list
+
+export type TListItem = PropSupportedType & {
+    addbutton: ButtonElem
+    card?: TCard
+}
+
+// single field
+
+export type TField = TFieldBase &  PropSupportedType &{
+    iprops?: PropsType
+    radio?: TRadio
+    checkbox?: TCheckBox
+    list?: TListItem
+}
+
+// the whole form
 
 export type TForm = JSSupportedType & {
     fields: TField[]

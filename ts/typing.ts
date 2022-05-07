@@ -8,6 +8,10 @@ export type JSSupportedType = {
   js?: string
 }
 
+export type PropSupportedType = {
+  props?: PropsType
+}
+
 // =============================================================
 // some customizable functions
 // ==============================================================
@@ -44,10 +48,9 @@ export type JsonTableResult = {
 // common button
 // =====================
 
-export type ButtonElem = {
+export type ButtonElem = PropSupportedType & {
   id: string;
   icon?: string;
-  props?: PropsType;
   name? : FormMessage
 };
 
@@ -102,9 +105,8 @@ export type TComponentProps = RestTableParam & ModalFormProps
 export type MenuElem = ButtonElem & TComponentProps;
 export type TMenuNode = MenuElem | TSubMenu
 
-export type TSubMenu = {
+export type TSubMenu = PropSupportedType & {
   icon?: string
-  props?: PropsType
   title: string
   menus: TMenuNode[]
 }
