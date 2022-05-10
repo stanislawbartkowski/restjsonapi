@@ -3,8 +3,7 @@
 // ======================================
 
 import { FIELDTYPE, TRow, FieldValue, OneRowData, RowData } from "../../ts/typing"
-import { tomoney } from "../DrawTable/js/helper"
-import { getValue } from "./helper"
+import { getValue, tomoney } from "./helper"
 import { fieldType } from "./transcol"
 import { TColumn, ColumnValue, TColumns } from "./typing"
 

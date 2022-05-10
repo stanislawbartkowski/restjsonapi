@@ -27,6 +27,7 @@ import { fieldTitle, fieldType } from '../ts/transcol';
 import { dateremoveT } from '../../ts/d'
 import { getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
+import lstring from '../../ts/localize';
 
 export type ErrorMessage = {
     field: string,
@@ -112,6 +113,7 @@ function produceElem(t: TField): React.ReactNode {
         else return createCheckBoxGroup(t);
 
     const fieldtype: FIELDTYPE = fieldType(t)
+
     switch (fieldtype) {
         case FIELDTYPE.NUMBER: return <InputNumber {...t.iprops} />
         case FIELDTYPE.DATE: return <DatePicker {...t.iprops} />
@@ -119,7 +121,7 @@ function produceElem(t: TField): React.ReactNode {
             checkedChildren={<CheckOutlined />}
             unCheckedChildren={<CloseOutlined />}
         />
-    }
+    }    
     return <Input {...t.iprops} />
 }
 
@@ -135,8 +137,16 @@ function errorMessage(t: TField, err: ErrorMessages): {} | { validateStatus: Val
 
 function produceFormItem(t: TField, err: ErrorMessages, name?: number): React.ReactNode {
 
+    const fieldtype: FIELDTYPE = fieldType(t)
+    const rules = fieldtype === FIELDTYPE.MONEY ? { pattern: new RegExp(/^[+-]?\d?\.?\d*$/),message: lstring("moneypattern")} : undefined
+    const props = {...t.props}    
+    if (props.rules) {
+        const newrules = rules ? [rules] : []
+        props.rules = newrules.concat(props.rules)
+    }
+
     const mess: string = fieldTitle(t, { r: {} });
-    return <Form.Item {...t.props} id={t.field} name={name !== undefined ? [name, t.field] : t.field} key={t.field} label={mess} {...errorMessage(t, err)}>
+    return <Form.Item {...props} id={t.field} name={name !== undefined ? [name, t.field] : t.field} key={t.field} label={mess} {...errorMessage(t, err)}>
         {produceElem(t)}
     </Form.Item>
 }
@@ -227,7 +237,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
             return transformValues(r, props.fields)
         },
         validate: () => {
-            ltrace('submit');
+            ltrace('submit');            
             f.submit()
         },
         setValue: (field: string, value: FieldValue) => {

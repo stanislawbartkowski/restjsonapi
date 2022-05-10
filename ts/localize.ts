@@ -17,7 +17,8 @@ const embedded = {
     update: 'Zmień',
     errorreadinglist: "Błąd podczas czytania danych z servera",
     print: "Drukuj",
-    done: "Zrobione"
+    done: "Zrobione",
+    moneypattern: "Only digits and decimal point"
   },
   en: {
     empty: '',
@@ -34,7 +35,8 @@ const embedded = {
     update: 'Update',
     errorreadinglist: "Error while reading data from server",
     print: "Print",
-    done: "Done"
+    done: "Done",
+    moneypattern: "Tylko cyfry, kropka dziesiętna oraz znak na początku"
   }
 };
 

@@ -1,7 +1,8 @@
-import { callJSFunction, isObject, makeMessage } from "../../ts/j";
+import { callJSFunction, isObject, isString, makeMessage } from "../../ts/j";
 import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
 import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, ShowDetails, TAction, TColumn } from "./typing";
 import { CSSProperties } from "react";
+import defaults from "../../ts/defaults";
 
 // =================
 // header
@@ -86,7 +87,7 @@ export function ismaskClicked(e: React.MouseEvent<HTMLElement>): boolean {
 // space for print content
 // ==============================
 
-type PrintResult = {
+export type PrintResult = {
     result: ActionResult, 
     content: string
     button: ButtonAction
@@ -103,5 +104,18 @@ export function getPrintContent(): PrintResult {
 }
 
 
+// ========================
 
+
+export function tomoney(t: string | number | undefined): undefined | string {
+    if (t === undefined || t == null) return undefined
+    if (isString(t)) return (+t).toFixed(defaults.moneydot)
+    return (t as number).toFixed(defaults.moneydot)
+  }
+  
+
+export function okmoney(t: string) : boolean {
+    const res =  tomoney(t)
+    return res !== "NaN"
+}
 

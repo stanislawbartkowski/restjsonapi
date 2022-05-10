@@ -2,10 +2,10 @@ import type { ColumnType } from "antd/lib/table";
 
 import type { ColumnList, TableHookParam, TColumn, TColumns } from "../../ts/typing";
 import { TRow, RowData, OneRowData } from '../../../ts/typing'
-import { callJSFunction, isString } from "../../../ts/j";
-import defaults from '../../../ts/defaults'
+import { callJSFunction } from "../../../ts/j";
 import './styles.css'
 import { transformOneColumn } from "../../ts/transcol";
+import { tomoney } from "../../ts/helper";
 
 // =================================
 // create ProColumns from columns
@@ -35,11 +35,6 @@ export function sumnumbers(t: RowData, f: string): string {
   return tomoney(s) as string
 }
 
-export function tomoney(t: string | number | undefined): undefined | string {
-  if (t === undefined || t == null) return undefined
-  if (isString(t)) return (+t).toFixed(defaults.moneydot)
-  return (t as number).toFixed(defaults.moneydot)
-}
 
 // ===================================
 // filter datasource

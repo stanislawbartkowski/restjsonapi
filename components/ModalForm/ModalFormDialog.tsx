@@ -1,7 +1,7 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
 import { Col, Modal, Row } from 'antd';
 
-import type { TClickButton } from '../ts/typing'
+import type { TClickButton, TField } from '../ts/typing'
 import type { TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
@@ -9,9 +9,11 @@ import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
-import { ismaskClicked } from '../ts/helper'
+import { ismaskClicked, okmoney } from '../ts/helper'
 import { trace } from '../../ts/l'
-import { PropsType, TRow } from '../../ts/typing'
+import { FIELDTYPE, PropsType, TRow } from '../../ts/typing'
+import { fieldType } from '../ts/transcol';
+import lstring from '../../ts/localize';
 
 export type { ErrorMessage, ErrorMessages } from './ModalFormView';
 
@@ -66,18 +68,37 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
 
     const ref: MutableRefObject<IRefCall> = useRef<IRefCall>() as MutableRefObject<IRefCall>
 
+    
+    function formvalidate(r: TRow) : boolean {
+        let ok : boolean = true
+        formdef.tabledata?.fields.forEach( (t: TField) => {
+            const fieldtype: FIELDTYPE = fieldType(t)
+            if (fieldtype === FIELDTYPE.MONEY && r[t.field] !== undefined ) {
+                // verify money
+                if (!okmoney(r[t.field] as string)) {
+                    const err : ErrorMessages = []
+                    err.push({ field: t.field, message : lstring("moneypattern")})
+                    setState({ ...formdef, err: err, loading: false })
+                    ok = false;
+                }
+            }     
+        })
+        return ok;
+    }
 
 
     const fclick: FClickButton = (b: ButtonAction) => {
         ltrace(`Button clicked: ${b.id}`)
         buttonclicked.current = b
+        const v : TRow = ref.current.getValues()
         if (b.validate) {
             ltrace('Button with validate props, call form validation')
-            const iref: IRefCall = ref.current
+            if (! formvalidate(v)) return;
+            const iref: IRefCall = ref.current            
             iref.validate()
         }
         else {
-            props.clickButton(b, ref.current.getValues());
+            props.clickButton(b, v);
         }
     }
 

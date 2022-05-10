@@ -1,3 +1,4 @@
+import { FILE } from 'dns'
 import validateTypeObject, { ObjectDescr, validateContent } from '../../ts/checktype'
 import { FIELDTYPE, FormMessage } from '../../ts/typing'
 
@@ -56,7 +57,8 @@ const ActionResultV: ObjectDescr = {
     attrs: [
         { attr: 'error', type: { isArray: true, arraytype: FieldErrorV } },
         { attr: 'notification', type: TNotificationV},
-        { attr: 'content'}
+        { attr: 'content'},
+        { attr: 'text', type: FIELDTYPE.BOOLEAN}
     ]
 
 }

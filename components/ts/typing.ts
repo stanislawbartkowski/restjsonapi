@@ -117,6 +117,7 @@ export type FieldError = {
 export type ActionResult = {
     error?: FieldError[]
     notification?: TNotification
+    text? : boolean
 }
 
 
