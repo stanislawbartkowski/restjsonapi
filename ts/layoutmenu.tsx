@@ -40,10 +40,13 @@ export function getMenuNameByLocation(id : string) : string {
   return getButtonName(e as MenuElem)
 }
 
-function createMenu(e: TMenuNode, keynumber: number): ReactNode {
+// global, to increase keynumber for submenu to bypass recursion
+let keysub : number 
 
-  return isSubMenu(e) ? <SubMenu key={keynumber} title={lstring((e as TSubMenu).title)} >
-    {(e as TSubMenu).menus.map(e => createMenu(e, keynumber + 1))}
+function createMenu(e: TMenuNode): ReactNode {
+
+  return isSubMenu(e) ? <SubMenu key={keysub++} title={lstring((e as TSubMenu).title)} >
+    {(e as TSubMenu).menus.map(e => createMenu(e))}
   </SubMenu> :
 
     <Menu.Item key={(e as MenuElem).id} icon={icon(e)}>
@@ -52,7 +55,8 @@ function createMenu(e: TMenuNode, keynumber: number): ReactNode {
 }
 
 function provideMenu() {
-  return getLeftMenu().menu.map((e: TMenuNode) => createMenu(e, 0))
+  keysub = 0
+  return getLeftMenu().menu.map((e: TMenuNode) => createMenu(e))
 }
 
 export function getDefaultMenu(currpath: string): string[] {
