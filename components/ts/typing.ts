@@ -1,4 +1,4 @@
-import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsCurrentDB, OnRowClick, OneRowData,JSSupportedType, FormMessage, PropSupportedType } from '../../ts/typing';
+import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsCurrentDB, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType } from '../../ts/typing';
 
 // =========================
 // status for async reading
@@ -117,7 +117,7 @@ export type FieldError = {
 export type ActionResult = {
     error?: FieldError[]
     notification?: TNotification
-    text? : boolean
+    text?: boolean
 }
 
 
@@ -267,12 +267,15 @@ export type TListItem = PropSupportedType & {
 
 // single field
 
-export type TField = TFieldBase &  PropSupportedType &{
+export type TField = PropSupportedType & TFieldBase & {
+    items?: TField[]
     iprops?: PropsType
     radio?: TRadio
     checkbox?: TCheckBox
     list?: TListItem
+    range?: boolean
 }
+
 
 // the whole form
 

@@ -1,8 +1,9 @@
 import { callJSFunction, isObject, isString, makeMessage } from "../../ts/j";
 import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
-import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, ShowDetails, TAction, TColumn } from "./typing";
+import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, ShowDetails, TAction, TColumn, TField } from "./typing";
 import { CSSProperties } from "react";
 import defaults from "../../ts/defaults";
+import { isLabeledStatement } from "typescript";
 
 // =================
 // header
@@ -88,12 +89,12 @@ export function ismaskClicked(e: React.MouseEvent<HTMLElement>): boolean {
 // ==============================
 
 export type PrintResult = {
-    result: ActionResult, 
+    result: ActionResult,
     content: string
     button: ButtonAction
 }
 
-let content: PrintResult|undefined = undefined
+let content: PrintResult | undefined = undefined
 
 export function setPrintContent(c: PrintResult) {
     content = c;
@@ -111,11 +112,44 @@ export function tomoney(t: string | number | undefined): undefined | string {
     if (t === undefined || t == null) return undefined
     if (isString(t)) return (+t).toFixed(defaults.moneydot)
     return (t as number).toFixed(defaults.moneydot)
-  }
-  
+}
 
-export function okmoney(t: string) : boolean {
-    const res =  tomoney(t)
+
+export function okmoney(t: string): boolean {
+    const res = tomoney(t)
     return res !== "NaN"
 }
 
+// =====================================
+
+
+export type FFieldElem = TField & {
+    elemlist? : FFieldElem[];
+
+}
+
+export function isItemGroup(t: TField): boolean {
+    return t.items !== undefined
+}
+
+function isList(t: TField) : boolean {
+    return t.list !== undefined
+}
+
+export function flattenTForm(tlist: TField[]): FFieldElem[] {
+    let res: FFieldElem[] = []
+
+    tlist.forEach(t => {
+        const e : FFieldElem = {...t}
+        if (isItemGroup(t)) {
+             const i : FFieldElem[] = flattenTForm(t.items as TField[])
+             if (isList(t)) e.elemlist = i;
+             else {
+                 res = res.concat(i);
+                 return
+             }
+            }
+        res.push(e)
+    })
+    return res
+}

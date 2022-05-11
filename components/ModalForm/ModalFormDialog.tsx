@@ -9,7 +9,7 @@ import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
-import { ismaskClicked, okmoney } from '../ts/helper'
+import { FFieldElem, flattenTForm, ismaskClicked, okmoney } from '../ts/helper'
 import { trace } from '../../ts/l'
 import { FIELDTYPE, PropsType, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
@@ -68,20 +68,22 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
 
     const ref: MutableRefObject<IRefCall> = useRef<IRefCall>() as MutableRefObject<IRefCall>
 
-    
-    function formvalidate(r: TRow) : boolean {
-        let ok : boolean = true
-        formdef.tabledata?.fields.forEach( (t: TField) => {
+    const fields: FFieldElem[] = flattenTForm(formdef.tabledata?.fields as TField[])
+
+
+    function formvalidate(r: TRow): boolean {
+        let ok: boolean = true
+        fields.forEach((t: TField) => {
             const fieldtype: FIELDTYPE = fieldType(t)
-            if (fieldtype === FIELDTYPE.MONEY && r[t.field] !== undefined ) {
+            if (fieldtype === FIELDTYPE.MONEY && r[t.field] !== undefined) {
                 // verify money
                 if (!okmoney(r[t.field] as string)) {
-                    const err : ErrorMessages = []
-                    err.push({ field: t.field, message : lstring("moneypattern")})
+                    const err: ErrorMessages = []
+                    err.push({ field: t.field, message: lstring("moneypattern") })
                     setState({ ...formdef, err: err, loading: false })
                     ok = false;
                 }
-            }     
+            }
         })
         return ok;
     }
@@ -90,11 +92,11 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
     const fclick: FClickButton = (b: ButtonAction) => {
         ltrace(`Button clicked: ${b.id}`)
         buttonclicked.current = b
-        const v : TRow = ref.current.getValues()
+        const v: TRow = ref.current.getValues()
         if (b.validate) {
             ltrace('Button with validate props, call form validation')
-            if (! formvalidate(v)) return;
-            const iref: IRefCall = ref.current            
+            if (!formvalidate(v)) return;
+            const iref: IRefCall = ref.current
             iref.validate()
         }
         else {
@@ -160,8 +162,10 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
             ref={ref} err={formdef.err}
             {...formd}
             buttonClicked={onButtonClicked}
-            buttonsextra={buttons}
-            onValuesChanges={onValuesChange} initvals={props.vars} />
+            buttonsextra={props.ispage ? buttons : undefined}
+            onValuesChanges={onValuesChange} initvals={props.vars}
+            list={fields}
+        />
         : undefined
 
     const modaldialog: ReactNode = <Modal destroyOnClose visible={props.visible}

@@ -17,17 +17,21 @@ import {
 } from 'antd';
 import { FormInstance } from 'antd/es/form';
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
-import { CloseOutlined, CheckOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 
 import { TField, TForm, TRadioItem } from '../ts/typing'
 import { trace } from '../../ts/l'
-import { ButtonElem, FIELDTYPE, FieldValue, PropsType, TRow } from '../../ts/typing'
+import { ButtonElem, FIELDTYPE, FieldValue, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType } from '../ts/transcol';
-import { dateremoveT } from '../../ts/d'
 import { getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
+import { FFieldElem, isItemGroup } from '../ts/helper';
+import { transformValues } from '../ts/transformres';
+
+
+const { RangePicker } = DatePicker;
 
 export type ErrorMessage = {
     field: string,
@@ -53,6 +57,7 @@ type TFormView = TForm & {
     buttonClicked: (row: TRow) => void
     buttonsextra?: ReactNode
     initvals?: TRow
+    list: FFieldElem[]
 }
 
 // -------- radio
@@ -102,7 +107,14 @@ function createCheckBoxGroup(t: TField): ReactNode {
 }
 
 
-function produceElem(t: TField): React.ReactNode {
+function produceElem(t: TField, err: ErrorMessages, name?: number): React.ReactNode {
+
+
+    if (isItemGroup(t)) {
+        return <React.Fragment>
+            {(t.items as TField[]).map(e => produceFormItem(e, err, name))}
+        </React.Fragment>
+    }
 
     if (t.radio)
         if (t.radio.select) return createSelectGroup(t, t.radio.items, false)
@@ -116,12 +128,14 @@ function produceElem(t: TField): React.ReactNode {
 
     switch (fieldtype) {
         case FIELDTYPE.NUMBER: return <InputNumber {...t.iprops} />
-        case FIELDTYPE.DATE: return <DatePicker {...t.iprops} />
+        case FIELDTYPE.DATE:
+            if (t.range) return <RangePicker {...t.iprops} />
+            return <DatePicker {...t.iprops} />
         case FIELDTYPE.BOOLEAN: return <Switch {...t.iprops}
             checkedChildren={<CheckOutlined />}
             unCheckedChildren={<CloseOutlined />}
         />
-    }    
+    }
     return <Input {...t.iprops} />
 }
 
@@ -138,8 +152,8 @@ function errorMessage(t: TField, err: ErrorMessages): {} | { validateStatus: Val
 function produceFormItem(t: TField, err: ErrorMessages, name?: number): React.ReactNode {
 
     const fieldtype: FIELDTYPE = fieldType(t)
-    const rules = fieldtype === FIELDTYPE.MONEY ? { pattern: new RegExp(/^[+-]?\d?\.?\d*$/),message: lstring("moneypattern")} : undefined
-    const props = {...t.props}    
+    const rules = fieldtype === FIELDTYPE.MONEY ? { pattern: new RegExp(/^[+-]?\d*\.?\d*$/), message: lstring("moneypattern") } : undefined
+    const props = { ...t.props }
     if (props.rules) {
         const newrules = rules ? [rules] : []
         props.rules = newrules.concat(props.rules)
@@ -147,7 +161,7 @@ function produceFormItem(t: TField, err: ErrorMessages, name?: number): React.Re
 
     const mess: string = fieldTitle(t, { r: {} });
     return <Form.Item {...props} id={t.field} name={name !== undefined ? [name, t.field] : t.field} key={t.field} label={mess} {...errorMessage(t, err)}>
-        {produceElem(t)}
+        {produceElem(t, err, name)}
     </Form.Item>
 }
 
@@ -164,8 +178,8 @@ function createList(t: TField, err: ErrorMessages): ReactNode {
 
     const addname = getButtonName(addButton)
 
-    const title = t.list?.card?.title ? { title : makeMessage(t.list.card.title, {r:{}})} : {}
-    const cardprops = t.list?.card?.props ? {...t.list.card.props} : undefined
+    const title = t.list?.card?.title ? { title: makeMessage(t.list.card.title, { r: {} }) } : {}
+    const cardprops = t.list?.card?.props ? { ...t.list.card.props } : undefined
 
 
     return <Card bordered {...title} {...cardprops}><Form.List name={t.field} key={t.field} {...t.list?.props} >
@@ -178,7 +192,7 @@ function createList(t: TField, err: ErrorMessages): ReactNode {
                     </Space>
                 ))}
                 <Form.Item>
-                    <Button type="dashed"  onClick={() => add()} block {...addButton.props} icon={plusicon}>
+                    <Button type="dashed" onClick={() => add()} block {...addButton.props} icon={plusicon}>
                         {addname}
                     </Button>
                 </Form.Item>
@@ -197,47 +211,22 @@ function produceItem(t: TField, err: ErrorMessages): React.ReactNode {
 
 }
 
-
-// =====================
-// transform result
-// =====================
-
-function getValue(v: any, t: TField) {
-
-    const tt: FIELDTYPE = fieldType(t);
-    if (tt !== FIELDTYPE.DATE) return v;
-    return dateremoveT(v)
-}
-
-function transformValues(row: TRow, tf: TField[]): TRow {
-    const res: TRow = {}
-    tf.forEach((t: TField) => {
-        const fieldtype: FIELDTYPE = fieldType(t)
-        if (row[t.field] !== undefined) {
-            res[t.field] = getValue(row[t.field], t)
-        } else
-            // undefined for boolean is false
-            if (fieldtype === FIELDTYPE.BOOLEAN) res[t.field] = false
-    })
-    return res;
-}
-
 const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged }>((props, ref) => {
 
     const [f]: [FormInstance] = Form.useForm()
 
     const onFinish = (values: TRow) => {
         ltrace('Success, data validated')
-        props.buttonClicked(transformValues(values, props.fields))
+        props.buttonClicked(transformValues(values, props.list))
     };
 
     useImperativeHandle(ref, () => ({
         getValues: () => {
             const r: TRow = f.getFieldsValue()
-            return transformValues(r, props.fields)
+            return transformValues(r, props.list)
         },
         validate: () => {
-            ltrace('submit');            
+            ltrace('submit');
             f.submit()
         },
         setValue: (field: string, value: FieldValue) => {
