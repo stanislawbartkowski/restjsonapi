@@ -152,12 +152,12 @@ function errorMessage(t: TField, err: ErrorMessages): {} | { validateStatus: Val
 function produceFormItem(t: TField, err: ErrorMessages, name?: number): React.ReactNode {
 
     const fieldtype: FIELDTYPE = fieldType(t)
-    const rules = fieldtype === FIELDTYPE.MONEY ? { pattern: new RegExp(/^[+-]?\d*\.?\d*$/), message: lstring("moneypattern") } : undefined
+    const rules = fieldtype === FIELDTYPE.MONEY ? [{ pattern: new RegExp(/^[+-]?\d*\.?\d*$/), message: lstring("moneypattern") }] : undefined
     const props = { ...t.props }
-    if (props.rules) {
-        const newrules = rules ? [rules] : []
-        props.rules = newrules.concat(props.rules)
+    if (props.rules && rules) {
+        props.rules = rules.concat(props.rules)
     }
+    else if (rules) props.rules = rules
 
     const mess: string = fieldTitle(t, { r: {} });
     return <Form.Item {...props} id={t.field} name={name !== undefined ? [name, t.field] : t.field} key={t.field} label={mess} {...errorMessage(t, err)}>
