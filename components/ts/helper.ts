@@ -3,7 +3,6 @@ import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
 import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, ShowDetails, TAction, TColumn, TField } from "./typing";
 import { CSSProperties } from "react";
 import defaults from "../../ts/defaults";
-import { isLabeledStatement } from "typescript";
 
 // =================
 // header

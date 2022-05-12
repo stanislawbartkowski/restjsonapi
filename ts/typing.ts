@@ -16,7 +16,7 @@ export type PropSupportedType = {
 // some customizable functions
 // ==============================================================
 
-type FCanDisplay = (p: RestTableParam) => undefined | string;
+export type FCanDisplay = (action: string, pathname: string) => boolean
 
 export type FIsCurrentDB = (t: TRow) => boolean;
 
@@ -64,7 +64,6 @@ export type RestTableParam = {
   params?: Record<string, FieldValue>;
   listdef?: string;
   onRowClick?: OnRowClick;
-  canDisplay?: FCanDisplay;
   isCurrentDB?: FIsCurrentDB;
   onTableRead?: OnTableRead;
   vars?: TRow;

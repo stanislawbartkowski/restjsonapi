@@ -20,11 +20,11 @@ const RestTableList: React.FC<RestTableParam> = (props) => {
         list: props.list as string,
     });
 
-    const dispmess: string | undefined = props.canDisplay
-        ? props.canDisplay(props)
-        : undefined;
+//    const dispmess: string | undefined = props.canDisplay
+//        ? props.canDisplay(props)
+//        : undefined;
 
-    if (dispmess) return <ReadListError errmess={dispmess} />;
+//    if (dispmess) return <ReadListError errmess={dispmess} />;
 
     if (state.status === Status.READY && state.list !== props.list) {
         setState({

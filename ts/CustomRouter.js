@@ -1,6 +1,7 @@
 import React from "react";
 import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
+import { log } from "./l";
 
 export const history = createBrowserHistory();
 
@@ -11,18 +12,33 @@ export function getPrevious() {
   return previous;
 }
 
+let canD = () => {
+  return true;
+};
+
+export function setCanD(f) {
+  canD = f;
+}
+
 const CustomRouter = ({ basename, children, history }) => {
   const [state, setState] = React.useState({
     action: history.action,
     location: history.location,
-  });
-
+  }); 
+  
   if (state.location.pathname !== current) {
     previous = current;
     current = state.location.pathname;
   }
 
-  React.useLayoutEffect(() => history.listen(setState), [history]);
+  function onChange(history) {
+    const action = history.action;
+    const pathname = history.pathname;
+    log(action + " : " + pathname);
+    if (canD(action, pathname)) setState(history);
+  }
+
+  React.useLayoutEffect(() => history.listen(onChange), [history]);
 
   return (
     <Router
