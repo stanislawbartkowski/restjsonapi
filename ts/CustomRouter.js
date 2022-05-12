@@ -33,7 +33,7 @@ const CustomRouter = ({ basename, children, history }) => {
 
   function onChange(history) {
     const action = history.action;
-    const pathname = history.pathname;
+    const pathname = history.location.pathname;
     log(action + " : " + pathname);
     if (canD(action, pathname)) setState(history);
   }
