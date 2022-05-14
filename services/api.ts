@@ -1,8 +1,9 @@
 import request, { ResponseError } from "umi-request";
 
 import type { FieldValue, FUrlModifier } from "../ts/typing";
-import { log, internalerrorlog, logG } from '../ts/l'
+import { log, internalerrorlog, logG, erralert } from '../ts/l'
 import { HTTPMETHOD } from "../ts/typing";
+import { getOrigin, getOriginURL } from "../ts/j";
 
 const rrequest = request;
 let prefix: string = "/"
@@ -74,3 +75,22 @@ export async function restaction(method: HTTPMETHOD, restaction: string, pars?: 
     ...{ getResponse: true, params: { ...para, ...pars } },
   });
 }
+
+export async function getPagePort() {
+
+  const url: string = getOriginURL();
+  const urll : string = `${url}/PORT`
+
+  log(`Fething ${urll}`)
+
+  const response = await fetch(urll);
+  const data = await response.text()
+  log(`Receiving ${data}`)
+  // verify number
+  const port : number = +data
+  if (isNaN(port)) {
+    internalerrorlog(`Incorrect value as port number received, number expected`)
+  }
+  return port;
+}
+

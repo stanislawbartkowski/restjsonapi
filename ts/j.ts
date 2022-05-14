@@ -50,6 +50,10 @@ export function getOrigin(): [string, string] {
   return [window.location.hostname, window.location.port]
 }
 
+export function getOriginURL() : string {
+  return window.location.origin;
+}
+
 export function isDev(): boolean {
   return process.env.NODE_ENV !== 'production'
 }
