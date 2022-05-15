@@ -50,7 +50,7 @@ export function getOrigin(): [string, string] {
   return [window.location.hostname, window.location.port]
 }
 
-export function getOriginURL() : string {
+export function getOriginURL(): string {
   return window.location.origin;
 }
 
@@ -63,7 +63,7 @@ export function isDev(): boolean {
 // ==============================
 
 
-export function makeMessage(m: FormMessage, pars: OneRowData): string | undefined {
+export function makeMessage(m: FormMessage, pars: OneRowData = { r: {} }): string | undefined {
   if (m.messagedirect) return m.messagedirect;
 
   if (m.js) {

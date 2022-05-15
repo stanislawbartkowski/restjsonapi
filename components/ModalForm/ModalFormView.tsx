@@ -60,6 +60,23 @@ type TFormView = TForm & {
     list: FFieldElem[]
 }
 
+
+function placeHolder(t: TField) {
+    if (t.placeholder) {
+        const placeH : string = makeMessage(t.placeholder) as string
+        return { placeholder: placeH }
+    }
+    return undefined;
+}
+
+function enterButton(t : TField) {
+    if (t.enterbutton) {
+        const searchB : string = makeMessage(t.enterbutton) as string;
+        return { enterButton : searchB}
+    }
+    return undefined
+}
+
 // -------- radio
 
 function itemName(e: TRadioItem): string | undefined {
@@ -87,7 +104,7 @@ function createSelectGroup(t: TField, items: TRadioItem[], multi: boolean): Reac
 
     const p: SelectProps = multi ? { mode: "multiple" } : {}
 
-    return <Select {...p} {...t.props}>
+    return <Select {...p} {...t.props} {...placeHolder(t)} >
         {
             items.map(e => <Select.Option value={e.value} {...e.props}>{itemName(e)}</Select.Option>)
         }
@@ -127,7 +144,7 @@ function produceElem(t: TField, err: ErrorMessages, name?: number): React.ReactN
     const fieldtype: FIELDTYPE = fieldType(t)
 
     switch (fieldtype) {
-        case FIELDTYPE.NUMBER: return <InputNumber {...t.iprops} />
+        case FIELDTYPE.NUMBER: return <InputNumber {...placeHolder(t)} {...t.iprops} />
         case FIELDTYPE.DATE:
             if (t.range) return <RangePicker {...t.iprops} />
             return <DatePicker {...t.iprops} />
@@ -136,7 +153,8 @@ function produceElem(t: TField, err: ErrorMessages, name?: number): React.ReactN
             unCheckedChildren={<CloseOutlined />}
         />
     }
-    return <Input {...t.iprops} />
+    return t.enterbutton ? <Input.Search {...enterButton(t)} {...placeHolder(t)}  {...t.iprops} /> :  
+      <Input {...placeHolder(t)}  {...t.iprops}  />
 }
 
 export function findErrField(field: string, err: ErrorMessages): ErrorMessage | undefined {

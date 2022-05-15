@@ -274,6 +274,8 @@ export type TField = PropSupportedType & TFieldBase & {
     checkbox?: TCheckBox
     list?: TListItem
     range?: boolean
+    placeholder?: FormMessage
+    enterbutton?: FormMessage
 }
 
 
