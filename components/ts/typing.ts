@@ -207,7 +207,7 @@ export type ColumnList = JSSupportedType & PropSupportedType & {
     nofilter?: boolean
     nosort?: boolean
     pageSize?: number
-    cardprops?: PropsType
+    card?: TCard
     rowprops?: PropsType
     filterJS?: string
     onerow?: boolean
@@ -227,7 +227,8 @@ export type TDetailsCard = ColumnList & OneRowData & {
 // Card
 // =========================
 
-type TCard = PropSupportedType & {
+export type TCard = {
+    cardprops?: PropsType
     title?: FormMessage
 }
 
@@ -286,7 +287,7 @@ export type TField = PropSupportedType & TFieldBase & {
 
 // the whole form
 
-export type TForm = JSSupportedType & {
+export type TForm = JSSupportedType & TCard & {
     fields: TField[]
     formprops?: PropsType
     buttons: ButtonAction[]

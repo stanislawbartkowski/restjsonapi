@@ -3,7 +3,7 @@ import { Card, Col, Divider, Row } from 'antd'
 import { blue } from '@ant-design/colors';
 
 import { TColumn, TDetailsCard } from "../ts/typing"
-import { detailsTitle, findColDetails, appendStyle } from "../ts/helper";
+import { detailsTitle, findColDetails, appendStyle, cardProps } from "../ts/helper";
 import { fieldTitle } from '../ts/transcol';
 import { FormMessage, OneRowData } from "../../ts/typing";
 import { makeMessage } from "../../ts/j";
@@ -27,7 +27,7 @@ const RecordCard: React.FC<TDetailsCard> = (props) => {
     const selectedcolors: CSSProperties =
         props.isCurrentDB && props.isCurrentDB(props.r) ? { borderStyle: 'solid', borderWidth: '5px', borderColor: blue[1] } : {}
 
-    const propsC = appendStyle(props.cardprops, selectedcolors)
+    const propsC = appendStyle(cardProps(props.card), selectedcolors)
 
     return <Card onClick={() => { if (props.onRowClick) props.onRowClick(props.r) }}
         title={title}

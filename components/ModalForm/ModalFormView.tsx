@@ -20,9 +20,9 @@ import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 
-import { SearchChooseButton, TField, TForm, TRadioItem } from '../ts/typing'
-import { trace } from '../../ts/l'
-import { ButtonElem, FAction, FIELDTYPE, FieldValue, OnRowClick, TRow } from '../../ts/typing'
+import { TField, TForm, TRadioItem } from '../ts/typing'
+import { log, trace } from '../../ts/l'
+import { ButtonElem, FAction, FIELDTYPE, FieldValue, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType } from '../ts/transcol';
 import { getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
@@ -30,13 +30,15 @@ import lstring from '../../ts/localize';
 import { FFieldElem, isItemGroup } from '../ts/helper';
 import { transformValues } from '../ts/transformres';
 import RestComponent from '../RestComponent';
+import { cardProps } from '../ts/helper'
 
-type FSearchAction = (s: string, t: TField) => void
+type FSearchAction = (s: string, t: FField) => void
 
 type FField = TField & {
 
     searchF: FSearchAction
-
+    name?: number
+    groupT?: TField
 }
 
 
@@ -137,10 +139,10 @@ function enterButton(t: TField) {
 }
 
 
-function searchItem(t: FField): React.ReactNode {
+function searchItem(t: FField, name?: number): React.ReactNode {
 
     function onSearchButton(value: string) {
-        t.searchF(value, t);
+        t.searchF(value, { ...t, name: name });
     }
 
 
@@ -155,7 +157,7 @@ function produceElem(t: FField, err: ErrorMessages, name?: number): React.ReactN
 
     if (isItemGroup(t)) {
         return <React.Fragment>
-            {(t.items as TField[]).map(e => produceFormItem({ ...e, searchF: t.searchF }, err, name))}
+            {(t.items as TField[]).map(e => produceFormItem({ ...e, searchF: t.searchF, groupT: t }, err, name))}
         </React.Fragment>
     }
 
@@ -181,7 +183,7 @@ function produceElem(t: FField, err: ErrorMessages, name?: number): React.ReactN
     }
 
 
-    return t.enterbutton ? searchItem(t) :
+    return t.enterbutton ? searchItem(t, name) :
         <Input {...placeHolder(t)}  {...t.iprops} />
 }
 
@@ -224,11 +226,7 @@ function createList(t: FField, err: ErrorMessages): ReactNode {
 
     const addname = getButtonName(addButton)
 
-    const title = t.list?.card?.title ? { title: makeMessage(t.list.card.title, { r: {} }) } : {}
-    const cardprops = t.list?.card?.props ? { ...t.list.card.props } : undefined
-
-
-    return <Card bordered {...title} {...cardprops}><Form.List name={t.field} key={t.field} {...t.list?.props} >
+    return <Card bordered {...cardProps(t.list?.card)}><Form.List name={t.field} key={t.field} {...t.list?.props} >
         {(fields, { add, remove }) => (
             <>
                 {fields.map(({ key, name, ...restField }) => (
@@ -259,11 +257,15 @@ function produceItem(t: FField, err: ErrorMessages): React.ReactNode {
 
 type SearchDialogProps = TField & {
     visible: boolean
+    name?: number
+    groupT?: TField
 }
+
+const emptySearch = { field: "", visible: false }
 
 const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged }>((props, ref) => {
 
-    const [searchD, setSearchT] = useState<SearchDialogProps>({ field: "", visible: false });
+    const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
 
 
     const [f]: [FormInstance] = Form.useForm()
@@ -303,19 +305,37 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     // ==================
 
-    const searchF: FSearchAction = (s: string, t: TField) => {
+    const searchF: FSearchAction = (s: string, t: FField) => {
         setSearchT({ ...t, visible: true })
     }
 
-    const closeF: FAction = (b?: ButtonElem, r? : TRow) => {
-        setSearchT({ field: "", visible: false })
-        if (b?.choosefield === undefined) return
+    const closeF: FAction = (b?: ButtonElem, r?: TRow) => {
+        if (b?.choosefield === undefined) {
+            setSearchT(emptySearch)
+            return;
+
+        }
+        const val: FieldValue = (r as TRow)[b?.choosefield]
+        if (val === undefined) return;
+        setSearchT(emptySearch)
+        log(`${val} selected`)
+        const x: TRow = f.getFieldsValue()
+        if (searchD.name === undefined) x[searchD.field] = val
+        else {
+            // list
+            const a: TRow[] = (x[searchD.groupT ? searchD.groupT.field : searchD.field] as any)
+            const elem: TRow = a[searchD.name]
+            elem[searchD.field] = val
+        }
+        f.setFieldsValue(x)
+
+
     }
 
     // ===================
 
-    const form = <Form labelCol={{ span: 4 }}
-        wrapperCol={{ span: 14 }} form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges}
+    const form = <Form
+        form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges}
         layout="horizontal" scrollToFirstError {...props.formprops} initialValues={props.initvals}>
 
 

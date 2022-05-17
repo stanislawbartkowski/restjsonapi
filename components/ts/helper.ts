@@ -1,8 +1,9 @@
 import { callJSFunction, isObject, isString, makeMessage } from "../../ts/j";
 import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
-import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, ShowDetails, TAction, TColumn, TField } from "./typing";
+import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, ShowDetails, TAction, TCard, TColumn, TField } from "./typing";
 import { CSSProperties } from "react";
 import defaults from "../../ts/defaults";
+import { resolveTripleslashReference } from "typescript";
 
 // =================
 // header
@@ -123,7 +124,7 @@ export function okmoney(t: string): boolean {
 
 
 export type FFieldElem = TField & {
-    elemlist? : FFieldElem[];
+    elemlist?: FFieldElem[];
 
 }
 
@@ -131,7 +132,7 @@ export function isItemGroup(t: TField): boolean {
     return t.items !== undefined
 }
 
-function isList(t: TField) : boolean {
+function isList(t: TField): boolean {
     return t.list !== undefined
 }
 
@@ -139,16 +140,31 @@ export function flattenTForm(tlist: TField[]): FFieldElem[] {
     let res: FFieldElem[] = []
 
     tlist.forEach(t => {
-        const e : FFieldElem = {...t}
+        const e: FFieldElem = { ...t }
         if (isItemGroup(t)) {
-             const i : FFieldElem[] = flattenTForm(t.items as TField[])
-             if (isList(t)) e.elemlist = i;
-             else {
-                 res = res.concat(i);
-                 return
-             }
+            const i: FFieldElem[] = flattenTForm(t.items as TField[])
+            if (isList(t)) e.elemlist = i;
+            else {
+                res = res.concat(i);
+                return
             }
+        }
         res.push(e)
     })
     return res
 }
+
+// ===================================
+// card props
+// ===================================
+
+export function cardProps(p?: TCard) {
+    if (p === undefined) return undefined
+    const title = p?.title ? { title: makeMessage(p.title) } : {}
+    const cardprops = p?.cardprops ? { ...p.cardprops } : undefined
+    return {
+        ...title,
+        ...cardprops
+    }
+}
+

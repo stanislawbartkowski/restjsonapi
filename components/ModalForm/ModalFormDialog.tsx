@@ -1,5 +1,5 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
-import { Col, Modal, Row } from 'antd';
+import { Card, Col, Modal, Row } from 'antd';
 
 import type { TClickButton, TField } from '../ts/typing'
 import type { TForm } from '../ts/typing'
@@ -9,7 +9,7 @@ import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
-import { FFieldElem, flattenTForm, ismaskClicked, okmoney } from '../ts/helper'
+import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps } from '../ts/helper'
 import { trace } from '../../ts/l'
 import { FIELDTYPE, PropsType, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
@@ -175,11 +175,9 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
     </Modal >
 
     const pagedialog: ReactNode = <React.Fragment>
-        <Row>
-            <Col>
-                {modalFormView}
-            </Col>
-        </Row>
+        <Card {...cardProps(formdef.tabledata)} >
+            {modalFormView}
+        </Card>
     </React.Fragment>
 
     return <React.Fragment>

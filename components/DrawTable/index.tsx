@@ -112,7 +112,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = 
 
 
     function buttonAction(b?: ButtonAction) {
-        if (b === undefined || currentRow === undefined || props.closeAction === undefined) return;
+        if (b === undefined || props.closeAction === undefined) return;
         props.closeAction(b, currentRow);
     }
 
