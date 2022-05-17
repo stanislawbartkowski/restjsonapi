@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 
 import type { ColumnType } from "antd/lib/table";
 import { Table, Drawer } from "antd";
+import type { TableRowSelection } from "antd/lib/table/interface";
 
 import lstring from "../../ts/localize";
-import type { OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
+import type { ClickActionProps, OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
-import type { ClickResult, ColumnList, FActionResult, FShowDetails } from "../ts/typing";
+import type { ButtonAction, ClickResult, ColumnList, FActionResult, FShowDetails } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource } from "./js/helper";
 import { makeHeader } from "../ts/helper";
@@ -21,7 +22,7 @@ import defaults from "../../ts/defaults";
 import { isNumber } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 import { ModalFormProps } from '../../components/ModalForm'
-import {emptyModalListProps} from './typing'
+import { emptyModalListProps } from './typing'
 
 function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefined | PropsType {
     let pageSize: number | undefined = props.pageSize ? props.pageSize : defaults.defpageSize
@@ -39,7 +40,7 @@ function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefin
 }
 
 
-const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
+const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = (props) => {
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [currentRow, setCurrentRow] = useState<TRow>();
 
@@ -109,10 +110,43 @@ const RestTableView: React.FC<RestTableParam & ColumnList> = (props) => {
 
     const paging = propsPaging(props, dsource.length)
 
+
+    function buttonAction(b?: ButtonAction) {
+        if (b === undefined || currentRow === undefined || props.closeAction === undefined) return;
+        props.closeAction(b, currentRow);
+    }
+
+    function findRowByKey(key: React.Key): TRow | undefined {
+        const k = datasource.rowkey
+        if (k === undefined) return undefined
+        return datasource.res.find(r => r[k] === key)
+    }
+
+    function rowSelection(t: RestTableParam): { rowSelection: TableRowSelection<TRow> } | undefined {
+
+        return t.choosing ? {
+            rowSelection: {
+                type: 'radio',
+                onChange: (r: React.Key[]) => {
+                    if (r.length > 0) {
+                        const key: React.Key = r[0]
+                        console.log(key)
+                        const ro: TRow | undefined = findRowByKey(key);
+                        if (ro) setCurrentRow(ro)
+                    }
+                }
+            }
+        } :
+            undefined
+    }
+
+
     return (
         <React.Fragment>
-            {props.header ? <HeaderTable {...props.header} vars={props.vars} refresh={refreshtable} /> : undefined}
+            {props.header ? <HeaderTable {...props.header} vars={props.vars} refresh={refreshtable} r={props} fbutton={buttonAction} /> : undefined}
             <Table
+                {...rowSelection({ ...props })
+                }
                 title={() => title}
                 rowKey={datasource.rowkey}
                 dataSource={dsource}

@@ -36,6 +36,10 @@ function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: bool
       messid = 'print'
       iconid = 'printoutlined'
       break
+    case BUTTONACTION.CHOOSE:
+      messid = 'chooseaction'
+      iconid = 'checkoutlined'
+      break;
   }
 
   const bname: String = messid !== "" ? lstring(messid) : getButtonName(b)

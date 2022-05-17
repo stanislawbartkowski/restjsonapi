@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactNode, useImperativeHandle } from 'react';
+import React, { forwardRef, ReactNode, useImperativeHandle, useState } from 'react';
 
 import {
     Form,
@@ -20,15 +20,24 @@ import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 
-import { TField, TForm, TRadioItem } from '../ts/typing'
+import { SearchChooseButton, TField, TForm, TRadioItem } from '../ts/typing'
 import { trace } from '../../ts/l'
-import { ButtonElem, FIELDTYPE, FieldValue, TRow } from '../../ts/typing'
+import { ButtonElem, FAction, FIELDTYPE, FieldValue, OnRowClick, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType } from '../ts/transcol';
 import { getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
 import { FFieldElem, isItemGroup } from '../ts/helper';
 import { transformValues } from '../ts/transformres';
+import RestComponent from '../RestComponent';
+
+type FSearchAction = (s: string, t: TField) => void
+
+type FField = TField & {
+
+    searchF: FSearchAction
+
+}
 
 
 const { RangePicker } = DatePicker;
@@ -61,20 +70,12 @@ type TFormView = TForm & {
 }
 
 
-function placeHolder(t: TField) {
+export function placeHolder(t: TField) {
     if (t.placeholder) {
-        const placeH : string = makeMessage(t.placeholder) as string
+        const placeH: string = makeMessage(t.placeholder) as string
         return { placeholder: placeH }
     }
     return undefined;
-}
-
-function enterButton(t : TField) {
-    if (t.enterbutton) {
-        const searchB : string = makeMessage(t.enterbutton) as string;
-        return { enterButton : searchB}
-    }
-    return undefined
 }
 
 // -------- radio
@@ -123,13 +124,38 @@ function createCheckBoxGroup(t: TField): ReactNode {
     </Checkbox.Group>
 }
 
+// =========================================
+// should exist in the same module
+// =========================================
 
-function produceElem(t: TField, err: ErrorMessages, name?: number): React.ReactNode {
+function enterButton(t: TField) {
+    if (t.enterbutton) {
+        const searchB: string = makeMessage(t.enterbutton) as string;
+        return { enterButton: searchB }
+    }
+    return undefined
+}
+
+
+function searchItem(t: FField): React.ReactNode {
+
+    function onSearchButton(value: string) {
+        t.searchF(value, t);
+    }
+
+
+    return <Input.Search  {...placeHolder(t)}  {...t.iprops}  {...enterButton(t)} onSearch={onSearchButton} />
+}
+
+// ===========================================
+
+
+function produceElem(t: FField, err: ErrorMessages, name?: number): React.ReactNode {
 
 
     if (isItemGroup(t)) {
         return <React.Fragment>
-            {(t.items as TField[]).map(e => produceFormItem(e, err, name))}
+            {(t.items as TField[]).map(e => produceFormItem({ ...e, searchF: t.searchF }, err, name))}
         </React.Fragment>
     }
 
@@ -153,21 +179,23 @@ function produceElem(t: TField, err: ErrorMessages, name?: number): React.ReactN
             unCheckedChildren={<CloseOutlined />}
         />
     }
-    return t.enterbutton ? <Input.Search {...enterButton(t)} {...placeHolder(t)}  {...t.iprops} /> :  
-      <Input {...placeHolder(t)}  {...t.iprops}  />
+
+
+    return t.enterbutton ? searchItem(t) :
+        <Input {...placeHolder(t)}  {...t.iprops} />
 }
 
 export function findErrField(field: string, err: ErrorMessages): ErrorMessage | undefined {
     return err.find(e => e.field === field)
 }
 
-function errorMessage(t: TField, err: ErrorMessages): {} | { validateStatus: ValidateStatus, help: string[] } {
+function errorMessage(t: FField, err: ErrorMessages): {} | { validateStatus: ValidateStatus, help: string[] } {
     const e: ErrorMessage | undefined = findErrField(t.field, err)
     if (e === undefined) return {}
     return { validateStatus: 'error', help: [e.message] }
 }
 
-function produceFormItem(t: TField, err: ErrorMessages, name?: number): React.ReactNode {
+function produceFormItem(t: FField, err: ErrorMessages, name?: number): React.ReactNode {
 
     const fieldtype: FIELDTYPE = fieldType(t)
     const rules = fieldtype === FIELDTYPE.MONEY ? [{ pattern: new RegExp(/^[+-]?\d*\.?\d*$/), message: lstring("moneypattern") }] : undefined
@@ -188,7 +216,7 @@ function produceFormItem(t: TField, err: ErrorMessages, name?: number): React.Re
 // ================================
 
 
-function createList(t: TField, err: ErrorMessages): ReactNode {
+function createList(t: FField, err: ErrorMessages): ReactNode {
 
     const addButton: ButtonElem = t.list?.addbutton as ButtonElem
 
@@ -222,14 +250,21 @@ function createList(t: TField, err: ErrorMessages): ReactNode {
 }
 
 
-function produceItem(t: TField, err: ErrorMessages): React.ReactNode {
+function produceItem(t: FField, err: ErrorMessages): React.ReactNode {
 
     if (t.list) return createList(t, err)
     return produceFormItem(t, err)
 
 }
 
+type SearchDialogProps = TField & {
+    visible: boolean
+}
+
 const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged }>((props, ref) => {
+
+    const [searchD, setSearchT] = useState<SearchDialogProps>({ field: "", visible: false });
+
 
     const [f]: [FormInstance] = Form.useForm()
 
@@ -266,21 +301,35 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     const buttons: ReactNode = props.buttonsextra ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextra}</Space></Form.Item></React.Fragment> : undefined
 
+    // ==================
 
+    const searchF: FSearchAction = (s: string, t: TField) => {
+        setSearchT({ ...t, visible: true })
+    }
+
+    const closeF: FAction = (b?: ButtonElem, r? : TRow) => {
+        setSearchT({ field: "", visible: false })
+        if (b?.choosefield === undefined) return
+    }
+
+    // ===================
 
     const form = <Form labelCol={{ span: 4 }}
         wrapperCol={{ span: 14 }} form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges}
         layout="horizontal" scrollToFirstError {...props.formprops} initialValues={props.initvals}>
 
 
-        {props.fields.map(e => produceItem(e, props.err))}
+        {props.fields.map(e => produceItem({ ...e, searchF: searchF }, props.err))}
 
         {buttons}
 
     </Form>
 
 
-    return form
+    return <React.Fragment>
+        {form}
+        <RestComponent  {...searchD.enterbutton} visible={searchD.visible} choosing closeAction={closeF} />
+    </React.Fragment>
 })
 
 export default ModalFormView

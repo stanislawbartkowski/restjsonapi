@@ -265,6 +265,11 @@ export type TListItem = PropSupportedType & {
     card?: TCard
 }
 
+// enter/ search button
+
+export type SearchChooseButton = FormMessage & RestTableParam;
+
+
 // single field
 
 export type TField = PropSupportedType & TFieldBase & {
@@ -275,7 +280,7 @@ export type TField = PropSupportedType & TFieldBase & {
     list?: TListItem
     range?: boolean
     placeholder?: FormMessage
-    enterbutton?: FormMessage
+    enterbutton?: SearchChooseButton
 }
 
 
@@ -303,6 +308,7 @@ export enum BUTTONACTION {
     CANCEL = 'CANCEL',
     DEL = 'DEL',
     UPDATE = 'UPDATE',
-    PRINT = 'PRINT'
+    PRINT = 'PRINT',
+    CHOOSE = 'CHOOSE'
 }
 

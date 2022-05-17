@@ -4,7 +4,7 @@ import { PageHeader } from "antd";
 import { emptyModalListProps } from "./typing";
 import { trace } from "../../ts/l";
 import constructButton from "../ts/constructbutton";
-import type { FAction, ModalFormProps, TRow } from '../../ts/typing'
+import type { FAction, ModalFormProps, RestTableParam, TRow } from '../../ts/typing'
 import { TableToolBar, ButtonAction, ClickResult, ShowDetails } from "../ts/typing";
 import { clickAction} from "../ts/helper";
 import OneRowTable from '../ShowDetails/OneRowTable'
@@ -16,8 +16,11 @@ function ltrace(mess: string) {
   trace('HeaderTable', mess)
 }
 
+function isChooseButton(a: ClickResult, t: RestTableParam) : boolean {
+  return (t.choosing !== undefined && t.choosing && a.list === undefined && a.listdef === undefined)
+}
 
-const HeaderTable: React.FC<ShowDetails & { refresh: FAction, vars?: TRow }> = (props) => {
+const HeaderTable: React.FC<ShowDetails & { refresh: FAction, vars?: TRow, r: RestTableParam, fbutton: FAction }> = (props) => {
   const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
 
   const h: TableToolBar = props.toolbar as TableToolBar;
@@ -29,7 +32,8 @@ const HeaderTable: React.FC<ShowDetails & { refresh: FAction, vars?: TRow }> = (
   function clickButton(b: ButtonAction) {
     ltrace(b.id)
     const res: ClickResult = clickAction(b, { r: {}, vars: props.vars })
-    setIsModalVisible({ ...res, visible: true, closeAction: fmodalhook })
+    if (isChooseButton(res,props.r)) props.fbutton(b)
+    else setIsModalVisible({ ...res, visible: true, closeAction: fmodalhook })
   }
 
   const title = props.title ? { title: makeMessage(props.title, { r: props.vars as TRow }) } : undefined;

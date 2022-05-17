@@ -51,7 +51,8 @@ export type JsonTableResult = {
 export type ButtonElem = PropSupportedType & {
   id: string;
   icon?: string;
-  name? : FormMessage
+  name?: FormMessage
+  choosefield? : string
 };
 
 
@@ -72,6 +73,7 @@ export type RestTableParam = {
   upload?: boolean;
   component?: string
   modalprops?: PropsType
+  choosing?: boolean
 };
 
 // ==============================
@@ -79,7 +81,7 @@ export type RestTableParam = {
 // ==============================
 
 
-export type FAction = () => void
+export type FAction = (b?: ButtonElem, r? : TRow) => void
 
 export interface ClickActionProps {
   closeAction?: FAction

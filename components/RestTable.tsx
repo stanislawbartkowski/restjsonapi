@@ -1,30 +1,24 @@
 import React, { useState, useEffect } from "react";
 
 import InLine from "../ts/inline";
-import { RestTableParam } from "../ts/typing";
+import { ClickActionProps, RestTableParam } from "../ts/typing";
 import Cards from "./Cards";
 import readdefs, { ReadDefsResult } from "./ts/readdefs";
 import RestTableView from "./DrawTable";
 import RestTableError from "./errors/ReadDefError";
 import { isCard } from "./ts/helper";
 import { ColumnList, Status } from "./ts/typing";
-import ReadListError from './errors/ReadListError'
 
 type ListState = ReadDefsResult & {
     list: string;
 };
 
-const RestTableList: React.FC<RestTableParam> = (props) => {
+const RestTableList: React.FC<RestTableParam& ClickActionProps> = (props) => {
     const [state, setState] = useState<ListState>({
         status: Status.PENDING,
         list: props.list as string,
     });
 
-//    const dispmess: string | undefined = props.canDisplay
-//        ? props.canDisplay(props)
-//        : undefined;
-
-//    if (dispmess) return <ReadListError errmess={dispmess} />;
 
     if (state.status === Status.READY && state.list !== props.list) {
         setState({
