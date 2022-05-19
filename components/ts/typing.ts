@@ -211,6 +211,7 @@ export type ColumnList = JSSupportedType & PropSupportedType & {
     rowprops?: PropsType
     filterJS?: string
     onerow?: boolean
+    extendedsearch?: boolean
 };
 
 

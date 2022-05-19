@@ -3,7 +3,6 @@ import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
 import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, ShowDetails, TAction, TCard, TColumn, TField } from "./typing";
 import { CSSProperties } from "react";
 import defaults from "../../ts/defaults";
-import { resolveTripleslashReference } from "typescript";
 
 // =================
 // header

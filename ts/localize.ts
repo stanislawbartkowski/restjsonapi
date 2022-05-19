@@ -19,7 +19,10 @@ const embedded = {
     print: "Drukuj",
     done: "Zrobione",
     moneypattern: "Tylko cyfry, kropka dziesiętna oraz znak na początku",
-    chooseaction: "Wybierz"
+    chooseaction: "Wybierz",
+    searchextended: "Wyszukiwanie zaawansowane",
+    removefilter: "Usuń filtr",
+    searchclose: "Szukaj i zamknij"
   },
   en: {
     empty: '',
@@ -38,7 +41,10 @@ const embedded = {
     print: "Print",
     done: "Done",
     moneypattern: "Only digits, decimal point and sign at the beginning",
-    chooseaction: "Choose"
+    chooseaction: "Choose",
+    searchextended: "Extended searching",
+    removefilter: "Remove filter",
+    searchclose: "Search and close"
   }
 };
 

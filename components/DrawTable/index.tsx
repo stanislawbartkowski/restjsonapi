@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import type { ColumnType } from "antd/lib/table";
-import { Table, Drawer } from "antd";
+import { Table, Drawer, Space, Divider } from "antd";
 import type { TableRowSelection } from "antd/lib/table/interface";
 
 import lstring from "../../ts/localize";
@@ -9,7 +9,7 @@ import type { ClickActionProps, OneRowData, PropsType, RestTableParam, RowData, 
 import type { TExtendable, } from "./typing";
 import type { ButtonAction, ClickResult, ColumnList, FActionResult, FShowDetails } from "../ts/typing";
 import { Status } from "../ts/typing";
-import { transformColumns, filterDataSource } from "./js/helper";
+import { transformColumns, filterDataSource, filterDataSourceButton } from "./js/helper";
 import { makeHeader } from "../ts/helper";
 import ModalList from "../RestComponent";
 import RowDescription from "../ShowDetails/RowDescription";
@@ -23,6 +23,8 @@ import { isNumber } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 import { ModalFormProps } from '../../components/ModalForm'
 import { emptyModalListProps } from './typing'
+import SearchButton, { FSetFilter } from "./SearchButton";
+import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
 
 function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefined | PropsType {
     let pageSize: number | undefined = props.pageSize ? props.pageSize : defaults.defpageSize
@@ -39,8 +41,9 @@ function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefin
     return nopaging ? { pagination: false } : { pagination: { defaultPageSize: pageSize } }
 }
 
-
 const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = (props) => {
+    const [extendedFilter, setExtendedFilter] = useState<ExtendedFilter>(noExtendedFilter)
+
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [currentRow, setCurrentRow] = useState<TRow>();
 
@@ -94,6 +97,10 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = 
         setRefreshNumber(refreshnumber + 1)
     }
 
+    const refreshFilter: FSetFilter = (p: ExtendedFilter) => {
+        setExtendedFilter({ isfilter: p.isfilter, filtervalues: JSON.parse(JSON.stringify(p.filtervalues)) })
+    }
+
     if (datasource.status === Status.ERROR) return <ReadListError />
 
     function isSummary(): boolean {
@@ -104,7 +111,9 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = 
         return <OneRowTable {...props} r={datasource.res.length === 0 ? {} : datasource.res[0]} />
     }
 
-    const dsource: RowData = props.filterJS ? filterDataSource(props, { r: {}, t: datasource.res, vars: props.vars }) : datasource.res
+    const ddsource: RowData = props.filterJS ? filterDataSource(props, { r: {}, t: datasource.res, vars: props.vars }) : datasource.res
+
+    const dsource: RowData = filterDataSourceButton(props, ddsource, extendedFilter)
 
     if (props.onTableRead) props.onTableRead({ res: dsource, vars: datasource.vars });
 
@@ -140,10 +149,15 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = 
             undefined
     }
 
+    const extendedSearch: React.ReactNode = props.extendedsearch ? <Space style={{ float: "right" }} split={<Divider type="vertical" />}> 
+       <SearchButton {...props} {...extendedFilter} refreshFilter={refreshFilter} /></Space> : 
+       undefined
+
 
     return (
         <React.Fragment>
             {props.header ? <HeaderTable {...props.header} vars={props.vars} refresh={refreshtable} r={props} fbutton={buttonAction} /> : undefined}
+            {extendedSearch}
             <Table
                 {...rowSelection({ ...props })
                 }

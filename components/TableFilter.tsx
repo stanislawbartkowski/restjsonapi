@@ -36,6 +36,17 @@ function eqNumber(row: TRow, field: string, filter: string): boolean {
   return res
 }
 
+export type FFilter = (value: string | number | boolean, record: TRow) => boolean
+
+export function constructTableFilter(c: TColumn) : FFilter {
+
+  return c.fieldtype === FIELDTYPE.NUMBER ? (value: string | number | boolean, record: TRow) => eqNumber(record, c.field, value as string) :
+     (value: string | number | boolean, record: TRow) => eqString(record, c.field, value as string)
+}
+
+
+//onFilter?: (value: string | number | boolean, record: RecordType) => boolean;
+
 
 function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
 
@@ -118,9 +129,7 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
     ),
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
 
-    onFilter:
-      c.fieldtype === FIELDTYPE.NUMBER ? (value: string | number | boolean, record: TRow) => eqNumber(record, c.field, value as string) :
-        (value: string | number | boolean, record: TRow) => eqString(record, c.field, value as string)
+    onFilter: constructTableFilter(c)
 
   }
 };
