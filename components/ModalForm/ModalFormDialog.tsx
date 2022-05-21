@@ -9,11 +9,12 @@ import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
-import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps } from '../ts/helper'
+import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars } from '../ts/helper'
 import { trace } from '../../ts/l'
 import { FIELDTYPE, PropsType, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
+import { transformValuesTo } from '../ts/transformres';
 
 export type { ErrorMessage, ErrorMessages } from './ModalFormView';
 
@@ -29,6 +30,7 @@ type DataFormState = {
     js?: any,
     err: ErrorMessages
     loading?: boolean
+    initvals?: TRow
 };
 
 const emptyTForm: TForm = {
@@ -46,7 +48,23 @@ export type ModalFormProps = {
     listdef?: string
     props?: PropsType
     visible?: boolean
-    vars?: TRow
+    initvals?: TRow
+}
+
+
+function isCookiesButton(b: ButtonAction): boolean {
+    return b.print !== undefined && b.print
+}
+
+function setVarsCookies(p: ModalFormProps, b: ButtonAction, r: TRow) {
+    if (isCookiesButton(b)) {
+        setCookiesFormListDefVars(p.listdef as string, r);
+    }
+}
+
+function isModalFormCookies(p: TForm): boolean {
+    const b: ButtonAction | undefined = p.buttons.find(b => isCookiesButton(b))
+    return b !== undefined
 }
 
 const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
@@ -102,6 +120,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
         else {
             props.clickButton(b, v);
         }
+        setVarsCookies(props, b, v);
     }
 
     function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {
@@ -119,13 +138,17 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
 
         function setS(d: ReadDefsResult) {
 
-            if (d.status === Status.READY)
+            const tabledata: TForm = { ...(d.res as TForm) }
+            const vars: TRow | undefined = isModalFormCookies(tabledata) ? getCookiesFormListDefVars(props.listdef as string) : props.initvals
+            if (d.status === Status.READY) {
                 setState({
                     status: Status.READY,
-                    tabledata: { ...(d.res as TForm) },
+                    tabledata: tabledata,
                     js: d.js,
-                    err: []
+                    err: [],
+                    initvals: vars ? transformValuesTo(vars, tabledata.fields) : undefined
                 });
+            }
 
             else setState({
                 status: Status.ERROR, err: []
@@ -157,13 +180,16 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
 
     const formd: TForm = (formdef.tabledata as TForm)
 
+    // requires attention
+    //const initvals: TRow | undefined = isModalFormCookies(formd) ? getCookiesFormListDefVars(props.listdef as string) : props.vars
+
     const modalFormView: ReactNode = formdef.status === Status.READY ?
         <ModalFormView
             ref={ref} err={formdef.err}
             {...formd}
             buttonClicked={onButtonClicked}
             buttonsextrabottom={props.ispage ? buttons : undefined}
-            onValuesChanges={onValuesChange} initvals={props.vars}
+            onValuesChanges={onValuesChange} initvals={formdef.initvals}
             list={fields}
         />
         : undefined
@@ -171,7 +197,6 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
     const modaldialog: ReactNode = <Modal destroyOnClose visible={props.visible}
         onCancel={onClose} {...props.props} footer={buttons}>
         {modalFormView}
-
     </Modal >
 
     const pagedialog: ReactNode = <React.Fragment>

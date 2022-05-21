@@ -5,7 +5,8 @@ interface Defaults {
   moneydot: number,
   defpageSize: number,
   rowkeyS: string
-  displayprintrouterid: string
+  displayprintrouterid: string,
+  cookieage : number
 };
 
 const defaults: Defaults = {
@@ -15,7 +16,8 @@ const defaults: Defaults = {
   moneydot: 2,
   defpageSize: 20,
   rowkeyS: "rowkey",
-  displayprintrouterid: "printingdisplayer"
+  displayprintrouterid: "printingdisplayer",
+  cookieage : 7
 };
 
 export default defaults;

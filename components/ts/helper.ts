@@ -1,8 +1,11 @@
-import { callJSFunction, isObject, isString, makeMessage } from "../../ts/j";
-import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
-import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, ShowDetails, TAction, TCard, TColumn, TField } from "./typing";
 import { CSSProperties } from "react";
+
+import { callJSFunction, isObject, isString, makeMessage } from "../../ts/j";
+import { FieldValue, OneRowData, PropsType, RestTableParam, TRow } from "../../ts/typing";
+import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, ShowDetails, TAction, TCard, TColumn, TField } from "./typing";
 import defaults from "../../ts/defaults";
+import { setCookieR, getCookieR } from '../../ts/cookies'
+
 
 // =================
 // header
@@ -165,5 +168,17 @@ export function cardProps(p?: TCard) {
         ...title,
         ...cardprops
     }
+}
+
+// =======================================
+// cookies
+// =======================================
+
+export function setCookiesFormListDefVars(listdef: string, r: TRow) {
+    setCookieR(listdef + "-vars ", r)
+}
+
+export function getCookiesFormListDefVars(listdef: string): TRow | undefined {
+    return getCookieR(listdef + "-vars ")
 }
 

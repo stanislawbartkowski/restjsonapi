@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactNode, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, ReactNode, useEffect, useImperativeHandle, useState } from 'react';
 
 import {
     Form,
@@ -308,6 +308,14 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
         }
     }));
 
+    useEffect(() => {
+
+        console.log("Formdef useeffect")
+        console.log(props.initvals)
+        f.setFieldsValue(props.initvals);
+
+    }, [props.initvals])
+
     const buttonstop: ReactNode = props.buttonsextratop ? <React.Fragment><Form.Item><Space>{props.buttonsextratop}</Space></Form.Item><Divider /></React.Fragment> : undefined
     const buttonsbottom: ReactNode = props.buttonsextrabottom ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextrabottom}</Space></Form.Item></React.Fragment> : undefined
 
@@ -336,15 +344,19 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
             elem[searchD.field] = val
         }
         f.setFieldsValue(x)
-
-
     }
 
     // ===================
 
-    const form = <Form
-        form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges}
-        layout="horizontal" scrollToFirstError {...props.formprops} initialValues={props.initvals ? transformValuesTo(props.initvals as TRow, props.list) : undefined}>
+    //const initvals = {paramsrequired: "aaa"}
+    const initvals = props.initvals ? transformValuesTo(props.initvals as TRow, props.list) : undefined
+
+    console.log("initvals")
+    console.log(initvals)
+
+    const form = <Form 
+        form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges} preserve={false}
+        layout="horizontal" scrollToFirstError {...props.formprops} initialValues={initvals}>
 
         {buttonstop}
 
