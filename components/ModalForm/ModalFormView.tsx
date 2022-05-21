@@ -22,13 +22,13 @@ import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/i
 
 import { TField, TForm, TRadioItem } from '../ts/typing'
 import { log, trace } from '../../ts/l'
-import { ButtonElem, FAction, FIELDTYPE, FieldValue, TRow } from '../../ts/typing'
+import { ButtonElem, FAction, FIELDTYPE, FieldValue, PropsType, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType } from '../ts/transcol';
 import { getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
 import { FFieldElem, isItemGroup } from '../ts/helper';
-import { transformValues } from '../ts/transformres';
+import { transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import { cardProps } from '../ts/helper'
 
@@ -66,7 +66,8 @@ export interface IRefCall {
 
 type TFormView = TForm & {
     buttonClicked: (row: TRow) => void
-    buttonsextra?: ReactNode
+    buttonsextratop?: ReactNode
+    buttonsextrabottom?: ReactNode
     initvals?: TRow
     list: FFieldElem[]
 }
@@ -152,39 +153,41 @@ function searchItem(t: FField, name?: number): React.ReactNode {
 // ===========================================
 
 
-function produceElem(t: FField, err: ErrorMessages, name?: number): React.ReactNode {
+function produceElem(t: FField, err: ErrorMessages, name?: number): [React.ReactNode, PropsType | undefined] {
 
 
     if (isItemGroup(t)) {
-        return <React.Fragment>
+        return [<React.Fragment>
             {(t.items as TField[]).map(e => produceFormItem({ ...e, searchF: t.searchF, groupT: t }, err, name))}
-        </React.Fragment>
+        </React.Fragment>,
+            undefined]
     }
 
     if (t.radio)
-        if (t.radio.select) return createSelectGroup(t, t.radio.items, false)
-        else return createRadioGroup(t)
+        if (t.radio.select) return [createSelectGroup(t, t.radio.items, false), undefined]
+        else return [createRadioGroup(t), undefined]
 
     if (t.checkbox)
-        if (t.checkbox.select) return createSelectGroup(t, t.checkbox.items, true)
-        else return createCheckBoxGroup(t);
+        if (t.checkbox.select) return [createSelectGroup(t, t.checkbox.items, true), undefined]
+        else return [createCheckBoxGroup(t), undefined]
 
     const fieldtype: FIELDTYPE = fieldType(t)
 
     switch (fieldtype) {
-        case FIELDTYPE.NUMBER: return <InputNumber {...placeHolder(t)} {...t.iprops} />
+        case FIELDTYPE.NUMBER: return [<InputNumber {...placeHolder(t)} {...t.iprops} />, undefined]
         case FIELDTYPE.DATE:
-            if (t.range) return <RangePicker {...t.iprops} />
-            return <DatePicker {...t.iprops} />
-        case FIELDTYPE.BOOLEAN: return <Switch {...t.iprops}
+            if (t.range) return [<RangePicker {...t.iprops} />, undefined]
+            return [<DatePicker {...t.iprops} />, undefined]
+        case FIELDTYPE.BOOLEAN: return [<Switch {...t.iprops}
             checkedChildren={<CheckOutlined />}
             unCheckedChildren={<CloseOutlined />}
-        />
+        />, { valuePropName: "checked" }
+        ]
     }
 
 
-    return t.enterbutton ? searchItem(t, name) :
-        <Input {...placeHolder(t)}  {...t.iprops} />
+    return t.enterbutton ? [searchItem(t, name), undefined] :
+        [<Input {...placeHolder(t)}  {...t.iprops} />, undefined]
 }
 
 export function findErrField(field: string, err: ErrorMessages): ErrorMessage | undefined {
@@ -207,9 +210,13 @@ function produceFormItem(t: FField, err: ErrorMessages, name?: number): React.Re
     }
     else if (rules) props.rules = rules
 
+    const addprops = t.fieldtype === FIELDTYPE.BOOLEAN ? { valuePropName: "checked" } : undefined
+
+    const elemp = produceElem(t, err, name)
+
     const mess: string = fieldTitle(t, { r: {} });
-    return <Form.Item {...props} id={t.field} name={name !== undefined ? [name, t.field] : t.field} key={t.field} label={mess} {...errorMessage(t, err)}>
-        {produceElem(t, err, name)}
+    return <Form.Item {...props} id={t.field} name={name !== undefined ? [name, t.field] : t.field} key={t.field} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]}>
+        {elemp[0]}
     </Form.Item>
 }
 
@@ -272,13 +279,13 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     const onFinish = (values: TRow) => {
         ltrace('Success, data validated')
-        props.buttonClicked(transformValues(values, props.list))
+        props.buttonClicked(transformValuesFrom(values, props.list))
     };
 
     useImperativeHandle(ref, () => ({
         getValues: () => {
             const r: TRow = f.getFieldsValue()
-            return transformValues(r, props.list)
+            return transformValuesFrom(r, props.list)
         },
         validate: () => {
             ltrace('submit');
@@ -301,7 +308,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
         }
     }));
 
-    const buttons: ReactNode = props.buttonsextra ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextra}</Space></Form.Item></React.Fragment> : undefined
+    const buttonstop: ReactNode = props.buttonsextratop ? <React.Fragment><Form.Item><Space>{props.buttonsextratop}</Space></Form.Item><Divider /></React.Fragment> : undefined
+    const buttonsbottom: ReactNode = props.buttonsextrabottom ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextrabottom}</Space></Form.Item></React.Fragment> : undefined
 
     // ==================
 
@@ -336,12 +344,13 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     const form = <Form
         form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges}
-        layout="horizontal" scrollToFirstError {...props.formprops} initialValues={props.initvals}>
+        layout="horizontal" scrollToFirstError {...props.formprops} initialValues={props.initvals ? transformValuesTo(props.initvals as TRow, props.list) : undefined}>
 
+        {buttonstop}
 
         {props.fields.map(e => produceItem({ ...e, searchF: searchF }, props.err))}
 
-        {buttons}
+        {buttonsbottom}
 
     </Form>
 

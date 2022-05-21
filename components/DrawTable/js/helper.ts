@@ -60,6 +60,8 @@ function okextendedfilter(p: ColumnList, r: TRow, valf: TRow, f: Record<string, 
 
   for (let v in valf) {
     const ff: FFilter = f[v]
+//    console.log(v)
+//    console.log(ff)
     if (!ff(valf[v] as string | number | boolean, r)) return false;
   }
   return true;
@@ -69,7 +71,7 @@ export function filterDataSourceButton(p: ColumnList, rows: RowData, pars: Exten
   if (pars.isfilter) {
     const f: Record<string, FFilter> = {}
     const v: TRow = (pars.filtervalues as TRow)
-    p.columns.filter(c => v[c.field]).forEach(c => f[c.field] = constructTableFilter(c))
+    p.columns.filter(c => v[c.field] !== undefined).forEach(c => f[c.field] = constructTableFilter(c))
     return rows.filter(e => okextendedfilter(p, e, v, f))
   }
   return rows

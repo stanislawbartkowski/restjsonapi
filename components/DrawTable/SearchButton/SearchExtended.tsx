@@ -3,7 +3,6 @@ import { forwardRef, MutableRefObject, useImperativeHandle, useRef } from "react
 import { TRow } from "../../../ts/typing"
 import type { ColumnList, TField } from "../../ts/typing"
 import ModalFormView, { ErrorMessages, FOnValuesChanged, IRefCall } from "../../ModalForm/ModalFormView";
-import { ButtonAction } from "../../ts/typing";
 import { FFieldElem, flattenTForm } from "../../ts/helper";
 import { convertColumnsToFields } from "./helper";
 
@@ -14,6 +13,10 @@ export interface IIRefCall {
 
 
 export type SearchButtonType = ColumnList & ExtendedFilter & {
+}
+
+type SearchDialog = SearchButtonType & {
+    buttons: React.ReactNode[]
     onValuesChanges?: FOnValuesChanged
 }
 
@@ -25,7 +28,7 @@ export type ExtendedFilter = {
 
 export const noExtendedFilter: ExtendedFilter = { isfilter: false, filtervalues: {} }
 
-const SearchExtended = forwardRef<IIRefCall, SearchButtonType>((props, iref) => {
+const SearchExtended = forwardRef<IIRefCall, SearchDialog>((props, iref) => {
 
 
     const refm: MutableRefObject<IRefCall> = useRef<IRefCall>() as MutableRefObject<IRefCall>
@@ -37,14 +40,13 @@ const SearchExtended = forwardRef<IIRefCall, SearchButtonType>((props, iref) => 
 
     const fields: TField[] = convertColumnsToFields(props)
     function buttonClickded(r: TRow) { }
-    const buttons: ButtonAction[] = []
     const ffields: FFieldElem[] = flattenTForm(fields)
     const err: ErrorMessages = []
     const onValuesChanges: FOnValuesChanged = (changedFields: Record<string, any>, p: Record<string, any>) => {
         if (props.onValuesChanges) props.onValuesChanges(changedFields, p);
     }
 
-    return <ModalFormView ref={refm} fields={fields} buttonClicked={buttonClickded} list={ffields} buttons={buttons} err={err} onValuesChanges={onValuesChanges} />
+    return <ModalFormView ref={refm} fields={fields} buttonClicked={buttonClickded} initvals={props.filtervalues} list={ffields} buttons={[]} buttonsextratop={props.buttons} err={err} onValuesChanges={onValuesChanges} />
 
 })
 

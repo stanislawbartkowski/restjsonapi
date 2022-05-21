@@ -162,7 +162,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
             ref={ref} err={formdef.err}
             {...formd}
             buttonClicked={onButtonClicked}
-            buttonsextra={props.ispage ? buttons : undefined}
+            buttonsextrabottom={props.ispage ? buttons : undefined}
             onValuesChanges={onValuesChange} initvals={props.vars}
             list={fields}
         />

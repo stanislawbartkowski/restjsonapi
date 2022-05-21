@@ -108,7 +108,7 @@ export type TMenuNode = MenuElem | TSubMenu
 
 export type TSubMenu = PropSupportedType & {
   icon?: string
-  title: string
+  title: string | FormMessage
   menus: TMenuNode[]
 }
 

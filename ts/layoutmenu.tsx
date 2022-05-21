@@ -8,8 +8,8 @@ import lstring from "./localize";
 import { getLeftMenu, getMenuElemsOnly, isSubMenu } from "./leftmenu";
 import defaults from "./defaults";
 import getIcon from "./icons";
-import { MenuElem, TMenuNode, TSubMenu } from "./typing";
-import { getButtonName } from "./j";
+import { FormMessage, MenuElem, TMenuNode, TSubMenu } from "./typing";
+import { getButtonName, isString, makeMessage } from "./j";
 
 
 function icon(e: TMenuNode): React.ReactNode {
@@ -17,9 +17,9 @@ function icon(e: TMenuNode): React.ReactNode {
 }
 
 
-function flattenMenu(m : TMenuNode[] ) : MenuElem[] {
+function flattenMenu(m: TMenuNode[]): MenuElem[] {
 
-  let e : MenuElem[] = []
+  let e: MenuElem[] = []
 
   m.forEach(ee => {
     if (isSubMenu(ee)) e = e.concat(flattenMenu((ee as TSubMenu).menus))
@@ -30,10 +30,10 @@ function flattenMenu(m : TMenuNode[] ) : MenuElem[] {
 
 }
 
-export function getMenuNameByLocation(id : string) : string {
-  const i : string = id.substring(1); // remove leading /
-  const el : MenuElem[] = flattenMenu(getLeftMenu().menu)
-  const e: TMenuNode|undefined = el.find(e => (e as MenuElem).id === i)
+export function getMenuNameByLocation(id: string): string {
+  const i: string = id.substring(1); // remove leading /
+  const el: MenuElem[] = flattenMenu(getLeftMenu().menu)
+  const e: TMenuNode | undefined = el.find(e => (e as MenuElem).id === i)
 
   if (e === undefined) return "????"
 
@@ -41,11 +41,16 @@ export function getMenuNameByLocation(id : string) : string {
 }
 
 // global, to increase keynumber for submenu to bypass recursion
-let keysub : number 
+let keysub: number
+
+function submenutitle(e: TSubMenu): string {
+  if (isString(e.title)) return lstring(e.title as string);
+  return makeMessage(e.title as FormMessage) as string
+}
 
 function createMenu(e: TMenuNode): ReactNode {
 
-  return isSubMenu(e) ? <SubMenu key={keysub++} title={lstring((e as TSubMenu).title)} >
+  return isSubMenu(e) ? <SubMenu key={keysub++} title={submenutitle(e as TSubMenu)} >
     {(e as TSubMenu).menus.map(e => createMenu(e))}
   </SubMenu> :
 

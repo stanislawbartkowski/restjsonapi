@@ -18,11 +18,15 @@ function isFilterSetEmpty(p: TRow): boolean {
   return empty
 }
 
+
 const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter }> = (props) => {
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [isFilterEmpty, setIsFilterEmpty] = useState<boolean>(isFilterSetEmpty(props.filtervalues))
+  const [refreshnumber, setRefreshNumber] = useState<number>(0);
   const ref: MutableRefObject<IIRefCall> = useRef<IIRefCall>() as MutableRefObject<IIRefCall>
+
+
+  const isFilterEmpty : boolean = isFilterSetEmpty(ref.current ? ref.current.getValues() : props.filtervalues)
 
   function onCancel() {
     setIsModalVisible(false)
@@ -45,8 +49,7 @@ const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter }> =
   }
 
   const onValuesChanges: FOnValuesChanged = (changedFields: Record<string, any>, p: Record<string, any>) => {
-    const v: TRow = ref.current.getValues()
-    setIsFilterEmpty(isFilterSetEmpty(v));
+    setRefreshNumber(refreshnumber+1)
   }
 
 
@@ -66,8 +69,8 @@ const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter }> =
   return <React.Fragment>
     <Tooltip title={lstring("searchextended")}><Button icon={<SearchOutlined />} size="small" {...primary} onClick={() => setIsModalVisible(true)} /> </Tooltip>
     {closeButton}
-    <Modal visible={isModalVisible} onCancel={onCancel} onOk={setFilter} destroyOnClose footer={buttons}>
-      <SearchExtended ref={ref} {...props} onValuesChanges={onValuesChanges} />
+    <Modal visible={isModalVisible} onCancel={onCancel} onOk={setFilter} destroyOnClose footer={null}>
+      <SearchExtended ref={ref} {...props} onValuesChanges={onValuesChanges} buttons = {buttons}/>
     </Modal>
 
   </React.Fragment>

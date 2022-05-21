@@ -10,6 +10,8 @@ import defaults from '../ts/defaults'
 import { datetoS, dateparseS } from '../ts/d'
 import type { TRow } from '../ts/typing'
 import { ReactNode } from "react";
+import { internalerrorlog, log } from "../ts/l";
+import { fieldType } from "./ts/transcol";
 
 // ========================
 // filter/search
@@ -25,25 +27,45 @@ export type ColumnFilterSearch = {
 
 
 function eqString(row: TRow, field: string, filter: string): boolean {
-  if (row === undefined || row[field] === undefined) return false
+  if (row === undefined || row[field] === undefined || row[field] === null) return false
+  log(row[field] as string)
   return (row[field] as string).toString().toUpperCase().indexOf(filter.toUpperCase()) !== -1;
 }
 
 function eqNumber(row: TRow, field: string, filter: string): boolean {
-  if (row === undefined || row[field] === undefined) return false
+  if (row === undefined || row[field] === undefined || row[field] === null) return false
   const fieldnum: number = +(row[field] as string | number)
   const res: boolean = fieldnum === +filter
   return res
 }
 
-export type FFilter = (value: string | number | boolean, record: TRow) => boolean
-
-export function constructTableFilter(c: TColumn) : FFilter {
-
-  return c.fieldtype === FIELDTYPE.NUMBER ? (value: string | number | boolean, record: TRow) => eqNumber(record, c.field, value as string) :
-     (value: string | number | boolean, record: TRow) => eqString(record, c.field, value as string)
+function eqBoolean(row: TRow, field: string, filter: boolean): boolean {
+  if (row === undefined || row[field] === undefined || row[field] === null) return false
+  const fieldbool: boolean = (row[field] as boolean)
+  return fieldbool === filter
 }
 
+
+export type FFilter = (value: string | number | boolean, record: TRow) => boolean
+
+export function constructTableFilter(c: TColumn): FFilter {
+
+  const t: FIELDTYPE = fieldType(c);
+
+  switch (t) {
+    case FIELDTYPE.NUMBER:
+    case FIELDTYPE.MONEY: return (value: string | number | boolean, record: TRow) => eqNumber(record, c.field, value as string);
+    case FIELDTYPE.STRING:
+    case FIELDTYPE.DATE:
+    case FIELDTYPE.TIME:
+      return (value: string | number | boolean, record: TRow) => eqString(record, c.field, value as string);
+    case FIELDTYPE.BOOLEAN:
+      return (value: string | number | boolean, record: TRow) => eqBoolean(record, c.field, value as boolean);
+    default:
+      internalerrorlog(`No filter function supported for this type ${t}`)
+      return (value: string | number | boolean, record: TRow) => true;
+  }
+}
 
 //onFilter?: (value: string | number | boolean, record: RecordType) => boolean;
 
