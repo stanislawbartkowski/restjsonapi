@@ -18,7 +18,7 @@ export type PropSupportedType = {
 
 export type FCanDisplay = (action: string, pathname: string) => boolean
 
-export type FIsCurrentDB = (t: TRow) => boolean;
+export type FIsSelected = (t: TRow) => boolean;
 
 export type OnRowClick = (r: TRow) => void
 
@@ -52,7 +52,7 @@ export type ButtonElem = PropSupportedType & {
   id: string;
   icon?: string;
   name?: FormMessage
-  choosefield? : string
+  choosefield?: string
 };
 
 
@@ -65,7 +65,7 @@ export type RestTableParam = {
   params?: Record<string, FieldValue>;
   listdef?: string;
   onRowClick?: OnRowClick;
-  isCurrentDB?: FIsCurrentDB;
+  isSelected?: FIsSelected;
   onTableRead?: OnTableRead;
   vars?: TRow;
   restaction?: string;
@@ -81,7 +81,7 @@ export type RestTableParam = {
 // ==============================
 
 
-export type FAction = (b?: ButtonElem, r? : TRow) => void
+export type FAction = (b?: ButtonElem, r?: TRow) => void
 
 export interface ClickActionProps {
   closeAction?: FAction
@@ -103,7 +103,10 @@ export type TComponentProps = RestTableParam & ModalFormProps
 // menu
 // ========================================
 
-export type MenuElem = ButtonElem & TComponentProps;
+export type MenuElem = ButtonElem & TComponentProps & {
+  menudir?: boolean
+}
+
 export type TMenuNode = MenuElem | TSubMenu
 
 export type TSubMenu = PropSupportedType & {

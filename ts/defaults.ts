@@ -16,7 +16,7 @@ const defaults: Defaults = {
   moneydot: 2,
   defpageSize: 20,
   rowkeyS: "rowkey",
-  displayprintrouterid: "printingdisplayer",
+  displayprintrouterid: "/printingdisplayer",
   cookieage : 7
 };
 

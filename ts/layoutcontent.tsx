@@ -1,8 +1,8 @@
 import { Route } from "react-router-dom";
 import { getMenuElemsOnly } from "./leftmenu";
-import { getMenuElement } from './constructRestElement'
+import { getMenuElement, getDirMenuElems, getMenuDirElement } from './constructRestElement'
 
-function getRouterContent() {
+export function getRouterContent() {
   return getMenuElemsOnly().map((e: string) => (
     <Route
       key={e}
@@ -12,4 +12,13 @@ function getRouterContent() {
   ));
 }
 
-export default getRouterContent;
+export function getRouterContentDir() {
+  return getDirMenuElems().map((e: string) => (
+    <Route
+      key={e + "submenu"}
+      path={"/" + e + "/:id"}
+      element={getMenuDirElement(e)}
+    />
+  ));
+}
+

@@ -11,6 +11,8 @@ import getIcon from "./icons";
 import { FormMessage, MenuElem, TMenuNode, TSubMenu } from "./typing";
 import { getButtonName, isString, makeMessage } from "./j";
 
+import { getLastMenuName } from '../components/MenuComps'
+
 
 function icon(e: TMenuNode): React.ReactNode {
   return getIcon(e.icon, defaults.defaultmenuicon);
@@ -33,8 +35,11 @@ function flattenMenu(m: TMenuNode[]): MenuElem[] {
 export function getMenuNameByLocation(id: string): string {
   const i: string = id.substring(1); // remove leading /
   const el: MenuElem[] = flattenMenu(getLeftMenu().menu)
-  const e: TMenuNode | undefined = el.find(e => (e as MenuElem).id === i)
+  let e: TMenuNode | undefined = el.find(e => (e as MenuElem).id === i)
 
+  if (e === undefined) {
+    if (getLastMenuName() !== undefined) return getLastMenuName() as string
+  }
   if (e === undefined) return "????"
 
   return getButtonName(e as MenuElem)

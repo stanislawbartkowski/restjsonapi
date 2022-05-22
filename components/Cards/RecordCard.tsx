@@ -25,7 +25,9 @@ const RecordCard: React.FC<TDetailsCard> = (props) => {
     const cols: TColumn[] = (tcol !== undefined && isfield) ? props.columns.filter(e => e.field !== tcol.field) : props.columns
 
     const selectedcolors: CSSProperties =
-        props.isCurrentDB && props.isCurrentDB(props.r) ? { borderStyle: 'solid', borderWidth: '5px', borderColor: blue[1] } : {}
+        props.isSelected && props.isSelected(props.r) ?
+            props.card?.selectedprops ? { ...props.card.selectedprops } : { borderStyle: 'solid', borderWidth: '5px', borderColor: blue[1] }
+            : {}
 
     const propsC = appendStyle(cardProps(props.card), selectedcolors)
 

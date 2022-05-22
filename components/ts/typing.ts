@@ -1,4 +1,4 @@
-import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsCurrentDB, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType } from '../../ts/typing';
+import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType } from '../../ts/typing';
 
 // =========================
 // status for async reading
@@ -220,7 +220,7 @@ export type ColumnList = JSSupportedType & PropSupportedType & {
 // ===========================
 
 export type TDetailsCard = ColumnList & OneRowData & {
-    isCurrentDB?: FIsCurrentDB
+    isSelected?: FIsSelected
     onRowClick?: OnRowClick
 }
 
@@ -231,6 +231,7 @@ export type TDetailsCard = ColumnList & OneRowData & {
 export type TCard = {
     cardprops?: PropsType
     title?: FormMessage
+    selectedprops?: PropsType
 }
 
 // ==========================

@@ -26,7 +26,7 @@ const CardList: React.FC<RestTableParam & ColumnList> = (props) => {
   }
 
   return <Card title={makeHeader(props, undefined, { vars: props.vars, r: {} })}><Row gutter={[8, 8]}>
-    {datasource.res.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isCurrentDB={props.isCurrentDB} onRowClick={props.onRowClick} /> </Col>)}
+    {datasource.res.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isSelected={props.isSelected} onRowClick={props.onRowClick} /> </Col>)}
   </Row>
   </Card>
 }

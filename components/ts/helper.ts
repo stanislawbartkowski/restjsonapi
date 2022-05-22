@@ -38,7 +38,7 @@ export function detailsTitle(c: ColumnList, pars: OneRowData): [boolean, string 
     const C: TColumn | undefined = findColDetails(c)
     if (C === undefined) return [false, undefined, undefined]
     if (!isObject(C.showdetails))
-        return c.rowkey ? [true, (pars.r as TRow)[c.rowkey] as string, undefined] : [false, undefined, undefined]
+        return c.rowkey ? [true, (pars.r as TRow)[C.field] as string, undefined] : [false, undefined, undefined]
     const s: ShowDetails = C.showdetails as ShowDetails
     if (s.title === undefined) return [false, undefined, s.props]
     return [false, makeMessage(s.title, pars), s.props]
