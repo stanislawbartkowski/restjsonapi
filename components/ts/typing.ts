@@ -67,12 +67,15 @@ export type ButtonAction = ButtonElem & TAction & {
 
 export type TableToolBar = ButtonAction[]
 
+type HeaderTitleType = FormMessage & PropSupportedType
+
+
 
 // =======================
 // show details feature
 // =======================
 export type ShowDetails = ReadDefType & PropSupportedType & {
-    title?: FormMessage
+    title?: HeaderTitleType
     toolbar?: TableToolBar
     collist: ColumnList
 }

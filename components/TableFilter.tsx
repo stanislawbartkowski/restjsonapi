@@ -62,7 +62,7 @@ export function constructTableFilter(c: TColumn): FFilter {
     case FIELDTYPE.BOOLEAN:
       return (value: string | number | boolean, record: TRow) => eqBoolean(record, c.field, value as boolean);
     default:
-      internalerrorlog(`No filter function supported for this type ${t}`)
+      internalerrorlog(`No filter function supported for this type: ${t} !`)
       return (value: string | number | boolean, record: TRow) => true;
   }
 }

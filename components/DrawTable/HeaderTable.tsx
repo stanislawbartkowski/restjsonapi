@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { PageHeader } from "antd";
+import { PageHeader, Space } from "antd";
 
 import { emptyModalListProps } from "./typing";
 import { trace } from "../../ts/l";
@@ -9,7 +9,7 @@ import { TableToolBar, ButtonAction, ClickResult, ShowDetails } from "../ts/typi
 import { clickAction} from "../ts/helper";
 import OneRowTable from '../ShowDetails/OneRowTable'
 import RestComponent from "../RestComponent";
-import { makeMessage } from "../../ts/j";
+import { isObject, makeMessage } from "../../ts/j";
 
 
 function ltrace(mess: string) {
@@ -18,6 +18,17 @@ function ltrace(mess: string) {
 
 function isChooseButton(a: ClickResult, t: RestTableParam) : boolean {
   return (t.choosing !== undefined && t.choosing && a.list === undefined && a.listdef === undefined)
+}
+
+function headerTitle(p: ShowDetails, vars?: TRow) {
+  if (p.title === undefined) return undefined
+//  const title = { title: makeMessage(p.title, { r: vars as TRow })
+  const title : string = makeMessage(p.title, { r: vars as TRow }) as string
+
+  if (isObject(p.title) && p.title?.props) {
+    return { title : <Space {...p.props}> {title} </Space> }
+  }
+  else return { title : title }
 }
 
 const HeaderTable: React.FC<ShowDetails & { refresh: FAction, vars?: TRow, r: RestTableParam, fbutton: FAction }> = (props) => {
@@ -36,7 +47,9 @@ const HeaderTable: React.FC<ShowDetails & { refresh: FAction, vars?: TRow, r: Re
     else setIsModalVisible({ ...res, visible: true, closeAction: fmodalhook })
   }
 
-  const title = props.title ? { title: makeMessage(props.title, { r: props.vars as TRow }) } : undefined;
+//  const title = props.title ? { title: makeMessage(props.title, { r: props.vars as TRow }) } : undefined;
+  //const title = props.title ? { title: <div style={{paddingLeft : 10}}>aaaaa</div> } : undefined;
+  const title = headerTitle(props,props.vars);
 
   const detaDescr = {
     r: props.vars as TRow,
