@@ -1,4 +1,5 @@
 import LocalizedStrings, { LocalizedStringsMethods } from 'react-localization';
+import { isOArray } from './j';
 
 
 const embedded = {
@@ -63,9 +64,25 @@ export function setStrings(s: any, l: string | undefined) {
   if (l) strings.setLanguage(l)
 }
 
-const lstring = (id: string, ...args: any[]): string => {
+const lstring = (id: string, ...args: any): string => {
   const s = strings.getString(id)
-  const ss: string = strings.formatString(s, ...args).toString()
+  if (args === undefined || args.length === 0) return s;
+  if (isOArray(args[0])) {
+    const a: any[] = args[0]
+    let ss: string = "Too many arguments"
+
+    switch (a.length) {
+      case 0: ss = s; break;
+      case 1: ss = strings.formatString(s, a[0]).toString(); break;
+      case 2: ss = strings.formatString(s, a[0],a[1]).toString(); break;
+      case 3: ss = strings.formatString(s, a[0],a[1],a[2]).toString(); break;
+      case 4: ss = strings.formatString(s, a[0],a[1],a[2],a[3]).toString(); break;
+    }
+    return ss;
+  
+  }
+
+  const ss = strings.formatString(s, args).toString();
   return ss;
 }
 
