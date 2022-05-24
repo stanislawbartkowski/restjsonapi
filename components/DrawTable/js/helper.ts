@@ -5,7 +5,7 @@ import { TRow, RowData, OneRowData } from '../../../ts/typing'
 import { callJSFunction } from "../../../ts/j";
 import './styles.css'
 import { transformOneColumn } from "../../ts/transcol";
-import { tomoney, findColDetails } from "../../ts/helper";
+import { tomoney } from "../../ts/helper";
 import { ExtendedFilter } from "../SearchButton/SearchExtended";
 import { constructTableFilter, FFilter } from '../../TableFilter'
 

@@ -22,7 +22,6 @@ function isChooseButton(a: ClickResult, t: RestTableParam) : boolean {
 
 function headerTitle(p: ShowDetails, vars?: TRow) {
   if (p.title === undefined) return undefined
-//  const title = { title: makeMessage(p.title, { r: vars as TRow })
   const title : string = makeMessage(p.title, { r: vars as TRow }) as string
 
   if (isObject(p.title) && p.title?.props) {
@@ -47,8 +46,6 @@ const HeaderTable: React.FC<ShowDetails & { refresh: FAction, vars?: TRow, r: Re
     else setIsModalVisible({ ...res, visible: true, closeAction: fmodalhook })
   }
 
-//  const title = props.title ? { title: makeMessage(props.title, { r: props.vars as TRow }) } : undefined;
-  //const title = props.title ? { title: <div style={{paddingLeft : 10}}>aaaaa</div> } : undefined;
   const title = headerTitle(props,props.vars);
 
   const detaDescr = {

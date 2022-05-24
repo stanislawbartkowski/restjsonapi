@@ -1,6 +1,6 @@
 import { ColumnType } from "antd/lib/table";
 import React from "react";
-import { Badge, Button, Dropdown, Menu, Space, Tag } from "antd";
+import { Badge, Button, Dropdown, Menu, Space, Switch, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
@@ -163,6 +163,11 @@ function constructBadge(badge: TBadge, pars: OneRowData): ReactElement {
     return <Badge title={title} {...ba.props} />
 }
 
+function constructBoolean(c: TColumn, r: TRow, vars?: TRow): ReactElement {
+    const checked: boolean = r[c.field] as boolean
+    return <Switch checked={checked} />
+}
+
 export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam, vars?: TRow): ReactElement {
     let style: CSSProperties = {};
     let rendered = dom;
@@ -170,7 +175,6 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
     if (c.addstyle) {
         style = getAddStyle(c.addstyle, parms);
     }
-
 
     if (c.tags) rendered = constructTags(c.tags, rhook, parms);
     if (c.actions && rhook.fresult) rendered = constructactionsCol(c.actions, rhook, parms);
@@ -185,7 +189,8 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
 
     if (c.showdetails && rhook.fdetails !== undefined)
         return <Button type="link" onClick={() => { if (rhook.fdetails) rhook.fdetails(r) }}>{rendered}</Button>;
-    else return rendered;
+    if (c.fieldtype === FIELDTYPE.BOOLEAN) return constructBoolean(c, r, vars);
+    return rendered;
 
 }
 
@@ -207,7 +212,8 @@ function isRenderable(c: TColumn): boolean {
         c.ident !== undefined ||
         c.tags !== undefined ||
         c.actions !== undefined ||
-        c.badge !== undefined
+        c.badge !== undefined ||
+        c.fieldtype === FIELDTYPE.BOOLEAN
     );
 }
 
