@@ -20,7 +20,7 @@ import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 
-import { TField, TForm, TRadioItem } from '../ts/typing'
+import { TField, TForm, TRadioCheckItem } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, PropsType, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType } from '../ts/transcol';
@@ -83,11 +83,11 @@ export function placeHolder(t: TField) {
 
 // -------- radio
 
-function itemName(e: TRadioItem): string | undefined {
+function itemName(e: TRadioCheckItem): string | undefined {
     return makeMessage(e.label, { r: {} })
 }
 
-function createRadioItem(e: TRadioItem, button?: boolean): ReactNode {
+function createRadioItem(e: TRadioCheckItem, button?: boolean): ReactNode {
 
     if (button) return <Radio.Button value={e.value} {...e.props}>{itemName(e)}</Radio.Button>
     return <Radio value={e.value} {...e.props}>{itemName(e)}</Radio>
@@ -98,13 +98,13 @@ function createRadioGroup(t: TField): ReactNode {
 
     return <Radio.Group {...t.props}>
         {
-            t.radio?.items.map(e => createRadioItem(e, t.radio?.button))
+            (t.radio?.items as TRadioCheckItem[]).map(e => createRadioItem(e, t.radio?.button))
         }
 
     </Radio.Group>
 }
 
-function createSelectGroup(t: TField, items: TRadioItem[], multi: boolean): ReactNode {
+function createSelectGroup(t: TField, items: TRadioCheckItem[], multi: boolean): ReactNode {
 
     const p: SelectProps = multi ? { mode: "multiple" } : {}
 
@@ -121,7 +121,7 @@ function createSelectGroup(t: TField, items: TRadioItem[], multi: boolean): Reac
 function createCheckBoxGroup(t: TField): ReactNode {
     return <Checkbox.Group {...t.props}>
         {
-            t.checkbox?.items.map(e => <Checkbox value={e.value} {...e.props}> {itemName(e)} </Checkbox>)
+            (t.checkbox?.items as TRadioCheckItem[]).map(e => <Checkbox value={e.value} {...e.props}> {itemName(e)} </Checkbox>)
         }
 
     </Checkbox.Group>
@@ -164,11 +164,11 @@ function produceElem(t: FField, err: ErrorMessages, name?: number): [React.React
     }
 
     if (t.radio)
-        if (t.radio.select) return [createSelectGroup(t, t.radio.items, false), undefined]
+        if (t.radio.select) return [createSelectGroup(t, t.radio.items as TRadioCheckItem[], false), undefined]
         else return [createRadioGroup(t), undefined]
 
     if (t.checkbox)
-        if (t.checkbox.select) return [createSelectGroup(t, t.checkbox.items, true), undefined]
+        if (t.checkbox.select) return [createSelectGroup(t, t.checkbox.items as TRadioCheckItem[], true), undefined]
         else return [createCheckBoxGroup(t), undefined]
 
     const fieldtype: FIELDTYPE = fieldType(t)
@@ -354,7 +354,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
     console.log("initvals")
     console.log(initvals)
 
-    const form = <Form 
+    const form = <Form
         form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges} preserve={false}
         layout="horizontal" scrollToFirstError {...props.formprops} initialValues={initvals}>
 

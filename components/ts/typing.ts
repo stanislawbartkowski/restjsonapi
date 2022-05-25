@@ -241,28 +241,36 @@ export type TCard = {
 // form
 // ==========================
 
-// ratio 
 
-export type TRadioItem = PropSupportedType & {
+// radio&check
+
+export type TItemsRest = {
+   restaction: string;
+   value: string
+   label: string
+}
+
+export type TRadioCheckItem = PropSupportedType & {
     value: string,
     label: FormMessage
 }
 
-export type TRadio = PropSupportedType & {
-    items: TRadioItem[]
-    button?: boolean
+export type TRadioCheck = PropSupportedType & JSSupportedType & {
+    items: TRadioCheckItem[] | TItemsRest
     select?: boolean
+}
+
+
+// radio 
+
+export type TRadio = TRadioCheck & {
+    button?: boolean
 }
 
 // check
 
-export type TCheckItem = TRadioItem
 
-
-export type TCheckBox = PropSupportedType & {
-    items: TCheckItem[]
-    select?: boolean
-}
+export type TCheckBox = TRadioCheck
 
 // list
 
