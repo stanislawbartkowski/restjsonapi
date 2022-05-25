@@ -15,7 +15,8 @@ import {
   StepBackwardOutlined,
   MinusCircleOutlined,
   PlusOutlined,
-  CheckOutlined
+  CheckOutlined,
+  ProfileOutlined
 } from "@ant-design/icons";
 
 import { ReactNode } from "react";
@@ -35,7 +36,8 @@ const map = new Map<string, ReactNode>([
   ['stepbackwardoutlined',<StepBackwardOutlined />],
   ['minuscircleoutlined',<MinusCircleOutlined/>],
   ['plusoutlined',<PlusOutlined/>],
-  ['checkoutlined',<CheckOutlined />]
+  ['checkoutlined',<CheckOutlined />],
+  ['profileoutlined',<ProfileOutlined />]
 ]);
 
 function getIcon(id?: string, defaultid?: string): ReactNode {

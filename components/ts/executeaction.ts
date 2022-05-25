@@ -1,17 +1,17 @@
 import { restaction } from "../../services/api";
 import { isEmpty, makeMessage } from "../../ts/j";
 import { fatalexceptionerror, trace } from "../../ts/l";
-import { TRow, OneRowData, HTTPMETHOD } from "../../ts/typing";
+import { TRow, OneRowData, HTTPMETHOD, TComponentProps } from "../../ts/typing";
 import openNotification from "../Notification";
 import { ErrorMessage, ErrorMessages, IIRefCall } from "../ModalForm/ModalFormDialog";
 import { clickAction } from "./helper";
 import type { ActionResult, ButtonAction, ClickResult, FieldError } from "./typing";
 import validateObject, { ObjectType } from "./validateobject";
-import {FAction, ClickActionProps} from '../../ts/typing'
+import { FAction, ClickActionProps } from '../../ts/typing'
 import analyzeresponse from './anayzeresponse'
-import {setPrintContent} from './helper'
+import { setPrintContent } from './helper'
 import defaults from "../../ts/defaults";
-import {history} from '../../ts/CustomRouter'
+import { history } from '../../ts/CustomRouter'
 
 function ltrace(mess: string) {
     trace('ClickButton', mess)
@@ -31,13 +31,13 @@ function transformErrors(err: FieldError[], pars: OneRowData): ErrorMessages {
 
 interface IClickParams extends ClickActionProps {
     vars?: TRow
-    i : IIRefCall
+    i: IIRefCall
 }
 
-function clickButton(props: IClickParams, button?: ButtonAction, t?: TRow): void {
+function clickButton(props: IClickParams, button?: ButtonAction, t?: TRow): TComponentProps | undefined {
 
 
-    const close : FAction = () => {
+    const close: FAction = () => {
         if (props.closeAction) props.closeAction()
     }
     ltrace(`Form button clicked ${button?.id}`)
@@ -51,19 +51,19 @@ function clickButton(props: IClickParams, button?: ButtonAction, t?: TRow): void
     const res: ClickResult = clickAction(button, toPars())
     if (res.close) close()
     if (res.restaction) {
-        props.i.setMode(true,[]);
+        props.i.setMode(true, []);
         restaction(res.method as HTTPMETHOD, res.restaction, res.params, t).then(
-            ({data, response}) => {
-                const da = analyzeresponse(data,response)
-                const resobject : ActionResult = da[0]
+            ({ data, response }) => {
+                const da = analyzeresponse(data, response)
+                const resobject: ActionResult = da[0]
                 ltrace("REST/API returned, validate the action result")
                 validateObject(ObjectType.ACTIONRESULT, `Result ${res.restaction}`, resobject)
                 ltrace("Action result")
                 const r: ActionResult = isEmpty(resobject) ? res : resobject as ActionResult
                 if (r.error) {
-                    props.i.setMode(false,transformErrors(r.error, toPars()))
+                    props.i.setMode(false, transformErrors(r.error, toPars()))
                 } else {
-                    props.i.setMode(false,[]);
+                    props.i.setMode(false, []);
                     close()
 
                     if (r.notification) openNotification(r.notification, { vars: props.vars, r: t as TRow });
@@ -76,11 +76,14 @@ function clickButton(props: IClickParams, button?: ButtonAction, t?: TRow): void
             }
         ).catch(((e) => {
             fatalexceptionerror(`Error while running ${res.restaction}`, e)
-            props.i.setMode(false,[]);
+            props.i.setMode(false, []);
         })
 
         )
+        return undefined
     }
+    if (res.list || res.listdef) return { ...res }
+    return undefined
 }
 
 export default clickButton
