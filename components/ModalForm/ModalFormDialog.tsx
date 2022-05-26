@@ -1,7 +1,7 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
-import { Card, Col, Modal, Row } from 'antd';
+import { Card, Modal } from 'antd';
 
-import type { TClickButton, TField } from '../ts/typing'
+import { ClickResult, PreseForms, StepsForm, TClickButton, TField, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
@@ -9,18 +9,23 @@ import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
-import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars } from '../ts/helper'
-import { trace } from '../../ts/l'
+import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT } from '../ts/helper'
+import { logG, trace } from '../../ts/l'
 import { FIELDTYPE, PropsType, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import { transformValuesTo } from '../ts/transformres';
+import ReadDefError from '../errors/ReadDefError';
+import TemplateFormDialog from './TemplateFormDialog'
+
 
 export type { ErrorMessage, ErrorMessages } from './ModalFormView';
 
 
 export interface IIRefCall {
-    setMode: (loading: boolean, errors: ErrorMessages) => void
+    setMode: (loading: boolean, errors: ErrorMessages) => void,
+    doAction?: (b: ClickResult) => void
+    getVals(): TRow | undefined
 }
 
 
@@ -53,7 +58,7 @@ export type ModalFormProps = {
 
 
 function isCookiesButton(b: ButtonAction): boolean {
-    return b.print !== undefined && b.print
+    return (b.print !== undefined && b.print) || (b.cookie !== undefined && b.cookie)
 }
 
 function setVarsCookies(p: ModalFormProps, b: ButtonAction, r: TRow) {
@@ -63,6 +68,7 @@ function setVarsCookies(p: ModalFormProps, b: ButtonAction, r: TRow) {
 }
 
 function isModalFormCookies(p: TForm): boolean {
+    if (p.buttons === undefined) return false
     const b: ButtonAction | undefined = p.buttons.find(b => isCookiesButton(b))
     return b !== undefined
 }
@@ -77,16 +83,21 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
         err: []
     });
 
+    const [buttontrigger, setButtonTrigger] = useState<ButtonAction | undefined>()
+
     useImperativeHandle(iref, () => ({
         setMode: (loading: boolean, errors: ErrorMessages) => {
             setState({ ...formdef, err: errors, loading: loading })
         },
+        getVals: () => {
+            return ref.current.getValues()
+        }
     })
     )
 
     const ref: MutableRefObject<IRefCall> = useRef<IRefCall>() as MutableRefObject<IRefCall>
 
-    const fields: FFieldElem[] = flattenTForm(formdef.tabledata?.fields as TField[])
+    const fields: FFieldElem[] = preseT(formdef.tabledata as PreseForms) === TPreseEnum.TForm ? flattenTForm(formdef.tabledata?.fields as TField[]) : []
 
 
     function formvalidate(r: TRow): boolean {
@@ -138,21 +149,25 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
 
         function setS(d: ReadDefsResult) {
 
-            const tabledata: TForm = { ...(d.res as TForm) }
-            const vars: TRow | undefined = isModalFormCookies(tabledata) ? getCookiesFormListDefVars(props.listdef as string) : props.initvals
             if (d.status === Status.READY) {
+                const tabledata: TForm = { ...(d.res as TForm) }
+
+                const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : isModalFormCookies(tabledata) ? getCookiesFormListDefVars(props.listdef as string) : props.initvals
+                const tranformvals: TRow | undefined = preseT(tabledata) === TPreseEnum.TForm && vars ? transformValuesTo(vars, tabledata.fields) : undefined
                 setState({
                     status: Status.READY,
                     tabledata: tabledata,
                     js: d.js,
                     err: [],
-                    initvals: vars ? transformValuesTo(vars, tabledata.fields) : undefined
+                    initvals: tranformvals
                 });
             }
-
-            else setState({
-                status: Status.ERROR, err: []
-            })
+            else {
+                logG.error(`Error while reading definition`)
+                setState({
+                    status: Status.ERROR, err: []
+                })
+            }
 
         }
 
@@ -161,6 +176,11 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
     }, [props.listdef]);
 
     if (formdef.status === Status.PENDING) return null
+    if (formdef.status === Status.ERROR) return <ReadDefError />
+
+    if (buttontrigger) {
+        fclick(buttontrigger)
+    }
 
     function onValuesChange(changedFields: Record<string, any>, _: any) {
 
@@ -174,8 +194,10 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
         setState({ ...formdef, err: err })
     }
 
+    const loading: boolean = (formdef.loading !== undefined && formdef.loading)
+
     const buttons: React.ReactNode | undefined = formdef.tabledata?.buttons ?
-        formdef.tabledata.buttons.map(e => constructButton(e, fclick, formdef.loading, formdef.loading && e.id === buttonclicked.current?.id)) :
+        formdef.tabledata.buttons.map(e => constructButton(e, fclick, loading, loading && e.id === buttonclicked.current?.id)) :
         undefined
 
     const formd: TForm = (formdef.tabledata as TForm)
@@ -183,15 +205,23 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
     // requires attention
     //const initvals: TRow | undefined = isModalFormCookies(formd) ? getCookiesFormListDefVars(props.listdef as string) : props.vars
 
+    const ftype: TPreseEnum | undefined = formdef.status === Status.READY ? preseT(formd) : undefined
+
+    if (ftype === TPreseEnum.TForm && buttontrigger === undefined) {
+        const tr: ButtonAction | undefined = formd.buttons ? formd.buttons.find(e => e.trigger) : undefined
+        if (tr) setButtonTrigger(tr)
+    }
+
     const modalFormView: ReactNode = formdef.status === Status.READY ?
-        <ModalFormView
-            ref={ref} err={formdef.err}
-            {...formd}
-            buttonClicked={onButtonClicked}
-            buttonsextrabottom={props.ispage ? buttons : undefined}
-            onValuesChanges={onValuesChange} initvals={formdef.initvals}
-            list={fields}
-        />
+        ftype === TPreseEnum.Steps ? <TemplateFormDialog {...(formd as any as StepsForm)} isform={false} /> :
+            <ModalFormView
+                ref={ref} err={formdef.err}
+                {...formd}
+                buttonClicked={onButtonClicked}
+                buttonsextrabottom={props.ispage ? buttons : undefined}
+                onValuesChanges={onValuesChange} initvals={formdef.initvals}
+                list={fields}
+            />
         : undefined
 
     const modaldialog: ReactNode = <Modal destroyOnClose visible={props.visible}
@@ -201,6 +231,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
 
     const pagedialog: ReactNode = <React.Fragment>
         <Card {...cardProps(formdef.tabledata)} >
+            <InLine js={formdef.js} />
             {modalFormView}
         </Card>
     </React.Fragment>

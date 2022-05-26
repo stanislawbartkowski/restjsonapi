@@ -53,6 +53,7 @@ export type ButtonElem = PropSupportedType & {
   icon?: string;
   name?: FormMessage
   choosefield?: string
+  trigger?: boolean
 };
 
 
@@ -146,7 +147,8 @@ export enum FIELDTYPE {
   ARRAY = "array",
   ANY = "any",
   MONEY = "money",
-  TIME = "time"
+  TIME = "time",
+  HTML = "html"
 }
 
 // ==============================

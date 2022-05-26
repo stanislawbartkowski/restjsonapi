@@ -1,29 +1,32 @@
-import type { TField, TForm, TItemsRest, TRadioCheck, TRadioCheckItem } from "./typing";
+import { PreseForms, TField, TForm, TItemsRest, TPreseEnum, TRadioCheck } from "./typing";
 import { log } from "../../ts/l";
-import { callJSFunction, isOArray, isObject } from "../../ts/j";
+import { callJSFunction, isOArray } from "../../ts/j";
 import type { RestTableParam, RowData, TRow } from "../../ts/typing";
 import { restapilistdef, restapijs, restapishowdetils, restapilist } from "../../services/api";
 import { Status, ColumnList, ShowDetails } from "./typing";
+import { preseT } from './helper'
+import { internalerrorlog } from '../../ts/l'
 
 export type ReadDefsResult = {
     status: Status
-    res?: ColumnList | TForm
+    res?: PreseForms
     js?: any
+    initvar?: TRow
 }
 
 type FSetState = (res: ReadDefsResult) => void
 
-function isTForm(p: ColumnList | TForm): boolean {
-    return (p as TForm).fields !== undefined
+async function readvals(initval: string, vars?: TRow): Promise<TRow> {
+    return await restapilist(initval as string)
 }
 
 async function readdefs(props: RestTableParam, f: FSetState) {
 
-
-    log("RestTableList " + props.list);
+    const def: string = props.listdef ? props.listdef : props.list as string
+    log(`Reading definition ${def}`)
 
     try {
-        const idef: ColumnList | TForm = await restapilistdef(props.listdef ? props.listdef : props.list as string) as (ColumnList | TForm)
+        const idef: PreseForms = await restapilistdef(def) as PreseForms
         const js: string | undefined = (idef.js) ? await restapijs(idef.js) : undefined
         const ic: ColumnList = idef as ColumnList
         let header: ShowDetails | undefined = undefined
@@ -31,12 +34,10 @@ async function readdefs(props: RestTableParam, f: FSetState) {
             header = ic.header.js ? callJSFunction(ic.header.js, { r: {}, vars: props.vars }) : ic.header
             if (header?.def) header = await restapishowdetils(header?.def) as ShowDetails
         }
-
         if (header) {
             ic.header = { ...header }
         }
-
-        if (isTForm(idef)) {
+        if (preseT(idef) === TPreseEnum.TForm) {
             // look for dynamic items
             const t: TForm = idef as TForm
 
@@ -55,12 +56,14 @@ async function readdefs(props: RestTableParam, f: FSetState) {
                 }
                 return c
             }))
-            f({ status: Status.READY, js: js, res: { ...idef, fields: ffields } });
+            const initvals: TRow | undefined = t.restapivals ? await readvals(t.restapivals, props.vars) : undefined
+            f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
         }
         else f({ status: Status.READY, js: js, res: idef });
     } catch (error) {
-        f({ status: Status.ERROR, });
-
+        console.log(error)
+        internalerrorlog(`Error while reading definition ${def}`)
+        f({ status: Status.ERROR });
     }
 
 }

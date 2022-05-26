@@ -23,7 +23,9 @@ const embedded = {
     chooseaction: "Wybierz",
     searchextended: "Wyszukiwanie zaawansowane",
     removefilter: "Usuń filtr",
-    searchclose: "Szukaj i zamknij"
+    searchclose: "Szukaj i zamknij",
+    next: "Dalej",
+    prev: "Poprzedni"
   },
   en: {
     empty: '',
@@ -45,7 +47,9 @@ const embedded = {
     chooseaction: "Choose",
     searchextended: "Extended searching",
     removefilter: "Remove filter",
-    searchclose: "Search and close"
+    searchclose: "Search and close",
+    next: "Next",
+    prev: "Previous"
   }
 };
 

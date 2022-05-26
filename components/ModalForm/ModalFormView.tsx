@@ -152,6 +152,17 @@ function searchItem(t: FField, name?: number): React.ReactNode {
 
 // ===========================================
 
+interface HTMLProps {
+    value?: string
+    onChange?: (value: string) => void
+}
+
+const HTMLControl: React.FC<HTMLProps> = (props) => {
+
+    const html: string = props.value ? props.value : ""
+    return <div dangerouslySetInnerHTML={{ __html: html }} />
+}
+
 
 function produceElem(t: FField, err: ErrorMessages, name?: number): [React.ReactNode, PropsType | undefined] {
 
@@ -183,6 +194,7 @@ function produceElem(t: FField, err: ErrorMessages, name?: number): [React.React
             unCheckedChildren={<CloseOutlined />}
         />, { valuePropName: "checked" }
         ]
+        case FIELDTYPE.HTML : return [<HTMLControl />, undefined]
     }
 
 

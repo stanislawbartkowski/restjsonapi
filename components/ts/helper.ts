@@ -2,7 +2,7 @@ import { CSSProperties } from "react";
 
 import { callJSFunction, isObject, isString, makeMessage } from "../../ts/j";
 import { FieldValue, OneRowData, PropsType, RestTableParam, TRow } from "../../ts/typing";
-import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, ShowDetails, TAction, TCard, TColumn, TField } from "./typing";
+import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TField, TForm, TPreseEnum } from "./typing";
 import defaults from "../../ts/defaults";
 import { setCookieR, getCookieR } from '../../ts/cookies'
 
@@ -180,5 +180,13 @@ export function setCookiesFormListDefVars(listdef: string, r: TRow) {
 
 export function getCookiesFormListDefVars(listdef: string): TRow | undefined {
     return getCookieR(listdef + "-vars ")
+}
+
+// ======================
+// different prese types
+// ======================
+
+export function preseT(p: PreseForms): TPreseEnum {
+    return  (p as any as StepsForm).steps !== undefined ? TPreseEnum.Steps : (p as TForm).fields !== undefined ? TPreseEnum.TForm : TPreseEnum.ColumnList
 }
 

@@ -65,7 +65,6 @@ function clickButton(props: IClickParams, button?: ButtonAction, t?: TRow): TCom
                 } else {
                     props.i.setMode(false, []);
                     close()
-
                     if (r.notification) openNotification(r.notification, { vars: props.vars, r: t as TRow });
                     if (props.refresh) props.refresh()
                     if (button.print) {
@@ -73,16 +72,17 @@ function clickButton(props: IClickParams, button?: ButtonAction, t?: TRow): TCom
                         history.push(defaults.displayprintrouterid);
                     }
                 }
+            if (props.i.doAction) props.i.doAction(resobject)
             }
         ).catch(((e) => {
             fatalexceptionerror(`Error while running ${res.restaction}`, e)
             props.i.setMode(false, []);
         })
-
         )
         return undefined
     }
     if (res.list || res.listdef) return { ...res }
+    if (props.i.doAction) props.i.doAction(res)
     return undefined
 }
 

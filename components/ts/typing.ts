@@ -61,6 +61,7 @@ export type TFieldBase = {
 // ===============================
 
 export type ButtonAction = ButtonElem & TAction & {
+    cookie?: boolean
     validate?: boolean
     confirm?: FormMessage | boolean
 }
@@ -120,7 +121,10 @@ export type FieldError = {
 export type ActionResult = {
     error?: FieldError[]
     notification?: TNotification
+    next?: boolean
+    prev?: boolean
     text?: boolean
+    vars?: TRow
 }
 
 
@@ -245,9 +249,9 @@ export type TCard = {
 // radio&check
 
 export type TItemsRest = {
-   restaction: string;
-   value: string
-   label: string
+    restaction: string;
+    value: string
+    label: string
 }
 
 export type TRadioCheckItem = PropSupportedType & {
@@ -304,12 +308,32 @@ export type TForm = JSSupportedType & TCard & {
     fields: TField[]
     formprops?: PropsType
     buttons: ButtonAction[]
+    restapivals?: string
 }
 
-// ==============================
-// modal props
-// ==============================
+// --------------------------------
+// steps
+// --------------------------------
 
+// ==================================
+// presentation data
+// ==================================
+
+export type StepsElem = PropSupportedType & {
+    title: FormMessage
+}
+
+export type StepsForm = PropSupportedType & {
+    steps: StepsElem[]
+}
+
+export type PreseForms = TForm | ColumnList
+
+export enum TPreseEnum {
+    TForm, ColumnList, Steps
+}
+
+// ===== buttons 
 
 export type TClickButton = (clickbutton?: ButtonAction, row?: TRow) => void
 
@@ -323,6 +347,8 @@ export enum BUTTONACTION {
     DEL = 'DEL',
     UPDATE = 'UPDATE',
     PRINT = 'PRINT',
-    CHOOSE = 'CHOOSE'
+    CHOOSE = 'CHOOSE',
+    NEXT = 'NEXT',
+    PREV = 'PREV'
 }
 

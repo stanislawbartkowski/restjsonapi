@@ -58,7 +58,10 @@ const ActionResultV: ObjectDescr = {
         { attr: 'error', type: { isArray: true, arraytype: FieldErrorV } },
         { attr: 'notification', type: TNotificationV},
         { attr: 'content'},
-        { attr: 'text', type: FIELDTYPE.BOOLEAN}
+        { attr: 'text', type: FIELDTYPE.BOOLEAN},
+        { attr: 'next', type: FIELDTYPE.BOOLEAN},
+        { attr: 'prev', type: FIELDTYPE.BOOLEAN},
+        { attr: 'vars', type: FIELDTYPE.OBJECT}
     ]
 
 }
