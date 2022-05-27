@@ -368,7 +368,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     const form = <Form
         form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges} preserve={false}
-        layout="horizontal" scrollToFirstError {...props.formprops} initialValues={initvals}>
+        layout="horizontal" scrollToFirstError {...props.formprops} >
 
         {buttonstop}
 
