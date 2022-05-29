@@ -48,8 +48,8 @@ export function detailsTitle(c: ColumnList, pars: OneRowData): [boolean, string 
 // =================
 // action
 // =================
-export function clickAction(t: TAction, pars: OneRowData): ClickResult {
-    let res: ClickResult = t;
+export function clickAction(t: TAction, pars: OneRowData): TAction {
+    let res: TAction = t;
     if (t.jsclick) res = callJSFunction(t.jsclick as string, pars);
     return res;
 }

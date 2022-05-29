@@ -37,10 +37,10 @@ interface IClickParams extends ClickActionProps {
 function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponentProps | undefined {
 
 
-    function doaction(r: ActionResult, presult?: string) {
-        ltrace("REST/API returned, validate the action result")
-        validateObject(ObjectType.ACTIONRESULT, `Result ${res.restaction}`, r)
-        ltrace("Action result")
+    function doaction(r: TAction, presult?: string) {
+//        ltrace("REST/API returned, validate the action result")
+//        validateObject(ObjectType.ACTIONRESULT, `Result ${res.restaction}`, r)
+//        ltrace("Action result")
         if (r.error) {
             props.i.setMode(false, transformErrors(r.error, toPars()))
         } else {
@@ -68,7 +68,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
     function toPars(): OneRowData {
         return { vars: props.vars, r: t as TRow }
     }
-    const res: ClickResult = clickAction(button, toPars())
+    const res: TAction = clickAction(button, toPars())
     if (res.close) close()
     if (res.restaction) {
         props.i.setMode(true, []);
@@ -77,25 +77,6 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
                 const da = analyzeresponse(data, response)
                 const resobject: ActionResult = da[0]
                 doaction(resobject, da[1])
-                /*                
-                                ltrace("REST/API returned, validate the action result")
-                                validateObject(ObjectType.ACTIONRESULT, `Result ${res.restaction}`, resobject)
-                                ltrace("Action result")
-                                const r: ActionResult = isEmpty(resobject) ? res : resobject as ActionResult
-                                if (r.error) {
-                                    props.i.setMode(false, transformErrors(r.error, toPars()))
-                                } else {
-                                    props.i.setMode(false, []);
-                                    close()
-                                    if (r.notification) openNotification(r.notification, { vars: props.vars, r: t as TRow });
-                                    if (props.refresh) props.refresh()
-                                    if (button.print) {
-                                        setPrintContent({ result: resobject, content: (da[1] as string), button: (button as ButtonAction) });
-                                        history.push(defaults.displayprintrouterid);
-                                    }
-                                }
-                                if (props.i.doAction) props.i.doAction(resobject)
-                */
             }
         ).catch(((e) => {
             fatalexceptionerror(`Error while running ${res.restaction}`, e)
