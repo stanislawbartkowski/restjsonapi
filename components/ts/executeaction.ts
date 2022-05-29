@@ -5,7 +5,7 @@ import { TRow, OneRowData, HTTPMETHOD, TComponentProps } from "../../ts/typing";
 import openNotification from "../Notification";
 import { ErrorMessage, ErrorMessages, IIRefCall } from "../ModalForm/ModalFormDialog";
 import { clickAction } from "./helper";
-import type { ActionResult, ButtonAction, ClickResult, FieldError } from "./typing";
+import type { ActionResult, ButtonAction, ClickResult, FieldError, TAction } from "./typing";
 import validateObject, { ObjectType } from "./validateobject";
 import { FAction, ClickActionProps } from '../../ts/typing'
 import analyzeresponse from './anayzeresponse'
@@ -34,13 +34,33 @@ interface IClickParams extends ClickActionProps {
     i: IIRefCall
 }
 
-function clickButton(props: IClickParams, button?: ButtonAction, t?: TRow): TComponentProps | undefined {
+function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponentProps | undefined {
 
+
+    function doaction(r: ActionResult, presult?: string) {
+        ltrace("REST/API returned, validate the action result")
+        validateObject(ObjectType.ACTIONRESULT, `Result ${res.restaction}`, r)
+        ltrace("Action result")
+        if (r.error) {
+            props.i.setMode(false, transformErrors(r.error, toPars()))
+        } else {
+            props.i.setMode(false, []);
+            close()
+            if (r.notification) openNotification(r.notification, { vars: props.vars, r: t as TRow });
+            if (props.refresh) props.refresh()
+            if (button?.print) {
+                setPrintContent({ result: r, content: (presult as string), button: (button as ButtonAction) });
+                history.push(defaults.displayprintrouterid);
+            }
+        }
+        if (props.i.doAction) props.i.doAction(r)
+        if (r.vars) props.i.setVals(r.vars)
+    }
 
     const close: FAction = () => {
         if (props.closeAction) props.closeAction()
     }
-    ltrace(`Form button clicked ${button?.id}`)
+    ltrace('clickButton function')
     if (button === undefined) {
         close()
         return;
@@ -56,23 +76,26 @@ function clickButton(props: IClickParams, button?: ButtonAction, t?: TRow): TCom
             ({ data, response }) => {
                 const da = analyzeresponse(data, response)
                 const resobject: ActionResult = da[0]
-                ltrace("REST/API returned, validate the action result")
-                validateObject(ObjectType.ACTIONRESULT, `Result ${res.restaction}`, resobject)
-                ltrace("Action result")
-                const r: ActionResult = isEmpty(resobject) ? res : resobject as ActionResult
-                if (r.error) {
-                    props.i.setMode(false, transformErrors(r.error, toPars()))
-                } else {
-                    props.i.setMode(false, []);
-                    close()
-                    if (r.notification) openNotification(r.notification, { vars: props.vars, r: t as TRow });
-                    if (props.refresh) props.refresh()
-                    if (button.print) {
-                        setPrintContent({ result: resobject, content: (da[1] as string), button: (button as ButtonAction) });
-                        history.push(defaults.displayprintrouterid);
-                    }
-                }
-            if (props.i.doAction) props.i.doAction(resobject)
+                doaction(resobject, da[1])
+                /*                
+                                ltrace("REST/API returned, validate the action result")
+                                validateObject(ObjectType.ACTIONRESULT, `Result ${res.restaction}`, resobject)
+                                ltrace("Action result")
+                                const r: ActionResult = isEmpty(resobject) ? res : resobject as ActionResult
+                                if (r.error) {
+                                    props.i.setMode(false, transformErrors(r.error, toPars()))
+                                } else {
+                                    props.i.setMode(false, []);
+                                    close()
+                                    if (r.notification) openNotification(r.notification, { vars: props.vars, r: t as TRow });
+                                    if (props.refresh) props.refresh()
+                                    if (button.print) {
+                                        setPrintContent({ result: resobject, content: (da[1] as string), button: (button as ButtonAction) });
+                                        history.push(defaults.displayprintrouterid);
+                                    }
+                                }
+                                if (props.i.doAction) props.i.doAction(resobject)
+                */
             }
         ).catch(((e) => {
             fatalexceptionerror(`Error while running ${res.restaction}`, e)
@@ -81,8 +104,9 @@ function clickButton(props: IClickParams, button?: ButtonAction, t?: TRow): TCom
         )
         return undefined
     }
+    doaction(res)
     if (res.list || res.listdef) return { ...res }
-    if (props.i.doAction) props.i.doAction(res)
+    //if (props.i.doAction) props.i.doAction(res)
     return undefined
 }
 

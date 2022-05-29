@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactNode, useEffect, useImperativeHandle, useState } from 'react';
+import React, { FocusEventHandler, ForwardedRef, forwardRef, ReactNode, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import {
     Form,
@@ -41,6 +41,10 @@ type FField = TField & {
     groupT?: TField
 }
 
+type TFieldChange = {
+    fieldchange: Set<string>;
+    notescalatewhenchange: Set<string>
+}
 
 const { RangePicker } = DatePicker;
 
@@ -53,15 +57,21 @@ export type ErrorMessages = ErrorMessage[]
 
 export type FOnValuesChanged = (changedFields: Record<string, any>, _: Record<string, any>) => void
 
+export type FOnFieldChanged = (id: string) => void
+
 function ltrace(mess: string) {
     trace('ModalFormView', mess)
 }
 
 export interface IRefCall {
     validate: () => void
-    setValue: (field: string, value: FieldValue) => void
-    scrollFocus: (field: string) => void
+    setValues: (row: TRow) => void
     getValues: () => TRow
+}
+
+interface IFieldContext {
+    getChanges: () => TFieldChange
+    fieldChanged: (id: string) => void
 }
 
 type TFormView = TForm & {
@@ -146,7 +156,6 @@ function searchItem(t: FField, name?: number): React.ReactNode {
         t.searchF(value, { ...t, name: name });
     }
 
-
     return <Input.Search  {...placeHolder(t)}  {...t.iprops}  {...enterButton(t)} onSearch={onSearchButton} />
 }
 
@@ -163,13 +172,28 @@ const HTMLControl: React.FC<HTMLProps> = (props) => {
     return <div dangerouslySetInnerHTML={{ __html: html }} />
 }
 
+function checkchange(ir: IFieldContext, id: string) {
 
-function produceElem(t: FField, err: ErrorMessages, name?: number): [React.ReactNode, PropsType | undefined] {
+    const ch: TFieldChange = ir.getChanges()
+    const exist: boolean = ch.fieldchange.has(id)
+    if (exist) {
+        ch.fieldchange.delete(id)
+        ir.fieldChanged(id)
+    }
 
+}
+
+function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: number): [React.ReactNode, PropsType | undefined] {
+
+    const onBlur: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
+        const id: string = c.target.id
+        log(id + " on blur")
+        checkchange(ir, c.target.id)
+    }
 
     if (isItemGroup(t)) {
         return [<React.Fragment>
-            {(t.items as TField[]).map(e => produceFormItem({ ...e, searchF: t.searchF, groupT: t }, err, name))}
+            {(t.items as TField[]).map(e => produceFormItem(ir, { ...e, searchF: t.searchF, groupT: t }, err, name))}
         </React.Fragment>,
             undefined]
     }
@@ -184,22 +208,24 @@ function produceElem(t: FField, err: ErrorMessages, name?: number): [React.React
 
     const fieldtype: FIELDTYPE = fieldType(t)
 
+    // except boolean/switch - change reported when blurred
+    if (fieldtype !== FIELDTYPE.BOOLEAN && fieldtype !== FIELDTYPE.DATE) ir.getChanges().notescalatewhenchange.add(t.field)
+
     switch (fieldtype) {
-        case FIELDTYPE.NUMBER: return [<InputNumber {...placeHolder(t)} {...t.iprops} />, undefined]
+        case FIELDTYPE.NUMBER: return [<InputNumber onBlur={onBlur} {...placeHolder(t)} {...t.iprops} />, undefined]
         case FIELDTYPE.DATE:
             if (t.range) return [<RangePicker {...t.iprops} />, undefined]
-            return [<DatePicker {...t.iprops} />, undefined]
+            return [<DatePicker  {...t.iprops} />, undefined]
         case FIELDTYPE.BOOLEAN: return [<Switch {...t.iprops}
             checkedChildren={<CheckOutlined />}
             unCheckedChildren={<CloseOutlined />}
         />, { valuePropName: "checked" }
         ]
-        case FIELDTYPE.HTML : return [<HTMLControl />, undefined]
+        case FIELDTYPE.HTML: return [<HTMLControl />, undefined]
     }
 
-
     return t.enterbutton ? [searchItem(t, name), undefined] :
-        [<Input {...placeHolder(t)}  {...t.iprops} />, undefined]
+        [<Input onBlur={onBlur} {...placeHolder(t)}  {...t.iprops} />, undefined]
 }
 
 export function findErrField(field: string, err: ErrorMessages): ErrorMessage | undefined {
@@ -212,7 +238,8 @@ function errorMessage(t: FField, err: ErrorMessages): {} | { validateStatus: Val
     return { validateStatus: 'error', help: [e.message] }
 }
 
-function produceFormItem(t: FField, err: ErrorMessages, name?: number): React.ReactNode {
+
+function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: number): React.ReactNode {
 
     const fieldtype: FIELDTYPE = fieldType(t)
     const rules = fieldtype === FIELDTYPE.MONEY ? [{ pattern: new RegExp(/^[+-]?\d*\.?\d*$/), message: lstring("moneypattern") }] : undefined
@@ -222,12 +249,13 @@ function produceFormItem(t: FField, err: ErrorMessages, name?: number): React.Re
     }
     else if (rules) props.rules = rules
 
-    const addprops = t.fieldtype === FIELDTYPE.BOOLEAN ? { valuePropName: "checked" } : undefined
+    // checked for boolean and not radio (important)
+    const addprops = (t.fieldtype === FIELDTYPE.BOOLEAN && t.radio === undefined) ? { valuePropName: "checked" } : undefined
 
-    const elemp = produceElem(t, err, name)
+    const elemp = produceElem(ir, t, err, name)
 
     const mess: string = fieldTitle(t, { r: {} });
-    return <Form.Item {...props} id={t.field} name={name !== undefined ? [name, t.field] : t.field} key={t.field} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]}>
+    return <Form.Item  {...props} id={t.field} name={name !== undefined ? [name, t.field] : t.field} key={t.field} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]}>
         {elemp[0]}
     </Form.Item>
 }
@@ -237,7 +265,7 @@ function produceFormItem(t: FField, err: ErrorMessages, name?: number): React.Re
 // ================================
 
 
-function createList(t: FField, err: ErrorMessages): ReactNode {
+function createList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {
 
     const addButton: ButtonElem = t.list?.addbutton as ButtonElem
 
@@ -250,7 +278,7 @@ function createList(t: FField, err: ErrorMessages): ReactNode {
             <>
                 {fields.map(({ key, name, ...restField }) => (
                     <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-                        {produceFormItem(t, err, name)}
+                        {produceFormItem(ir, t, err, name)}
                         <MinusCircleOutlined onClick={() => remove(name)} />
                     </Space>
                 ))}
@@ -267,10 +295,10 @@ function createList(t: FField, err: ErrorMessages): ReactNode {
 }
 
 
-function produceItem(t: FField, err: ErrorMessages): React.ReactNode {
+function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages): React.ReactNode {
 
-    if (t.list) return createList(t, err)
-    return produceFormItem(t, err)
+    if (t.list) return createList(ir, t, err)
+    return produceFormItem(ir, t, err)
 
 }
 
@@ -282,10 +310,10 @@ type SearchDialogProps = TField & {
 
 const emptySearch = { field: "", visible: false }
 
-const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged }>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
-
+    const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
 
     const [f]: [FormInstance] = Form.useForm()
 
@@ -294,35 +322,28 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
         props.buttonClicked(transformValuesFrom(values, props.list))
     };
 
+    const getVals = () : TRow => {
+        const r: TRow = f.getFieldsValue()
+        return transformValuesFrom(r, props.list)
+    }
+
     useImperativeHandle(ref, () => ({
         getValues: () => {
-            const r: TRow = f.getFieldsValue()
-            return transformValuesFrom(r, props.list)
+            return getVals()
         },
         validate: () => {
             ltrace('submit');
             f.submit()
         },
-        setValue: (field: string, value: FieldValue) => {
-            ltrace(`${field} value: ${value}`)
-            f.setFields([
-                {
-                    name: field,
-                    touched: false,
-                    value: value
-                },
-            ]);
-
+        setValues: (row: TRow) => {
+            const r : TRow = getVals();
+            const newr : TRow = {...r,...row}
+            f.setFieldsValue(transformValuesTo(newr, props.list))
         },
-        scrollFocus(field: string) {
-            ltrace(`focus: ${field}`)
-            f.scrollToField(field);
-        }
     }));
 
     useEffect(() => {
 
-        console.log("Formdef useeffect")
         console.log(props.initvals)
         f.setFieldsValue(props.initvals);
 
@@ -363,16 +384,33 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
     //const initvals = {paramsrequired: "aaa"}
     const initvals = props.initvals ? transformValuesTo(props.initvals as TRow, props.list) : undefined
 
-    console.log("initvals")
     console.log(initvals)
+
+    const onFieldsChanges = (changedFields: Record<string, any>, _: any) => {
+        const id: string = changedFields[0]["name"][0]
+        log(id + " changed")
+        // if field is not triggered when blurred, escalates immediately
+        if (!fchanges.current.notescalatewhenchange.has(id)) props.onFieldChange(id)
+        else fchanges.current.fieldchange.add(id)
+    }
+
+    const fieldContext: IFieldContext = {
+        getChanges: function (): TFieldChange {
+            return fchanges.current;
+        },
+        fieldChanged: function (id: string): void {
+            console.log(id + " change escalated")
+            props.onFieldChange(id)
+        }
+    }
 
     const form = <Form
         form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges} preserve={false}
-        layout="horizontal" scrollToFirstError {...props.formprops} >
+        layout="horizontal" scrollToFirstError {...props.formprops} onFieldsChange={onFieldsChanges} >
 
         {buttonstop}
 
-        {props.fields.map(e => produceItem({ ...e, searchF: searchF }, props.err))}
+        {props.fields.map(e => produceItem(fieldContext, { ...e, searchF: searchF }, props.err))}
 
         {buttonsbottom}
 

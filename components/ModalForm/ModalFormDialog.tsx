@@ -8,7 +8,7 @@ import { Status } from '../ts/typing'
 import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
-import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
+import ModalFormView, { IRefCall, ErrorMessages, findErrField, FOnFieldChanged } from './ModalFormView';
 import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
 import { FIELDTYPE, PropsType, TRow } from '../../ts/typing'
@@ -26,6 +26,7 @@ export interface IIRefCall {
     setMode: (loading: boolean, errors: ErrorMessages) => void,
     doAction?: (b: ClickResult) => void
     getVals(): TRow | undefined
+    setVals : (row: TRow) => void
 }
 
 
@@ -91,7 +92,11 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
         },
         getVals: () => {
             return ref.current.getValues()
+        },
+        setVals: (r: TRow) => {
+            ref.current.setValues(r)
         }
+
     })
     )
 
@@ -194,6 +199,17 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
         setState({ ...formdef, err: err })
     }
 
+    const onFieldChange: FOnFieldChanged = (id: string) => {
+        console.log(id + " field changed")
+        const f: FFieldElem | undefined = fields.find(e => e.field === id)
+        if (f === undefined) return
+        if (f.onchange) {
+            const v: TRow = ref.current.getValues()
+            props.clickButton(f.onchange, v)
+        }
+    }
+
+
     const loading: boolean = (formdef.loading !== undefined && formdef.loading)
 
     const buttons: React.ReactNode | undefined = formdef.tabledata?.buttons ?
@@ -220,6 +236,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
                 buttonClicked={onButtonClicked}
                 buttonsextrabottom={props.ispage ? buttons : undefined}
                 onValuesChanges={onValuesChange} initvals={formdef.initvals}
+                onFieldChange={onFieldChange}
                 list={fields}
             />
         : undefined

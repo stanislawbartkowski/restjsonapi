@@ -38,7 +38,8 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickBu
       ref.current?.setMode(loading, errors)
     },
     getVals: () => {
-      return c.vars
+      const ar: TRow | undefined = ref.current?.getVals()
+      return { ...c.vars, ...ar }
     },
     doAction: (b: ClickResult) => {
       log(`doaction`)
@@ -57,7 +58,9 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickBu
           log("Beginning, cannot go backward")
         }
       }
-
+    },
+    setVals: (r: TRow) => {
+      ref.current?.setVals(r)
     }
   })
   )

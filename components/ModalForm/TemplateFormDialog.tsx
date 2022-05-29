@@ -3,7 +3,7 @@ import React, { MutableRefObject, useRef, useState } from "react";
 import { IIRefCall } from "./ModalFormDialog";
 import ModalFormDialog from "./ModalFormDialog";
 import executeAction from '../ts/executeaction'
-import { ButtonAction, StepsForm, TClickButton } from "../ts/typing";
+import { StepsForm, TAction, TClickButton } from "../ts/typing";
 import { FAction, TComponentProps, TRow } from "../../ts/typing";
 import { ClickActionProps } from "../../ts/typing";
 import RestComponent from "../RestComponent";
@@ -31,7 +31,7 @@ const ModalDialog: React.FC<(ModalFormProps | StepsForm) & { isform: boolean }> 
         setRestView({ visible: false })
     }
 
-    const clickButton: TClickButton = (button?: ButtonAction, row?: TRow) => {
+    const clickButton: TClickButton = (button?: TAction, row?: TRow) => {
         const res: TComponentProps | undefined = executeAction({ ...props, i: ref.current }, button, row);
         if (res) {
             setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF } })

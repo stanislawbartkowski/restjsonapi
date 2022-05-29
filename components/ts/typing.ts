@@ -299,6 +299,7 @@ export type TField = PropSupportedType & TFieldBase & {
     range?: boolean
     placeholder?: FormMessage
     enterbutton?: SearchChooseButton
+    onchange? : ButtonAction
 }
 
 
