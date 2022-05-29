@@ -145,9 +145,10 @@ export type ClickAction = ClickResult & {
 export type TAction = ClickAction & FormMessage
 
 // list actions e.g. action columne
-export type TActions = JSSupportedType & {
+export type TActions = JSSupportedType & PropSupportedType & {
     dropdown?: boolean
     actions?: TAction[]
+    dprops?: PropsType
 }
 
 

@@ -108,12 +108,12 @@ function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRowData): 
     if (actions === undefined) return undefined
     if (act.dropdown) {
         const menu = (
-            <Menu>
+            <Menu {...act.props}>
                 {actions.map(e => constructMenuAction(numb++, e, r, pars))}
             </Menu>
         );
         return (
-            <Dropdown.Button icon={getIcon('moreoutlined')} overlay={menu}>
+            <Dropdown.Button {...act.dprops} icon={getIcon('moreoutlined')} overlay={menu}>
             </Dropdown.Button>
         )
     }
