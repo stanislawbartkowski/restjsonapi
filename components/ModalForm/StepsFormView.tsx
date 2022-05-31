@@ -7,11 +7,11 @@ import ModalFormDialog, { ErrorMessages, IIRefCall } from "./ModalFormDialog"
 import { log } from "../../ts/l"
 import { TRow } from "../../ts/typing"
 
-function constructStep(p: StepsElem, key: number, last: boolean): React.ReactNode {
+function constructStep(p: StepsElem, key: number, last: boolean, errorstep: boolean): React.ReactNode {
 
   const title: string = makeMessage(p.title) as string
 
-  const c: StepProps | undefined = last ? { status: 'finish' } : undefined
+  const c: StepProps | undefined = errorstep ? { status: 'error' } : last ? { status: 'finish' } : undefined
 
   return <Steps.Step key={key} title={title} {...p.props} {...c} />
 }
@@ -19,18 +19,19 @@ function constructStep(p: StepsElem, key: number, last: boolean): React.ReactNod
 type TData = {
   current: number,
   vars?: TRow
+  errorstep: number | undefined
 }
 
 const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickButton }>((props, iref) => {
 
-  const [c, setCurrent] = useState<TData>({ current: 0 });
+  const [c, setCurrent] = useState<TData>({ current: 0, errorstep: undefined });
   let key: number = 0
 
   const ref: MutableRefObject<IIRefCall | undefined> = useRef<IIRefCall>();
 
-  function setC(current: number, vars: TRow | undefined) {
+  function setC(current: number, vars: TRow | undefined, b: ClickResult) {
     const v: TRow | undefined = ref.current?.getVals();
-    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars } })
+    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined })
   }
 
   useImperativeHandle(iref, () => ({
@@ -43,21 +44,20 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickBu
     },
     doAction: (b: ClickResult) => {
       log(`doaction`)
-      const current: number = c.current
+      let current: number = c.current
       if (b?.next) {
-        if (current < props.steps.length - 1) {
-          setC(current + 1, b.vars)
-        }
-        else {
-          log("Last step, cannot go forward")
-        }
+        if (current < props.steps.length - 1) current = current + 1
+      } else {
+        log("Last step, cannot go forward")
       }
+
       if (b?.prev) {
-        if (current > 0) setC(current - 1, b.vars)
+        if (current > 0) current = current - 1
         else {
           log("Beginning, cannot go backward")
         }
       }
+      setC(current, b.vars, b)
     },
     setVals: (r: TRow) => {
       ref.current?.setVals(r)
@@ -66,7 +66,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickBu
   )
 
   return <React.Fragment><Steps current={c.current}>
-    {props.steps.map(e => constructStep(e, key++, c.current === props.steps.length - 1))}
+    {props.steps.map(e => constructStep(e, key++, c.current === props.steps.length - 1, c.errorstep ? (key - 1) === c.errorstep : false))}
   </Steps>
     <ModalFormDialog ref={ref as any} {...props.steps[c.current]} clickButton={props.clickButton} visible ispage initvals={c.vars} />
   </React.Fragment>
