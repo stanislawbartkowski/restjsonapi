@@ -1,7 +1,7 @@
 import React, { useState, forwardRef, useRef, MutableRefObject, useImperativeHandle } from "react"
 import { StepProps, Steps } from 'antd'
 
-import type { ClickResult, StepsElem, StepsForm, TClickButton } from "../ts/typing"
+import type { ButtonAction, ClickResult, StepsElem, StepsForm, TClickButton } from "../ts/typing"
 import { makeMessage } from "../../ts/j"
 import ModalFormDialog, { ErrorMessages, IIRefCall } from "./ModalFormDialog"
 import { log } from "../../ts/l"
@@ -65,10 +65,14 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickBu
   })
   )
 
+  const clickB: TClickButton = (b?: ButtonAction, row?: TRow) => {
+    props.clickButton(b, { ...c.vars, ...row })
+  }
+
   return <React.Fragment><Steps current={c.current}>
     {props.steps.map(e => constructStep(e, key++, c.current === props.steps.length - 1, c.errorstep ? (key - 1) === c.errorstep : false))}
   </Steps>
-    <ModalFormDialog ref={ref as any} {...props.steps[c.current]} clickButton={props.clickButton} visible ispage initvals={c.vars} />
+    <ModalFormDialog ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={c.vars} />
   </React.Fragment>
 })
 
