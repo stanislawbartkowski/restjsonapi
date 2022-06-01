@@ -61,7 +61,12 @@ export type ButtonElem = PropSupportedType & {
 // table props
 // ===========================
 
-export type RestTableParam = {
+export type RESTMETH = {
+  method?: HTTPMETHOD;
+  upload?: boolean;
+}
+
+export type RestTableParam = RESTMETH & {
   list?: string;
   params?: Record<string, FieldValue>;
   listdef?: string;
@@ -70,8 +75,6 @@ export type RestTableParam = {
   onTableRead?: OnTableRead;
   vars?: TRow;
   restaction?: string;
-  method?: HTTPMETHOD;
-  upload?: boolean;
   component?: string
   modalprops?: PropsType
   choosing?: boolean

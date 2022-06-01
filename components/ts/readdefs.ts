@@ -20,7 +20,7 @@ async function readvals(initval: string, vars?: TRow): Promise<TRow> {
     return await restapilist(initval as string)
 }
 
-async function readdefs(props: RestTableParam, f: FSetState) {
+async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals? : boolean) {
 
     const def: string = props.listdef ? props.listdef : props.list as string
     log(`Reading definition ${def}`)
@@ -56,7 +56,7 @@ async function readdefs(props: RestTableParam, f: FSetState) {
                 }
                 return c
             }))
-            const initvals: TRow | undefined = t.restapivals ? await readvals(t.restapivals, props.vars) : undefined
+            const initvals: TRow | undefined = (t.restapivals && !ignoreinitvals) ? await readvals(t.restapivals, props.vars) : undefined
             f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
         }
         else f({ status: Status.READY, js: js, res: idef });

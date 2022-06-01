@@ -20,6 +20,7 @@ type TData = {
   current: number,
   vars?: TRow
   errorstep: number | undefined
+  aftermove?: boolean
 }
 
 const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickButton }>((props, iref) => {
@@ -31,7 +32,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickBu
 
   function setC(current: number, vars: TRow | undefined, b: ClickResult) {
     const v: TRow | undefined = ref.current?.getVals();
-    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined })
+    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined, aftermove : true })
   }
 
   useImperativeHandle(iref, () => ({
@@ -72,7 +73,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickBu
   return <React.Fragment><Steps current={c.current}>
     {props.steps.map(e => constructStep(e, key++, c.current === props.steps.length - 1, c.errorstep ? (key - 1) === c.errorstep : false))}
   </Steps>
-    <ModalFormDialog ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={c.vars} />
+    <ModalFormDialog ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={c.vars} ignorerestapivals={c.aftermove} />
   </React.Fragment>
 })
 

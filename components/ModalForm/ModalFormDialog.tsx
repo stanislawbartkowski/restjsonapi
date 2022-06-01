@@ -26,7 +26,7 @@ export interface IIRefCall {
     setMode: (loading: boolean, errors: ErrorMessages) => void,
     doAction?: (b: ClickResult) => void
     getVals(): TRow | undefined
-    setVals : (row: TRow) => void
+    setVals: (row: TRow) => void
 }
 
 
@@ -52,9 +52,10 @@ export type ModalFormProps = {
     ispage?: boolean
     clickButton: TClickButton
     listdef?: string
-    props?: PropsType
+    modalprops?: PropsType
     visible?: boolean
     initvals?: TRow
+    ignorerestapivals?: boolean
 }
 
 
@@ -176,7 +177,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
 
         }
 
-        readdefs(props, setS)
+        readdefs(props, setS, props.ignorerestapivals)
 
     }, [props.listdef]);
 
@@ -242,7 +243,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
         : undefined
 
     const modaldialog: ReactNode = <Modal destroyOnClose visible={props.visible}
-        onCancel={onClose} {...props.props} footer={buttons}>
+        onCancel={onClose} {...props.modalprops} footer={buttons}>
         {modalFormView}
     </Modal >
 
