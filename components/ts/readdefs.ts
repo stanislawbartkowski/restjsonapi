@@ -56,7 +56,7 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals? : b
                 }
                 return c
             }))
-            const initvals: TRow | undefined = (t.restapivals && !ignoreinitvals) ? await readvals(t.restapivals, props.vars) : undefined
+            const initvals: TRow | undefined = (t.restapivals && (ignoreinitvals === undefined || !ignoreinitvals)) ? await readvals(t.restapivals, props.vars) : undefined
             f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
         }
         else f({ status: Status.READY, js: js, res: idef });

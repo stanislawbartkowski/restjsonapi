@@ -67,7 +67,8 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickBu
   )
 
   const clickB: TClickButton = (b?: ButtonAction, row?: TRow) => {
-    props.clickButton(b, { ...c.vars, ...row })
+    const v: TRow | undefined = ref.current?.getVals();
+    props.clickButton(b, { ...v, ...c.vars, ...row })
   }
 
   return <React.Fragment><Steps current={c.current}>

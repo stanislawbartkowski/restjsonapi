@@ -150,13 +150,19 @@ function enterButton(t: TField) {
 }
 
 
-function searchItem(t: FField, name?: number): React.ReactNode {
+function searchItem(ir: IFieldContext, t: FField, name?: number): React.ReactNode {
+
+    const onBlur: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
+        const id: string = c.target.id
+        log(id + " on blur")
+        checkchange(ir, c.target.id)
+    }
 
     function onSearchButton(value: string) {
         t.searchF(value, { ...t, name: name });
     }
 
-    return <Input.Search  {...placeHolder(t)}  {...t.iprops}  {...enterButton(t)} onSearch={onSearchButton} />
+    return <Input.Search onBlur={onBlur} {...placeHolder(t)}  {...t.iprops}  {...enterButton(t)} onSearch={onSearchButton} />
 }
 
 // ===========================================
@@ -224,7 +230,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
         case FIELDTYPE.HTML: return [<HTMLControl />, undefined]
     }
 
-    return t.enterbutton ? [searchItem(t, name), undefined] :
+    return t.enterbutton ? [searchItem(ir, t, name), undefined] :
         [<Input onBlur={onBlur} {...placeHolder(t)}  {...t.iprops} />, undefined]
 }
 
@@ -322,7 +328,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
         props.buttonClicked(transformValuesFrom(values, props.list))
     };
 
-    const getVals = () : TRow => {
+    const getVals = (): TRow => {
         const r: TRow = f.getFieldsValue()
         return transformValuesFrom(r, props.list)
     }
@@ -336,8 +342,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
             f.submit()
         },
         setValues: (row: TRow) => {
-            const r : TRow = getVals();
-            const newr : TRow = {...r,...row}
+            const r: TRow = getVals();
+            const newr: TRow = { ...r, ...row }
             f.setFieldsValue(transformValuesTo(newr, props.list))
         },
     }));
@@ -345,7 +351,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
     useEffect(() => {
 
         console.log(props.initvals)
-        f.setFieldsValue(props.initvals);
+        if (props.initvals) f.setFieldsValue(transformValuesTo(props.initvals, props.list));
 
     }, [props.initvals])
 
@@ -377,6 +383,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
             elem[searchD.field] = val
         }
         f.setFieldsValue(x)
+        props.onFieldChange(searchD.field)
     }
 
     // ===================

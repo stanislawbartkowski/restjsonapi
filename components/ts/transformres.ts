@@ -30,13 +30,9 @@ function getValue(v: any, t: FFieldElem, from: boolean) {
 function transformValues(row: TRow, tf: FFieldElem[], from: boolean): TRow {
     const res: TRow = {}
     tf.forEach((t: FFieldElem) => {
-        //        const fieldtype: FIELDTYPE = fieldType(t)
         if (row[t.field] !== undefined) {
             res[t.field] = getValue(row[t.field], t, from)
-        } //else
-        // undefined for boolean is false
-        //if (fieldtype === FIELDTYPE.BOOLEAN) res[t.field] = false
-        // zmiana: 2022/05/20 -- undefined for false is undefined, necessary for searching
+        } 
     })
     return res;
 }

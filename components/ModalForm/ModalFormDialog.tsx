@@ -14,7 +14,7 @@ import { logG, trace } from '../../ts/l'
 import { FIELDTYPE, PropsType, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
-import { transformValuesTo } from '../ts/transformres';
+//import { transformValuesTo } from '../ts/transformres';
 import ReadDefError from '../errors/ReadDefError';
 import TemplateFormDialog from './TemplateFormDialog'
 
@@ -36,7 +36,7 @@ type DataFormState = {
     js?: any,
     err: ErrorMessages
     loading?: boolean
-    initvals?: TRow
+    initvals: TRow|undefined
 };
 
 const emptyTForm: TForm = {
@@ -82,7 +82,8 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
     const [formdef, setState] = useState<DataFormState>({
         status: Status.PENDING,
         tabledata: emptyTForm,
-        err: []
+        err: [],
+        initvals: undefined
     });
 
     const [buttontrigger, setButtonTrigger] = useState<ButtonAction | undefined>()
@@ -92,7 +93,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
             setState({ ...formdef, err: errors, loading: loading })
         },
         getVals: () => {
-            return ref.current.getValues()
+            return { ...formdef.initvals, ...ref.current.getValues() }
         },
         setVals: (r: TRow) => {
             ref.current.setValues(r)
@@ -159,19 +160,19 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
                 const tabledata: TForm = { ...(d.res as TForm) }
 
                 const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : isModalFormCookies(tabledata) ? getCookiesFormListDefVars(props.listdef as string) : props.initvals
-                const tranformvals: TRow | undefined = preseT(tabledata) === TPreseEnum.TForm && vars ? transformValuesTo(vars, tabledata.fields) : undefined
+                //const tranformvals: TRow | undefined = preseT(tabledata) === TPreseEnum.TForm && vars ? transformValuesTo(vars, tabledata.fields) : undefined
                 setState({
                     status: Status.READY,
                     tabledata: tabledata,
                     js: d.js,
                     err: [],
-                    initvals: tranformvals
+                    initvals: vars
                 });
             }
             else {
                 logG.error(`Error while reading definition`)
                 setState({
-                    status: Status.ERROR, err: []
+                    status: Status.ERROR, err: [], initvals: undefined
                 })
             }
 
@@ -219,8 +220,6 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
 
     const formd: TForm = (formdef.tabledata as TForm)
 
-    // requires attention
-    //const initvals: TRow | undefined = isModalFormCookies(formd) ? getCookiesFormListDefVars(props.listdef as string) : props.vars
 
     const ftype: TPreseEnum | undefined = formdef.status === Status.READY ? preseT(formd) : undefined
 
