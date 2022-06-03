@@ -1,4 +1,4 @@
-import React, { FocusEventHandler, ForwardedRef, forwardRef, ReactNode, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { FocusEventHandler, forwardRef, ReactNode, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import {
     Form,
@@ -15,7 +15,7 @@ import {
     Button,
     Card
 } from 'antd';
-import { FormInstance } from 'antd/es/form';
+import { FormInstance, Rule } from 'antd/es/form';
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
@@ -244,11 +244,35 @@ function errorMessage(t: FField, err: ErrorMessages): {} | { validateStatus: Val
     return { validateStatus: 'error', help: [e.message] }
 }
 
+function createRules(t: FField): [Rule[] | undefined, boolean] {
+
+    const fieldtype: FIELDTYPE = fieldType(t)
+
+    const rules: Rule[] = []
+    let required: boolean = false
+
+    if (fieldtype === FIELDTYPE.MONEY) rules.push({ pattern: new RegExp(/^[+-]?\d*\.?\d*$/), message: lstring("moneypattern") })
+
+    if (t.validate)
+        t.validate.forEach(e => {
+            const message: string | undefined = e.message ? makeMessage(e.message) : undefined
+            if (e.required) {
+                rules.push({ required: true, message: message })
+                required = true
+            }
+            if (e.pattern) {
+                rules.push({ pattern: new RegExp(e.pattern), message: message })
+            }
+        })
+
+    return [rules.length === 0 ? undefined : rules, required]
+
+}
+
 
 function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: number): React.ReactNode {
 
-    const fieldtype: FIELDTYPE = fieldType(t)
-    const rules = fieldtype === FIELDTYPE.MONEY ? [{ pattern: new RegExp(/^[+-]?\d*\.?\d*$/), message: lstring("moneypattern") }] : undefined
+    const [rules, required] = createRules(t)
     const props = { ...t.props }
     if (props.rules && rules) {
         props.rules = rules.concat(props.rules)
@@ -260,8 +284,10 @@ function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?
 
     const elemp = produceElem(ir, t, err, name)
 
+    const requiredprops = required ? { required: true } : undefined
+
     const mess: string = fieldTitle(t, { r: {} });
-    return <Form.Item  {...props} id={t.field} name={name !== undefined ? [name, t.field] : t.field} key={t.field} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]}>
+    return <Form.Item {...props} {...requiredprops} id={t.field} name={name !== undefined ? [name, t.field] : t.field} key={t.field} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]}>
         {elemp[0]}
     </Form.Item>
 }

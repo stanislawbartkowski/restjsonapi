@@ -11,7 +11,7 @@ import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField, FOnFieldChanged } from './ModalFormView';
 import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FIELDTYPE, PropsType, TRow } from '../../ts/typing'
+import { FAction, FIELDTYPE, PropsType, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 //import { transformValuesTo } from '../ts/transformres';
@@ -36,7 +36,7 @@ type DataFormState = {
     js?: any,
     err: ErrorMessages
     loading?: boolean
-    initvals: TRow|undefined
+    initvals: TRow | undefined
 };
 
 const emptyTForm: TForm = {
@@ -56,6 +56,7 @@ export type ModalFormProps = {
     visible?: boolean
     initvals?: TRow
     ignorerestapivals?: boolean
+    refresh?: FAction
 }
 
 
@@ -229,7 +230,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
     }
 
     const modalFormView: ReactNode = formdef.status === Status.READY ?
-        ftype === TPreseEnum.Steps ? <TemplateFormDialog {...(formd as any as StepsForm)} isform={false} /> :
+        ftype === TPreseEnum.Steps ? <TemplateFormDialog refresh={props.refresh} {...(formd as any as StepsForm)} isform={false} /> :
             <ModalFormView
                 ref={ref} err={formdef.err}
                 {...formd}

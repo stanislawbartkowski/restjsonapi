@@ -64,6 +64,9 @@ export function isDev(): boolean {
 
 
 export function makeMessage(m: FormMessage, pars: OneRowData = { r: {} }): string | undefined {
+
+  if (isString(m)) return lstring(m as string)
+
   if (m.messagedirect) return m.messagedirect;
 
   if (m.js) {

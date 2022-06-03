@@ -2,6 +2,8 @@
 // general types
 // ==========================================================
 
+import { ButtonAction } from "../components/ts/typing"
+
 export type PropsType = Record<string, any>
 
 export type JSSupportedType = {
@@ -85,7 +87,7 @@ export type RestTableParam = RESTMETH & {
 // ==============================
 
 
-export type FAction = (b?: ButtonElem, r?: TRow) => void
+export type FAction = (b?: ButtonAction, r?: TRow) => void
 
 export interface ClickActionProps {
   closeAction?: FAction
@@ -158,8 +160,8 @@ export enum FIELDTYPE {
 // Localized message
 // ==============================
 
-export type FormMessage = JSSupportedType & {
+export type FormMessage = JSSupportedType & (string|undefined) & {
   messagedirect?: string
   message?: string
   params?: string[]
-}
+} 

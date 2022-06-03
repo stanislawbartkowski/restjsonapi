@@ -292,6 +292,12 @@ export type SearchChooseButton = FormMessage & RestTableParam;
 
 // single field
 
+export type ValidatorType = {
+    required?: true
+    pattern?: string
+    message?: FormMessage
+}
+
 export type TField = PropSupportedType & TFieldBase & {
     items?: TField[]
     iprops?: PropsType
@@ -302,6 +308,7 @@ export type TField = PropSupportedType & TFieldBase & {
     placeholder?: FormMessage
     enterbutton?: SearchChooseButton
     onchange? : ButtonAction
+    validate?: ValidatorType[]
 }
 
 

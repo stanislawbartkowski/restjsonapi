@@ -74,7 +74,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
         restaction(res.method as HTTPMETHOD, res.restaction, res.params, t).then(
             ({ data, response }) => {
                 const da = analyzeresponse(data, response)
-                const resobject: ActionResult = da[0]
+                const resobject: TAction = da[0] as TAction
                 doaction(resobject, da[1])
             }
         ).catch(((e) => {
@@ -85,7 +85,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
         return undefined
     }
     doaction(res)
-    if (res.list || res.listdef) return { ...res }
+    if (res.list || res.listdef) return { ...res as TComponentProps }
     //if (props.i.doAction) props.i.doAction(res)
     return undefined
 }

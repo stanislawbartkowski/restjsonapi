@@ -1,7 +1,7 @@
 import { PreseForms, TField, TForm, TItemsRest, TPreseEnum, TRadioCheck } from "./typing";
 import { log } from "../../ts/l";
 import { callJSFunction, isOArray } from "../../ts/j";
-import type { RestTableParam, RowData, TRow } from "../../ts/typing";
+import type { FormMessage, RestTableParam, RowData, TRow } from "../../ts/typing";
 import { restapilistdef, restapijs, restapishowdetils, restapilist } from "../../services/api";
 import { Status, ColumnList, ShowDetails } from "./typing";
 import { preseT } from './helper'
@@ -48,7 +48,7 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals? : b
                     if (rest) {
                         const resta: Record<string, any> = await restapilist(rest.restaction)
                         const rlist: RowData = resta.res
-                        tr.items = rlist.map(r => { return { value: r[rest.value] as string, label: { messagedirect: r[rest.label] as string } } })
+                        tr.items = rlist.map(r => { return { value: r[rest.value] as string, label: { messagedirect: r[rest.label] } as FormMessage } })
                         console.log(tr)
                         if (c.checkbox) c.checkbox = { ...tr }
                         if (c.radio) c.radio = { ...tr }
