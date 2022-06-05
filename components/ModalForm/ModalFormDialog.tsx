@@ -56,7 +56,7 @@ export type ModalFormProps = {
     visible?: boolean
     initvals?: TRow
     ignorerestapivals?: boolean
-    refresh?: FAction
+    refreshaction?: FAction
     vars?: TRow
 }
 
@@ -231,7 +231,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
     }
 
     const modalFormView: ReactNode = formdef.status === Status.READY ?
-        ftype === TPreseEnum.Steps ? <TemplateFormDialog refresh={props.refresh} {...(formd as any as StepsForm)} isform={false} /> :
+        ftype === TPreseEnum.Steps ? <TemplateFormDialog refreshaction={props.refreshaction} {...(formd as any as StepsForm)} isform={false} /> :
             <ModalFormView
                 ref={ref} err={formdef.err}
                 {...formd}

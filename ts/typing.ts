@@ -91,7 +91,7 @@ export type FAction = (b?: ButtonAction, r?: TRow) => void
 
 export interface ClickActionProps {
   closeAction?: FAction
-  refresh?: FAction
+  refreshaction?: FAction
 }
 
 export type ModalFormProps = ClickActionProps & {

@@ -44,10 +44,11 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
             props.i.setMode(false, transformErrors(r.error, toPars()))
         } else {
             props.i.setMode(false, []);
-            close()
+            if (r.close) close()
             if (r.notification) openNotification(r.notification, { vars: props.vars, r: t as TRow });
-            if (props.refresh) props.refresh()
+            if (r.refresh && props.refreshaction) props.refreshaction()
             if (button?.print) {
+                close()
                 setPrintContent({ result: r, content: (presult as string), button: (button as ButtonAction) });
                 history.push(defaults.displayprintrouterid);
             }

@@ -156,7 +156,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = 
 
     return (
         <React.Fragment>
-            {props.header ? <HeaderTable {...props.header} vars={props.vars} refresh={refreshtable} r={props} fbutton={buttonAction} /> : undefined}
+            {props.header ? <HeaderTable {...props.header} vars={props.vars} refreshaction={refreshtable} r={props} fbutton={buttonAction} /> : undefined}
             {extendedSearch}
             <Table
                 {...rowSelection({ ...props })
@@ -177,7 +177,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = 
                 })}
                 {...props.props}
             />
-            <ModalList {...modalProps} refresh={refreshtable} />
+            <ModalList {...modalProps} refreshaction={refreshtable} />
             <Drawer
                 width={600}
                 visible={showDetail}

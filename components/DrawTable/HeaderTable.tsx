@@ -30,7 +30,7 @@ function headerTitle(p: ShowDetails, vars?: TRow) {
   else return { title : title }
 }
 
-const HeaderTable: React.FC<ShowDetails & { refresh: FAction, vars?: TRow, r: RestTableParam, fbutton: FAction }> = (props) => {
+const HeaderTable: React.FC<ShowDetails & { refreshaction: FAction, vars?: TRow, r: RestTableParam, fbutton: FAction }> = (props) => {
   const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
 
   const h: TableToolBar = props.toolbar as TableToolBar;
@@ -62,7 +62,7 @@ const HeaderTable: React.FC<ShowDetails & { refresh: FAction, vars?: TRow, r: Re
         extra={h ? h.map((e: ButtonAction) => constructButton(e, clickButton)) : undefined} >
         {props.collist ? <OneRowTable { ...detaDescr} /> : undefined}
       </PageHeader>
-      <RestComponent {...modalProps} refresh={props.refresh} />
+      <RestComponent {...modalProps} refreshaction={props.refreshaction} />
     </React.Fragment>
   );
 };

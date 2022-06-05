@@ -126,6 +126,7 @@ export type ActionResult = {
     text?: boolean
     vars?: TRow
     steperror?: boolean
+    refresh?: boolean
 }
 
 
