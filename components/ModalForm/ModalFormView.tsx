@@ -24,7 +24,7 @@ import { TField, TForm, TRadioCheckItem } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, PropsType, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType } from '../ts/transcol';
-import { getButtonName, makeMessage } from '../../ts/j';
+import { callJSFunction, getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
 import { FFieldElem, isItemGroup } from '../ts/helper';
@@ -80,6 +80,8 @@ type TFormView = TForm & {
     buttonsextrabottom?: ReactNode
     initvals?: TRow
     list: FFieldElem[]
+    vars?: TRow
+    ignorerestapivals?: boolean
 }
 
 
@@ -376,7 +378,18 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     useEffect(() => {
 
+        if (props.jsrestapivals) {
+            var initvals: TRow = callJSFunction(props.jsrestapivals as string, { r: {}, vars: props.vars as TRow });
+            f.setFieldsValue(transformValuesTo(initvals, props.list));
+        }
+
+    }, [props.jsrestapivals])
+
+
+    useEffect(() => {
+
         console.log(props.initvals)
+        if (props.ignorerestapivals !== undefined && !props.ignorerestapivals) return;
         if (props.initvals) f.setFieldsValue(transformValuesTo(props.initvals, props.list));
 
     }, [props.initvals])

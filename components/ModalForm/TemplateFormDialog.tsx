@@ -40,8 +40,7 @@ const ModalDialog: React.FC<(ModalFormProps | StepsForm) & { isform: boolean }> 
 
     const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} /> : undefined
 
-    const comp: React.ReactNode = props.isform ? <ModalFormDialog ref={ref} {...props} clickButton={clickButton} /> : <StepsFormView ref={ref} {...props as StepsForm} clickButton={clickButton} />
-
+    const comp: React.ReactNode = props.isform ? <ModalFormDialog vars={(props as ModalFormProps).vars} ref={ref} {...props} clickButton={clickButton} /> : <StepsFormView ref={ref} {...props as StepsForm} clickButton={clickButton} />
 
     return <React.Fragment>
         {comp}

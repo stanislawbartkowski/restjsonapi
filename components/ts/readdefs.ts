@@ -1,8 +1,8 @@
 import { PreseForms, TField, TForm, TItemsRest, TPreseEnum, TRadioCheck } from "./typing";
 import { log } from "../../ts/l";
-import { callJSFunction, isOArray } from "../../ts/j";
-import type { FormMessage, RestTableParam, RowData, TRow } from "../../ts/typing";
-import { restapilistdef, restapijs, restapishowdetils, restapilist } from "../../services/api";
+import { callJSFunction, isOArray, isString } from "../../ts/j";
+import type { FormMessage, HTTPMETHOD, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
+import { restapilistdef, restapijs, restapishowdetils, restapilist, restaction } from "../../services/api";
 import { Status, ColumnList, ShowDetails } from "./typing";
 import { preseT } from './helper'
 import { internalerrorlog } from '../../ts/l'
@@ -16,9 +16,13 @@ export type ReadDefsResult = {
 
 type FSetState = (res: ReadDefsResult) => void
 
-async function readvals(initval: string, vars?: TRow): Promise<TRow> {
-    return await restapilist(initval as string)
+async function readvals(initval: string| RESTMETH, props: RestTableParam): Promise<TRow> {
+    if (isString(initval)) return await restapilist(initval as string)
+    const r : RESTMETH = initval as RESTMETH
+    return restaction(r.method as HTTPMETHOD, r.restaction as string, props.params, props.vars) as any as Promise<TRow>
 }
+
+//  restaction(res.method as HTTPMETHOD, res.restaction, res.params, t)
 
 async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals? : boolean) {
 
@@ -56,7 +60,7 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals? : b
                 }
                 return c
             }))
-            const initvals: TRow | undefined = (t.restapivals && (ignoreinitvals === undefined || !ignoreinitvals)) ? await readvals(t.restapivals, props.vars) : undefined
+            const initvals: TRow | undefined = (t.restapivals && (ignoreinitvals === undefined || !ignoreinitvals)) ? await readvals(t.restapivals, props) : undefined
             f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
         }
         else f({ status: Status.READY, js: js, res: idef });

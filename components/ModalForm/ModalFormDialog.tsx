@@ -57,6 +57,7 @@ export type ModalFormProps = {
     initvals?: TRow
     ignorerestapivals?: boolean
     refresh?: FAction
+    vars?: TRow
 }
 
 
@@ -239,6 +240,8 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
                 onValuesChanges={onValuesChange} initvals={formdef.initvals}
                 onFieldChange={onFieldChange}
                 list={fields}
+                vars={props.vars}
+                ignorerestapivals={props.ignorerestapivals}
             />
         : undefined
 

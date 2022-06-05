@@ -1,4 +1,4 @@
-import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType } from '../../ts/typing';
+import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType, RESTMETH } from '../../ts/typing';
 
 // =========================
 // status for async reading
@@ -314,11 +314,14 @@ export type TField = PropSupportedType & TFieldBase & {
 
 // the whole form
 
+  
+
 export type TForm = JSSupportedType & TCard & {
     fields: TField[]
     formprops?: PropsType
     buttons: ButtonAction[]
-    restapivals?: string
+    restapivals?: string | RESTMETH
+    jsrestapivals?: string
 }
 
 // --------------------------------
