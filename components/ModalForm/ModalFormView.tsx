@@ -20,9 +20,9 @@ import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 
-import { TField, TForm, TRadioCheckItem } from '../ts/typing'
+import { RestValidatorResult, TField, TForm, TRadioCheckItem } from '../ts/typing'
 import { log, trace } from '../../ts/l'
-import { ButtonElem, FAction, FIELDTYPE, FieldValue, PropsType, TRow } from '../../ts/typing'
+import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, HTTPMETHOD, PropsType, RESTMETH, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType } from '../ts/transcol';
 import { callJSFunction, getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
@@ -31,6 +31,7 @@ import { FFieldElem, isItemGroup } from '../ts/helper';
 import { transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import { cardProps } from '../ts/helper'
+import { restaction } from '../../services/api';
 
 type FSearchAction = (s: string, t: FField) => void
 
@@ -72,6 +73,7 @@ export interface IRefCall {
 interface IFieldContext {
     getChanges: () => TFieldChange
     fieldChanged: (id: string) => void
+    getValues: () => TRow
 }
 
 type TFormView = TForm & {
@@ -246,7 +248,7 @@ function errorMessage(t: FField, err: ErrorMessages): {} | { validateStatus: Val
     return { validateStatus: 'error', help: [e.message] }
 }
 
-function createRules(t: FField): [Rule[] | undefined, boolean] {
+function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, boolean] {
 
     const fieldtype: FIELDTYPE = fieldType(t)
 
@@ -265,6 +267,36 @@ function createRules(t: FField): [Rule[] | undefined, boolean] {
             if (e.pattern) {
                 rules.push({ pattern: new RegExp(e.pattern), message: message })
             }
+//            if (e.restaction) {
+//                rules.push(
+//                    ({ getFieldValue }) => ({
+//                        validator(_, value) {
+//                            if (!value || getFieldValue('password') === value) {
+//                                return Promise.resolve();
+//                            }
+//                            return Promise.reject(new Error('The two passwords that you entered do not match!'));
+//                        },
+//                    }),
+//                )
+//            }
+            if (e.restaction) {
+                rules.push(
+                    ({ getFieldValue }) => ({
+                        async validator(_, value) {
+                            const data: TRow = ir.getValues()
+                            data[t.field] = value
+                            const h: RESTMETH = e.restaction as RESTMETH;
+                            const da : any = await restaction(h.method as HTTPMETHOD, h.restaction as string, h.params, data) 
+                            const res: RestValidatorResult = da.data
+                            if (res.err === undefined) return Promise.resolve();
+                            const errmess: string = makeMessage(res.err as FormMessage) as string
+                            return Promise.reject(new Error(errmess))
+                        }
+                    }
+
+                    ))
+            }
+
         })
 
     return [rules.length === 0 ? undefined : rules, required]
@@ -274,7 +306,7 @@ function createRules(t: FField): [Rule[] | undefined, boolean] {
 
 function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: number): React.ReactNode {
 
-    const [rules, required] = createRules(t)
+    const [rules, required] = createRules(ir, t)
     const props = { ...t.props }
     if (props.rules && rules) {
         props.rules = rules.concat(props.rules)
@@ -445,8 +477,11 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
             return fchanges.current;
         },
         fieldChanged: function (id: string): void {
-            console.log(id + " change escalated")
-            props.onFieldChange(id)
+            console.log(id + " change escalated");
+            props.onFieldChange(id);
+        },
+        getValues: function (): TRow {
+            return getVals()
         }
     }
 

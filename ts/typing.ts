@@ -67,11 +67,11 @@ export type RESTMETH = {
   restaction?: string
   method?: HTTPMETHOD;
   upload?: boolean;
+  params?: Record<string, FieldValue>;
 }
 
 export type RestTableParam = RESTMETH & {
   list?: string;
-  params?: Record<string, FieldValue>;
   listdef?: string;
   onRowClick?: OnRowClick;
   isSelected?: FIsSelected;

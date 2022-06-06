@@ -293,10 +293,15 @@ export type SearchChooseButton = FormMessage & RestTableParam;
 
 // single field
 
+export type RestValidatorResult = {
+    err? : FormMessage;
+}
+
 export type ValidatorType = {
     required?: true
     pattern?: string
     message?: FormMessage
+    restaction?: RESTMETH
 }
 
 export type TField = PropSupportedType & TFieldBase & {
