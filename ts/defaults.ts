@@ -7,7 +7,8 @@ interface Defaults {
   rowkeyS: string
   displayprintrouterid: string,
   cookieage : number,
-  currentfield: string
+  currentfield: string,
+  verstring: string
 };
 
 const defaults: Defaults = {
@@ -19,7 +20,8 @@ const defaults: Defaults = {
   rowkeyS: "rowkey",
   displayprintrouterid: "/printingdisplayer",
   cookieage : 7,
-  currentfield: "currentfield"
+  currentfield: "currentfield",
+  verstring: "Wersja 1.0 (r:0) z dnia 7 czerwca 2022 roku"
 };
 
 export default defaults;

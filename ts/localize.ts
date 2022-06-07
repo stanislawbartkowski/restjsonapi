@@ -25,7 +25,8 @@ const embedded = {
     removefilter: "Usuń filtr",
     searchclose: "Szukaj i zamknij",
     next: "Dalej",
-    prev: "Poprzedni"
+    prev: "Poprzedni",
+    version: "Wersja"
   },
   en: {
     empty: '',
@@ -49,7 +50,8 @@ const embedded = {
     removefilter: "Remove filter",
     searchclose: "Search and close",
     next: "Next",
-    prev: "Previous"
+    prev: "Previous",
+    version: "Version"
   }
 };
 
