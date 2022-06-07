@@ -7,7 +7,7 @@ import type { TableRowSelection } from "antd/lib/table/interface";
 import lstring from "../../ts/localize";
 import type { ClickActionProps, OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
-import type { ButtonAction, ClickResult, ColumnList, FActionResult, FShowDetails } from "../ts/typing";
+import type { ButtonAction, ClickResult, ColumnList, FActionResult, FShowDetails, TAsyncRestCall } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton } from "./js/helper";
 import { makeHeader } from "../ts/helper";
@@ -40,6 +40,7 @@ function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefin
 
     return nopaging ? { pagination: false } : { pagination: { defaultPageSize: pageSize } }
 }
+
 
 const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = (props) => {
     const [extendedFilter, setExtendedFilter] = useState<ExtendedFilter>(noExtendedFilter)

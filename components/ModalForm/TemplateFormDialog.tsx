@@ -3,11 +3,13 @@ import React, { MutableRefObject, useRef, useState } from "react";
 import { IIRefCall } from "./ModalFormDialog";
 import ModalFormDialog from "./ModalFormDialog";
 import executeAction from '../ts/executeaction'
-import { StepsForm, TAction, TClickButton } from "../ts/typing";
-import { FAction, TComponentProps, TRow } from "../../ts/typing";
+import { StepsForm, TAction, TAsyncRestCall, TClickButton } from "../ts/typing";
+import { FAction, RESTMETH, TComponentProps, TRow } from "../../ts/typing";
 import { ClickActionProps } from "../../ts/typing";
 import RestComponent from "../RestComponent";
 import StepsFormView from "./StepsFormView";
+import { readvals } from "../ts/readdefs";
+import analyzeresponse from "../ts/anayzeresponse";
 
 export type ModalFormProps = ClickActionProps &
 {
@@ -38,9 +40,20 @@ const ModalDialog: React.FC<(ModalFormProps | StepsForm) & { isform: boolean }> 
         }
     }
 
+    const aRest :TAsyncRestCall = async (h : RESTMETH, r: TRow) => {
+
+        const data : TRow = {...ref.current.getVals(), ...r}
+        const dat: any = await readvals(h, data)
+        const da = analyzeresponse(dat.data, dat.response)
+
+        return Promise.resolve(da[0])        
+    }
+
+
     const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} /> : undefined
 
-    const comp: React.ReactNode = props.isform ? <ModalFormDialog vars={(props as ModalFormProps).vars} ref={ref} {...props} clickButton={clickButton} /> : <StepsFormView ref={ref} {...props as StepsForm} clickButton={clickButton} />
+    const comp: React.ReactNode = props.isform ? <ModalFormDialog aRest={aRest} vars={(props as ModalFormProps).vars} ref={ref} {...props} clickButton={clickButton} /> : 
+                                                 <StepsFormView aRest={aRest} ref={ref} {...props as StepsForm} clickButton={clickButton} />
 
     return <React.Fragment>
         {comp}

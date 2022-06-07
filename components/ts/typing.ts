@@ -356,6 +356,8 @@ export enum TPreseEnum {
 
 export type TClickButton = (clickbutton?: ButtonAction, row?: TRow) => void
 
+export type TAsyncRestCall = (h : RESTMETH, row: TRow) => Promise<TRow>
+
 // ============================
 // standard buttons 
 // ============================

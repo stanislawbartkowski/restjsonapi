@@ -7,6 +7,7 @@ import lstring from '../../../ts/localize';
 import SearchExtended, { SearchButtonType, IIRefCall, ExtendedFilter } from './SearchExtended'
 import { TRow } from "../../../ts/typing";
 import { FOnValuesChanged } from "../../ModalForm/ModalFormView";
+import { TAsyncRestCall } from "../../ts/typing";
 
 export type FSetFilter = (t: ExtendedFilter) => void
 
@@ -19,14 +20,14 @@ function isFilterSetEmpty(p: TRow): boolean {
 }
 
 
-const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter }> = (props) => {
+const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter}> = (props) => {
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [refreshnumber, setRefreshNumber] = useState<number>(0);
   const ref: MutableRefObject<IIRefCall> = useRef<IIRefCall>() as MutableRefObject<IIRefCall>
 
 
-  const isFilterEmpty : boolean = isFilterSetEmpty(ref.current ? ref.current.getValues() : props.filtervalues)
+  const isFilterEmpty: boolean = isFilterSetEmpty(ref.current ? ref.current.getValues() : props.filtervalues)
 
   function onCancel() {
     setIsModalVisible(false)
@@ -49,7 +50,7 @@ const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter }> =
   }
 
   const onValuesChanges: FOnValuesChanged = (changedFields: Record<string, any>, p: Record<string, any>) => {
-    setRefreshNumber(refreshnumber+1)
+    setRefreshNumber(refreshnumber + 1)
   }
 
 
@@ -70,7 +71,7 @@ const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter }> =
     <Tooltip title={lstring("searchextended")}><Button icon={<SearchOutlined />} size="small" {...primary} onClick={() => setIsModalVisible(true)} /> </Tooltip>
     {closeButton}
     <Modal visible={isModalVisible} onCancel={onCancel} onOk={setFilter} destroyOnClose footer={null}>
-      <SearchExtended ref={ref} {...props} onValuesChanges={onValuesChanges} buttons = {buttons}/>
+      <SearchExtended ref={ref} {...props} onValuesChanges={onValuesChanges} buttons={buttons} />
     </Modal>
 
   </React.Fragment>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
 import { Card, Modal } from 'antd';
 
-import { ClickResult, PreseForms, StepsForm, TClickButton, TField, TPreseEnum } from '../ts/typing'
+import { ClickResult, PreseForms, StepsForm, TAsyncRestCall, TClickButton, TField, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
@@ -58,6 +58,7 @@ export type ModalFormProps = {
     ignorerestapivals?: boolean
     refreshaction?: FAction
     vars?: TRow
+    aRest: TAsyncRestCall 
 }
 
 
@@ -233,6 +234,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
     const modalFormView: ReactNode = formdef.status === Status.READY ?
         ftype === TPreseEnum.Steps ? <TemplateFormDialog refreshaction={props.refreshaction} {...(formd as any as StepsForm)} isform={false} /> :
             <ModalFormView
+                aRest={props.aRest}
                 ref={ref} err={formdef.err}
                 {...formd}
                 buttonClicked={onButtonClicked}

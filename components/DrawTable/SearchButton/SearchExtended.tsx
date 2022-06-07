@@ -1,7 +1,7 @@
 import { forwardRef, MutableRefObject, useImperativeHandle, useRef } from "react";
 
-import { TRow } from "../../../ts/typing"
-import type { ColumnList, TField } from "../../ts/typing"
+import { RESTMETH, TRow } from "../../../ts/typing"
+import type { ColumnList, TAsyncRestCall, TField } from "../../ts/typing"
 import ModalFormView, { ErrorMessages, FOnFieldChanged, FOnValuesChanged, IRefCall } from "../../ModalForm/ModalFormView";
 import { FFieldElem, flattenTForm } from "../../ts/helper";
 import { convertColumnsToFields } from "./helper";
@@ -48,8 +48,15 @@ const SearchExtended = forwardRef<IIRefCall, SearchDialog>((props, iref) => {
     const onFieldChange: FOnFieldChanged = (id: string) => {
     }
 
+    const aRest: TAsyncRestCall = (h : RESTMETH, row: TRow) => {
+        const a : TRow = {}
+        return Promise.resolve(a)
 
-    return <ModalFormView ref={refm} fields={fields} buttonClicked={buttonClickded} initvals={props.filtervalues} list={ffields} buttons={[]} buttonsextratop={props.buttons} err={err} onValuesChanges={onValuesChanges} onFieldChange={onFieldChange} />
+    }
+
+
+
+    return <ModalFormView aRest={aRest} ref={refm} fields={fields} buttonClicked={buttonClickded} initvals={props.filtervalues} list={ffields} buttons={[]} buttonsextratop={props.buttons} err={err} onValuesChanges={onValuesChanges} onFieldChange={onFieldChange} />
 
 })
 

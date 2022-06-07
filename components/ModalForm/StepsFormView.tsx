@@ -1,7 +1,7 @@
 import React, { useState, forwardRef, useRef, MutableRefObject, useImperativeHandle } from "react"
 import { StepProps, Steps } from 'antd'
 
-import type { ButtonAction, ClickResult, StepsElem, StepsForm, TClickButton } from "../ts/typing"
+import type { ButtonAction, ClickResult, StepsElem, StepsForm, TAsyncRestCall, TClickButton } from "../ts/typing"
 import { makeMessage } from "../../ts/j"
 import ModalFormDialog, { ErrorMessages, IIRefCall } from "./ModalFormDialog"
 import { log } from "../../ts/l"
@@ -23,7 +23,7 @@ type TData = {
   aftermove?: boolean
 }
 
-const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickButton }>((props, iref) => {
+const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickButton, aRest : TAsyncRestCall  }>((props, iref) => {
 
   const [c, setCurrent] = useState<TData>({ current: 0, errorstep: undefined });
   let key: number = 0
@@ -74,7 +74,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickBu
   return <React.Fragment><Steps current={c.current}>
     {props.steps.map(e => constructStep(e, key++, c.current === props.steps.length - 1, c.errorstep ? (key - 1) === c.errorstep : false))}
   </Steps>
-    <ModalFormDialog ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={c.vars} ignorerestapivals={c.aftermove} />
+    <ModalFormDialog aRest={props.aRest} ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={c.vars} ignorerestapivals={c.aftermove} />
   </React.Fragment>
 })
 

@@ -20,9 +20,9 @@ import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 
-import { RestValidatorResult, TField, TForm, TRadioCheckItem } from '../ts/typing'
+import { RestValidatorResult, TAsyncRestCall, TField, TForm, TRadioCheckItem } from '../ts/typing'
 import { log, trace } from '../../ts/l'
-import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, HTTPMETHOD, PropsType, RESTMETH, TRow } from '../../ts/typing'
+import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType } from '../ts/transcol';
 import { callJSFunction, getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
@@ -31,7 +31,7 @@ import { FFieldElem, isItemGroup } from '../ts/helper';
 import { transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import { cardProps } from '../ts/helper'
-import { restaction } from '../../services/api';
+import defaults from '../../ts/defaults';
 
 type FSearchAction = (s: string, t: FField) => void
 
@@ -74,6 +74,7 @@ interface IFieldContext {
     getChanges: () => TFieldChange
     fieldChanged: (id: string) => void
     getValues: () => TRow
+    aRest: TAsyncRestCall
 }
 
 type TFormView = TForm & {
@@ -267,27 +268,18 @@ function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, boolean
             if (e.pattern) {
                 rules.push({ pattern: new RegExp(e.pattern), message: message })
             }
-//            if (e.restaction) {
-//                rules.push(
-//                    ({ getFieldValue }) => ({
-//                        validator(_, value) {
-//                            if (!value || getFieldValue('password') === value) {
-//                                return Promise.resolve();
-//                            }
-//                            return Promise.reject(new Error('The two passwords that you entered do not match!'));
-//                        },
-//                    }),
-//                )
-//            }
             if (e.restaction) {
                 rules.push(
                     ({ getFieldValue }) => ({
                         async validator(_, value) {
-                            const data: TRow = ir.getValues()
+                            if (value === undefined) return Promise.resolve();
+                            const data: TRow = {}
                             data[t.field] = value
+                            data[defaults.currentfield] = value
                             const h: RESTMETH = e.restaction as RESTMETH;
-                            const da : any = await restaction(h.method as HTTPMETHOD, h.restaction as string, h.params, data) 
-                            const res: RestValidatorResult = da.data
+                            const dat: TRow = await ir.aRest(h, data)
+
+                            const res: RestValidatorResult = dat
                             if (res.err === undefined) return Promise.resolve();
                             const errmess: string = makeMessage(res.err as FormMessage) as string
                             return Promise.reject(new Error(errmess))
@@ -376,7 +368,7 @@ type SearchDialogProps = TField & {
 
 const emptySearch = { field: "", visible: false }
 
-const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged }>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
@@ -481,7 +473,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
             props.onFieldChange(id);
         },
         getValues: function (): TRow {
-            return getVals()
+            return getVals();
+        },
+        aRest: function (r: RESTMETH, data: TRow): Promise<TRow> {
+            return props.aRest(r, data)
         }
     }
 

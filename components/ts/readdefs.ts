@@ -16,10 +16,10 @@ export type ReadDefsResult = {
 
 type FSetState = (res: ReadDefsResult) => void
 
-async function readvals(initval: string| RESTMETH, props: RestTableParam): Promise<TRow> {
+export async function readvals(initval: string| RESTMETH, vars?: TRow): Promise<Record<string, any>> {
     if (isString(initval)) return await restapilist(initval as string)
     const r : RESTMETH = initval as RESTMETH
-    return restaction(r.method as HTTPMETHOD, r.restaction as string, props.params, props.vars) as any as Promise<TRow>
+    return restaction(r.method as HTTPMETHOD, r.restaction as string, r.params, vars)
 }
 
 //  restaction(res.method as HTTPMETHOD, res.restaction, res.params, t)
@@ -60,7 +60,7 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals? : b
                 }
                 return c
             }))
-            const initvals: TRow | undefined = (t.restapivals && (ignoreinitvals === undefined || !ignoreinitvals)) ? await readvals(t.restapivals, props) : undefined
+            const initvals: TRow | undefined = (t.restapivals && (ignoreinitvals === undefined || !ignoreinitvals)) ? await readvals(t.restapivals, props.vars) : undefined
             f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
         }
         else f({ status: Status.READY, js: js, res: idef });
