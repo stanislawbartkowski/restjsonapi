@@ -315,6 +315,7 @@ export type TField = PropSupportedType & TFieldBase & {
     enterbutton?: SearchChooseButton
     onchange? : ButtonAction
     validate?: ValidatorType[]
+    divider?: TDivider
 }
 
 

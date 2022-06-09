@@ -20,10 +20,10 @@ import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 
-import { RestValidatorResult, TAsyncRestCall, TField, TForm, TRadioCheckItem } from '../ts/typing'
+import { RestValidatorResult, TAsyncRestCall, TField, TForm, TRadioCheckItem, ValidatorType } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, TRow } from '../../ts/typing'
-import { fieldTitle, fieldType } from '../ts/transcol';
+import { fieldTitle, fieldType, makeDivider } from '../ts/transcol';
 import { callJSFunction, getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
@@ -111,7 +111,7 @@ function createRadioItem(e: TRadioCheckItem, button?: boolean): ReactNode {
 
 function createRadioGroup(t: TField): ReactNode {
 
-    return <Radio.Group {...t.props}>
+    return <Radio.Group {...t.iprops}>
         {
             (t.radio?.items as TRadioCheckItem[]).map(e => createRadioItem(e, t.radio?.button))
         }
@@ -119,11 +119,18 @@ function createRadioGroup(t: TField): ReactNode {
     </Radio.Group>
 }
 
+function isNotRequired(t: TField): boolean {
+    if (t.validate === undefined) return true;
+    const v: ValidatorType | undefined = t.validate.find(t => t.required)
+    return v === undefined || v.required === undefined || !v.required
+}
+
 function createSelectGroup(t: TField, items: TRadioCheckItem[], multi: boolean): ReactNode {
 
+    const clear: SelectProps = isNotRequired(t) ? { allowClear: true } : { allowClear: false }
     const p: SelectProps = multi ? { mode: "multiple" } : {}
 
-    return <Select {...p} {...t.props} {...placeHolder(t)} >
+    return <Select {...p} {...clear} {...t.iprops} {...placeHolder(t)} >
         {
             items.map(e => <Select.Option value={e.value} {...e.props}>{itemName(e)}</Select.Option>)
         }
@@ -356,7 +363,10 @@ function createList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode
 function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages): React.ReactNode {
 
     if (t.list) return createList(ir, t, err)
-    return produceFormItem(ir, t, err)
+    return <React.Fragment>
+        {t.divider ? makeDivider(t.divider, { r: {} }) : undefined}
+        {produceFormItem(ir, t, err)}
+    </React.Fragment>
 
 }
 

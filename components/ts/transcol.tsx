@@ -1,11 +1,11 @@
 import { ColumnType } from "antd/lib/table";
 import React from "react";
-import { Badge, Button, Dropdown, Menu, Space, Switch, Tag } from "antd";
+import { Badge, Button, Divider, Dropdown, Menu, Space, Switch, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, TRow } from "../../ts/typing";
-import { AddStyle, ClickResult, ColumnList, TableHookParam, TAction, TActions, TBadge, TColumn, TFieldBase, TTag, TTags } from "./typing";
+import { AddStyle, ClickResult, ColumnList, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue } from "./helper";
 import { callJSFunction, isString, makeMessage } from "../../ts/j";
@@ -259,4 +259,13 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
     }
 
     return e;
+}
+
+
+// =========================
+// divider 
+// =========================
+
+export function makeDivider(d: TDivider, t: OneRowData): React.ReactElement {
+    return <Divider {...d.props}>{makeMessage(d as FormMessage, { r: t.r, vars: t.vars })}</Divider>
 }

@@ -4,7 +4,7 @@ import { callJSFunction, isOArray, isString } from "../../ts/j";
 import type { FormMessage, HTTPMETHOD, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
 import { restapilistdef, restapijs, restapishowdetils, restapilist, restaction } from "../../services/api";
 import { Status, ColumnList, ShowDetails } from "./typing";
-import { preseT } from './helper'
+import { isItemGroup, preseT } from './helper'
 import { internalerrorlog } from '../../ts/l'
 
 export type ReadDefsResult = {
@@ -16,15 +16,42 @@ export type ReadDefsResult = {
 
 type FSetState = (res: ReadDefsResult) => void
 
-export async function readvals(initval: string| RESTMETH, vars?: TRow): Promise<Record<string, any>> {
+export async function readvals(initval: string | RESTMETH, vars?: TRow): Promise<Record<string, any>> {
     if (isString(initval)) return await restapilist(initval as string)
-    const r : RESTMETH = initval as RESTMETH
+    const r: RESTMETH = initval as RESTMETH
     return restaction(r.method as HTTPMETHOD, r.restaction as string, r.params, vars)
 }
 
 //  restaction(res.method as HTTPMETHOD, res.restaction, res.params, t)
 
-async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals? : boolean) {
+async function resolveRest(tl: TField[]): Promise<TField[]> {
+    const ffields: TField[] = await Promise.all(tl.map(async c => {
+
+        const tr: TRadioCheck | undefined = c.checkbox ? c.checkbox : c.radio ? c.radio : undefined
+        if (isItemGroup(c)) {
+            const itemlist: TField[] = await resolveRest(c.items as TField[])
+            c.items = itemlist
+            return c;
+        }
+
+        if (tr) {
+            const rest: TItemsRest | undefined = !isOArray(tr.items) ? tr.items as TItemsRest : undefined
+            if (rest) {
+                const resta: Record<string, any> = await restapilist(rest.restaction)
+                const rlist: RowData = resta.res
+                tr.items = rlist.map(r => { return { value: r[rest.value] as string, label: { messagedirect: r[rest.label] } as FormMessage } })
+                console.log(tr)
+                if (c.checkbox) c.checkbox = { ...tr }
+                if (c.radio) c.radio = { ...tr }
+            }
+        }
+        return c
+    }))
+    return ffields
+
+}
+
+async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: boolean) {
 
     const def: string = props.listdef ? props.listdef : props.list as string
     log(`Reading definition ${def}`)
@@ -44,22 +71,8 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals? : b
         if (preseT(idef) === TPreseEnum.TForm) {
             // look for dynamic items
             const t: TForm = idef as TForm
+            const ffields: TField[] = await resolveRest(t.fields)
 
-            const ffields: TField[] = await Promise.all(t.fields.map(async c => {
-                const tr: TRadioCheck | undefined = c.checkbox ? c.checkbox : c.radio ? c.radio : undefined
-                if (tr) {
-                    const rest: TItemsRest | undefined = !isOArray(tr.items) ? tr.items as TItemsRest : undefined
-                    if (rest) {
-                        const resta: Record<string, any> = await restapilist(rest.restaction)
-                        const rlist: RowData = resta.res
-                        tr.items = rlist.map(r => { return { value: r[rest.value] as string, label: { messagedirect: r[rest.label] } as FormMessage } })
-                        console.log(tr)
-                        if (c.checkbox) c.checkbox = { ...tr }
-                        if (c.radio) c.radio = { ...tr }
-                    }
-                }
-                return c
-            }))
             const initvals: TRow | undefined = (t.restapivals && (ignoreinitvals === undefined || !ignoreinitvals)) ? await readvals(t.restapivals, props.vars) : undefined
             f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
         }

@@ -1,16 +1,15 @@
 import React, { CSSProperties, ReactNode } from "react";
-import { Card, Col, Divider, Row } from 'antd'
+import { Card, Col, Row } from 'antd'
 import { blue } from '@ant-design/colors';
 
 import { TColumn, TDetailsCard } from "../ts/typing"
-import { detailsTitle, findColDetails, appendStyle, cardProps } from "../ts/helper";
-import { fieldTitle } from '../ts/transcol';
-import { FormMessage, OneRowData } from "../../ts/typing";
-import { makeMessage } from "../../ts/j";
+import { detailsTitle, findColDetails, appendStyle, cardProps, } from "../ts/helper";
+import { fieldTitle, makeDivider } from '../ts/transcol';
+import { OneRowData } from "../../ts/typing";
 
 function toCardRow(e: TColumn, t: TDetailsCard, pars: OneRowData): ReactNode {
     return <Row key={e.field} {...t.rowprops}>
-        {e.divider ? <Divider {...e.divider.props}>{makeMessage(e.divider as FormMessage, { r: t.r, vars: t.vars })}</Divider> : undefined}
+        {e.divider ? makeDivider(e.divider, { r: t.r, vars: t.vars }) : undefined}
         <Col> {fieldTitle(e, pars)}</Col>
         <Col >{t.r[e.field]}</Col>
     </Row>

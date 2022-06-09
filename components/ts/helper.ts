@@ -187,6 +187,6 @@ export function getCookiesFormListDefVars(listdef: string): TRow | undefined {
 // ======================
 
 export function preseT(p: PreseForms): TPreseEnum {
-    return  (p as any as StepsForm).steps !== undefined ? TPreseEnum.Steps : (p as TForm).fields !== undefined ? TPreseEnum.TForm : TPreseEnum.ColumnList
+    return (p as any as StepsForm).steps !== undefined ? TPreseEnum.Steps : (p as TForm).fields !== undefined ? TPreseEnum.TForm : TPreseEnum.ColumnList
 }
 
