@@ -6,6 +6,7 @@ import { makeMessage } from "../../ts/j"
 import ModalFormDialog, { ErrorMessages, IIRefCall } from "./ModalFormDialog"
 import { log } from "../../ts/l"
 import { TRow } from "../../ts/typing"
+import { THooks } from "./TemplateFormDialog"
 
 function constructStep(p: StepsElem, key: number, last: boolean, errorstep: boolean): React.ReactNode {
 
@@ -23,7 +24,7 @@ type TData = {
   aftermove?: boolean
 }
 
-const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickButton, aRest : TAsyncRestCall  }>((props, iref) => {
+const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) => {
 
   const [c, setCurrent] = useState<TData>({ current: 0, errorstep: undefined });
   let key: number = 0
@@ -32,7 +33,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickBu
 
   function setC(current: number, vars: TRow | undefined, b: ClickResult) {
     const v: TRow | undefined = ref.current?.getVals();
-    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined, aftermove : true })
+    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined, aftermove: true })
   }
 
   useImperativeHandle(iref, () => ({
@@ -71,10 +72,12 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & { clickButton: TClickBu
     props.clickButton(b, { ...v, ...c.vars, ...row })
   }
 
+  const initvals: TRow = { ...props.initvals, ...c.vars }
+
   return <React.Fragment><Steps current={c.current}>
     {props.steps.map(e => constructStep(e, key++, c.current === props.steps.length - 1, c.errorstep ? (key - 1) === c.errorstep : false))}
   </Steps>
-    <ModalFormDialog aRest={props.aRest} ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={c.vars} ignorerestapivals={c.aftermove} />
+    <ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={initvals} ignorerestapivals={c.aftermove} />
   </React.Fragment>
 })
 

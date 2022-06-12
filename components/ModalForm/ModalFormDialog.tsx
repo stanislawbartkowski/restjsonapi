@@ -1,22 +1,21 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
 import { Card, Modal } from 'antd';
 
-import { ClickResult, PreseForms, StepsForm, TAsyncRestCall, TClickButton, TField, TPreseEnum } from '../ts/typing'
+import { ClickResult, FOnFieldChanged, PreseForms, StepsForm, TAsyncRestCall, TClickButton, TField, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
 import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
-import ModalFormView, { IRefCall, ErrorMessages, findErrField, FOnFieldChanged } from './ModalFormView';
+import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
 import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
 import { FAction, FIELDTYPE, PropsType, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
-//import { transformValuesTo } from '../ts/transformres';
 import ReadDefError from '../errors/ReadDefError';
-import TemplateFormDialog from './TemplateFormDialog'
+import TemplateFormDialog, { THooks } from './TemplateFormDialog'
 
 
 export type { ErrorMessage, ErrorMessages } from './ModalFormView';
@@ -48,9 +47,8 @@ function ltrace(mess: string) {
     trace('ModalForm', mess)
 }
 
-export type ModalFormProps = {
+type ModalFormProps = {
     ispage?: boolean
-    clickButton: TClickButton
     listdef?: string
     modalprops?: PropsType
     visible?: boolean
@@ -58,7 +56,6 @@ export type ModalFormProps = {
     ignorerestapivals?: boolean
     refreshaction?: FAction
     vars?: TRow
-    aRest: TAsyncRestCall 
 }
 
 
@@ -78,7 +75,7 @@ function isModalFormCookies(p: TForm): boolean {
     return b !== undefined
 }
 
-const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
+const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, iref) => {
 
     const buttonclicked = useRef<ButtonAction | undefined>(undefined);
 
@@ -96,7 +93,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
             setState({ ...formdef, err: errors, loading: loading })
         },
         getVals: () => {
-            return { ...formdef.initvals, ...ref.current.getValues() }
+            return { ...formdef.initvals, ...ref.current?.getValues() }
         },
         setVals: (r: TRow) => {
             ref.current.setValues(r)
@@ -232,7 +229,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
     }
 
     const modalFormView: ReactNode = formdef.status === Status.READY ?
-        ftype === TPreseEnum.Steps ? <TemplateFormDialog refreshaction={props.refreshaction} {...(formd as any as StepsForm)} isform={false} /> :
+        ftype === TPreseEnum.Steps ? <TemplateFormDialog vars={props.vars} refreshaction={props.refreshaction} {...(formd as any as StepsForm)} isform={false} /> :
             <ModalFormView
                 aRest={props.aRest}
                 ref={ref} err={formdef.err}
@@ -244,6 +241,8 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps>((props, iref) => {
                 list={fields}
                 vars={props.vars}
                 ignorerestapivals={props.ignorerestapivals}
+                getValues={props.getValues}
+                setInitValues={props.setInitValues}
             />
         : undefined
 

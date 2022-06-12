@@ -6,6 +6,7 @@ import { restapilistdef, restapijs, restapishowdetils, restapilist, restaction }
 import { Status, ColumnList, ShowDetails } from "./typing";
 import { isItemGroup, preseT } from './helper'
 import { internalerrorlog } from '../../ts/l'
+import analyzeresponse from "./anayzeresponse";
 
 export type ReadDefsResult = {
     status: Status
@@ -16,11 +17,19 @@ export type ReadDefsResult = {
 
 type FSetState = (res: ReadDefsResult) => void
 
-export async function readvals(initval: string | RESTMETH, vars?: TRow): Promise<Record<string, any>> {
+async function readvals(initval: string | RESTMETH, vars?: TRow): Promise<Record<string, any>> {
     if (isString(initval)) return await restapilist(initval as string)
     const r: RESTMETH = initval as RESTMETH
     return restaction(r.method as HTTPMETHOD, r.restaction as string, r.params, vars)
 }
+
+
+export async function readvalsdata(initval: string | RESTMETH, vars?: TRow): Promise<Record<string, any>> {
+    const dat: any = await readvals(initval, vars)
+    const da = analyzeresponse(dat.data, dat.response)
+    return Promise.resolve(da[0])
+}
+
 
 //  restaction(res.method as HTTPMETHOD, res.restaction, res.params, t)
 
@@ -73,7 +82,7 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: bo
             const t: TForm = idef as TForm
             const ffields: TField[] = await resolveRest(t.fields)
 
-            const initvals: TRow | undefined = (t.restapivals && (ignoreinitvals === undefined || !ignoreinitvals)) ? await readvals(t.restapivals, props.vars) : undefined
+            const initvals: TRow | undefined = (t.restapivals && (ignoreinitvals === undefined || !ignoreinitvals)) ? await readvalsdata(t.restapivals, props.vars) : undefined
             f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
         }
         else f({ status: Status.READY, js: js, res: idef });

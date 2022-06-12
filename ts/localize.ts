@@ -1,4 +1,5 @@
 import LocalizedStrings, { LocalizedStringsMethods } from 'react-localization';
+import { takeCoverage } from 'v8';
 import { isOArray } from './j';
 
 
@@ -26,7 +27,10 @@ const embedded = {
     searchclose: "Szukaj i zamknij",
     next: "Dalej",
     prev: "Poprzedni",
-    version: "Wersja"
+    version: "Wersja",
+    notdefined: "<nie wprowadzone>",
+    yes: "Tak",
+    no: "Nie"
   },
   en: {
     empty: '',
@@ -51,7 +55,11 @@ const embedded = {
     searchclose: "Search and close",
     next: "Next",
     prev: "Previous",
-    version: "Version"
+    version: "Version",
+    notdefined: "<empty>",
+    yes: "Yes",
+    no: "No"
+
   }
 };
 

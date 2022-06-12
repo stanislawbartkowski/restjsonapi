@@ -6,8 +6,7 @@ import React, { MutableRefObject, useRef, useState } from "react";
 import lstring from '../../../ts/localize';
 import SearchExtended, { SearchButtonType, IIRefCall, ExtendedFilter } from './SearchExtended'
 import { TRow } from "../../../ts/typing";
-import { FOnValuesChanged } from "../../ModalForm/ModalFormView";
-import { TAsyncRestCall } from "../../ts/typing";
+import { FOnValuesChanged } from "../../ts/typing";
 
 export type FSetFilter = (t: ExtendedFilter) => void
 

@@ -13,7 +13,7 @@ type ListState = ReadDefsResult & {
     list: string;
 };
 
-const RestTableList: React.FC<RestTableParam& ClickActionProps> = (props) => {
+const RestTable: React.FC<RestTableParam& ClickActionProps> = (props) => {
     const [state, setState] = useState<ListState>({
         status: Status.PENDING,
         list: props.list as string,
@@ -72,4 +72,4 @@ const RestTableList: React.FC<RestTableParam& ClickActionProps> = (props) => {
     }
 };
 
-export default RestTableList;
+export default RestTable;

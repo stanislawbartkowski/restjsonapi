@@ -13,21 +13,22 @@ import {
     Select,
     SelectProps,
     Button,
-    Card
+    Card,
+    List
 } from 'antd';
 import { FormInstance, Rule } from 'antd/es/form';
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 
-import { RestValidatorResult, TAsyncRestCall, TField, TForm, TRadioCheckItem, ValidatorType } from '../ts/typing'
+import { FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, RestValidatorResult, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, ValidatorType } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType, makeDivider } from '../ts/transcol';
 import { callJSFunction, getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
-import { FFieldElem, isItemGroup } from '../ts/helper';
+import { FFieldElem, isItemGroup, isnotdefined } from '../ts/helper';
 import { transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import { cardProps } from '../ts/helper'
@@ -56,10 +57,6 @@ export type ErrorMessage = {
 
 export type ErrorMessages = ErrorMessage[]
 
-export type FOnValuesChanged = (changedFields: Record<string, any>, _: Record<string, any>) => void
-
-export type FOnFieldChanged = (id: string) => void
-
 function ltrace(mess: string) {
     trace('ModalFormView', mess)
 }
@@ -67,13 +64,13 @@ function ltrace(mess: string) {
 export interface IRefCall {
     validate: () => void
     setValues: (row: TRow) => void
-    getValues: () => TRow
+    getValues: FGetValues
 }
 
 interface IFieldContext {
     getChanges: () => TFieldChange
     fieldChanged: (id: string) => void
-    getValues: () => TRow
+    getValues: FGetValues
     aRest: TAsyncRestCall
 }
 
@@ -360,8 +357,34 @@ function createList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode
 }
 
 
+
+function transformToListItem(t: FField, li: TListItems, r: TRow): React.ReactNode {
+
+    const ftype: FIELDTYPE = fieldType(t)
+    const value: FieldValue = isnotdefined(r[t.field]) ? lstring("notdefined") : r[t.field]
+    let values: string = value as string
+    if (ftype === FIELDTYPE.BOOLEAN && !isnotdefined(r[t.field])) values = (value as boolean) ? lstring("yes") : lstring("no")
+
+    const title: string = fieldTitle(t, { r: r })
+
+    return <List.Item {...li.iprops}><Space {...li.lprops}>{title}</Space><Space {...li.vprops}> {values}</Space></List.Item>
+
+}
+
+
+function createItemList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {
+    const li: TListItems = t.itemlist as TListItems
+    const r: TRow = ir.getValues()
+    const dsource: FField[] = t.items as FField[]
+    const header = li.header ? makeMessage(li.header, { r: r }) : undefined
+    const footer = li.footer ? makeMessage(li.footer, { r: r }) : undefined
+    return <List size="small" header={header} footer={footer} dataSource={dsource} {...li.props} renderItem={(item: FField) => transformToListItem(item, li, r)} />
+}
+
+
 function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages): React.ReactNode {
 
+    if (t.itemlist) return createItemList(ir, t, err);
     if (t.list) return createList(ir, t, err)
     return <React.Fragment>
         {t.divider ? makeDivider(t.divider, { r: {} }) : undefined}
@@ -378,10 +401,11 @@ type SearchDialogProps = TField & {
 
 const emptySearch = { field: "", visible: false }
 
-const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall }>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues,setInitValues: FSetValues}>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
+
 
     const [f]: [FormInstance] = Form.useForm()
 
@@ -414,7 +438,9 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
         if (props.jsrestapivals) {
             var initvals: TRow = callJSFunction(props.jsrestapivals as string, { r: {}, vars: props.vars as TRow });
-            f.setFieldsValue(transformValuesTo(initvals, props.list));
+            const vals = transformValuesTo(initvals, props.list);
+            f.setFieldsValue(vals)
+            props.setInitValues(initvals)
         }
 
     }, [props.jsrestapivals])
@@ -424,7 +450,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
         console.log(props.initvals)
         if (props.ignorerestapivals !== undefined && !props.ignorerestapivals) return;
-        if (props.initvals) f.setFieldsValue(transformValuesTo(props.initvals, props.list));
+        if (props.initvals) {
+            const vals = transformValuesTo(props.initvals, props.list);
+            f.setFieldsValue(vals);
+        }
 
     }, [props.initvals])
 
@@ -483,15 +512,17 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
             props.onFieldChange(id);
         },
         getValues: function (): TRow {
-            return getVals();
+            return props.getValues()
+            //return getVals()
         },
         aRest: function (r: RESTMETH, data: TRow): Promise<TRow> {
             return props.aRest(r, data)
         }
     }
 
+    // must be preserve=true (default)
     const form = <Form
-        form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges} preserve={false}
+        form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges} 
         layout="horizontal" scrollToFirstError {...props.formprops} onFieldsChange={onFieldsChanges} >
 
         {buttonstop}

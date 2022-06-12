@@ -105,6 +105,7 @@ export type TNotification = {
     kind?: NotificationKind,
     title: FormMessage,
     description: FormMessage
+    ishtml?: boolean
 }
 
 
@@ -290,11 +291,20 @@ export type TListItem = PropSupportedType & {
 
 export type SearchChooseButton = FormMessage & RestTableParam;
 
+// lista
+
+export type TListItems = PropSupportedType & {
+    header?: FormMessage
+    footer?: FormMessage
+    lprops?: PropsType
+    vprops?: PropsType
+    iprops?: PropsType
+}
 
 // single field
 
 export type RestValidatorResult = {
-    err? : FormMessage;
+    err?: FormMessage;
 }
 
 export type ValidatorType = {
@@ -313,15 +323,16 @@ export type TField = PropSupportedType & TFieldBase & {
     range?: boolean
     placeholder?: FormMessage
     enterbutton?: SearchChooseButton
-    onchange? : ButtonAction
+    onchange?: ButtonAction
     validate?: ValidatorType[]
     divider?: TDivider
+    itemlist?: TListItem
 }
 
 
 // the whole form
 
-  
+
 
 export type TForm = JSSupportedType & TCard & {
     fields: TField[]
@@ -345,6 +356,8 @@ export type StepsElem = PropSupportedType & {
 
 export type StepsForm = PropSupportedType & {
     steps: StepsElem[]
+    vars?: TRow
+    initvals?: TRow
 }
 
 export type PreseForms = TForm | ColumnList
@@ -357,7 +370,14 @@ export enum TPreseEnum {
 
 export type TClickButton = (clickbutton?: ButtonAction, row?: TRow) => void
 
-export type TAsyncRestCall = (h : RESTMETH, row: TRow) => Promise<TRow>
+export type TAsyncRestCall = (h: RESTMETH, row: TRow) => Promise<TRow>
+
+export type FOnValuesChanged = (changedFields: Record<string, any>, _: Record<string, any>) => void
+
+export type FOnFieldChanged = (id: string) => void
+
+export type FGetValues = () => TRow
+export type FSetValues = (r: TRow) => void
 
 // ============================
 // standard buttons 
@@ -373,4 +393,3 @@ export enum BUTTONACTION {
     NEXT = 'NEXT',
     PREV = 'PREV'
 }
-

@@ -109,10 +109,14 @@ export function getPrintContent(): PrintResult {
 
 // ========================
 
+export function isnotdefined(t : any) : boolean {
+    return t === undefined || t === null;
+}
+
 
 export function tomoney(t: string | number | undefined): undefined | string {
-    if (t === undefined || t == null) return undefined
-    if (isString(t)) return (+t).toFixed(defaults.moneydot)
+    if (isnotdefined(t)) return undefined
+    if (isString(t)) return (+(t as string|number)).toFixed(defaults.moneydot)
     return (t as number).toFixed(defaults.moneydot)
 }
 

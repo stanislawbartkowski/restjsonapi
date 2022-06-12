@@ -3,16 +3,21 @@ import React, { MutableRefObject, useRef, useState } from "react";
 import { IIRefCall } from "./ModalFormDialog";
 import ModalFormDialog from "./ModalFormDialog";
 import executeAction from '../ts/executeaction'
-import { StepsForm, TAction, TAsyncRestCall, TClickButton } from "../ts/typing";
+import { FGetValues, FSetValues, StepsForm, TAction, TAsyncRestCall, TClickButton } from "../ts/typing";
 import { FAction, RESTMETH, TComponentProps, TRow } from "../../ts/typing";
 import { ClickActionProps } from "../../ts/typing";
 import RestComponent from "../RestComponent";
 import StepsFormView from "./StepsFormView";
-import { readvals } from "../ts/readdefs";
-import analyzeresponse from "../ts/anayzeresponse";
+import { readvalsdata } from "../ts/readdefs";
 
-export type ModalFormProps = ClickActionProps &
-{
+export type THooks = {
+    aRest: TAsyncRestCall,
+    clickButton: TClickButton
+    getValues: FGetValues
+    setInitValues: FSetValues
+}
+
+type ModalFormProps = ClickActionProps & {
     visible?: boolean
     ispage?: boolean
     vars?: TRow
@@ -27,6 +32,9 @@ const ModalDialog: React.FC<(ModalFormProps | StepsForm) & { isform: boolean }> 
 
     const [restview, setRestView] = useState<PopDialogView>({ visible: false });
 
+    const [initvals, setInitVals] = useState<TRow>({...props.vars});
+
+
     const ref: MutableRefObject<any> = useRef<IIRefCall>();
 
     const closeF: FAction = () => {
@@ -35,25 +43,36 @@ const ModalDialog: React.FC<(ModalFormProps | StepsForm) & { isform: boolean }> 
 
     const clickButton: TClickButton = (button?: TAction, row?: TRow) => {
         const res: TComponentProps | undefined = executeAction({ ...props, i: ref.current }, button, row);
+        console.log(row)
         if (res) {
             setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF } })
         }
     }
 
-    const aRest :TAsyncRestCall = async (h : RESTMETH, r: TRow) => {
+    const aRest: TAsyncRestCall = async (h: RESTMETH, r: TRow) => {
 
-        const data : TRow = {...ref.current.getVals(), ...r}
-        const dat: any = await readvals(h, data)
-        const da = analyzeresponse(dat.data, dat.response)
+        const data: TRow = { ...initvals, ...ref.current.getVals(), ...r }
+        return readvalsdata(h, data)
+    }
 
-        return Promise.resolve(da[0])        
+    const thooks: THooks = {
+        aRest: aRest,
+        clickButton: clickButton,
+        getValues: () => {
+            const r: TRow = { ...initvals, ...ref.current?.getVals() }
+            return r
+        },
+        setInitValues: (r: TRow) => {
+            const ar: TRow = { ...initvals, ...r }
+            setInitVals({...ar})
+        }
     }
 
 
     const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} /> : undefined
 
-    const comp: React.ReactNode = props.isform ? <ModalFormDialog aRest={aRest} vars={(props as ModalFormProps).vars} ref={ref} {...props} clickButton={clickButton} /> : 
-                                                 <StepsFormView aRest={aRest} ref={ref} {...props as StepsForm} clickButton={clickButton} />
+    const comp: React.ReactNode = props.isform ? <ModalFormDialog {...thooks} ref={ref} {...props} /> :
+        <StepsFormView {...thooks} ref={ref} vars={(props as ModalFormProps).vars} {...props as StepsForm} initvals={initvals} />
 
     return <React.Fragment>
         {comp}

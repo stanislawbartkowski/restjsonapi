@@ -1,8 +1,8 @@
 import { forwardRef, MutableRefObject, useImperativeHandle, useRef } from "react";
 
 import { RESTMETH, TRow } from "../../../ts/typing"
-import type { ColumnList, TAsyncRestCall, TField } from "../../ts/typing"
-import ModalFormView, { ErrorMessages, FOnFieldChanged, FOnValuesChanged, IRefCall } from "../../ModalForm/ModalFormView";
+import type { ColumnList, FGetValues, FOnFieldChanged, FOnValuesChanged, TAsyncRestCall, TField } from "../../ts/typing"
+import ModalFormView, { ErrorMessages, IRefCall } from "../../ModalForm/ModalFormView";
 import { FFieldElem, flattenTForm } from "../../ts/helper";
 import { convertColumnsToFields } from "./helper";
 
@@ -38,6 +38,10 @@ const SearchExtended = forwardRef<IIRefCall, SearchDialog>((props, iref) => {
     }
     ));
 
+    const getValues: FGetValues = () => {
+        return refm.current.getValues()
+    }
+
     const fields: TField[] = convertColumnsToFields(props)
     function buttonClickded(r: TRow) { }
     const ffields: FFieldElem[] = flattenTForm(fields)
@@ -48,15 +52,14 @@ const SearchExtended = forwardRef<IIRefCall, SearchDialog>((props, iref) => {
     const onFieldChange: FOnFieldChanged = (id: string) => {
     }
 
-    const aRest: TAsyncRestCall = (h : RESTMETH, row: TRow) => {
-        const a : TRow = {}
+    const aRest: TAsyncRestCall = (h: RESTMETH, row: TRow) => {
+        const a: TRow = {}
         return Promise.resolve(a)
 
     }
 
-
-
-    return <ModalFormView aRest={aRest} ref={refm} fields={fields} buttonClicked={buttonClickded} initvals={props.filtervalues} list={ffields} buttons={[]} buttonsextratop={props.buttons} err={err} onValuesChanges={onValuesChanges} onFieldChange={onFieldChange} />
+    return <ModalFormView aRest={aRest} getValues={getValues} ref={refm} fields={fields} buttonClicked={buttonClickded} 
+       initvals={props.filtervalues} list={ffields} buttons={[]} buttonsextratop={props.buttons} err={err} onValuesChanges={onValuesChanges} onFieldChange={onFieldChange} setInitValues={() => {}}/>
 
 })
 
