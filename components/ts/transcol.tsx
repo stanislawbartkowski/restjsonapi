@@ -269,3 +269,13 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
 export function makeDivider(d: TDivider, t: OneRowData): React.ReactElement {
     return <Divider {...d.props}>{makeMessage(d as FormMessage, { r: t.r, vars: t.vars })}</Divider>
 }
+
+// =========================
+// HTML content
+// =========================
+
+export function HTMLElem(value: string|undefined) : React.ReactElement  {
+
+    const html: string = value ? value as string : ""
+    return <div dangerouslySetInnerHTML={{ __html: html }} />
+}

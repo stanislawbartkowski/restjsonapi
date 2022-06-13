@@ -24,7 +24,7 @@ import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/i
 import { FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, RestValidatorResult, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, ValidatorType } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, TRow } from '../../ts/typing'
-import { fieldTitle, fieldType, makeDivider } from '../ts/transcol';
+import { fieldTitle, fieldType, HTMLElem, makeDivider } from '../ts/transcol';
 import { callJSFunction, getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
@@ -183,8 +183,10 @@ interface HTMLProps {
 
 const HTMLControl: React.FC<HTMLProps> = (props) => {
 
-    const html: string = props.value ? props.value : ""
-    return <div dangerouslySetInnerHTML={{ __html: html }} />
+    return HTMLElem(props.value);
+
+//    const html: string = props.value ? props.value : ""
+//    return <div dangerouslySetInnerHTML={{ __html: html }} />
 }
 
 function checkchange(ir: IFieldContext, id: string) {
