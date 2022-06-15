@@ -26,6 +26,8 @@ async function readvals(initval: string | RESTMETH, vars?: TRow): Promise<Record
 
 export async function readvalsdata(initval: string | RESTMETH, vars?: TRow): Promise<Record<string, any>> {
     const dat: any = await readvals(initval, vars)
+    // dat.data === undefinded means GET method only
+    if (dat.data === undefined) return Promise.resolve(dat)
     const da = analyzeresponse(dat.data, dat.response)
     return Promise.resolve(da[0])
 }
