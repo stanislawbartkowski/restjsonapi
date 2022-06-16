@@ -42,7 +42,7 @@ const ModalDialog: React.FC<(ModalFormProps | StepsForm) & { isform: boolean }> 
     }
 
     const clickButton: TClickButton = (button?: TAction, row?: TRow) => {
-        const res: TComponentProps | undefined = executeAction({ ...props, i: ref.current }, button, row);
+        const res: TComponentProps | undefined = executeAction({ ...props, i: ref.current }, button, {...initvals, ...row});
         console.log(row)
         if (res) {
             setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF } })

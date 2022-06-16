@@ -185,8 +185,8 @@ const HTMLControl: React.FC<HTMLProps> = (props) => {
 
     return HTMLElem(props.value);
 
-//    const html: string = props.value ? props.value : ""
-//    return <div dangerouslySetInnerHTML={{ __html: html }} />
+    //    const html: string = props.value ? props.value : ""
+    //    return <div dangerouslySetInnerHTML={{ __html: html }} />
 }
 
 function checkchange(ir: IFieldContext, id: string) {
@@ -403,7 +403,7 @@ type SearchDialogProps = TField & {
 
 const emptySearch = { field: "", visible: false }
 
-const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues,setInitValues: FSetValues}>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
@@ -443,6 +443,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
             const vals = transformValuesTo(initvals, props.list);
             f.setFieldsValue(vals)
             props.setInitValues(initvals)
+            ltrace("useEffect jsrestapivals")
+            console.log(initvals)
         }
 
     }, [props.jsrestapivals])
@@ -455,6 +457,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
         if (props.initvals) {
             const vals = transformValuesTo(props.initvals, props.list);
             f.setFieldsValue(vals);
+            ltrace("useEffect initvals")
+            console.log(initvals)
         }
 
     }, [props.initvals])
@@ -495,6 +499,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
     //const initvals = {paramsrequired: "aaa"}
     const initvals = props.initvals ? transformValuesTo(props.initvals as TRow, props.list) : undefined
 
+    ltrace("initvals")
     console.log(initvals)
 
     const onFieldsChanges = (changedFields: Record<string, any>, _: any) => {
@@ -524,7 +529,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     // must be preserve=true (default)
     const form = <Form
-        form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges} 
+        form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges}
         layout="horizontal" scrollToFirstError {...props.formprops} onFieldsChange={onFieldsChanges} >
 
         {buttonstop}
