@@ -182,12 +182,23 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
 
     }, [props.listdef]);
 
+    // important: to run trigger button exactly once
+    useEffect(() => {
+        if (buttontrigger) {
+// do not use            
+//            setButtonTrigger(undefined)
+            fclick(buttontrigger)
+        }
+    
+    }, [buttontrigger]);
+
     if (formdef.status === Status.PENDING) return null
     if (formdef.status === Status.ERROR) return <ReadDefError />
 
-    if (buttontrigger) {
-        fclick(buttontrigger)
-    }
+//    if (buttontrigger) {
+//        setButtonTrigger(undefined)
+//        fclick(buttontrigger)
+//    }
 
     function onValuesChange(changedFields: Record<string, any>, _: any) {
 
