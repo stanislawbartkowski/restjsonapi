@@ -21,7 +21,7 @@ import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 
-import { FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, RestValidatorResult, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, ValidatorType } from '../ts/typing'
+import { FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, RestValidatorResult, SearchChooseButton, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, ValidatorType } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType, HTMLElem, makeDivider } from '../ts/transcol';
@@ -543,7 +543,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     return <React.Fragment>
         {form}
-        <RestComponent  {...searchD.enterbutton} visible={searchD.visible} choosing closeAction={closeF} />
+        <RestComponent  {...searchD.enterbutton as object} visible={searchD.visible} choosing closeAction={closeF} />
     </React.Fragment>
 })
 

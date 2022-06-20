@@ -160,7 +160,13 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
                 const tabledata: TForm = { ...(d.res as TForm) }
 
                 const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : isModalFormCookies(tabledata) ? getCookiesFormListDefVars(props.listdef as string) : props.initvals
-                //const tranformvals: TRow | undefined = preseT(tabledata) === TPreseEnum.TForm && vars ? transformValuesTo(vars, tabledata.fields) : undefined
+                if (vars !== undefined) {
+                    ltrace("readdefs")
+                    console.log(vars)
+                    props.setInitValues(vars)
+                }
+                // 2022/06/21
+                // push up
                 setState({
                     status: Status.READY,
                     tabledata: tabledata,
@@ -195,10 +201,6 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
     if (formdef.status === Status.PENDING) return null
     if (formdef.status === Status.ERROR) return <ReadDefError />
 
-//    if (buttontrigger) {
-//        setButtonTrigger(undefined)
-//        fclick(buttontrigger)
-//    }
 
     function onValuesChange(changedFields: Record<string, any>, _: any) {
 
