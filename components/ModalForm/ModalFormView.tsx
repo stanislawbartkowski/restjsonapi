@@ -438,30 +438,36 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     useEffect(() => {
 
+        console.log(props.initvals)
+        if (props.ignorerestapivals !== undefined && !props.ignorerestapivals) return;
+        if (props.initvals) {
+            ltrace("useEffect initvals")
+            console.log(initvals)
+            const vals = transformValuesTo(props.initvals, props.list);
+            f.setFieldsValue(vals);
+            ltrace("useEffect initvals transformed")
+            console.log(vals)
+        }
+
+    }, [props.initvals])
+
+
+    // 2022/06/22 - jsrestapi after initvals, order is important
+    useEffect(() => {
+
         if (props.jsrestapivals) {
             var initvals: TRow = callJSFunction(props.jsrestapivals as string, { r: {}, vars: props.vars as TRow });
+            ltrace("useEffect jsrestapivals")
+            console.log(initvals)
             const vals = transformValuesTo(initvals, props.list);
             f.setFieldsValue(vals)
             props.setInitValues(initvals)
-            ltrace("useEffect jsrestapivals")
-            console.log(initvals)
+            ltrace("useEffect jsrestapivals transformed")
+            console.log(vals)
         }
 
     }, [props.jsrestapivals])
 
-
-    useEffect(() => {
-
-        console.log(props.initvals)
-        if (props.ignorerestapivals !== undefined && !props.ignorerestapivals) return;
-        if (props.initvals) {
-            const vals = transformValuesTo(props.initvals, props.list);
-            f.setFieldsValue(vals);
-            ltrace("useEffect initvals")
-            console.log(initvals)
-        }
-
-    }, [props.initvals])
 
     const buttonstop: ReactNode = props.buttonsextratop ? <React.Fragment><Form.Item><Space>{props.buttonsextratop}</Space></Form.Item><Divider /></React.Fragment> : undefined
     const buttonsbottom: ReactNode = props.buttonsextrabottom ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextrabottom}</Space></Form.Item></React.Fragment> : undefined
