@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import "antd/dist/antd.css";
 import { Layout } from "antd";
@@ -7,12 +7,19 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import AppContent from "./AppContent";
 import LeftMenu from "./LeftMenu";
 import HeaderLine from './HeaderLine'
+import { getAppData } from "../ts/readresource";
 
 
 const { Header, Sider, Content } = Layout;
 
 const AppLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+
+  // This effect runs once, after the first render
+  useEffect(() => {
+    document.title = getAppData()['title']
+  }, [])
+
   return (
     <Layout>
       <Sider
@@ -23,7 +30,7 @@ const AppLayout: React.FC = () => {
           minHeight: "100vh",
         }}
       >
-        <LeftMenu />
+        <LeftMenu collapsed={collapsed} />
       </Sider>
       <Layout className="site-layout">
         <Header className="site-layout-background" style={{ padding: 0 }}>

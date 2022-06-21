@@ -8,7 +8,12 @@ import { useLocation } from 'react-router-dom'
 import lstring from "../ts/localize";
 import defaults from "../ts/defaults";
 
-const Logo: React.FC = () => {
+
+type TLeftMenu = {
+  collapsed: boolean
+}
+
+const Logo: React.FC<TLeftMenu> = (props) => {
 
 
   const text = <span>{lstring('version')}</span>;
@@ -18,19 +23,21 @@ const Logo: React.FC = () => {
     </div>
   );
 
-  const logo: string | undefined = getAppData() ? getAppData()['logo'] ? getAppData()['logo'] : undefined : undefined
+  const logkey = props.collapsed ? 'logosmall' : 'logo'
 
-  const image: ReactElement = logo ? (<Image style={{ paddingLeft: '20px' }} src={logo} width="60%" height='32px' />) : <div></div>;
+  const logo: string | undefined = getAppData() ? getAppData()[logkey] ? getAppData()[logkey] : undefined : undefined
 
-  return  <Popover placement="left" title={text} content={content} trigger="click">{image} </Popover>
+  if (logo === undefined) return <span/>
+
+  const image: ReactElement = props.collapsed ? <Image style={{ paddingLeft: '1px' }} src={logo} width="100%" height='32px' /> :
+                              <Image style={{ paddingLeft: '20px' }} src={logo} width="60%" height='32px' /> 
+
+  return <Popover placement="left" title={text} content={content} trigger="click">{image} </Popover>
 
 }
 
-const LeftMenu: React.FC = () => {
+const LeftMenu: React.FC<TLeftMenu> = (props) => {
 
-  const logo: string | undefined = getAppData() ? getAppData()['logo'] ? getAppData()['logo'] : undefined : undefined
-
-  const image: ReactElement | undefined = logo ? (<Image style={{ paddingLeft: '20px' }} src={logo} width="60%" height='32px' />) : undefined;
 
   const location = useLocation();
   //console.log(location.pathname);
@@ -38,7 +45,7 @@ const LeftMenu: React.FC = () => {
   return (
     <React.Fragment>
       <div className="logo">
-        <Logo />
+        <Logo {...props} />
       </div>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={getDefaultMenu(location.pathname)}>
         {provideMenu()}
