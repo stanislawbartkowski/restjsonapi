@@ -113,6 +113,10 @@ export function isnotdefined(t : any) : boolean {
     return t === undefined || t === null;
 }
 
+export function istrue(t : boolean|undefined) : boolean {
+    if (isnotdefined(t)) return false;
+    return t as boolean
+}
 
 export function tomoney(t: string | number | undefined): undefined | string {
     if (isnotdefined(t)) return undefined

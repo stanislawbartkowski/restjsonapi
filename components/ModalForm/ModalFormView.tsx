@@ -21,14 +21,14 @@ import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 
-import { FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, RestValidatorResult, SearchChooseButton, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, ValidatorType } from '../ts/typing'
+import { FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, RestValidatorResult, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, ValidatorType } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType, HTMLElem, makeDivider } from '../ts/transcol';
 import { callJSFunction, getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
-import { FFieldElem, isItemGroup, isnotdefined } from '../ts/helper';
+import { FFieldElem, isItemGroup, isnotdefined, istrue } from '../ts/helper';
 import { transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import { cardProps } from '../ts/helper'
@@ -439,7 +439,11 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
     useEffect(() => {
 
         console.log(props.initvals)
-        if (props.ignorerestapivals !== undefined && !props.ignorerestapivals) return;
+        // added properly recognizing value
+        if (istrue(props.ignorerestapivals)) {
+            if (props.initvals) ltrace("Ignore initvals for the second time")
+            return;
+        }
         if (props.initvals) {
             ltrace("useEffect initvals")
             console.log(initvals)
@@ -454,7 +458,11 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     // 2022/06/22 - jsrestapi after initvals, order is important
     useEffect(() => {
-
+        // 2022/06/22 - ignore
+        if (istrue(props.ignorerestapivals)) {
+            if (props.jsrestapivals) ltrace("Ignore jsrestapivals for the second time")
+            return;
+        }
         if (props.jsrestapivals) {
             var initvals: TRow = callJSFunction(props.jsrestapivals as string, { r: {}, vars: props.vars as TRow });
             ltrace("useEffect jsrestapivals")

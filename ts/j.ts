@@ -3,6 +3,7 @@
 // ====================
 
 import validateObject, { ObjectType } from "../components/ts/validateobject";
+import defaults from "./defaults";
 import { log } from "./l";
 import lstring from "./localize";
 import type { ButtonElem, FormMessage, OneRowData, TRow } from "./typing";
@@ -65,7 +66,10 @@ export function isDev(): boolean {
 
 export function makeMessage(m: FormMessage, pars: OneRowData = { r: {} }): string | undefined {
 
-  if (isString(m)) return lstring(m as string)
+  if (isString(m)) {
+    if (m.startsWith(defaults.directprefix)) return m.substring(defaults.directprefix.length)
+    return lstring(m as string)
+  }
 
   if (m.messagedirect) return m.messagedirect;
 
