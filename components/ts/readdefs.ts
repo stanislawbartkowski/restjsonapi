@@ -4,7 +4,7 @@ import { callJSFunction, isOArray, isString } from "../../ts/j";
 import type { FormMessage, HTTPMETHOD, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
 import { restapilistdef, restapijs, restapishowdetils, restapilist, restaction } from "../../services/api";
 import { Status, ColumnList, ShowDetails } from "./typing";
-import { isItemGroup, preseT } from './helper'
+import { isItemGroup, istrue, preseT } from './helper'
 import { internalerrorlog } from '../../ts/l'
 import analyzeresponse from "./anayzeresponse";
 
@@ -84,7 +84,7 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: bo
             const t: TForm = idef as TForm
             const ffields: TField[] = await resolveRest(t.fields)
 
-            const initvals: TRow | undefined = (t.restapivals && (ignoreinitvals === undefined || !ignoreinitvals)) ? await readvalsdata(t.restapivals, props.vars) : undefined
+            const initvals: TRow | undefined = (t.restapivals && !istrue(ignoreinitvals)) ? await readvalsdata(t.restapivals, props.vars) : undefined
             f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
         }
         else f({ status: Status.READY, js: js, res: idef });
