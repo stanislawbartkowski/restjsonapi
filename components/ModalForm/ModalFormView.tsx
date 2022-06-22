@@ -440,10 +440,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
         console.log(props.initvals)
         // added properly recognizing value
-        if (istrue(props.ignorerestapivals)) {
-            if (props.initvals) ltrace("Ignore initvals for the second time")
-            return;
-        }
+//        if (istrue(props.ignorerestapivals)) {
+//            if (props.initvals) ltrace("Ignore initvals for the second time")
+//            return;
+//        }
         if (props.initvals) {
             ltrace("useEffect initvals")
             console.log(initvals)
