@@ -21,19 +21,21 @@ type TData = {
   current: number,
   vars?: TRow
   errorstep: number | undefined
+  // TODO: remove
   aftermove?: boolean
+  visited: Set<number>
 }
 
 const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) => {
 
-  const [c, setCurrent] = useState<TData>({ current: 0, errorstep: undefined });
+  const [c, setCurrent] = useState<TData>({ current: 0, errorstep: undefined, visited: new Set<number>() });
   let key: number = 0
 
   const ref: MutableRefObject<IIRefCall | undefined> = useRef<IIRefCall>();
 
-  function setC(current: number, vars: TRow | undefined, b: ClickResult) {
+  function setC(current: number, vars: TRow | undefined, b: ClickResult, visited: Set<number>) {
     const v: TRow | undefined = ref.current?.getVals();
-    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined, aftermove: true })
+    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined, aftermove: true, visited: visited })
   }
 
   useImperativeHandle(iref, () => ({
@@ -47,6 +49,8 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
     doAction: (b: ClickResult) => {
       log(`doaction`)
       let current: number = c.current
+      const visited: Set<number> = new Set<number>(c.visited)
+      visited.add(current)
       if (b?.next) {
         if (current < props.steps.length - 1) current = current + 1
       } else {
@@ -59,7 +63,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
           log("Beginning, cannot go backward")
         }
       }
-      setC(current, b.vars, b)
+      setC(current, b.vars, b, visited)
     },
     setVals: (r: TRow) => {
       ref.current?.setVals(r)
@@ -77,7 +81,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
   return <React.Fragment><Steps current={c.current}>
     {props.steps.map(e => constructStep(e, key++, c.current === props.steps.length - 1, c.errorstep ? (key - 1) === c.errorstep : false))}
   </Steps>
-    <ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={initvals} ignorerestapivals={c.aftermove} />
+    <ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={initvals} ignorerestapivals={c.visited.has(c.current)} />
   </React.Fragment>
 })
 

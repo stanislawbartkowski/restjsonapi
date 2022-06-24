@@ -12,7 +12,7 @@ function datetransform(v: any, from: boolean) {
     return dateparseS(v)
 }
 
-function getValue(v: any, t: FFieldElem, from: boolean) {
+export function transformSingleValue(v: any, t: FFieldElem, from: boolean) {
 
     if (t.elemlist) {
         const vlist: TRow[] = v
@@ -31,7 +31,7 @@ function transformValues(row: TRow, tf: FFieldElem[], from: boolean): TRow {
     const res: TRow = {}
     tf.forEach((t: FFieldElem) => {
         if (row[t.field] !== undefined) {
-            res[t.field] = getValue(row[t.field], t, from)
+            res[t.field] = transformSingleValue(row[t.field], t, from)
         } 
     })
     return res;

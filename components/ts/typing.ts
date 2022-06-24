@@ -327,6 +327,7 @@ export type TField = PropSupportedType & TFieldBase & {
     validate?: ValidatorType[]
     divider?: TDivider
     itemlist?: TListItem
+    value?: ColumnValue
 }
 
 
@@ -340,6 +341,7 @@ export type TForm = JSSupportedType & TCard & {
     buttons: ButtonAction[]
     restapivals?: string | RESTMETH
     jsrestapivals?: string
+    header?: ShowDetails
 }
 
 // --------------------------------

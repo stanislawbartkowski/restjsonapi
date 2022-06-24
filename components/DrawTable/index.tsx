@@ -5,7 +5,7 @@ import { Table, Drawer, Space, Divider } from "antd";
 import type { TableRowSelection } from "antd/lib/table/interface";
 
 import lstring from "../../ts/localize";
-import type { ClickActionProps, OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
+import { ClickActionProps, emptyModalListProps, OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
 import type { ButtonAction, ClickResult, ColumnList, FActionResult, FShowDetails, TAsyncRestCall } from "../ts/typing";
 import { Status } from "../ts/typing";
@@ -14,7 +14,7 @@ import { makeHeader } from "../ts/helper";
 import ModalList from "../RestComponent";
 import RowDescription from "../ShowDetails/RowDescription";
 import getExtendableProps from "./Expendable";
-import HeaderTable from "./HeaderTable";
+import HeaderTable from "../HeaderTable";
 import readlist, { DataSourceState } from '../ts/readlist'
 import ReadListError from '../errors/ReadListError'
 import SummaryTable from './SummaryTable'
@@ -22,7 +22,6 @@ import defaults from "../../ts/defaults";
 import { isNumber } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 import { ModalFormProps } from '../../components/ModalForm'
-import { emptyModalListProps } from './typing'
 import SearchButton, { FSetFilter } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
 

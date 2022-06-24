@@ -28,11 +28,12 @@ import { fieldTitle, fieldType, HTMLElem, makeDivider } from '../ts/transcol';
 import { callJSFunction, getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
-import { FFieldElem, isItemGroup, isnotdefined, istrue } from '../ts/helper';
-import { transformValuesFrom, transformValuesTo } from '../ts/transformres';
+import { FFieldElem, getValue, isItemGroup, isnotdefined, istrue } from '../ts/helper';
+import { transformSingleValue, transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import { cardProps } from '../ts/helper'
 import defaults from '../../ts/defaults';
+import HeaderTable from '../HeaderTable'
 
 type FSearchAction = (s: string, t: FField) => void
 
@@ -182,11 +183,7 @@ interface HTMLProps {
 }
 
 const HTMLControl: React.FC<HTMLProps> = (props) => {
-
     return HTMLElem(props.value);
-
-    //    const html: string = props.value ? props.value : ""
-    //    return <div dangerouslySetInnerHTML={{ __html: html }} />
 }
 
 function checkchange(ir: IFieldContext, id: string) {
@@ -228,21 +225,33 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
     // except boolean/switch - change reported when blurred
     if (fieldtype !== FIELDTYPE.BOOLEAN && fieldtype !== FIELDTYPE.DATE) ir.getChanges().notescalatewhenchange.add(t.field)
 
+    let valuep = {}
+    let disabledp = {}
+
+    if (t.value) {
+        const value: FieldValue = getValue(t.value, { r: ir.getValues() });
+        const v = transformSingleValue(value, t, false);
+        valuep = fieldtype !== FIELDTYPE.BOOLEAN ? valuep = { initialValue: v } :
+            (v as boolean) ? { initialValue: "checked" } : {}
+        if (fieldtype !== FIELDTYPE.HTML) disabledp = { disabled: true }
+    }
+
     switch (fieldtype) {
-        case FIELDTYPE.NUMBER: return [<InputNumber onBlur={onBlur} {...placeHolder(t)} {...t.iprops} />, undefined]
+        case FIELDTYPE.NUMBER: return [<InputNumber onBlur={onBlur} {...placeHolder(t)} {...t.iprops} {...disabledp} />, { ...valuep }]
         case FIELDTYPE.DATE:
             if (t.range) return [<RangePicker {...t.iprops} />, undefined]
-            return [<DatePicker  {...t.iprops} />, undefined]
+            return [<DatePicker  {...t.iprops} {...disabledp} />, { ...valuep }]
         case FIELDTYPE.BOOLEAN: return [<Switch {...t.iprops}
             checkedChildren={<CheckOutlined />}
             unCheckedChildren={<CloseOutlined />}
-        />, { valuePropName: "checked" }
+            {...disabledp}
+        />, { valuePropName: "checked", ...valuep }
         ]
-        case FIELDTYPE.HTML: return [<HTMLControl />, undefined]
+        case FIELDTYPE.HTML: return [<HTMLControl />, { ...valuep }]
     }
 
     return t.enterbutton ? [searchItem(ir, t, name), undefined] :
-        [<Input onBlur={onBlur} {...placeHolder(t)}  {...t.iprops} />, undefined]
+        [<Input onBlur={onBlur} {...placeHolder(t)}  {...t.iprops} {...disabledp} />, { ...valuep }]
 }
 
 export function findErrField(field: string, err: ErrorMessages): ErrorMessage | undefined {
@@ -439,11 +448,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
     useEffect(() => {
 
         console.log(props.initvals)
-        // added properly recognizing value
-//        if (istrue(props.ignorerestapivals)) {
-//            if (props.initvals) ltrace("Ignore initvals for the second time")
-//            return;
-//        }
         if (props.initvals) {
             ltrace("useEffect initvals")
             console.log(initvals)
@@ -554,8 +558,12 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
 
     </Form>
 
+    const header: ReactNode | undefined = props.header ? 
+                    <HeaderTable {...props.header} refreshaction={()=> {}} fbutton={closeF} r={{}} ></HeaderTable> : 
+                    undefined
 
     return <React.Fragment>
+        {header}
         {form}
         <RestComponent  {...searchD.enterbutton as object} visible={searchD.visible} choosing closeAction={closeF} />
     </React.Fragment>

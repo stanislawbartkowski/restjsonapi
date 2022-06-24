@@ -24,7 +24,8 @@ export function fieldType(t: TFieldBase): FIELDTYPE {
 
 export function fieldTitle(t: TFieldBase, pars: OneRowData): string {
     if (t.coltitle === undefined) return lstring(t.field);
-    if (isString(t.coltitle)) return lstring(t.coltitle as string)
+// 2022/06/24 -- commented out    
+//    if (isString(t.coltitle)) return lstring(t.coltitle as string)
     const m: FormMessage = t.coltitle as FormMessage
     return makeMessage(m, pars) as string
 

@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { PageHeader, Space } from "antd";
 
-import { emptyModalListProps } from "./typing";
-import { trace } from "../../ts/l";
-import constructButton from "../ts/constructbutton";
-import type { FAction, ModalFormProps, RestTableParam, TRow } from '../../ts/typing'
-import { TableToolBar, ButtonAction, ClickResult, ShowDetails } from "../ts/typing";
-import { clickAction} from "../ts/helper";
-import OneRowTable from '../ShowDetails/OneRowTable'
-import RestComponent from "../RestComponent";
-import { isObject, makeMessage } from "../../ts/j";
+import { trace } from "../ts/l";
+import constructButton from "./ts/constructbutton";
+import { emptyModalListProps, FAction, ModalFormProps, RestTableParam, TRow } from '../ts/typing'
+import { TableToolBar, ButtonAction, ClickResult, ShowDetails } from "./ts/typing";
+import { clickAction} from "./ts/helper";
+import OneRowTable from './ShowDetails/OneRowTable'
+import RestComponent from "./RestComponent";
+import { isObject, makeMessage } from "../ts/j";
 
 
 function ltrace(mess: string) {
