@@ -2,6 +2,7 @@ import React from "react";
 
 import {TRow } from "../../ts/typing";
 import { ClickActionProps } from "../../ts/typing";
+import ModalFormDialog from "./ModalFormDialog";
 import TemplateFormDialog from './TemplateFormDialog'
 
 export type ModalFormProps = ClickActionProps &
@@ -13,8 +14,8 @@ export type ModalFormProps = ClickActionProps &
 
 const ModalDialog: React.FC<ModalFormProps> = (props) => {
 
-    return <TemplateFormDialog {...props} isform />
-
+    return <ModalFormDialog {...props} />
+       
 }
 
 

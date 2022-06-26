@@ -11,10 +11,10 @@ import StepsFormView from "./StepsFormView";
 import { readvalsdata } from "../ts/readdefs";
 
 export type THooks = {
-    aRest: TAsyncRestCall,
-    clickButton: TClickButton
-    getValues: FGetValues
-    setInitValues: FSetValues
+    aRest?: TAsyncRestCall,
+    clickButton?: TClickButton
+    getValues?: FGetValues
+    setInitValues?: FSetValues
 }
 
 type ModalFormProps = ClickActionProps & {

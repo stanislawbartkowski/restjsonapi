@@ -73,7 +73,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
 
   const clickB: TClickButton = (b?: ButtonAction, row?: TRow) => {
     const v: TRow | undefined = ref.current?.getVals();
-    props.clickButton(b, { ...v, ...c.vars, ...row })
+    if (props.clickButton) props.clickButton(b, { ...v, ...c.vars, ...row })
   }
 
   const initvals: TRow = { ...props.initvals, ...c.vars }

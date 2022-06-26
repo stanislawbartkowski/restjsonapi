@@ -1,7 +1,7 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
 import { Card, Modal } from 'antd';
 
-import { ClickResult, FOnFieldChanged, PreseForms, StepsForm, TAsyncRestCall, TClickButton, TField, TPreseEnum } from '../ts/typing'
+import { ClickResult, FGetValues, FOnFieldChanged, FSetValues, PreseForms, StepsForm, TAsyncRestCall, TClickButton, TField, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
@@ -16,6 +16,7 @@ import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
 import TemplateFormDialog, { THooks } from './TemplateFormDialog'
+import StepsFormView from './StepsFormView';
 
 
 export type { ErrorMessage, ErrorMessages } from './ModalFormView';
@@ -136,18 +137,18 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
             iref.validate()
         }
         else {
-            props.clickButton(b, v);
+            if (props.clickButton) props.clickButton(b, v);
         }
         setVarsCookies(props, b, v);
     }
 
     function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {
         if (ismaskClicked(e)) return
-        props.clickButton()
+        if (props.clickButton) props.clickButton()
     }
 
     function onButtonClicked(r: TRow): void {
-        props.clickButton(buttonclicked.current, r)
+        if (props.clickButton) props.clickButton(buttonclicked.current, r)
     }
 
     useEffect(() => {
@@ -163,7 +164,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
                 if (vars !== undefined) {
                     ltrace("readdefs")
                     console.log(vars)
-                    props.setInitValues(vars)
+                    if (props.setInitValues) props.setInitValues(vars)
                 }
                 // 2022/06/21
                 // push up
@@ -191,11 +192,11 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
     // important: to run trigger button exactly once
     useEffect(() => {
         if (buttontrigger) {
-// do not use            
-//            setButtonTrigger(undefined)
+            // do not use            
+            //            setButtonTrigger(undefined)
             fclick(buttontrigger)
         }
-    
+
     }, [buttontrigger]);
 
     if (formdef.status === Status.PENDING) return null
@@ -220,7 +221,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
         if (f === undefined) return
         if (f.onchange) {
             const v: TRow = ref.current.getValues()
-            props.clickButton(f.onchange, v)
+            if (props.clickButton) props.clickButton(f.onchange, v)
         }
     }
 
@@ -241,10 +242,14 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
         if (tr) setButtonTrigger(tr)
     }
 
+    // <TemplateFormDialog vars={props.vars} refreshaction={props.refreshaction} {...(formd as any as StepsForm)} isform={false} /> :
+    // <StepsFormView {...thooks} ref={ref} vars={(props as ModalFormProps).vars} {...props as StepsForm} initvals={initvals} />
+
+
     const modalFormView: ReactNode = formdef.status === Status.READY ?
-        ftype === TPreseEnum.Steps ? <TemplateFormDialog vars={props.vars} refreshaction={props.refreshaction} {...(formd as any as StepsForm)} isform={false} /> :
+        ftype === TPreseEnum.Steps ? <StepsFormView vars={props.vars} {...props} {...(formd as any as StepsForm)} /> :
             <ModalFormView
-                aRest={props.aRest}
+                aRest={props.aRest as TAsyncRestCall}
                 ref={ref} err={formdef.err}
                 {...formd}
                 buttonClicked={onButtonClicked}
@@ -254,8 +259,8 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
                 list={fields}
                 vars={props.vars}
                 ignorerestapivals={props.ignorerestapivals}
-                getValues={props.getValues}
-                setInitValues={props.setInitValues}
+                getValues={props.getValues as FGetValues}
+                setInitValues={props.setInitValues as FSetValues}
             />
         : undefined
 
