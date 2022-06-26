@@ -1,7 +1,7 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
 import { Card, Modal } from 'antd';
 
-import { ClickResult, FGetValues, FOnFieldChanged, FSetValues, PreseForms, StepsForm, TAsyncRestCall, TClickButton, TField, TPreseEnum } from '../ts/typing'
+import { ClickResult, FGetValues, FOnFieldChanged, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TClickButton, TField, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
@@ -11,22 +11,22 @@ import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
 import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FAction, FIELDTYPE, PropsType, TRow } from '../../ts/typing'
+import { FAction, FIELDTYPE, PropsType, RESTMETH, TComponentProps, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
 import TemplateFormDialog, { THooks } from './TemplateFormDialog'
 import StepsFormView from './StepsFormView';
-
+import executeAction from '../ts/executeaction'
+import { readvalsdata } from "../ts/readdefs";
 
 export type { ErrorMessage, ErrorMessages } from './ModalFormView';
-
 
 export interface IIRefCall {
     setMode: (loading: boolean, errors: ErrorMessages) => void,
     doAction?: (b: ClickResult) => void
-    getVals(): TRow | undefined
-    setVals: (row: TRow) => void
+    getVals: FGetValues
+    setVals: FSetValues
 }
 
 
@@ -87,23 +87,109 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
         initvals: undefined
     });
 
+    const [initvals, setInitVals] = useState<TRow>({ ...props.vars });
+
     const [buttontrigger, setButtonTrigger] = useState<ButtonAction | undefined>()
 
-    useImperativeHandle(iref, () => ({
+
+    const formd: TForm = (formdef.tabledata as TForm)
+
+    const ftype: TPreseEnum | undefined = formdef.status === Status.READY ? preseT(formd) : undefined
+
+    const getVals: FGetValues = () => {
+        if (sref.current === undefined && ref.current === undefined) return {}
+        return ftype === TPreseEnum.Steps ? sref.current.getVals() : ref.current.getValues()
+    }
+
+    const setVals : FSetValues = (r: TRow) => {
+        if (ftype === TPreseEnum.Steps) sref.current.setVals(r)
+        else ref.current.setValues(r)
+    }
+
+
+    const iiref: IIRefCall = {
         setMode: (loading: boolean, errors: ErrorMessages) => {
-            setState({ ...formdef, err: errors, loading: loading })
+            if (ftype === TPreseEnum.Steps) sref.current.setMode(loading,errors)
+            else setState({ ...formdef, err: errors, loading: loading })
         },
         getVals: () => {
-            return { ...formdef.initvals, ...ref.current?.getValues() }
+            return { ...formdef.initvals, ...initvals, ...getVals() }
         },
         setVals: (r: TRow) => {
-            ref.current.setValues(r)
+            setVals(r)
+            setInitVals({...initvals, ...r})
+        },
+        doAction: (b: ClickResult) => {
+            if (ftype === TPreseEnum.Steps) 
+              if (sref.current?.doAction) sref.current?.doAction(b)
         }
+    }
 
-    })
+    useImperativeHandle(iref, () => (iiref)
+        //        setMode: (loading: boolean, errors: ErrorMessages) => {
+        //            setState({ ...formdef, err: errors, loading: loading })
+        //        },
+        //        getVals: ()   => {
+        //            return { ...formdef.initvals, ...ref.current?.getValues() } 
+        //        },
+        //        setVals: (r: TRow) => {
+        //            ref.current.setValues(r)
+        //        }
+        //
+        //    })
     )
 
     const ref: MutableRefObject<IRefCall> = useRef<IRefCall>() as MutableRefObject<IRefCall>
+    const sref: MutableRefObject<IIRefCall> = useRef<IIRefCall>() as MutableRefObject<IIRefCall>
+
+    // ====================================
+    const _aRest: TAsyncRestCall = async (h: RESTMETH, r: TRow) => {
+
+        const data: TRow = { ...initvals, ...getVals(), ...r }
+        return readvalsdata(h, data)
+    }
+
+
+    const _clickButton: TClickButton = (button?: TAction, row?: TRow) => {
+        const res: TComponentProps | undefined = executeAction({ ...props, i: iiref }, button, { ...initvals, ...row });
+        console.log(row)
+        //        if (res) {
+        //            setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF } })
+        //        }
+    }
+
+
+    const thooks: THooks = {
+        aRest:  async (h: RESTMETH, r: TRow) => {
+            if (props.aRest) return props.aRest(h,r);
+            else return _aRest(h,r);
+        },
+
+        clickButton: (button?: ButtonAction, row?: TRow) => {
+            if (props.clickButton) props.clickButton(button,row);
+            else _clickButton(button,row);
+        },
+        getValues: () => {
+            if (props.getValues) return props.getValues();
+            const r: TRow = { ...initvals, ...getVals() }
+            return r
+        },
+        setInitValues: (r: TRow) => {
+            if (props.setInitValues) {
+                props.setInitValues(r);
+                return;
+            }
+            const ar: TRow = { ...initvals, ...r }
+            setInitVals({ ...ar })
+        }
+    }
+
+    const clickButton: TClickButton = (button?: ButtonAction, row?: TRow) => {
+        if (thooks.clickButton) thooks.clickButton(button,row);
+    }
+
+
+    // =========================================
 
     const fields: FFieldElem[] = preseT(formdef.tabledata as PreseForms) === TPreseEnum.TForm ? flattenTForm(formdef.tabledata?.fields as TField[]) : []
 
@@ -137,18 +223,18 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
             iref.validate()
         }
         else {
-            if (props.clickButton) props.clickButton(b, v);
+            clickButton(b, v);
         }
         setVarsCookies(props, b, v);
     }
 
     function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {
         if (ismaskClicked(e)) return
-        if (props.clickButton) props.clickButton()
+        clickButton()
     }
 
     function onButtonClicked(r: TRow): void {
-        if (props.clickButton) props.clickButton(buttonclicked.current, r)
+        clickButton(buttonclicked.current, r)
     }
 
     useEffect(() => {
@@ -164,7 +250,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
                 if (vars !== undefined) {
                     ltrace("readdefs")
                     console.log(vars)
-                    if (props.setInitValues) props.setInitValues(vars)
+                    if (thooks.setInitValues) thooks.setInitValues(vars)
                 }
                 // 2022/06/21
                 // push up
@@ -221,7 +307,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
         if (f === undefined) return
         if (f.onchange) {
             const v: TRow = ref.current.getValues()
-            if (props.clickButton) props.clickButton(f.onchange, v)
+            clickButton(f.onchange, v)
         }
     }
 
@@ -232,11 +318,6 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
         formdef.tabledata.buttons.map(e => constructButton(e, fclick, loading, loading && e.id === buttonclicked.current?.id)) :
         undefined
 
-    const formd: TForm = (formdef.tabledata as TForm)
-
-
-    const ftype: TPreseEnum | undefined = formdef.status === Status.READY ? preseT(formd) : undefined
-
     if (ftype === TPreseEnum.TForm && buttontrigger === undefined) {
         const tr: ButtonAction | undefined = formd.buttons ? formd.buttons.find(e => e.trigger) : undefined
         if (tr) setButtonTrigger(tr)
@@ -246,21 +327,24 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
     // <StepsFormView {...thooks} ref={ref} vars={(props as ModalFormProps).vars} {...props as StepsForm} initvals={initvals} />
 
 
+    const ivals: TRow = thooks.getValues ? thooks.getValues() : {}
+
     const modalFormView: ReactNode = formdef.status === Status.READY ?
-        ftype === TPreseEnum.Steps ? <StepsFormView vars={props.vars} {...props} {...(formd as any as StepsForm)} /> :
+        ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={ivals} /> :
             <ModalFormView
                 aRest={props.aRest as TAsyncRestCall}
                 ref={ref} err={formdef.err}
                 {...formd}
                 buttonClicked={onButtonClicked}
                 buttonsextrabottom={props.ispage ? buttons : undefined}
-                onValuesChanges={onValuesChange} initvals={formdef.initvals}
+                onValuesChanges={onValuesChange} initvals={ivals}
                 onFieldChange={onFieldChange}
                 list={fields}
                 vars={props.vars}
                 ignorerestapivals={props.ignorerestapivals}
                 getValues={props.getValues as FGetValues}
                 setInitValues={props.setInitValues as FSetValues}
+                {...thooks}
             />
         : undefined
 

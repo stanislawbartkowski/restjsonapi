@@ -77,7 +77,8 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
         restaction(res.method as HTTPMETHOD, res.restaction, res.params, t).then(
             ({ data, response }) => {
                 const da = analyzeresponse(data, response)
-                const resobject: TAction = da[0] as TAction
+                const reobject: TAction = da[0] as TAction
+                const resobject: TAction = (res.retprops) ? Object.assign(reobject,res.retprops) : reobject
                 doaction(resobject, da[1])
             }
         ).catch(((e) => {

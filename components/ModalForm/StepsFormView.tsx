@@ -19,7 +19,7 @@ function constructStep(p: StepsElem, key: number, last: boolean, errorstep: bool
 
 type TData = {
   current: number,
-  vars?: TRow
+//  vars?: TRow
   errorstep: number | undefined
   // TODO: remove
   aftermove?: boolean
@@ -35,7 +35,8 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
 
   function setC(current: number, vars: TRow | undefined, b: ClickResult, visited: Set<number>) {
     const v: TRow | undefined = ref.current?.getVals();
-    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined, aftermove: true, visited: visited })
+//    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined, aftermove: true, visited: visited })
+    setCurrent({ current: current, errorstep: b.steperror ? current : undefined, aftermove: true, visited: visited })
   }
 
   useImperativeHandle(iref, () => ({
@@ -44,7 +45,8 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
     },
     getVals: () => {
       const ar: TRow | undefined = ref.current?.getVals()
-      return { ...c.vars, ...ar }
+//      return { ...c.vars, ...ar }
+      return {...ar }
     },
     doAction: (b: ClickResult) => {
       log(`doaction`)
@@ -71,17 +73,22 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
   })
   )
 
-  const clickB: TClickButton = (b?: ButtonAction, row?: TRow) => {
-    const v: TRow | undefined = ref.current?.getVals();
-    if (props.clickButton) props.clickButton(b, { ...v, ...c.vars, ...row })
-  }
+//  const clickB: TClickButton = (b?: ButtonAction, row?: TRow) => {
+//    const v: TRow | undefined = ref.current?.getVals();
+//    if (props.clickButton) props.clickButton(b, { ...v, ...c.vars, ...row })
+//  }
 
-  const initvals: TRow = { ...props.initvals, ...c.vars }
+//<ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={initvals} ignorerestapivals={c.visited.has(c.current)} />
+
+//  const initvals: TRow = { ...props.initvals, ...c.vars }
+  //const vals : TRow = props.getValues ? props.getValues() : {}
+  const vals: TRow = {}
+  const initvals: TRow = { ...props.initvals, ...vals }
 
   return <React.Fragment><Steps current={c.current}>
     {props.steps.map(e => constructStep(e, key++, c.current === props.steps.length - 1, c.errorstep ? (key - 1) === c.errorstep : false))}
   </Steps>
-    <ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={initvals} ignorerestapivals={c.visited.has(c.current)} />
+    <ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} visible ispage initvals={initvals} ignorerestapivals={c.visited.has(c.current)} />
   </React.Fragment>
 })
 

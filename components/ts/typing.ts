@@ -145,7 +145,9 @@ export type ClickAction = ClickResult & {
 }
 
 // single action, message or click action
-export type TAction = ClickAction & FormMessage
+export type TAction = ClickAction & FormMessage & {
+    retprops?: TAction
+}
 
 // list actions e.g. action columne
 export type TActions = JSSupportedType & PropSupportedType & {
