@@ -13,9 +13,7 @@ export type ModalFormProps = ClickActionProps &
 }
 
 const ModalDialog: React.FC<ModalFormProps> = (props) => {
-
     return <ModalFormDialog {...props} />
-       
 }
 
 

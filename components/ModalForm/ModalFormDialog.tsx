@@ -91,13 +91,17 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
 
     const [buttontrigger, setButtonTrigger] = useState<ButtonAction | undefined>()
 
+    const ref: MutableRefObject<IRefCall> = useRef<IRefCall>() as MutableRefObject<IRefCall>
+    const sref: MutableRefObject<IIRefCall> = useRef<IIRefCall>() as MutableRefObject<IIRefCall>
 
     const formd: TForm = (formdef.tabledata as TForm)
 
     const ftype: TPreseEnum | undefined = formdef.status === Status.READY ? preseT(formd) : undefined
 
+
+
     const getVals: FGetValues = () => {
-        if (sref.current === undefined && ref.current === undefined) return {}
+        if ((sref.current === undefined || sref.current === null)  && (ref.current === undefined || ref.current === null)) return {}
         return ftype === TPreseEnum.Steps ? sref.current.getVals() : ref.current.getValues()
     }
 
@@ -138,9 +142,6 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
         //
         //    })
     )
-
-    const ref: MutableRefObject<IRefCall> = useRef<IRefCall>() as MutableRefObject<IRefCall>
-    const sref: MutableRefObject<IIRefCall> = useRef<IIRefCall>() as MutableRefObject<IIRefCall>
 
     // ====================================
     const _aRest: TAsyncRestCall = async (h: RESTMETH, r: TRow) => {
