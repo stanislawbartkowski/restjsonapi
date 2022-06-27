@@ -29,6 +29,12 @@ export interface IIRefCall {
     setVals: FSetValues
 }
 
+export interface ModalHooks {
+
+    setButtons: (buttons: ReactNode) => void
+    setProps: (props: PropsType) => void
+}
+
 
 type DataFormState = {
     status: Status;
@@ -57,6 +63,7 @@ type ModalFormProps = {
     ignorerestapivals?: boolean
     refreshaction?: FAction
     vars?: TRow
+    mhooks?: ModalHooks
 }
 
 
@@ -101,11 +108,12 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
 
 
     const getVals: FGetValues = () => {
-        if ((sref.current === undefined || sref.current === null)  && (ref.current === undefined || ref.current === null)) return {}
-        return ftype === TPreseEnum.Steps ? sref.current.getVals() : ref.current.getValues()
+        return ftype === TPreseEnum.Steps ?
+            (sref.current === undefined || sref.current === null) ? {} : sref.current.getVals() :
+            (ref.current === undefined || ref.current === null) ? {} : ref.current.getValues()
     }
 
-    const setVals : FSetValues = (r: TRow) => {
+    const setVals: FSetValues = (r: TRow) => {
         if (ftype === TPreseEnum.Steps) sref.current.setVals(r)
         else ref.current.setValues(r)
     }
@@ -113,7 +121,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
 
     const iiref: IIRefCall = {
         setMode: (loading: boolean, errors: ErrorMessages) => {
-            if (ftype === TPreseEnum.Steps) sref.current.setMode(loading,errors)
+            if (ftype === TPreseEnum.Steps) sref.current.setMode(loading, errors)
             else setState({ ...formdef, err: errors, loading: loading })
         },
         getVals: () => {
@@ -121,11 +129,11 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
         },
         setVals: (r: TRow) => {
             setVals(r)
-            setInitVals({...initvals, ...r})
+            setInitVals({ ...initvals, ...r })
         },
         doAction: (b: ClickResult) => {
-            if (ftype === TPreseEnum.Steps) 
-              if (sref.current?.doAction) sref.current?.doAction(b)
+            if (ftype === TPreseEnum.Steps)
+                if (sref.current?.doAction) sref.current?.doAction(b)
         }
     }
 
@@ -161,14 +169,14 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
 
 
     const thooks: THooks = {
-        aRest:  async (h: RESTMETH, r: TRow) => {
-            if (props.aRest) return props.aRest(h,r);
-            else return _aRest(h,r);
+        aRest: async (h: RESTMETH, r: TRow) => {
+            if (props.aRest) return props.aRest(h, r);
+            else return _aRest(h, r);
         },
 
         clickButton: (button?: ButtonAction, row?: TRow) => {
-            if (props.clickButton) props.clickButton(button,row);
-            else _clickButton(button,row);
+            if (props.clickButton) props.clickButton(button, row);
+            else _clickButton(button, row);
         },
         getValues: () => {
             if (props.getValues) return props.getValues();
@@ -186,7 +194,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
     }
 
     const clickButton: TClickButton = (button?: ButtonAction, row?: TRow) => {
-        if (thooks.clickButton) thooks.clickButton(button,row);
+        if (thooks.clickButton) thooks.clickButton(button, row);
     }
 
 
@@ -349,10 +357,15 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
             />
         : undefined
 
-    const modaldialog: ReactNode = <Modal destroyOnClose visible={props.visible}
-        onCancel={onClose} {...props.modalprops} footer={buttons}>
-        {modalFormView}
-    </Modal >
+    if (!props.ispage && props.mhooks) props.mhooks.setButtons(buttons)
+    if (props.mhooks) props.mhooks.setProps(props.modalprops as PropsType)
+
+    //    const modaldialog: ReactNode = <Modal destroyOnClose visible={props.visible}
+    //        onCancel={onClose} {...props.modalprops} footer={buttons}>
+    //        {modalFormView}
+    //    </Modal >
+
+    const modaldialog: ReactNode = modalFormView
 
     const pagedialog: ReactNode = <React.Fragment>
         <Card {...cardProps(formdef.tabledata)} >

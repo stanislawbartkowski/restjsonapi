@@ -1,8 +1,9 @@
-import React from "react";
+import { Modal } from "antd";
+import React, { ReactNode, useState } from "react";
 
-import {TRow } from "../../ts/typing";
+import { PropsType, TRow } from "../../ts/typing";
 import { ClickActionProps } from "../../ts/typing";
-import ModalFormDialog from "./ModalFormDialog";
+import ModalFormDialog, { ModalHooks } from "./ModalFormDialog";
 import TemplateFormDialog from './TemplateFormDialog'
 
 export type ModalFormProps = ClickActionProps &
@@ -12,8 +13,33 @@ export type ModalFormProps = ClickActionProps &
     vars?: TRow
 }
 
+type ModalPropsData = {
+    modalprops: PropsType | undefined;
+    buttons: ReactNode
+}
+
 const ModalDialog: React.FC<ModalFormProps> = (props) => {
-    return <ModalFormDialog {...props} />
+
+    const [moddef, setState] = useState<ModalPropsData>({ modalprops: undefined, buttons: undefined });
+
+    const ihooks: ModalHooks = {
+
+        setButtons: function (buttons: ReactNode): void {
+            setState({ ...moddef, buttons: buttons })
+        },
+        setProps: function (props: PropsType): void {
+            setState({ ...moddef, modalprops: props })
+        }
+    }
+
+    function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {
+    }
+
+    if (props.ispage) return <ModalFormDialog {...props} />
+    else return <Modal destroyOnClose visible={props.visible}
+        onCancel={onClose} {...moddef.modalprops} footer={moddef.buttons} >
+        <ModalFormDialog {...props} mhooks={ihooks} />
+    </Modal >
 }
 
 
