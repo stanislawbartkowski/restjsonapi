@@ -64,9 +64,10 @@ function ltrace(mess: string) {
 
 export interface IRefCall {
     validate: () => void
-    setValues: (row: TRow) => void
+//    setValues: (row: TRow) => void
     getValues: FGetValues
 }
+
 
 interface IFieldContext {
     getChanges: () => TFieldChange
@@ -412,6 +413,8 @@ type SearchDialogProps = TField & {
 
 const emptySearch = { field: "", visible: false }
 
+// getValues: used only to get values for field list
+// setInitValues: used to pass values set during jsinitvals (JSON)
 const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
@@ -438,11 +441,11 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
             ltrace('submit');
             f.submit()
         },
-        setValues: (row: TRow) => {
-            const r: TRow = getVals();
-            const newr: TRow = { ...r, ...row }
-            f.setFieldsValue(transformValuesTo(newr, props.list))
-        },
+//        setValues: (row: TRow) => {
+//            const r: TRow = getVals();
+//            const newr: TRow = { ...r, ...row }
+//            f.setFieldsValue(transformValuesTo(newr, props.list))
+//        },
     }));
 
     useEffect(() => {

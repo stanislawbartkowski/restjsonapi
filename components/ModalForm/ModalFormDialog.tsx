@@ -26,7 +26,9 @@ export interface IIRefCall {
     setMode: (loading: boolean, errors: ErrorMessages) => void,
     doAction?: (b: ClickResult) => void
     getVals: FGetValues
+    // used while setting variables during execute actions
     setVals: FSetValues
+    formGetVals: FGetValues
 }
 
 export interface ModalHooks {
@@ -103,7 +105,12 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         psetState(p)
     }
 
-    const [initvals, setInitVals] = useState<TRow>({ ...props.vars });
+    const [initvals, psetInitVals] = useState<TRow>({ ...props.vars });
+
+    function setInitVals(r: TRow) {
+        psetInitVals(r);
+    }
+
 
     const [buttontrigger, setButtonTrigger] = useState<ButtonAction | undefined>()
 
@@ -120,27 +127,35 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
             (ref.current === undefined || ref.current === null) ? {} : ref.current.getValues()
     }
 
-    const setVals: FSetValues = (r: TRow) => {
-        if (ftype === TPreseEnum.Steps) sref.current.setVals(r)
-        else ref.current.setValues(r)
-    }
+//    const setVals: FSetValues = (r: TRow) => {
+
+//        if (ftype === TPreseEnum.Steps) sref.current.setVals(r)
+//        else ref.current.setValues(r)
+
+//    }
 
 
     const iiref: IIRefCall = {
         setMode: (loading: boolean, errors: ErrorMessages) => {
-            if (ftype === TPreseEnum.Steps) sref.current.setMode(loading, errors)
-            else setState({ ...formdef, err: errors, loading: loading })
+            if (ftype === TPreseEnum.Steps)
+                sref.current.setMode(loading, errors);
+            else
+                setState({ ...formdef, err: errors, loading: loading });
         },
         getVals: () => {
-            return { ...formdef.initvals, ...initvals, ...getVals() }
+            return { ...formdef.initvals, ...initvals, ...getVals() };
         },
         setVals: (r: TRow) => {
-            setVals(r)
-            setInitVals({ ...initvals, ...r })
+            // setVals(r);
+            setInitVals({ ...initvals, ...r });
         },
         doAction: (b: ClickResult) => {
             if (ftype === TPreseEnum.Steps)
-                if (sref.current?.doAction) sref.current?.doAction(b)
+                if (sref.current?.doAction)
+                    sref.current?.doAction(b);
+        },
+        formGetVals: function (): TRow {
+            return getVals();
         }
     }
 
@@ -251,7 +266,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     //function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {setVals
-    //}
+    //}IRefCa
 
     function onButtonClicked(r: TRow): void {
         clickButton(buttonclicked.current, r)
@@ -352,17 +367,18 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     // <StepsFormView {...thooks} ref={ref} vars={(props as ModalFormProps).vars} {...props as StepsForm} initvals={initvals} />
 
 
-    const ivals: TRow = thooks.getValues ? thooks.getValues() : {}
+//    const ivals: TRow = thooks.getValues ? thooks.getValues() : initvals
+    const ivals: TRow = initvals
 
     const modalFormView: ReactNode = formdef.status === Status.READY ?
-        ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={ivals} /> :
+        ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={initvals} /> :
             <ModalFormView
                 aRest={props.aRest as TAsyncRestCall}
                 ref={ref} err={formdef.err}
                 {...formd}
                 buttonClicked={onButtonClicked}
                 buttonsextrabottom={props.ispage ? createB(formdef.tabledata,formdef.loading) : undefined}
-                onValuesChanges={onValuesChange} initvals={ivals}
+                onValuesChanges={onValuesChange} initvals={initvals}
                 onFieldChange={onFieldChange}
                 list={createF()}
                 vars={props.vars}

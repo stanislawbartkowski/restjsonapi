@@ -52,7 +52,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
       log(`doaction`)
       let current: number = c.current
       // ---------- refresh global vars
-      const va : TRow = ref.current?.getVals() as TRow
+      const va : TRow = ref.current?.formGetVals() as TRow
       if (props.setInitValues) props.setInitValues(va);
       // -----------------------------
       const visited: Set<number> = new Set<number>(c.visited)
@@ -73,6 +73,9 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
     },
     setVals: (r: TRow) => {
       ref.current?.setVals(r)
+    },
+    formGetVals : () => {
+      return ref.current?.formGetVals() as TRow
     }
   })
   )
@@ -85,8 +88,8 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
 //<ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={initvals} ignorerestapivals={c.visited.has(c.current)} />
 
 //  const initvals: TRow = { ...props.initvals, ...c.vars }
-  //const vals : TRow = props.getValues ? props.getValues() : {}
-  const vals: TRow = {}
+  const vals : TRow = props.getValues ? props.getValues() : {}
+  //const vals: TRow = {}
   const initvals: TRow = { ...props.initvals, ...vals }
 
   return <React.Fragment><Steps current={c.current}>
