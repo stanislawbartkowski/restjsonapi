@@ -127,12 +127,17 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
             (ref.current === undefined || ref.current === null) ? {} : ref.current.getValues()
     }
 
-//    const setVals: FSetValues = (r: TRow) => {
+    //    const setVals: FSetValues = (r: TRow) => {
 
-//        if (ftype === TPreseEnum.Steps) sref.current.setVals(r)
-//        else ref.current.setValues(r)
+    //        if (ftype === TPreseEnum.Steps) sref.current.setVals(r)
+    //        else ref.current.setValues(r)
 
-//    }
+    //    }
+
+    const constructCurVals = (r?: TRow): TRow => {
+        const data: TRow = {  ...formdef.initvals,...initvals, ...getVals(), ...r }
+        return data
+    }
 
 
     const iiref: IIRefCall = {
@@ -143,11 +148,12 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 setState({ ...formdef, err: errors, loading: loading });
         },
         getVals: () => {
-            return { ...formdef.initvals, ...initvals, ...getVals() };
+            return constructCurVals();
         },
         setVals: (r: TRow) => {
             // setVals(r);
-            setInitVals({ ...initvals, ...r });
+            const vars : TRow = constructCurVals(r);
+            setInitVals(vars);
         },
         doAction: (b: ClickResult) => {
             if (ftype === TPreseEnum.Steps)
@@ -165,13 +171,15 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     // ====================================
     const _aRest: TAsyncRestCall = async (h: RESTMETH, r: TRow) => {
 
-        const data: TRow = { ...initvals, ...getVals(), ...r }
+        const data: TRow = constructCurVals(r);
         return readvalsdata(h, data)
     }
 
 
     const _clickButton: TClickButton = (button?: TAction, row?: TRow) => {
-        const res: TComponentProps | undefined = executeAction({ ...props, i: iiref }, button, { ...initvals, ...row });
+        const nvars: TRow = constructCurVals(row)
+        setInitVals(nvars);
+        const res: TComponentProps | undefined = executeAction({ ...props, i: iiref }, button, nvars);
         console.log(row)
         //        if (res) {
         //            setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF } })
@@ -273,11 +281,11 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     useEffect(() => {
-        if (!props.ispage && props.mhooks){ 
-            const buttons : ReactNode = createB(formdef.tabledata, formdef.loading)
-            props.mhooks.setButtons(buttons,formdef.loading as boolean)
+        if (!props.ispage && props.mhooks) {
+            const buttons: ReactNode = createB(formdef.tabledata, formdef.loading)
+            props.mhooks.setButtons(buttons, formdef.loading as boolean)
         }
-    }, [formdef.tabledata,formdef.loading])
+    }, [formdef.tabledata, formdef.loading])
 
     useEffect(() => {
 
@@ -292,7 +300,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 if (vars !== undefined) {
                     ltrace("readdefs")
                     console.log(vars)
-                    if (thooks.setInitValues) thooks.setInitValues(vars)
+                    // if (thooks.setInitValues) thooks.setInitValues(vars)
                 }
                 // 2022/06/21
                 // push up
@@ -306,7 +314,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
             }
             else {
                 logG.error(`Error while reading definition`)
-                setState({status: Status.ERROR, err: [], initvals: undefined})
+                setState({ status: Status.ERROR, err: [], initvals: undefined })
             }
 
         }
@@ -367,18 +375,18 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     // <StepsFormView {...thooks} ref={ref} vars={(props as ModalFormProps).vars} {...props as StepsForm} initvals={initvals} />
 
 
-//    const ivals: TRow = thooks.getValues ? thooks.getValues() : initvals
-    const ivals: TRow = initvals
+    //    const ivals: TRow = thooks.getValues ? thooks.getValues() : initvals
+    const ivals: TRow = { ...props.initvals, ...initvals }
 
     const modalFormView: ReactNode = formdef.status === Status.READY ?
-        ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={initvals} /> :
+        ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={ivals} /> :
             <ModalFormView
                 aRest={props.aRest as TAsyncRestCall}
                 ref={ref} err={formdef.err}
                 {...formd}
                 buttonClicked={onButtonClicked}
-                buttonsextrabottom={props.ispage ? createB(formdef.tabledata,formdef.loading) : undefined}
-                onValuesChanges={onValuesChange} initvals={initvals}
+                buttonsextrabottom={props.ispage ? createB(formdef.tabledata, formdef.loading) : undefined}
+                onValuesChanges={onValuesChange} initvals={ivals}
                 onFieldChange={onFieldChange}
                 list={createF()}
                 vars={props.vars}

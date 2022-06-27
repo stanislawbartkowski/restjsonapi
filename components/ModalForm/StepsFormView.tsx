@@ -88,8 +88,8 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
 //<ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={initvals} ignorerestapivals={c.visited.has(c.current)} />
 
 //  const initvals: TRow = { ...props.initvals, ...c.vars }
-  const vals : TRow = props.getValues ? props.getValues() : {}
-  //const vals: TRow = {}
+  //const vals : TRow = props.getValues ? props.getValues() : {}
+  const vals: TRow = {}
   const initvals: TRow = { ...props.initvals, ...vals }
 
   return <React.Fragment><Steps current={c.current}>
