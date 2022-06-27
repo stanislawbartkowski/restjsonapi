@@ -51,6 +51,10 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
     doAction: (b: ClickResult) => {
       log(`doaction`)
       let current: number = c.current
+      // ---------- refresh global vars
+      const va : TRow = ref.current?.getVals() as TRow
+      if (props.setInitValues) props.setInitValues(va);
+      // -----------------------------
       const visited: Set<number> = new Set<number>(c.visited)
       visited.add(current)
       if (b?.next) {

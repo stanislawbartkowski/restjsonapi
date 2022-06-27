@@ -145,17 +145,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     useImperativeHandle(iref, () => (iiref)
-        //        setMode: (loading: boolean, errors: ErrorMessages) => {
-        //            setState({ ...formdef, err: errors, loading: loading })
-        //        },
-        //        getVals: ()   => {
-        //            return { ...formdef.initvals, ...ref.current?.getValues() } 
-        //        },
-        //        setVals: (r: TRow) => {
-        //            ref.current.setValues(r)
-        //        }
-        //
-        //    })
     )
 
     // ====================================
