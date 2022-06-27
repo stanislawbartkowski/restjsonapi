@@ -250,9 +250,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         setVarsCookies(props, b, v);
     }
 
-    //function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {
-    //    if (ismaskClicked(e)) return
-    //    clickButton()
+    //function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {setVals
     //}
 
     function onButtonClicked(r: TRow): void {
