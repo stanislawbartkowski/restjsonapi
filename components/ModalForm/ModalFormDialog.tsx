@@ -9,9 +9,9 @@ import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
-import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT } from '../ts/helper'
+import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT, istrue } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FAction, FIELDTYPE, PropsType, RESTMETH, TComponentProps, TRow } from '../../ts/typing'
+import { FAction, FIELDTYPE, ModalFormProps, PropsType, RESTMETH, TComponentProps, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
@@ -31,8 +31,7 @@ export interface IIRefCall {
 
 export interface ModalHooks {
 
-    setButtons: (buttons: ReactNode) => void
-    setProps: (props: PropsType) => void
+    setButtons: (buttons: ReactNode, loading: boolean) => void
 }
 
 
@@ -54,24 +53,30 @@ function ltrace(mess: string) {
     trace('ModalForm', mess)
 }
 
-type ModalFormProps = {
-    ispage?: boolean
+type MModalFormProps = ModalFormProps & {
+    mhooks?: ModalHooks
     listdef?: string
-    modalprops?: PropsType
-    visible?: boolean
+    vars?: TRow
     initvals?: TRow
     ignorerestapivals?: boolean
-    refreshaction?: FAction
-    vars?: TRow
-    mhooks?: ModalHooks
 }
+//    ispage?: boolean
+//    listdef?: string
+//    modalprops?: PropsType
+//    visible?: boolean
+//    initvals?: TRow
+//    ignorerestapivals?: boolean
+//    refreshaction?: FAction
+//    vars?: TRow
+//    mhooks?: ModalHooks
+//}
 
 
 function isCookiesButton(b: ButtonAction): boolean {
     return (b.print !== undefined && b.print) || (b.cookie !== undefined && b.cookie)
 }
 
-function setVarsCookies(p: ModalFormProps, b: ButtonAction, r: TRow) {
+function setVarsCookies(p: MModalFormProps, b: ButtonAction, r: TRow) {
     if (isCookiesButton(b)) {
         setCookiesFormListDefVars(p.listdef as string, r);
     }
@@ -83,16 +88,20 @@ function isModalFormCookies(p: TForm): boolean {
     return b !== undefined
 }
 
-const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, iref) => {
+const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, iref) => {
 
     const buttonclicked = useRef<ButtonAction | undefined>(undefined);
 
-    const [formdef, setState] = useState<DataFormState>({
+    const [formdef, psetState] = useState<DataFormState>({
         status: Status.PENDING,
         tabledata: emptyTForm,
         err: [],
         initvals: undefined
     });
+
+    function setState(p: DataFormState) {
+        psetState(p)
+    }
 
     const [initvals, setInitVals] = useState<TRow>({ ...props.vars });
 
@@ -104,8 +113,6 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
     const formd: TForm = (formdef.tabledata as TForm)
 
     const ftype: TPreseEnum | undefined = formdef.status === Status.READY ? preseT(formd) : undefined
-
-
 
     const getVals: FGetValues = () => {
         return ftype === TPreseEnum.Steps ?
@@ -200,11 +207,28 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
 
     // =========================================
 
-    const fields: FFieldElem[] = preseT(formdef.tabledata as PreseForms) === TPreseEnum.TForm ? flattenTForm(formdef.tabledata?.fields as TField[]) : []
+    const createL = (loading: boolean | undefined) => {
+        const load: boolean = istrue(loading)
+        return load
+    }
+
+    const createF = () => {
+        const fields: FFieldElem[] = preseT(formdef.tabledata as PreseForms) === TPreseEnum.TForm ? flattenTForm(formdef.tabledata?.fields as TField[]) : []
+        return fields
+
+    }
+
+    const createB = (tabledata: TForm | undefined, loading: boolean | undefined) => {
+        const load: boolean = createL(loading);
+        return tabledata?.buttons ?
+            tabledata.buttons.map(e => constructButton(e, fclick, load, load && e.id === buttonclicked.current?.id)) :
+            undefined
+    }
 
 
     function formvalidate(r: TRow): boolean {
         let ok: boolean = true
+        const fields: FFieldElem[] = createF();
         fields.forEach((t: TField) => {
             const fieldtype: FIELDTYPE = fieldType(t)
             if (fieldtype === FIELDTYPE.MONEY && r[t.field] !== undefined) {
@@ -237,14 +261,21 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
         setVarsCookies(props, b, v);
     }
 
-    function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {
-        if (ismaskClicked(e)) return
-        clickButton()
-    }
+    //function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {
+    //    if (ismaskClicked(e)) return
+    //    clickButton()
+    //}
 
     function onButtonClicked(r: TRow): void {
         clickButton(buttonclicked.current, r)
     }
+
+    useEffect(() => {
+        if (!props.ispage && props.mhooks){ 
+            const buttons : ReactNode = createB(formdef.tabledata, formdef.loading)
+            props.mhooks.setButtons(buttons,formdef.loading as boolean)
+        }
+    }, [formdef.tabledata,formdef.loading])
 
     useEffect(() => {
 
@@ -273,9 +304,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
             }
             else {
                 logG.error(`Error while reading definition`)
-                setState({
-                    status: Status.ERROR, err: [], initvals: undefined
-                })
+                setState({status: Status.ERROR, err: [], initvals: undefined})
             }
 
         }
@@ -312,6 +341,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
 
     const onFieldChange: FOnFieldChanged = (id: string) => {
         console.log(id + " field changed")
+        const fields: FFieldElem[] = createF();
         const f: FFieldElem | undefined = fields.find(e => e.field === id)
         if (f === undefined) return
         if (f.onchange) {
@@ -320,12 +350,11 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
         }
     }
 
+    // const loading: boolean = (formdef.loading !== undefined && formdef.loading)
 
-    const loading: boolean = (formdef.loading !== undefined && formdef.loading)
-
-    const buttons: React.ReactNode | undefined = formdef.tabledata?.buttons ?
-        formdef.tabledata.buttons.map(e => constructButton(e, fclick, loading, loading && e.id === buttonclicked.current?.id)) :
-        undefined
+    //    const buttons: React.ReactNode | undefined = formdef.tabledata?.buttons ?
+    //        formdef.tabledata.buttons.map(e => constructButton(e, fclick, loading, loading && e.id === buttonclicked.current?.id)) :
+    //        undefined
 
     if (ftype === TPreseEnum.TForm && buttontrigger === undefined) {
         const tr: ButtonAction | undefined = formd.buttons ? formd.buttons.find(e => e.trigger) : undefined
@@ -345,10 +374,10 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
                 ref={ref} err={formdef.err}
                 {...formd}
                 buttonClicked={onButtonClicked}
-                buttonsextrabottom={props.ispage ? buttons : undefined}
+                buttonsextrabottom={props.ispage ? createB(formdef.tabledata,formdef.loading) : undefined}
                 onValuesChanges={onValuesChange} initvals={ivals}
                 onFieldChange={onFieldChange}
-                list={fields}
+                list={createF()}
                 vars={props.vars}
                 ignorerestapivals={props.ignorerestapivals}
                 getValues={props.getValues as FGetValues}
@@ -357,8 +386,7 @@ const ModalFormDialog = forwardRef<IIRefCall, ModalFormProps & THooks>((props, i
             />
         : undefined
 
-    if (!props.ispage && props.mhooks) props.mhooks.setButtons(buttons)
-    if (props.mhooks) props.mhooks.setProps(props.modalprops as PropsType)
+    //    if (!props.ispage && props.mhooks) props.mhooks.setButtons(buttons)
 
     //    const modaldialog: ReactNode = <Modal destroyOnClose visible={props.visible}
     //        onCancel={onClose} {...props.modalprops} footer={buttons}>

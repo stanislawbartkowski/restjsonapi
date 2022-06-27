@@ -97,6 +97,7 @@ export interface ClickActionProps {
 export type ModalFormProps = ClickActionProps & {
   visible?: boolean
   ispage?: boolean
+  modalprops?: PropsType
 }
 
 export const emptyModalListProps : ModalFormProps = { visible : false}

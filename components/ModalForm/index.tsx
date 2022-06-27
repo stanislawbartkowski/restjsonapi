@@ -1,43 +1,36 @@
 import { Modal } from "antd";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 
-import { PropsType, TRow } from "../../ts/typing";
+import { ModalFormProps, PropsType, TRow } from "../../ts/typing";
 import { ClickActionProps } from "../../ts/typing";
+import { ismaskClicked } from "../ts/helper";
 import ModalFormDialog, { ModalHooks } from "./ModalFormDialog";
 import TemplateFormDialog from './TemplateFormDialog'
 
-export type ModalFormProps = ClickActionProps &
-{
-    visible?: boolean
-    ispage?: boolean
-    vars?: TRow
-}
 
 type ModalPropsData = {
-    modalprops: PropsType | undefined;
     buttons: ReactNode
 }
 
 const ModalDialog: React.FC<ModalFormProps> = (props) => {
 
-    const [moddef, setState] = useState<ModalPropsData>({ modalprops: undefined, buttons: undefined });
+    const [moddef, setState] = useState<ModalPropsData>({ buttons: undefined });
 
     const ihooks: ModalHooks = {
 
-        setButtons: function (buttons: ReactNode): void {
+        setButtons: function (buttons: ReactNode, loading:  boolean): void {
             setState({ ...moddef, buttons: buttons })
         },
-        setProps: function (props: PropsType): void {
-            setState({ ...moddef, modalprops: props })
-        }
     }
 
     function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {
+        if (ismaskClicked(e)) return
+        if (props.closeAction) props.closeAction()
     }
 
     if (props.ispage) return <ModalFormDialog {...props} />
-    else return <Modal destroyOnClose visible={props.visible}
-        onCancel={onClose} {...moddef.modalprops} footer={moddef.buttons} >
+    return <Modal destroyOnClose visible={props.visible}
+        onCancel={onClose} {...props.modalprops} footer={moddef.buttons} >
         <ModalFormDialog {...props} mhooks={ihooks} />
     </Modal >
 }
