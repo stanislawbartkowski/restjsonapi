@@ -322,7 +322,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                     js: d.js,
                     err: [],
                     initvals: vars,
-                    definitvars: vars
+                    definitvars: d.initvar
                     //propsinitvals: props.initvals
                 });
             }
