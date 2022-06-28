@@ -1,22 +1,25 @@
-import { CSSProperties } from "react";
+import React, { CSSProperties } from "react";
 
 import { callJSFunction, isObject, isString, makeMessage } from "../../ts/j";
-import { FieldValue, OneRowData, PropsType, RestTableParam, TRow } from "../../ts/typing";
-import { ActionResult, ButtonAction, ClickResult, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TField, TForm, TPreseEnum } from "./typing";
+import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
+import { ActionResult, ButtonAction, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TField, TForm, TPreseEnum } from "./typing";
 import defaults from "../../ts/defaults";
 import { setCookieR, getCookieR } from '../../ts/cookies'
+import { HTMLElem } from "./transcol";
 
 
 // =================
 // header
 // =================
-export function makeHeader(p: ColumnList, unheader: string | undefined, pars: OneRowData): string | undefined {
+export function makeHeader(p: ColumnList, unheader: string | undefined, pars: OneRowData): React.ReactNode | undefined {
 
     const title: string | undefined = p.headertitle
         ? makeMessage(p.headertitle, pars)
         : unheader
 
-    return title
+    if (title === undefined) return undefined
+
+    return HTMLElem(title)
 }
 
 // =====================
@@ -131,6 +134,10 @@ export function okmoney(t: string): boolean {
 }
 
 // =====================================
+
+// =========================
+// HTML content
+// =========================
 
 
 export type FFieldElem = TField & {
