@@ -1,4 +1,4 @@
-import { PreseForms, TField, TForm, TItemsRest, TPreseEnum, TRadioCheck } from "./typing";
+import { FSetValues, PreseForms, TField, TForm, TItemsRest, TPreseEnum, TRadioCheck } from "./typing";
 import { log } from "../../ts/l";
 import { callJSFunction, isOArray, isString } from "../../ts/j";
 import type { FormMessage, HTTPMETHOD, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";

@@ -415,7 +415,9 @@ const emptySearch = { field: "", visible: false }
 
 // getValues: used only to get values for field list
 // setInitValues: used to pass values set during jsinitvals (JSON)
-const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
+// restapiinitname: the name is passed only to useEffect to be raised only once
+// if definitvars is used in the userEffect, it is raised once per every rendering and overwrites variables
+const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname? : string, definitvars? : TRow, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
@@ -482,6 +484,16 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { err: ErrorMessages, onV
         }
 
     }, [props.jsrestapivals])
+
+    // 2022/06/28 
+    //definitvars: used restapiinitname to be raised only once
+    useEffect(() => {
+        // 2022/06/22 - ignore
+        if (props.definitvars) {
+            props.setInitValues(props.definitvars)
+        }
+
+    }, [props.restapiinitname])
 
 
     const buttonstop: ReactNode = props.buttonsextratop ? <React.Fragment><Form.Item><Space>{props.buttonsextratop}</Space></Form.Item><Divider /></React.Fragment> : undefined

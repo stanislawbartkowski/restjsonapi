@@ -19,6 +19,7 @@ import TemplateFormDialog, { THooks } from './TemplateFormDialog'
 import StepsFormView from './StepsFormView';
 import executeAction from '../ts/executeaction'
 import { readvalsdata } from "../ts/readdefs";
+import { isString } from '../../ts/j';
 
 export type { ErrorMessage, ErrorMessages } from './ModalFormView';
 
@@ -44,7 +45,8 @@ type DataFormState = {
     err: ErrorMessages
     loading?: boolean
     initvals: TRow | undefined
-    propsinitvals: TRow | undefined
+    definitvars: TRow | undefined
+    propsinitvals?: TRow
 };
 
 const emptyTForm: TForm = {
@@ -100,7 +102,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         tabledata: emptyTForm,
         err: [],
         initvals: undefined,
-        propsinitvals: props.initvals
+        definitvars: undefined
+        // propsinitvals: props.initvals
     });
 
     function setState(p: DataFormState) {
@@ -296,12 +299,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
     useEffect(() => {
 
-        setState({ ...formdef, propsinitvals: props.initvals })
-
-    }, [props.initvals])
-
-    useEffect(() => {
-
         if (props.listdef === undefined) return
 
         function setS(d: ReadDefsResult) {
@@ -313,22 +310,26 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 if (vars !== undefined) {
                     ltrace("readdefs")
                     console.log(vars)
+                    // 2022/06/28
+                    // push up
                     // if (thooks.setInitValues) thooks.setInitValues(vars)
+                    // Import: initvars are passed as definitvars to ModalFormView and pushed up later
+                    // running setInitValues here is a risk to overlap rendering
                 }
-                // 2022/06/21
-                // push up
                 setState({
                     status: Status.READY,
                     tabledata: tabledata,
                     js: d.js,
                     err: [],
                     initvals: vars,
-                    propsinitvals: props.initvals
+                    definitvars: vars
+                    //propsinitvals: props.initvals
                 });
             }
             else {
                 logG.error(`Error while reading definition`)
-                setState({ status: Status.ERROR, err: [], initvals: undefined, propsinitvals: props.initvals })
+                setState({ status: Status.ERROR, err: [], initvals: undefined, definitvars: undefined })
+                //                setState({ status: Status.ERROR, err: [], initvals: undefined, propsinitvals: props.initvals })
             }
 
         }
@@ -346,6 +347,14 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         }
 
     }, [buttontrigger]);
+
+    // 2022/06/28
+    // TODO: remove
+    //useEffect(() => {
+
+    //    setState({ ...formdef, propsinitvals: props.initvals })
+
+    //}, [props.initvals])
 
     if (formdef.status === Status.PENDING) return null
     if (formdef.status === Status.ERROR) return <ReadDefError />
@@ -393,6 +402,10 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     const mvals: TRow = isTop ? { ...initvals } : {}
     const ivals: TRow = { ...props.initvals, ...mvals }
 
+    // restapiname is passed to ModalFormView to trigger useEffect with definitvats only once
+    // if more then once then it will overwrite variable to the beginning values
+    const restapiname = formdef.tabledata?.restapivals ? isString(formdef.tabledata?.restapivals) ? formdef.tabledata?.restapivals as string : (formdef.tabledata?.restapivals as RESTMETH).restaction : undefined
+
     const modalFormView: ReactNode = formdef.status === Status.READY ?
         ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={ivals} /> :
             <ModalFormView
@@ -409,6 +422,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 ignorerestapivals={props.ignorerestapivals}
                 getValues={thooks.getValues as FGetValues}
                 setInitValues={thooks.setInitValues as FSetValues}
+                definitvars={formdef.definitvars}
+                restapiinitname={restapiname}
                 {...thooks}
             />
         : undefined
