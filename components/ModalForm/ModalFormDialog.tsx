@@ -1,5 +1,5 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
-import { Card, Modal } from 'antd';
+import { Card } from 'antd';
 
 import { ClickResult, FGetValues, FOnFieldChanged, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TClickButton, TField, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
@@ -9,13 +9,13 @@ import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
-import { FFieldElem, flattenTForm, ismaskClicked, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT, istrue } from '../ts/helper'
+import { FFieldElem, flattenTForm, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT, istrue } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FAction, FIELDTYPE, ModalFormProps, PropsType, RESTMETH, TComponentProps, TRow } from '../../ts/typing'
+import { FIELDTYPE, ModalFormProps, RESTMETH, TComponentProps, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
-import TemplateFormDialog, { THooks } from './TemplateFormDialog'
+import { THooks } from './TemplateFormDialog'
 import StepsFormView from './StepsFormView';
 import executeAction from '../ts/executeaction'
 import { readvalsdata } from "../ts/readdefs";

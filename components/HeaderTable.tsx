@@ -4,11 +4,15 @@ import { PageHeader, Space } from "antd";
 import { trace } from "../ts/l";
 import constructButton from "./ts/constructbutton";
 import { emptyModalListProps, FAction, ModalFormProps, RestTableParam, TRow } from '../ts/typing'
-import { TableToolBar, ButtonAction, ClickResult, ShowDetails } from "./ts/typing";
+import { TableToolBar, ButtonAction, ClickResult, ShowDetails, TAction, ClickAction } from "./ts/typing";
 import { clickAction} from "./ts/helper";
 import OneRowTable from './ShowDetails/OneRowTable'
 import RestComponent from "./RestComponent";
 import { isObject, makeMessage } from "../ts/j";
+import executeAction,{ispopupDialog} from './ts/executeaction'
+import { IRefCall } from "./ModalForm/ModalFormView";
+import { ErrorMessages, IIRefCall } from "./ModalForm/ModalFormDialog";
+
 
 
 function ltrace(mess: string) {
@@ -40,9 +44,23 @@ const HeaderTable: React.FC<ShowDetails & { refreshaction: FAction, vars?: TRow,
 
   function clickButton(b: ButtonAction) {
     ltrace(b.id)
-    const res: ClickResult = clickAction(b, { r: {}, vars: props.vars })
+    const res: TAction = clickAction(b, { r: {}, vars: props.vars })
+    const ii : IIRefCall = {
+      setMode: function (loading: boolean, errors: ErrorMessages): void {
+      },
+      getVals: function (): TRow {
+        return {}
+      },
+      setVals: function (r: TRow): void {
+      },
+      formGetVals: function (): TRow {
+        return props.vars as TRow;
+      }
+    }
     if (isChooseButton(res,props.r)) props.fbutton(b)
-    else setIsModalVisible({ ...res, visible: true, closeAction: fmodalhook })
+    if (ispopupDialog(res)) setIsModalVisible({ ...(res as ClickAction), visible: true, closeAction: fmodalhook })
+    else executeAction({ ...(res as ClickAction), i : ii},res,props.vars ? props.vars : {})
+
   }
 
   const title = headerTitle(props,props.vars);

@@ -12,6 +12,10 @@ import { setPrintContent } from './helper'
 import defaults from "../../ts/defaults";
 import { history } from '../../ts/CustomRouter'
 
+export function ispopupDialog(res: TAction) : boolean {
+    return res.list !== undefined || res.listdef !== undefined
+}
+
 function ltrace(mess: string) {
     trace('ClickButton', mess)
 }
@@ -89,7 +93,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
         return undefined
     }
     doaction(res)
-    if (res.list || res.listdef) return { ...res as TComponentProps }
+    if (ispopupDialog(res)) return { ...res as TComponentProps }
     //if (props.i.doAction) props.i.doAction(res)
     return undefined
 }
