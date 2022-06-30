@@ -11,7 +11,7 @@ import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
 import { FFieldElem, flattenTForm, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT, istrue } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FIELDTYPE, ModalFormProps, RESTMETH, TComponentProps, TRow } from '../../ts/typing'
+import { FAction, FIELDTYPE, ModalFormProps, RESTMETH, TComponentProps, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
@@ -20,6 +20,7 @@ import StepsFormView from './StepsFormView';
 import executeAction from '../ts/executeaction'
 import { readvalsdata } from "../ts/readdefs";
 import { isString } from '../../ts/j';
+import RestComponent from '../RestComponent';
 
 export type { ErrorMessage, ErrorMessages } from './ModalFormView';
 
@@ -88,10 +89,16 @@ function setVarsCookies(p: MModalFormProps, b: ButtonAction, r: TRow) {
 }
 
 function isModalFormCookies(p: TForm): boolean {
-    if (p.buttons === undefined) return false
+    if (p.buttons === undefined || p.buttons === null) return false
     const b: ButtonAction | undefined = p.buttons.find(b => isCookiesButton(b))
     return b !== undefined
 }
+
+type PopDialogView = {
+    def?: TComponentProps
+    visible: boolean
+}
+
 
 const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, iref) => {
 
@@ -105,6 +112,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         definitvars: undefined
         // propsinitvals: props.initvals
     });
+
+    const [restview, setRestView] = useState<PopDialogView>({ visible: false });
 
     function setState(p: DataFormState) {
         psetState(p)
@@ -183,15 +192,18 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         return readvalsdata(h, data)
     }
 
+    const closeF: FAction = () => {
+        setRestView({ visible: false })
+    }
 
     const _clickButton: TClickButton = (button?: TAction, row?: TRow) => {
         const nvars: TRow = constructCurVals(row)
         setInitVals(nvars);
         const res: TComponentProps | undefined = executeAction({ ...props, i: iiref }, button, nvars);
         console.log(row)
-        //        if (res) {
-        //            setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF } })
-        //        }
+        if (res) {
+            setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF } })
+         }
     }
 
 
@@ -406,6 +418,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     // if more then once then it will overwrite variable to the beginning values
     const restapiname = formdef.tabledata?.restapivals ? isString(formdef.tabledata?.restapivals) ? formdef.tabledata?.restapivals as string : (formdef.tabledata?.restapivals as RESTMETH).restaction : undefined
 
+    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} /> : undefined
+
     const modalFormView: ReactNode = formdef.status === Status.READY ?
         ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={ivals} /> :
             <ModalFormView
@@ -447,6 +461,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     return <React.Fragment>
         <InLine js={formdef.js} />
         {props.ispage ? pagedialog : modaldialog}
+        {popDialog}
     </React.Fragment>
 })
 
