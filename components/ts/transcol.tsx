@@ -1,11 +1,11 @@
 import { ColumnType } from "antd/lib/table";
 import React from "react";
-import { Badge, Button, Divider, Dropdown, Menu, Space, Switch, Tag } from "antd";
+import { Badge, Button, Divider, Dropdown, Menu, Space, Statistic, Switch, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
-import { FIELDTYPE, FieldValue, FormMessage, OneRowData, TRow } from "../../ts/typing";
-import { AddStyle, ClickResult, ColumnList, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TTag, TTags } from "./typing";
+import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
+import { AddStyle, ClickResult, ColumnList, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue } from "./helper";
 import { callJSFunction, isString, makeMessage } from "../../ts/j";
@@ -24,8 +24,8 @@ export function fieldType(t: TFieldBase): FIELDTYPE {
 
 export function fieldTitle(t: TFieldBase, pars: OneRowData): string {
     if (t.coltitle === undefined) return lstring(t.field);
-// 2022/06/24 -- commented out    
-//    if (isString(t.coltitle)) return lstring(t.coltitle as string)
+    // 2022/06/24 -- commented out    
+    //    if (isString(t.coltitle)) return lstring(t.coltitle as string)
     const m: FormMessage = t.coltitle as FormMessage
     return makeMessage(m, pars) as string
 
@@ -173,9 +173,12 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
     let style: CSSProperties = {};
     let rendered = dom;
     const parms = { r: r, vars: vars }
+
     if (c.addstyle) {
         style = getAddStyle(c.addstyle, parms);
     }
+
+    if (c.stat) rendered = makeStatItem(c.stat, parms)
 
     if (c.tags) rendered = constructTags(c.tags, rhook, parms);
     if (c.actions && rhook.fresult) rendered = constructactionsCol(c.actions, rhook, parms);
@@ -214,6 +217,7 @@ function isRenderable(c: TColumn): boolean {
         c.tags !== undefined ||
         c.actions !== undefined ||
         c.badge !== undefined ||
+        c.stat !== undefined ||
         c.fieldtype === FIELDTYPE.BOOLEAN
     );
 }
@@ -275,8 +279,22 @@ export function makeDivider(d: TDivider, t: OneRowData): React.ReactElement {
 // HTML content
 // =========================
 
-export function HTMLElem(value: string|undefined) : React.ReactElement  {
+export function HTMLElem(value: string | undefined): React.ReactElement {
 
     const html: string = value ? value as string : ""
     return <div dangerouslySetInnerHTML={{ __html: html }} />
+}
+
+
+// ===================
+// stat 
+// ===================
+
+export function makeStatItem(stat: StatisticType, t: OneRowData): React.ReactNode {
+    const st: StatisticType = stat.js ? callJSFunction(stat.js as string, t) : stat
+    const icon = st.icon ? { prefix: getIcon(st.icon) } : undefined
+    const title: string = makeMessage(st.title, t) as string
+    const valuestyle = st.valueStyle ? { valueStyle: st.valueStyle } : undefined
+    const props : PropsType = {precision : defaults.moneydot, ...st.props}
+    return <Statistic title={title} {...icon} value={st.value as string | number} {...props} {...valuestyle} ></Statistic>
 }

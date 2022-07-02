@@ -20,6 +20,7 @@ import {
   StepForwardOutlined,
   LoadingOutlined,
   BuildOutlined,
+  LikeOutlined
 } from "@ant-design/icons";
 
 import { ReactNode } from "react";
@@ -44,7 +45,8 @@ const map = new Map<string, ReactNode>([
   ['stepsforwardoutlined',<StepForwardOutlined />],
   ['stepsbackwardoutlined',<StepBackwardOutlined />],
   ['loadingoutlined',<LoadingOutlined/> ],
-  ['buildoutlined',<BuildOutlined />]
+  ['buildoutlined',<BuildOutlined />],
+  ['likeoutlined',<LikeOutlined />]
 ]);
 
 function getIcon(id?: string, defaultid?: string): ReactNode {

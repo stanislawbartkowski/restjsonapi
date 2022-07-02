@@ -14,17 +14,18 @@ import {
     SelectProps,
     Button,
     Card,
-    List
+    List,
+    Statistic
 } from 'antd';
 import { FormInstance, Rule } from 'antd/es/form';
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
-import { CloseOutlined, CheckOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { CloseOutlined, CheckOutlined, MinusCircleOutlined, PropertySafetyFilled } from '@ant-design/icons';
 
 
-import { FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, RestValidatorResult, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, ValidatorType } from '../ts/typing'
+import { FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, RestValidatorResult, StatisticType, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, ValidatorType } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, TRow } from '../../ts/typing'
-import { fieldTitle, fieldType, HTMLElem, makeDivider } from '../ts/transcol';
+import { fieldTitle, fieldType, HTMLElem, makeDivider, makeStatItem } from '../ts/transcol';
 import { callJSFunction, getButtonName, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
@@ -64,7 +65,7 @@ function ltrace(mess: string) {
 
 export interface IRefCall {
     validate: () => void
-//    setValues: (row: TRow) => void
+    //    setValues: (row: TRow) => void
     getValues: FGetValues
 }
 
@@ -380,7 +381,6 @@ function transformToListItem(t: FField, li: TListItems, r: TRow): React.ReactNod
     const title: string = fieldTitle(t, { r: r })
 
     return <List.Item {...li.iprops}><Space {...li.lprops}>{title}</Space><Space {...li.vprops}> {values}</Space></List.Item>
-
 }
 
 
@@ -393,11 +393,15 @@ function createItemList(ir: IFieldContext, t: FField, err: ErrorMessages): React
     return <List size="small" header={header} footer={footer} dataSource={dsource} {...li.props} renderItem={(item: FField) => transformToListItem(item, li, r)} />
 }
 
+function produceStatIem(ir: IFieldContext, t: FField): React.ReactNode {
+    return makeStatItem(t.stat as StatisticType, {r: ir.getValues()})
+}
 
 function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages): React.ReactNode {
 
     if (t.itemlist) return createItemList(ir, t, err);
     if (t.list) return createList(ir, t, err)
+    if (t.stat) return produceStatIem(ir, t)
     return <React.Fragment>
         {t.divider ? makeDivider(t.divider, { r: {} }) : undefined}
         {produceFormItem(ir, t, err)}
@@ -417,7 +421,7 @@ const emptySearch = { field: "", visible: false }
 // setInitValues: used to pass values set during jsinitvals (JSON)
 // restapiinitname: the name is passed only to useEffect to be raised only once
 // if definitvars is used in the userEffect, it is raised once per every rendering and overwrites variables
-const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname? : string, definitvars? : TRow, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, definitvars?: TRow, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
@@ -443,11 +447,11 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname? : stri
             ltrace('submit');
             f.submit()
         },
-//        setValues: (row: TRow) => {
-//            const r: TRow = getVals();
-//            const newr: TRow = { ...r, ...row }
-//            f.setFieldsValue(transformValuesTo(newr, props.list))
-//        },
+        //        setValues: (row: TRow) => {
+        //            const r: TRow = getVals();
+        //            const newr: TRow = { ...r, ...row }
+        //            f.setFieldsValue(transformValuesTo(newr, props.list))
+        //        },
     }));
 
     useEffect(() => {
@@ -573,9 +577,9 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname? : stri
 
     </Form>
 
-    const header: ReactNode | undefined = props.header ? 
-                    <HeaderTable {...props.header} refreshaction={()=> {}} fbutton={closeF} r={{}} ></HeaderTable> : 
-                    undefined
+    const header: ReactNode | undefined = props.header ?
+        <HeaderTable {...props.header} refreshaction={() => { }} fbutton={closeF} r={{}} ></HeaderTable> :
+        undefined
 
     return <React.Fragment>
         {header}

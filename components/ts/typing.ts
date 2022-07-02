@@ -200,6 +200,7 @@ export type TColumn = TFieldBase & PropSupportedType & {
     sum?: boolean
     divider?: TDivider
     tablenodef?: boolean
+    stat?: StatisticType
 };
 
 // ===============================
@@ -316,6 +317,13 @@ export type ValidatorType = {
     restaction?: RESTMETH
 }
 
+export type StatisticType = PropSupportedType & JSSupportedType & {
+    title: FormMessage
+    icon?: string
+    valueStyle? : PropsType
+    value: FieldValue
+}
+
 export type TField = PropSupportedType & TFieldBase & {
     items?: TField[]
     iprops?: PropsType
@@ -330,6 +338,7 @@ export type TField = PropSupportedType & TFieldBase & {
     divider?: TDivider
     itemlist?: TListItem
     value?: ColumnValue
+    stat?: StatisticType
 }
 
 

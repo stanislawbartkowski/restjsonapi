@@ -4,9 +4,7 @@ import { Descriptions, DescriptionsProps } from 'antd';
 import { OneRowData, TRow } from '../../ts/typing';
 import { detailsTitle } from '../ts/helper';
 import { TableHookParam, TColumn, TDetailsCard } from '../ts/typing';
-import { fieldTitle } from '../ts/transcol';
-import { renderCell } from '../ts/transcol'
-
+import { fieldTitle, renderCell } from '../ts/transcol';
 
 function toDescritionItem(c: TColumn, pars: OneRowData) {
   const f: TableHookParam = { fdetails: undefined, fresult: undefined }
