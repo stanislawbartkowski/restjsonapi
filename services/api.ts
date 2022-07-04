@@ -38,6 +38,10 @@ export function setUrlModifier(u: FUrlModifier) {
   urlModifier = u
 }
 
+export function getUrlModifier() : FUrlModifier | undefined {
+  return urlModifier
+}
+
 export async function restapilist(list: string, pars?: Record<string, FieldValue>) {
   const url: string = `${prefix}${list}`;
   const para: any = urlModifier === undefined ? {} : urlModifier(list);
