@@ -30,7 +30,10 @@ const embedded = {
     version: "Wersja",
     notdefined: "<nie wprowadzone>",
     yes: "Tak",
-    no: "Nie"
+    no: "Nie",
+    upload: "Upload",
+    fileuploadedsuccess: `{0} file uploaded successfully`,
+    fileuploadedfailure: "{0} file upload failed"
   },
   en: {
     empty: '',
@@ -58,8 +61,10 @@ const embedded = {
     version: "Version",
     notdefined: "<empty>",
     yes: "Yes",
-    no: "No"
-
+    no: "No",
+    upload: "Upload",
+    fileuploadedsuccess: "{0} plik przesłany",
+    fileuploadedfailure: "{0} przesłanie pliku nie udało się"
   }
 };
 

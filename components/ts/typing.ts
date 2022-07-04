@@ -324,6 +324,10 @@ export type StatisticType = PropSupportedType & JSSupportedType & {
     value: FieldValue
 }
 
+export type UploadType = JSSupportedType & ButtonAction & {
+    uploadprops?: PropsType
+}
+
 export type TField = PropSupportedType & TFieldBase & {
     items?: TField[]
     iprops?: PropsType
@@ -339,12 +343,10 @@ export type TField = PropSupportedType & TFieldBase & {
     itemlist?: TListItem
     value?: ColumnValue
     stat?: StatisticType
+    upload?: UploadType
 }
 
-
 // the whole form
-
-
 
 export type TForm = JSSupportedType & TCard & {
     fields: TField[]
@@ -404,5 +406,6 @@ export enum BUTTONACTION {
     PRINT = 'PRINT',
     CHOOSE = 'CHOOSE',
     NEXT = 'NEXT',
-    PREV = 'PREV'
+    PREV = 'PREV',
+    UPLOAD = 'UPLOAD'
 }

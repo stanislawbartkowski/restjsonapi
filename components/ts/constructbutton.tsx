@@ -5,11 +5,11 @@ import lstring from "../../ts/localize";
 import { BUTTONACTION } from "./typing";
 import { getButtonName, isBool, makeMessage } from '../../ts/j'
 import { ButtonAction } from "./typing";
-import { FormMessage } from "../../ts/typing";
+import { ButtonElem, FormMessage } from "../../ts/typing";
 
 export type FClickButton = (b: ButtonAction) => void;
 
-function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
+export function constructButtonElem(b: ButtonAction, onclick: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
   let messid = "";
   let iconid: string | undefined = b.icon;
 
@@ -48,16 +48,19 @@ function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: bool
       messid = 'prev'
       iconid = 'stepsbackwardoutlined'
       break;
-
-
+    case BUTTONACTION.UPLOAD:
+      messid = 'upload'
+      iconid = 'uploadoutlined'
+      break;  
   }
 
   const bname: String = messid !== "" ? lstring(messid) : getButtonName(b)
 
   const loadingprop: Record<string, any> = loading ? { loading: true } : {}
   const disabledprop: Record<string, any> = disabled ? { disabled: true } : {}
-  const onclickprops: Record<string, any> = b.confirm ? {} : { onClick: () => onclick(b) }
-
+  const onclickprops: Record<string, any> = { onClick: () => onclick(b) }
+  
+  
   const icon: React.ReactNode | undefined = iconid
     ? getIcon(iconid)
     : undefined;
@@ -68,6 +71,15 @@ function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: bool
     </Button>
     ;
 
+  return bu;  
+
+}
+
+function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
+
+
+  const bu = constructButtonElem(b,b.confirm? () => {} : onclick,disabled,loading);
+  
   if (!b.confirm) return bu
 
   const title: string = isBool(b.confirm) ? lstring('areyousure') : makeMessage(b.confirm as FormMessage, { r: {} }) as string

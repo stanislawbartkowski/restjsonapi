@@ -15,18 +15,20 @@ import {
     Button,
     Card,
     List,
-    Statistic
+    message,
+    Upload,
+    UploadProps
 } from 'antd';
 import { FormInstance, Rule } from 'antd/es/form';
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
-import { CloseOutlined, CheckOutlined, MinusCircleOutlined, PropertySafetyFilled } from '@ant-design/icons';
+import { CloseOutlined, CheckOutlined, MinusCircleOutlined, PropertySafetyFilled, UploadOutlined } from '@ant-design/icons';
 
 
-import { FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, RestValidatorResult, StatisticType, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, ValidatorType } from '../ts/typing'
+import { ButtonAction, FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, RestValidatorResult, StatisticType, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, UploadType, ValidatorType } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType, HTMLElem, makeDivider, makeStatItem } from '../ts/transcol';
-import { callJSFunction, getButtonName, makeMessage } from '../../ts/j';
+import { callJSFunction, getButtonName, getSessionId, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
 import { FFieldElem, getValue, isItemGroup, isnotdefined, istrue } from '../ts/helper';
@@ -35,6 +37,10 @@ import RestComponent from '../RestComponent';
 import { cardProps } from '../ts/helper'
 import defaults from '../../ts/defaults';
 import HeaderTable from '../HeaderTable'
+import { RcFile } from 'antd/lib/upload';
+import { getHost } from '../../services/api';
+import { constructButtonElem } from '../ts/constructbutton';
+import { UploadFile } from 'antd/lib/upload/interface';
 
 type FSearchAction = (s: string, t: FField) => void
 
@@ -69,12 +75,15 @@ export interface IRefCall {
     getValues: FGetValues
 }
 
+type UploadStore = Map<string, UploadFile[]>
 
 interface IFieldContext {
     getChanges: () => TFieldChange
     fieldChanged: (id: string) => void
     getValues: FGetValues
     aRest: TAsyncRestCall
+    upGet: () => UploadStore
+    upSet: (p: UploadStore) => void
 }
 
 type TFormView = TForm & {
@@ -394,7 +403,76 @@ function createItemList(ir: IFieldContext, t: FField, err: ErrorMessages): React
 }
 
 function produceStatIem(ir: IFieldContext, t: FField): React.ReactNode {
-    return makeStatItem(t.stat as StatisticType, {r: ir.getValues()})
+    return makeStatItem(t.stat as StatisticType, { r: ir.getValues() })
+}
+
+// (file) => Promise<string>
+
+function getUpPars(file: RcFile): string {
+    const fname = file.name
+    const host = getHost()
+    const uuid = getSessionId()
+    return `${host}/upload?filename=${uuid}/${fname}`
+}
+
+const customRequest = (options: any) => {
+   fetch(options.action, {
+    method: 'POST',
+    body: options.file    
+   }
+   )
+   .then(result => {
+    console.log('Success:', result);
+    options.onSuccess()
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    options.onError()
+  });
+  
+}
+
+
+function produceUploadItem(ir: IFieldContext, t: FField): ReactNode {
+    const upload: UploadType = t.upload as UploadType
+    const props: UploadProps = {
+        name: 'file',
+        action: getUpPars,
+        headers : {},
+        customRequest: customRequest,
+        onChange(info) {
+            const f: UploadFile[] = info.fileList
+            const ss: Map<string, UploadFile[]> = ir.upGet()
+            ss.set(t.field, f);
+            if (info.file.status !== 'uploading') {
+                console.log(info.file, info.fileList);
+            }
+            if (info.file.status === 'done') {
+                const mess = lstring('fileuploadedsuccess', info.file.name);
+                // message.success(`${info.file.name} file uploaded successfully`);
+                message.success(mess);
+            } else if (info.file.status === 'error') {
+                const mess = lstring('fileuploadedfailure', info.file.name);
+                //message.error(`${info.file.name} file upload failed.`);
+                message.error(mess);
+            }
+            if (info.file.status === 'done' || info.file.status === 'removed') {
+                ir.upSet(ss)
+            }
+        },
+        ...upload.uploadprops
+    };
+
+    const bu = constructButtonElem(upload, (b: ButtonAction) => { })
+
+    //    return <Upload {...props }>
+    //        <Button icon={<UploadOutlined />}>Click to Upload</Button>        
+    //    </Upload>
+
+    return <Upload {...props}>
+        {bu}
+    </Upload>
+
 }
 
 function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages): React.ReactNode {
@@ -402,6 +480,7 @@ function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages): React.Re
     if (t.itemlist) return createItemList(ir, t, err);
     if (t.list) return createList(ir, t, err)
     if (t.stat) return produceStatIem(ir, t)
+    if (t.upload) return produceUploadItem(ir, t)
     return <React.Fragment>
         {t.divider ? makeDivider(t.divider, { r: {} }) : undefined}
         {produceFormItem(ir, t, err)}
@@ -415,6 +494,7 @@ type SearchDialogProps = TField & {
     groupT?: TField
 }
 
+
 const emptySearch = { field: "", visible: false }
 
 // getValues: used only to get values for field list
@@ -424,10 +504,11 @@ const emptySearch = { field: "", visible: false }
 const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, definitvars?: TRow, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
+    const [fileupload, setFileUpload] = useState<UploadStore>(new Map())
     const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
 
-
     const [f]: [FormInstance] = Form.useForm()
+
 
     const onFinish = (values: TRow) => {
         ltrace('Success, data validated')
@@ -436,6 +517,14 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     const getVals = (): TRow => {
         const r: TRow = f.getFieldsValue()
+
+        // extract uploads
+        const uuid = getSessionId()
+        for (let [id, list] of fileupload) {
+            const l: string[] = list.map(e => uuid + "/" + e.name)
+            r[id] = l
+        }
+
         return transformValuesFrom(r, props.list)
     }
 
@@ -561,6 +650,12 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         },
         aRest: function (r: RESTMETH, data: TRow): Promise<TRow> {
             return props.aRest(r, data)
+        },
+        upGet: function (): UploadStore {
+            return fileupload
+        },
+        upSet: function (p: UploadStore) {
+            setFileUpload(p)
         }
     }
 
@@ -589,3 +684,5 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 })
 
 export default ModalFormView
+
+

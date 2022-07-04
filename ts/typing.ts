@@ -133,7 +133,7 @@ export type MenuLeft = {
 // data, row, types
 // =================================
 
-export type FieldValue = string | number | boolean | undefined;
+export type FieldValue = string | number | boolean | undefined | string[]
 
 export type TRow = Record<string, FieldValue>;
 

@@ -20,7 +20,7 @@ import {
   StepForwardOutlined,
   LoadingOutlined,
   BuildOutlined,
-  LikeOutlined
+  LikeOutlined,
 } from "@ant-design/icons";
 
 import { ReactNode } from "react";

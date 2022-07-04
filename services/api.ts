@@ -8,14 +8,21 @@ import { getOrigin, getOriginURL } from "../ts/j";
 const rrequest = request;
 let prefix: string = "/"
 
+let host : string = ""
+
 // /restapi
 
 export function setPrefix(p: string) {
   prefix = p
 }
 
+export function getHost() : string {
+  return host;
+}
+
 export function setHost(prefix: string) {
 
+  host = prefix
   log(`setHost ${prefix}`);
   function errorHandler(error: ResponseError) {
     internalerrorlog(error.message);
