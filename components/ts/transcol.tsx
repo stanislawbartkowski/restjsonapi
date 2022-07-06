@@ -218,6 +218,7 @@ function isRenderable(c: TColumn): boolean {
         c.actions !== undefined ||
         c.badge !== undefined ||
         c.stat !== undefined ||
+        c.addstyle !== undefined ||
         c.fieldtype === FIELDTYPE.BOOLEAN
     );
 }
