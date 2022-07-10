@@ -17,18 +17,19 @@ import {
     List,
     message,
     Upload,
-    UploadProps
+    UploadProps,
+    Badge
 } from 'antd';
 import { FormInstance, Rule } from 'antd/es/form';
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined, PropertySafetyFilled, UploadOutlined } from '@ant-design/icons';
 
 
-import { ButtonAction, FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, RestValidatorResult, StatisticType, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, UploadType, ValidatorType } from '../ts/typing'
+import { ButtonAction, FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, MultiChoiceButton, RestValidatorResult, StatisticType, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, UploadType, ValidatorType } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType, HTMLElem, makeDivider, makeStatItem } from '../ts/transcol';
-import { callJSFunction, getButtonName, getSessionId, makeMessage } from '../../ts/j';
+import { callJSFunction, getButtonName, getSessionId, isEmpty, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
 import { FFieldElem, getValue, isItemGroup, isnotdefined, istrue } from '../ts/helper';
@@ -43,10 +44,14 @@ import { constructButtonElem } from '../ts/constructbutton';
 import { UploadFile } from 'antd/lib/upload/interface';
 
 type FSearchAction = (s: string, t: FField) => void
+type FMultiAction = (t: FField) => void
+type TMultiSelect = Map<string, FieldValue[]>;
+
 
 type FField = TField & {
 
     searchF: FSearchAction
+    multiF: FMultiAction
     name?: number
     groupT?: TField
 }
@@ -84,6 +89,7 @@ interface IFieldContext {
     aRest: TAsyncRestCall
     upGet: () => UploadStore
     upSet: (p: UploadStore) => void
+    getMulti: () => TMultiSelect
 }
 
 type TFormView = TForm & {
@@ -218,7 +224,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
 
     if (isItemGroup(t)) {
         return [<React.Fragment>
-            {(t.items as TField[]).map(e => produceFormItem(ir, { ...e, searchF: t.searchF, groupT: t }, err, name))}
+            {(t.items as TField[]).map(e => produceFormItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF }, err, name))}
         </React.Fragment>,
             undefined]
     }
@@ -239,13 +245,21 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
     let valuep = {}
     let disabledp = {}
 
-    if (t.value) {
-        const value: FieldValue = getValue(t.value, { r: ir.getValues() });
-        const v = transformSingleValue(value, t, false);
-        valuep = fieldtype !== FIELDTYPE.BOOLEAN ? valuep = { initialValue: v } :
-            (v as boolean) ? { initialValue: "checked" } : {}
-        if (fieldtype !== FIELDTYPE.HTML) disabledp = { disabled: true }
-    }
+    //    if (t.value) {
+    //        const value: FieldValue = getValue(t.value, { r: ir.getValues() });
+    //        const v = transformSingleValue(value, t, false);
+    //        valuep = fieldtype !== FIELDTYPE.BOOLEAN ? valuep = { initialValue: v } :
+    //            (v as boolean) ? { initialValue: "checked" } : {}
+    //        if (fieldtype !== FIELDTYPE.HTML) disabledp = { disabled: true }
+    //    }
+
+        // set value here only for boolean
+        if (t.value) {
+            const value: FieldValue = getValue(t.value, { r: ir.getValues() });
+            const v = transformSingleValue(value, t, false);
+            valuep = fieldtype === FIELDTYPE.BOOLEAN ? (v as boolean) ? { initialValue: "checked" } : {} : {}
+            if (fieldtype !== FIELDTYPE.HTML) disabledp = { disabled: true }
+        }
 
     switch (fieldtype) {
         case FIELDTYPE.NUMBER: return [<InputNumber onBlur={onBlur} {...placeHolder(t)} {...t.iprops} {...disabledp} />, { ...valuep }]
@@ -406,7 +420,9 @@ function produceStatIem(ir: IFieldContext, t: FField): React.ReactNode {
     return makeStatItem(t.stat as StatisticType, { r: ir.getValues() })
 }
 
-// (file) => Promise<string>
+// ================
+// upload button
+// ================
 
 function getUpPars(file: RcFile): string {
     const fname = file.name
@@ -416,20 +432,20 @@ function getUpPars(file: RcFile): string {
 }
 
 const customRequest = (options: any) => {
-   fetch(options.action, {
-    method: 'POST',
-    body: options.file    
-   }
-   )
-   .then(result => {
-    console.log('Success:', result);
-    options.onSuccess()
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    options.onError()
-  });
-  
+    fetch(options.action, {
+        method: 'POST',
+        body: options.file
+    }
+    )
+        .then(result => {
+            console.log('Success:', result);
+            options.onSuccess()
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            options.onError()
+        });
+
 }
 
 
@@ -438,7 +454,7 @@ function produceUploadItem(ir: IFieldContext, t: FField): ReactNode {
     const props: UploadProps = {
         name: 'file',
         action: getUpPars,
-        headers : {},
+        headers: {},
         customRequest: customRequest,
         onChange(info) {
             const f: UploadFile[] = info.fileList
@@ -475,8 +491,26 @@ function produceUploadItem(ir: IFieldContext, t: FField): ReactNode {
 
 }
 
-function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages): React.ReactNode {
+// ==================================
+// multichoice button
+// ==================================
 
+function produceMultiChoiceButton(ir: IFieldContext, t: FField): ReactNode {
+
+    const s: TMultiSelect = ir.getMulti()
+    const se: FieldValue[] | undefined = s.get(t.field)
+    const no = se === undefined ? 0 : se.length
+    const mu: MultiChoiceButton = t.multichoice as MultiChoiceButton
+    const bu = constructButtonElem(mu, (b: ButtonAction) => t.multiF(t))
+    if (no === 0) return bu
+    return <Badge count={no}>
+        {bu}
+    </Badge>
+}
+
+function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {
+
+    if (t.multichoice) return produceMultiChoiceButton(ir, t)
     if (t.itemlist) return createItemList(ir, t, err);
     if (t.list) return createList(ir, t, err)
     if (t.stat) return produceStatIem(ir, t)
@@ -494,8 +528,13 @@ type SearchDialogProps = TField & {
     groupT?: TField
 }
 
+type MultiSelectProps = TField & {
+    visible: boolean
+}
+
 
 const emptySearch = { field: "", visible: false }
+
 
 // getValues: used only to get values for field list
 // setInitValues: used to pass values set during jsinitvals (JSON)
@@ -504,8 +543,11 @@ const emptySearch = { field: "", visible: false }
 const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, definitvars?: TRow, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
+    const [multiselectD, setMultiSelectD] = useState<MultiSelectProps>(emptySearch);
     const [fileupload, setFileUpload] = useState<UploadStore>(new Map())
     const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
+    const [multiselect, setMultiSelect] = useState<TMultiSelect>(new Map())
+
 
     const [f]: [FormInstance] = Form.useForm()
 
@@ -523,6 +565,11 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         for (let [id, list] of fileupload) {
             const l: string[] = list.map(e => uuid + "/" + e.name)
             r[id] = l
+        }
+
+        // multichoice
+        for (let [id, mselect] of multiselect) {
+            r[id] = mselect
         }
 
         return transformValuesFrom(r, props.list)
@@ -546,14 +593,33 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     useEffect(() => {
 
         console.log(props.initvals)
+        let vals: TRow | undefined
         if (props.initvals) {
             ltrace("useEffect initvals")
             console.log(initvals)
-            const vals = transformValuesTo(props.initvals, props.list);
+            vals = transformValuesTo(props.initvals, props.list);
             f.setFieldsValue(vals);
             ltrace("useEffect initvals transformed")
             console.log(vals)
         }
+        // recalculate getVal
+        const l: FFieldElem[] = props.list
+        l.forEach(t => {
+            if (t.value) {
+                const value: FieldValue = getValue(t.value, { r: props.initvals ? props.initvals : {} });
+                const v = transformSingleValue(value, t, false);
+                if (vals === undefined) vals = {}
+                vals[t.field] = v
+            }
+        })
+
+        if (vals !== undefined) {
+            f.setFieldsValue(vals);
+            ltrace("useEffect initvals transformed")
+            console.log(vals)
+        }
+
+
 
     }, [props.initvals])
 
@@ -592,10 +658,32 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const buttonstop: ReactNode = props.buttonsextratop ? <React.Fragment><Form.Item><Space>{props.buttonsextratop}</Space></Form.Item><Divider /></React.Fragment> : undefined
     const buttonsbottom: ReactNode = props.buttonsextrabottom ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextrabottom}</Space></Form.Item></React.Fragment> : undefined
 
+    //    const setmultiC: FMultiSelected = (sel: FieldValue[]) => {
+    //        const s = new Map(multiselect)
+    //        s.set(multiselectD.field, sel);
+    //        setMultiSelect(s);
+    //    }
+
     // ==================
 
     const searchF: FSearchAction = (s: string, t: FField) => {
         setSearchT({ ...t, visible: true })
+    }
+    const multiF: FMultiAction = (t: FField) => {
+        setMultiSelectD({ ...t, visible: true })
+    }
+
+    const closeMultiD: FAction = (b?: ButtonElem, r?: TRow) => {
+        if (b?.choosefield === undefined) {
+            setMultiSelectD(emptySearch)
+            return;
+        }
+        const sel: FieldValue[] = (r as TRow)[defaults.multichoicevar] as FieldValue[]
+        const s = new Map(multiselect)
+        s.set(multiselectD.field, sel);
+        setMultiSelect(s);
+        props.onFieldChange(multiselectD.field)
+        setMultiSelectD(emptySearch)
     }
 
     const closeF: FAction = (b?: ButtonElem, r?: TRow) => {
@@ -629,6 +717,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     console.log(initvals)
 
     const onFieldsChanges = (changedFields: Record<string, any>, _: any) => {
+        if (isEmpty(changedFields)) return
         const id: string = changedFields[0]["name"][0]
         log(id + " changed")
         // if field is not triggered when blurred, escalates immediately
@@ -645,17 +734,20 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             props.onFieldChange(id);
         },
         getValues: function (): TRow {
-            return props.getValues()
+            return props.getValues();
             //return getVals()
         },
         aRest: function (r: RESTMETH, data: TRow): Promise<TRow> {
-            return props.aRest(r, data)
+            return props.aRest(r, data);
         },
         upGet: function (): UploadStore {
-            return fileupload
+            return fileupload;
         },
         upSet: function (p: UploadStore) {
-            setFileUpload(p)
+            setFileUpload(p);
+        },
+        getMulti: function (): TMultiSelect {
+            return multiselect
         }
     }
 
@@ -666,20 +758,22 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
         {buttonstop}
 
-        {props.fields.map(e => produceItem(fieldContext, { ...e, searchF: searchF }, props.err))}
+        {props.fields.map(e => produceItem(fieldContext, { ...e, searchF: searchF, multiF: multiF }, props.err))}
 
         {buttonsbottom}
 
     </Form>
 
     const header: ReactNode | undefined = props.header ?
-        <HeaderTable {...props.header} refreshaction={() => { }} fbutton={closeF} r={{}} ></HeaderTable> :
+        <HeaderTable {...props.header} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} ></HeaderTable> :
         undefined
 
     return <React.Fragment>
         {header}
         {form}
         <RestComponent  {...searchD.enterbutton as object} visible={searchD.visible} choosing closeAction={closeF} />
+        <RestComponent  {...multiselectD.multichoice as object} visible={multiselectD.visible} closeAction={closeMultiD}
+            initsel={multiselect.get(multiselectD.field)} multiselect />
     </React.Fragment>
 })
 

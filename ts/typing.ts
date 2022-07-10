@@ -45,7 +45,6 @@ export type JsonTableResult = {
   vars?: PropsType
 }
 
-
 // =====================
 // common button
 // =====================
@@ -80,6 +79,8 @@ export type RestTableParam = RESTMETH & {
   component?: string
   modalprops?: PropsType
   choosing?: boolean
+  initsel? : FieldValue[]
+  multiselect?: boolean
 };
 
 // ==============================
@@ -100,7 +101,7 @@ export type ModalFormProps = ClickActionProps & {
   modalprops?: PropsType
 }
 
-export const emptyModalListProps : ModalFormProps = { visible : false}
+export const emptyModalListProps: ModalFormProps = { visible: false }
 
 
 // ==================================
@@ -133,7 +134,7 @@ export type MenuLeft = {
 // data, row, types
 // =================================
 
-export type FieldValue = string | number | boolean | undefined | string[]
+export type FieldValue = string | number | boolean | undefined | string[] | FieldValue[]
 
 export type TRow = Record<string, FieldValue>;
 
@@ -164,9 +165,9 @@ export enum FIELDTYPE {
 // Localized message
 // ==============================
 
-export type FormMessage = JSSupportedType & (string|undefined) & {
+export type FormMessage = JSSupportedType & (string | undefined) & {
   messagedirect?: string
   message?: string
   params?: string[]
-} 
+}
 

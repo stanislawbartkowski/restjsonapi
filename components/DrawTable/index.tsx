@@ -5,7 +5,7 @@ import { Table, Drawer, Space, Divider } from "antd";
 import type { TableRowSelection } from "antd/lib/table/interface";
 
 import lstring from "../../ts/localize";
-import { ClickActionProps, emptyModalListProps, ModalFormProps, OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
+import { ClickActionProps, emptyModalListProps, FieldValue, ModalFormProps, OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
 import type { ButtonAction, ClickResult, ColumnList, FActionResult, FShowDetails, TAsyncRestCall } from "../ts/typing";
 import { Status } from "../ts/typing";
@@ -21,7 +21,6 @@ import SummaryTable from './SummaryTable'
 import defaults from "../../ts/defaults";
 import { isNumber } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
-//import { ModalFormProps } from '../../components/ModalForm'
 import SearchButton, { FSetFilter } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
 
@@ -40,12 +39,18 @@ function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefin
     return nopaging ? { pagination: false } : { pagination: { defaultPageSize: pageSize } }
 }
 
+function tranformtoSel(sel: FieldValue[] | undefined): (string | number)[] {
+    if (sel === undefined) return []
+    return sel.map((e: FieldValue) => isNumber(e) ? e as number : e as string)
+}
 
 const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = (props) => {
     const [extendedFilter, setExtendedFilter] = useState<ExtendedFilter>(noExtendedFilter)
 
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [currentRow, setCurrentRow] = useState<TRow>();
+    const [multichoice, setMultiChoice] = useState<FieldValue[]>(props.initsel as FieldValue[])
+
 
     const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
     const [datasource, setDataSource] = useState<DataSourceState>({
@@ -120,9 +125,9 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = 
     const paging = propsPaging(props, dsource.length)
 
 
-    function buttonAction(b?: ButtonAction) {
+    function buttonAction(b?: ButtonAction, r?: TRow) {
         if (b === undefined || props.closeAction === undefined) return;
-        props.closeAction(b, currentRow);
+        props.closeAction(b, { ...currentRow, ...r });
     }
 
     function findRowByKey(key: React.Key): TRow | undefined {
@@ -133,30 +138,33 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = 
 
     function rowSelection(t: RestTableParam): { rowSelection: TableRowSelection<TRow> } | undefined {
 
-        return t.choosing ? {
+        return (t.choosing || props.multiselect) ? {
             rowSelection: {
-                type: 'radio',
+                type: t.choosing ? 'radio' : 'checkbox',
                 onChange: (r: React.Key[]) => {
+                    // if (props.multiSelect) props.multiSelect(r)
+                    setMultiChoice(r)
                     if (r.length > 0) {
                         const key: React.Key = r[0]
                         console.log(key)
                         const ro: TRow | undefined = findRowByKey(key);
                         if (ro) setCurrentRow(ro)
                     }
-                }
+                },
+                selectedRowKeys: tranformtoSel(multichoice)
             }
         } :
             undefined
     }
 
-    const extendedSearch: React.ReactNode = props.extendedsearch ? <Space style={{ float: "right" }} split={<Divider type="vertical" />}> 
-       <SearchButton {...props} {...extendedFilter} refreshFilter={refreshFilter} /></Space> : 
-       undefined
+    const extendedSearch: React.ReactNode = props.extendedsearch ? <Space style={{ float: "right" }} split={<Divider type="vertical" />}>
+        <SearchButton {...props} {...extendedFilter} refreshFilter={refreshFilter} /></Space> :
+        undefined
 
 
     return (
         <React.Fragment>
-            {props.header ? <HeaderTable {...props.header} vars={props.vars} refreshaction={refreshtable} r={props} fbutton={buttonAction} /> : undefined}
+            {props.header ? <HeaderTable {...props.header} vars={props.vars} refreshaction={refreshtable} r={props} fbutton={buttonAction} selectedM={multichoice} /> : undefined}
             {extendedSearch}
             <Table
                 {...rowSelection({ ...props })

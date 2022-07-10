@@ -11,7 +11,7 @@ import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
 import { FFieldElem, flattenTForm, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT, istrue } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FAction, FIELDTYPE, ModalFormProps, RESTMETH, TComponentProps, TRow } from '../../ts/typing'
+import { FAction, FIELDTYPE, FieldValue, ModalFormProps, RESTMETH, TComponentProps, TRow } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
@@ -66,17 +66,6 @@ type MModalFormProps = ModalFormProps & {
     initvals?: TRow
     ignorerestapivals?: boolean
 }
-//    ispage?: boolean
-//    listdef?: string
-//    modalprops?: PropsType
-//    visible?: boolean
-//    initvals?: TRow
-//    ignorerestapivals?: boolean
-//    refreshaction?: FAction
-//    vars?: TRow
-//    mhooks?: ModalHooks
-//}
-
 
 function isCookiesButton(b: ButtonAction): boolean {
     return (b.print !== undefined && b.print) || (b.cookie !== undefined && b.cookie)
@@ -98,7 +87,6 @@ type PopDialogView = {
     def?: TComponentProps
     visible: boolean
 }
-
 
 const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, iref) => {
 
@@ -143,13 +131,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
             (sref.current === undefined || sref.current === null) ? {} : sref.current.getVals() :
             (ref.current === undefined || ref.current === null) ? {} : ref.current.getValues()
     }
-
-    //    const setVals: FSetValues = (r: TRow) => {
-
-    //        if (ftype === TPreseEnum.Steps) sref.current.setVals(r)
-    //        else ref.current.setValues(r)
-
-    //    }
 
     const constructCurVals = (r?: TRow): TRow => {
         const data: TRow = isTop ? { ...formdef.initvals, ...initvals, ...getVals(), ...r } : { ...getVals(), ...r }
@@ -438,16 +419,10 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 setInitValues={thooks.setInitValues as FSetValues}
                 definitvars={formdef.definitvars}
                 restapiinitname={restapiname}
+                
                 {...thooks}
             />
         : undefined
-
-    //    if (!props.ispage && props.mhooks) props.mhooks.setButtons(buttons)
-
-    //    const modaldialog: ReactNode = <Modal destroyOnClose visible={props.visible}
-    //        onCancel={onClose} {...props.modalprops} footer={buttons}>
-    //        {modalFormView}
-    //    </Modal >
 
     const modaldialog: ReactNode = modalFormView
 
