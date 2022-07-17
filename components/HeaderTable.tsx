@@ -8,11 +8,10 @@ import { TableToolBar, ButtonAction, ClickResult, ShowDetails, TAction, ClickAct
 import { clickAction} from "./ts/helper";
 import OneRowTable from './ShowDetails/OneRowTable'
 import RestComponent from "./RestComponent";
-import { isObject, makeMessage } from "../ts/j";
+import { commonVars, isObject, makeMessage } from "../ts/j";
 import executeAction,{ispopupDialog} from './ts/executeaction'
 import { IRefCall } from "./ModalForm/ModalFormView";
 import { ErrorMessages, IIRefCall } from "./ModalForm/ModalFormDialog";
-
 
 
 function ltrace(mess: string) {
@@ -44,7 +43,7 @@ const HeaderTable: React.FC<ShowDetails & { refreshaction: FAction, vars?: TRow,
 
   function clickButton(b: ButtonAction) {
     ltrace(b.id)
-    const res: TAction = clickAction(b, { r: {}, vars: props.vars })
+    const res: TAction = clickAction(b, { r: commonVars(), vars: props.vars })
     const ii : IIRefCall = {
       setMode: function (loading: boolean, errors: ErrorMessages): void {
       },

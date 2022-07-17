@@ -15,14 +15,20 @@ import { FAction, FIELDTYPE, ModalFormProps, RESTMETH, TComponentProps, TRow } f
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
-import { THooks } from './TemplateFormDialog'
 import StepsFormView from './StepsFormView';
 import executeAction from '../ts/executeaction'
 import { readvalsdata } from "../ts/readdefs";
-import { isString } from '../../ts/j';
+import { commonVars, isString } from '../../ts/j';
 import RestComponent from '../RestComponent';
 
 export type { ErrorMessage, ErrorMessages } from './ModalFormView';
+
+export type THooks = {
+    aRest?: TAsyncRestCall,
+    clickButton?: TClickButton
+    getValues?: FGetValues
+    setInitValues?: FSetValues
+}
 
 export interface IIRefCall {
     setMode: (loading: boolean, errors: ErrorMessages) => void,
@@ -152,7 +158,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     //    }
 
     const constructCurVals = (r?: TRow): TRow => {
-        const data: TRow = isTop ? { ...formdef.initvals, ...initvals, ...getVals(), ...r } : { ...getVals(), ...r }
+        const data: TRow = isTop ? { ...commonVars(),...formdef.initvals, ...initvals, ...getVals(), ...r } : { ...getVals(), ...r }
         return data
     }
 

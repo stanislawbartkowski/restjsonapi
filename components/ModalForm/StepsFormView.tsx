@@ -3,10 +3,9 @@ import { StepProps, Steps } from 'antd'
 
 import type { ButtonAction, ClickResult, StepsElem, StepsForm, TAsyncRestCall, TClickButton } from "../ts/typing"
 import { makeMessage } from "../../ts/j"
-import ModalFormDialog, { ErrorMessages, IIRefCall } from "./ModalFormDialog"
+import ModalFormDialog, { ErrorMessages, IIRefCall, THooks } from "./ModalFormDialog"
 import { log } from "../../ts/l"
 import { TRow } from "../../ts/typing"
-import { THooks } from "./TemplateFormDialog"
 
 function constructStep(p: StepsElem, key: number, last: boolean, errorstep: boolean): React.ReactNode {
 

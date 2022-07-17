@@ -109,3 +109,11 @@ function generateID(): string {
     return v.toString(16);
   })
 }
+
+// ==============================
+// global vars
+// ==============================
+
+export function commonVars() : TRow {
+  return { "sessionid" : getSessionId() }
+} 

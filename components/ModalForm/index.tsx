@@ -5,8 +5,6 @@ import { ModalFormProps, PropsType, TRow } from "../../ts/typing";
 import { ClickActionProps } from "../../ts/typing";
 import { ismaskClicked } from "../ts/helper";
 import ModalFormDialog, { ModalHooks } from "./ModalFormDialog";
-import TemplateFormDialog from './TemplateFormDialog'
-
 
 type ModalPropsData = {
     buttons: ReactNode
