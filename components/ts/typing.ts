@@ -294,6 +294,8 @@ export type TListItem = PropSupportedType & {
 
 export type SearchChooseButton = FormMessage & RestTableParam;
 
+export type MultiChoiceButton = SearchChooseButton & ButtonElem
+
 // lista
 
 export type TListItems = PropSupportedType & {
@@ -344,6 +346,7 @@ export type TField = PropSupportedType & TFieldBase & {
     value?: ColumnValue
     stat?: StatisticType
     upload?: UploadType
+    multichoice?: MultiChoiceButton
 }
 
 // the whole form
