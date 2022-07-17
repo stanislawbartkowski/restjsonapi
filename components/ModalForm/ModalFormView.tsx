@@ -29,7 +29,7 @@ import { ButtonAction, FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType, HTMLElem, makeDivider, makeStatItem } from '../ts/transcol';
-import { callJSFunction, getButtonName, getSessionId, isEmpty, makeMessage } from '../../ts/j';
+import { callJSFunction, commonVars, getButtonName, getSessionId, isEmpty, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
 import { FFieldElem, getValue, isItemGroup, isnotdefined, istrue } from '../ts/helper';
@@ -253,13 +253,13 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
     //        if (fieldtype !== FIELDTYPE.HTML) disabledp = { disabled: true }
     //    }
 
-        // set value here only for boolean
-        if (t.value) {
-            const value: FieldValue = getValue(t.value, { r: ir.getValues() });
-            const v = transformSingleValue(value, t, false);
-            valuep = fieldtype === FIELDTYPE.BOOLEAN ? (v as boolean) ? { initialValue: "checked" } : {} : {}
-            if (fieldtype !== FIELDTYPE.HTML) disabledp = { disabled: true }
-        }
+    // set value here only for boolean
+    if (t.value) {
+        const value: FieldValue = getValue(t.value, { r: ir.getValues() });
+        const v = transformSingleValue(value, t, false);
+        valuep = fieldtype === FIELDTYPE.BOOLEAN ? (v as boolean) ? { initialValue: "checked" } : {} : {}
+        if (fieldtype !== FIELDTYPE.HTML) disabledp = { disabled: true }
+    }
 
     switch (fieldtype) {
         case FIELDTYPE.NUMBER: return [<InputNumber onBlur={onBlur} {...placeHolder(t)} {...t.iprops} {...disabledp} />, { ...valuep }]
@@ -596,7 +596,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         let vals: TRow | undefined
         if (props.initvals) {
             ltrace("useEffect initvals")
-            console.log(initvals)
+            console.log(props.initvals)
             vals = transformValuesTo(props.initvals, props.list);
             f.setFieldsValue(vals);
             ltrace("useEffect initvals transformed")
@@ -711,10 +711,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     // ===================
 
     //const initvals = {paramsrequired: "aaa"}
-    const initvals = props.initvals ? transformValuesTo(props.initvals as TRow, props.list) : undefined
+    const initvals = { ...commonVars(), ...(props.initvals ? transformValuesTo(props.initvals as TRow, props.list) : undefined) }
 
-    ltrace("initvals")
-    console.log(initvals)
+    //ltrace("initvals")
+    //console.log(initvals)
 
     const onFieldsChanges = (changedFields: Record<string, any>, _: any) => {
         if (isEmpty(changedFields)) return
@@ -773,7 +773,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         {form}
         <RestComponent  {...searchD.enterbutton as object} visible={searchD.visible} choosing closeAction={closeF} />
         <RestComponent  {...multiselectD.multichoice as object} visible={multiselectD.visible} closeAction={closeMultiD}
-            initsel={multiselect.get(multiselectD.field)} multiselect />
+            initsel={multiselect.get(multiselectD.field)} multiselect vars={initvals} />
     </React.Fragment>
 })
 
