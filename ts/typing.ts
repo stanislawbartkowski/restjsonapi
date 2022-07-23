@@ -99,6 +99,7 @@ export type ModalFormProps = ClickActionProps & {
   visible?: boolean
   ispage?: boolean
   modalprops?: PropsType
+  vars?: TRow
 }
 
 export const emptyModalListProps: ModalFormProps = { visible: false }

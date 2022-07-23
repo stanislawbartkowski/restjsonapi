@@ -60,7 +60,10 @@ const HeaderTable: React.FC<ShowDetails & { refreshaction: FAction, vars?: TRow,
       }
     }
     if (isChooseButton(res, props.r)) props.fbutton(b, rr)
-    if (ispopupDialog(res)) setIsModalVisible({ ...(res as ClickAction), visible: true, closeAction: fmodalhook })
+    // Data: 2022/07/23
+    // pass vars from action to dialog invoked
+    // vars: vars: {...props.vars}
+    if (ispopupDialog(res)) setIsModalVisible({ vars: {...props.vars}, ...(res as ClickAction), visible: true, closeAction: fmodalhook })
     else executeAction({ ...(res as ClickAction), i: ii }, res, { ...rr, ...props.vars })
   }
 
