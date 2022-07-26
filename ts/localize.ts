@@ -32,9 +32,9 @@ const embedded = {
     yes: "Tak",
     no: "Nie",
     upload: "Upload",
-    fileuploadedsuccess: `{0} file uploaded successfully`,
-    fileuploadedfailure: "{0} file upload failed",
-    fullprint: "Full print"
+    fileuploadedsuccess: "{0} plik przesłany",
+    fileuploadedfailure: "{0} przesłanie pliku nie udało się",
+    fullprint: "Cały ekran"
   },
   en: {
     empty: '',
@@ -64,9 +64,10 @@ const embedded = {
     yes: "Yes",
     no: "No",
     upload: "Upload",
-    fileuploadedsuccess: "{0} plik przesłany",
-    fileuploadedfailure: "{0} przesłanie pliku nie udało się",
-    fullprint: "Cały ekran"
+    fileuploadedsuccess: `{0} file uploaded successfully`,
+    fileuploadedfailure: "{0} file upload failed",
+    fullprint: "Full print"
+
   }
 };
 
