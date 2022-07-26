@@ -128,6 +128,7 @@ export type ActionResult = {
     vars?: TRow
     steperror?: boolean
     refresh?: boolean
+    printlink?: string
 }
 
 

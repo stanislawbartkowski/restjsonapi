@@ -3,7 +3,7 @@ import request, { ResponseError } from "umi-request";
 import type { FieldValue, FUrlModifier } from "../ts/typing";
 import { log, internalerrorlog, logG, erralert } from '../ts/l'
 import { HTTPMETHOD } from "../ts/typing";
-import { getOrigin, getOriginURL } from "../ts/j";
+import { getOriginURL } from "../ts/j";
 
 const rrequest = request;
 let prefix: string = "/"
@@ -11,6 +11,13 @@ let prefix: string = "/"
 let host : string = ""
 
 // /restapi
+
+export function enhanceLink(url: string) : string {
+  const o = host;
+  if (url.startsWith("/")) return `${o}${url}`
+  else return `${o}/${url}`
+}
+
 
 export function setPrefix(p: string) {
   prefix = p

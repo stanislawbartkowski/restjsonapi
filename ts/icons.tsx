@@ -21,6 +21,7 @@ import {
   LoadingOutlined,
   BuildOutlined,
   LikeOutlined,
+  FullscreenOutlined
 } from "@ant-design/icons";
 
 import { ReactNode } from "react";
@@ -46,7 +47,8 @@ const map = new Map<string, ReactNode>([
   ['stepsbackwardoutlined',<StepBackwardOutlined />],
   ['loadingoutlined',<LoadingOutlined/> ],
   ['buildoutlined',<BuildOutlined />],
-  ['likeoutlined',<LikeOutlined />]
+  ['likeoutlined',<LikeOutlined />],
+  ['fullscreenoutlined',<FullscreenOutlined />]
 ]);
 
 function getIcon(id?: string, defaultid?: string): ReactNode {
