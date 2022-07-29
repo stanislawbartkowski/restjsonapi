@@ -293,7 +293,9 @@ export type TListItem = PropSupportedType & {
 
 // enter/ search button
 
-export type SearchChooseButton = FormMessage & RestTableParam;
+export type SearchChooseButton = FormMessage & RestTableParam & {
+    jsrest? : string
+}
 
 export type MultiChoiceButton = SearchChooseButton & ButtonElem
 

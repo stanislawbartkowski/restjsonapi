@@ -224,7 +224,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
 
     if (isItemGroup(t)) {
         return [<React.Fragment>
-            {(t.items as TField[]).map(e => produceFormItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF }, err, name))}
+            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF }, err, name))}
         </React.Fragment>,
             undefined]
     }
@@ -508,7 +508,7 @@ function produceMultiChoiceButton(ir: IFieldContext, t: FField): ReactNode {
     </Badge>
 }
 
-function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {
+function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: number): ReactNode {
 
     if (t.multichoice) return produceMultiChoiceButton(ir, t)
     if (t.itemlist) return createItemList(ir, t, err);
@@ -517,7 +517,7 @@ function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNod
     if (t.upload) return produceUploadItem(ir, t)
     return <React.Fragment>
         {t.divider ? makeDivider(t.divider, { r: {} }) : undefined}
-        {produceFormItem(ir, t, err)}
+        {produceFormItem(ir, t, err, name)}
     </React.Fragment>
 
 }
@@ -526,10 +526,12 @@ type SearchDialogProps = TField & {
     visible: boolean
     name?: number
     groupT?: TField
+    addpars?: TRow
 }
 
 type MultiSelectProps = TField & {
     visible: boolean
+    addpars?: TRow
 }
 
 
@@ -666,11 +668,20 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     // ==================
 
-    const searchF: FSearchAction = (s: string, t: FField) => {
-        setSearchT({ ...t, visible: true })
+    function transform(t: FField): TRow | undefined {
+        const jsrest: string | undefined = t?.enterbutton?.jsrest ? t?.enterbutton.jsrest : t?.multichoice?.jsrest
+        if (jsrest === undefined) return undefined
+        const r: TRow = props.getValues();
+        const trest: TRow = callJSFunction(jsrest, { r: r })
+        return trest;
     }
+
+    const searchF: FSearchAction = (s: string, t: FField) => {
+        setSearchT({ ...t, addpars: transform(t), visible: true })
+    }
+
     const multiF: FMultiAction = (t: FField) => {
-        setMultiSelectD({ ...t, visible: true })
+        setMultiSelectD({ ...t, addpars: transform(t), visible: true })
     }
 
     const closeMultiD: FAction = (b?: ButtonElem, r?: TRow) => {
@@ -771,8 +782,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     return <React.Fragment>
         {header}
         {form}
-        <RestComponent  {...searchD.enterbutton as object} visible={searchD.visible} choosing closeAction={closeF} />
-        <RestComponent  {...multiselectD.multichoice as object} visible={multiselectD.visible} closeAction={closeMultiD}
+        <RestComponent  {...searchD.enterbutton as object} {...searchD.addpars} visible={searchD.visible} choosing closeAction={closeF} />
+        <RestComponent  {...multiselectD.multichoice as object} {...multiselectD.addpars} visible={multiselectD.visible} closeAction={closeMultiD}
             initsel={multiselect.get(multiselectD.field)} multiselect vars={initvals} />
     </React.Fragment>
 })
