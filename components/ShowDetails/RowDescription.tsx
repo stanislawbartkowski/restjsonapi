@@ -21,8 +21,8 @@ const DescriptionsDetails: React.FC<TDetailsCard> = (props) => {
   // to remove action column
   function isAction(field: string): boolean {
     const c: TColumn | undefined = (props.columns as TColumn[]).find(e => e.field === field)
-    if (c === undefined) return false
-    return c.actions !== undefined
+    if (c === undefined || c.actions === undefined) return false
+    return ! c.actions.showindetails
   }
 
   const dprops: DescriptionsProps = deprops ? deprops : { column: 1, bordered: true }

@@ -155,6 +155,7 @@ export type TActions = JSSupportedType & PropSupportedType & {
     dropdown?: boolean
     actions?: TAction[]
     dprops?: PropsType
+    showindetails?: boolean
 }
 
 
