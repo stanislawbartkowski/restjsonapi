@@ -25,9 +25,9 @@ import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined, PropertySafetyFilled, UploadOutlined } from '@ant-design/icons';
 
 
-import { ButtonAction, FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, MultiChoiceButton, RestValidatorResult, StatisticType, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, UploadType, ValidatorType } from '../ts/typing'
+import { ButtonAction, FGetValues, FieldRestList, FOnFieldChanged, FOnValuesChanged, FSetValues, MultiChoiceButton, RestValidatorResult, StatisticType, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, UploadType, ValidatorType } from '../ts/typing'
 import { log, trace } from '../../ts/l'
-import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, TRow } from '../../ts/typing'
+import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, RestTableParam, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType, HTMLElem, makeDivider, makeStatItem } from '../ts/transcol';
 import { callJSFunction, commonVars, getButtonName, getSessionId, isEmpty, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
@@ -42,6 +42,7 @@ import { RcFile } from 'antd/lib/upload';
 import { getHost } from '../../services/api';
 import { constructButtonElem } from '../ts/constructbutton';
 import { UploadFile } from 'antd/lib/upload/interface';
+import RestTable from "../RestTable"
 
 type FSearchAction = (s: string, t: FField) => void
 type FMultiAction = (t: FField) => void
@@ -508,6 +509,20 @@ function produceMultiChoiceButton(ir: IFieldContext, t: FField): ReactNode {
     </Badge>
 }
 
+// ===========================
+// RestTable as a field
+// ===========================
+
+function produceRestTable(ir: IFieldContext, t: FField): ReactNode {
+
+    const frest: FieldRestList = t.restlist as FieldRestList
+    const pars: RestTableParam = frest.js ? callJSFunction(frest.js, { r: ir.getValues() }) as RestTableParam : t.restlist as RestTableParam
+
+    return <Form.Item id={t.field} name={t.field} {...t.props} >
+        <RestTable {...pars} />
+    </Form.Item>
+}
+
 function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: number): ReactNode {
 
     if (t.multichoice) return produceMultiChoiceButton(ir, t)
@@ -515,6 +530,7 @@ function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
     if (t.list) return createList(ir, t, err)
     if (t.stat) return produceStatIem(ir, t)
     if (t.upload) return produceUploadItem(ir, t)
+    if (t.restlist) return produceRestTable(ir, t);
     return <React.Fragment>
         {t.divider ? makeDivider(t.divider, { r: {} }) : undefined}
         {produceFormItem(ir, t, err, name)}

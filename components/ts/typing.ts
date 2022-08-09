@@ -334,6 +334,8 @@ export type UploadType = JSSupportedType & ButtonAction & {
     uploadprops?: PropsType
 }
 
+export type FieldRestList = JSSupportedType & RestTableParam
+
 export type TField = PropSupportedType & TFieldBase & {
     items?: TField[]
     iprops?: PropsType
@@ -351,6 +353,7 @@ export type TField = PropSupportedType & TFieldBase & {
     stat?: StatisticType
     upload?: UploadType
     multichoice?: MultiChoiceButton
+    restlist?: FieldRestList
 }
 
 // the whole form

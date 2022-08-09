@@ -23,7 +23,7 @@ const defaults: Defaults = {
   displayprintrouterid: "/printingdisplayer",
   cookieage : 7,
   currentfield: "currentfield",
-  verstring: "Wersja 1.0 (r:18) z dnia 31 lipca 2022 roku",
+  verstring: "Wersja 1.0 (r:19) z dnia 10 sierpnia 2022 roku",
   directprefix: "~",
   multichoicevar: "multichoice"
 };
