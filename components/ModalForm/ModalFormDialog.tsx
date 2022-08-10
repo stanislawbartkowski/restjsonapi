@@ -139,10 +139,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     const constructCurVals = (r?: TRow): TRow => {
-        const data: TRow = isTop ? { ...commonVars(),...formdef.initvals, ...initvals, ...getVals(), ...r } : { ...getVals(), ...r }
+        const data: TRow = isTop ? { ...commonVars(), ...formdef.initvals, ...initvals, ...getVals(), ...r } : { ...getVals(), ...r }
         return data
     }
-
 
     const iiref: IIRefCall = {
         setMode: (loading: boolean, errors: ErrorMessages) => {
@@ -157,6 +156,18 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         setVals: (r: TRow) => {
             // setVals(r);
             const vars: TRow = constructCurVals(r);
+
+            // check for refresh table
+            formdef.tabledata?.fields.forEach(t => {
+                if (t.restlist) {
+                    if (istrue(vars[t.field] as boolean)) {
+                        ref.current.refreshTable(t.field);
+                        vars[t.field] = false;
+                    }
+                }
+            })
+
+
             setInitVals(vars);
         },
         doAction: (b: ClickResult) => {
@@ -190,7 +201,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         console.log(row)
         if (res) {
             setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF } })
-         }
+        }
     }
 
 
@@ -425,7 +436,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 setInitValues={thooks.setInitValues as FSetValues}
                 definitvars={formdef.definitvars}
                 restapiinitname={restapiname}
-                
+
                 {...thooks}
             />
         : undefined

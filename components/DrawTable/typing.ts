@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import type { ModalFormProps, TRow } from '../../ts/typing';
+import type { TRow } from '../../ts/typing';
 
 export type PageParams = {
   current?: number;

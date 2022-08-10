@@ -13,7 +13,7 @@ type ListState = ReadDefsResult & {
     list: string;
 };
 
-const RestTable: React.FC<RestTableParam& ClickActionProps> = (props) => {
+const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: number }> = (props) => {
     const [state, setState] = useState<ListState>({
         status: Status.PENDING,
         list: props.list as string,
@@ -65,7 +65,7 @@ const RestTable: React.FC<RestTableParam& ClickActionProps> = (props) => {
                         <InLine js={state.js} />
                         {isCard(state.res as ColumnList) && (state.res as ColumnList).onerow === undefined ?
                             <Cards {...(state.res as ColumnList)} {...props}></Cards> :
-                            <RestTableView {...(state.res as ColumnList)} {...props} />}
+                            <RestTableView {...(state.res as ColumnList)} {...props} refreshno={props.refreshno} />}
                     </React.Fragment>
                 );
             } else return null;

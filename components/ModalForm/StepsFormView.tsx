@@ -1,7 +1,7 @@
 import React, { useState, forwardRef, useRef, MutableRefObject, useImperativeHandle } from "react"
 import { StepProps, Steps } from 'antd'
 
-import type { ButtonAction, ClickResult, StepsElem, StepsForm, TAsyncRestCall, TClickButton } from "../ts/typing"
+import type { ClickResult, StepsElem, StepsForm } from "../ts/typing"
 import { makeMessage } from "../../ts/j"
 import ModalFormDialog, { ErrorMessages, IIRefCall, THooks } from "./ModalFormDialog"
 import { log } from "../../ts/l"

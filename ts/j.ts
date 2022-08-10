@@ -114,6 +114,18 @@ function generateID(): string {
 // global vars
 // ==============================
 
-export function commonVars() : TRow {
-  return { "sessionid" : getSessionId() }
-} 
+export function commonVars(): TRow {
+  return { "sessionid": getSessionId() }
+}
+
+// ==============================
+
+export function copyMap(m: Map<any, any>): Map<any, any> {
+
+  const mm: Map<any, any> = new Map();
+
+  for (let [key, val] of m) {
+    mm.set(key, val)
+  }
+  return mm;
+}

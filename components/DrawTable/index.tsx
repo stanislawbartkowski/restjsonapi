@@ -44,7 +44,8 @@ function tranformtoSel(sel: FieldValue[] | undefined): (string | number)[] {
     return sel.map((e: FieldValue) => isNumber(e) ? e as number : e as string)
 }
 
-const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = (props) => {
+const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number }> = (props) => {
+
     const [extendedFilter, setExtendedFilter] = useState<ExtendedFilter>(noExtendedFilter)
 
     const [showDetail, setShowDetail] = useState<boolean>(false);
@@ -91,7 +92,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps> = 
     const title = makeHeader(props, lstring("empty"), toPars())
 
     useEffect(() => readlist(props, (s: DataSourceState) => { setDataSource({ ...s }) })
-        , [props.list, props.listdef, refreshnumber]);
+        , [props.list, props.listdef, refreshnumber, props.refreshno]);
 
 
     const extend: TExtendable | undefined = props.extendable

@@ -1,4 +1,4 @@
-import React, { FocusEventHandler, forwardRef, ReactNode, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { FocusEventHandler, forwardRef, MutableRefObject, ReactNode, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import {
     Form,
@@ -29,7 +29,7 @@ import { ButtonAction, FGetValues, FieldRestList, FOnFieldChanged, FOnValuesChan
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, RestTableParam, TRow } from '../../ts/typing'
 import { fieldTitle, fieldType, HTMLElem, makeDivider, makeStatItem } from '../ts/transcol';
-import { callJSFunction, commonVars, getButtonName, getSessionId, isEmpty, makeMessage } from '../../ts/j';
+import { callJSFunction, commonVars, copyMap, getButtonName, getSessionId, isEmpty, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
 import { FFieldElem, getValue, isItemGroup, isnotdefined, istrue } from '../ts/helper';
@@ -47,12 +47,14 @@ import RestTable from "../RestTable"
 type FSearchAction = (s: string, t: FField) => void
 type FMultiAction = (t: FField) => void
 type TMultiSelect = Map<string, FieldValue[]>;
+type TableRefresh = Map<string, number>;
 
 
 type FField = TField & {
 
     searchF: FSearchAction
     multiF: FMultiAction
+    tableR: TableRefresh
     name?: number
     groupT?: TField
 }
@@ -77,8 +79,8 @@ function ltrace(mess: string) {
 
 export interface IRefCall {
     validate: () => void
-    //    setValues: (row: TRow) => void
     getValues: FGetValues
+    refreshTable: (field: string) => void
 }
 
 type UploadStore = Map<string, UploadFile[]>
@@ -225,7 +227,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
 
     if (isItemGroup(t)) {
         return [<React.Fragment>
-            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF }, err, name))}
+            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR }, err, name))}
         </React.Fragment>,
             undefined]
     }
@@ -517,9 +519,11 @@ function produceRestTable(ir: IFieldContext, t: FField): ReactNode {
 
     const frest: FieldRestList = t.restlist as FieldRestList
     const pars: RestTableParam = frest.js ? callJSFunction(frest.js, { r: ir.getValues() }) as RestTableParam : t.restlist as RestTableParam
+    const vars: TRow = ir.getValues()
+    const refreshno: number = t.tableR.has(t.field) ? t.tableR.get(t.field) as number : 0
 
     return <Form.Item id={t.field} name={t.field} {...t.props} >
-        <RestTable {...pars} />
+        <RestTable {...pars} vars={vars} refreshno={refreshno} />
     </Form.Item>
 }
 
@@ -565,10 +569,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const [fileupload, setFileUpload] = useState<UploadStore>(new Map())
     const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
     const [multiselect, setMultiSelect] = useState<TMultiSelect>(new Map())
+    const [tableR, setTableRefresh] = useState<TableRefresh>(new Map())
 
 
     const [f]: [FormInstance] = Form.useForm()
-
 
     const onFinish = (values: TRow) => {
         ltrace('Success, data validated')
@@ -601,11 +605,12 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             ltrace('submit');
             f.submit()
         },
-        //        setValues: (row: TRow) => {
-        //            const r: TRow = getVals();
-        //            const newr: TRow = { ...r, ...row }
-        //            f.setFieldsValue(transformValuesTo(newr, props.list))
-        //        },
+        refreshTable(field: string) {
+            ltrace('Refresh table {field}')
+            const ntableR: TableRefresh = copyMap(tableR)
+            ntableR.set(field, ntableR.get(field) !== undefined ? ntableR.get(field) as number + 1 : 1);
+            setTableRefresh(ntableR)
+        },
     }));
 
     useEffect(() => {
@@ -636,8 +641,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             ltrace("useEffect initvals transformed")
             console.log(vals)
         }
-
-
 
     }, [props.initvals])
 
@@ -675,12 +678,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     const buttonstop: ReactNode = props.buttonsextratop ? <React.Fragment><Form.Item><Space>{props.buttonsextratop}</Space></Form.Item><Divider /></React.Fragment> : undefined
     const buttonsbottom: ReactNode = props.buttonsextrabottom ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextrabottom}</Space></Form.Item></React.Fragment> : undefined
-
-    //    const setmultiC: FMultiSelected = (sel: FieldValue[]) => {
-    //        const s = new Map(multiselect)
-    //        s.set(multiselectD.field, sel);
-    //        setMultiSelect(s);
-    //    }
 
     // ==================
 
@@ -785,7 +782,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
         {buttonstop}
 
-        {props.fields.map(e => produceItem(fieldContext, { ...e, searchF: searchF, multiF: multiF }, props.err))}
+        {props.fields.map(e => produceItem(fieldContext, { ...e, searchF: searchF, multiF: multiF, tableR: tableR }, props.err))}
 
         {buttonsbottom}
 
