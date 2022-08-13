@@ -10,7 +10,6 @@ import OneRowTable from './ShowDetails/OneRowTable'
 import RestComponent from "./RestComponent";
 import { commonVars, isObject, makeMessage } from "../ts/j";
 import executeAction, { ispopupDialog } from './ts/executeaction'
-import { IRefCall } from "./ModalForm/ModalFormView";
 import { ErrorMessages, IIRefCall } from "./ModalForm/ModalFormDialog";
 import defaults from "../ts/defaults";
 

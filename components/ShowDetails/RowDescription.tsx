@@ -22,7 +22,7 @@ const DescriptionsDetails: React.FC<TDetailsCard> = (props) => {
   function isAction(field: string): boolean {
     const c: TColumn | undefined = (props.columns as TColumn[]).find(e => e.field === field)
     if (c === undefined || c.actions === undefined) return false
-    return ! c.actions.showindetails
+    return !c.actions.showindetails
   }
 
   const dprops: DescriptionsProps = deprops ? deprops : { column: 1, bordered: true }

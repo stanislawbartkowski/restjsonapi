@@ -7,12 +7,11 @@ import type { TableRowSelection } from "antd/lib/table/interface";
 import lstring from "../../ts/localize";
 import { ClickActionProps, emptyModalListProps, FieldValue, ModalFormProps, OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
-import type { ButtonAction, ClickResult, ColumnList, FActionResult, FShowDetails, TAsyncRestCall } from "../ts/typing";
+import type { ButtonAction, ClickResult, ColumnList, FActionResult, FShowDetails, ShowDetails, TAsyncRestCall, TColumn } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton } from "./js/helper";
-import { makeHeader } from "../ts/helper";
+import { findColDetails, makeHeader } from "../ts/helper";
 import ModalList from "../RestComponent";
-import RowDescription from "../ShowDetails/RowDescription";
 import getExtendableProps from "./Expendable";
 import HeaderTable from "../HeaderTable";
 import readlist, { DataSourceState } from '../ts/readlist'
@@ -162,6 +161,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         <SearchButton {...props} {...extendedFilter} refreshFilter={refreshFilter} /></Space> :
         undefined
 
+    const detcol: TColumn | undefined = findColDetails(props)
 
     return (
         <React.Fragment>
@@ -193,7 +193,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 onClose={() => setShowDetail(false)}
                 closable={false}
             >
-                <RowDescription r={currentRow as TRow} {...props} />
+                <OneRowTable r={currentRow as TRow} {...props} varsrestaction={(detcol?.showdetails as ShowDetails).varsrestaction} />
             </Drawer>
         </React.Fragment>
     );

@@ -1,19 +1,26 @@
 import { restaction, restapilist } from "../../services/api"
-import { HTTPMETHOD, JsonTableResult, RestTableParam, RowData } from "../../ts/typing"
+import { HTTPMETHOD, JsonTableResult, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing"
 import { ColumnList, Status } from "./typing"
 import { transformList, addRowKey } from "./tranformlist"
 import { fatalexceptionerror } from '../../ts/l'
 import defaults from '../../ts/defaults'
 import analyzeresponse from "./anayzeresponse"
+import { REPLWriter } from "repl"
 
 export type DataSourceState = JsonTableResult & {
     status: Status;
     rowkey?: string
 };
 
+export type TReadListParam = RESTMETH & {
+    list? : string
+    vars?: TRow
+
+}
+
 type FSetState = (s: DataSourceState) => void
 
-function readlist(props: RestTableParam & ColumnList, f: FSetState) {
+function readlist(props: TReadListParam & ColumnList, f: FSetState) {
 
     (props.method === undefined ?
         restapilist(props.list as string, props.params) :

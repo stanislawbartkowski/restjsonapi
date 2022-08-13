@@ -169,10 +169,17 @@ function constructBoolean(c: TColumn, r: TRow, vars?: TRow): ReactElement {
     return <Switch checked={checked} />
 }
 
+export function getVal(c: TColumn, props: OneRowData): FieldValue {
+    const val: FieldValue = (props.r as TRow)[c.field]
+    if (val) return val
+    return (props.vars) ? props.vars[c.field] : undefined
+}
+
+
 export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam, vars?: TRow): ReactElement {
     let style: CSSProperties = {};
     let rendered = dom;
-    const parms = { r: r, vars: vars }
+    const parms: OneRowData = { r: r, vars: vars }
 
     if (c.addstyle) {
         style = getAddStyle(c.addstyle, parms);
@@ -194,6 +201,7 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
     if (c.showdetails && rhook.fdetails !== undefined)
         return <Button type="link" onClick={() => { if (rhook.fdetails) rhook.fdetails(r) }}>{rendered}</Button>;
     if (c.fieldtype === FIELDTYPE.BOOLEAN) return constructBoolean(c, r, vars);
+    if (c.fieldtype === FIELDTYPE.HTML) return HTMLElem(getVal(c, parms) as string);
     return rendered;
 
 }
@@ -296,6 +304,6 @@ export function makeStatItem(stat: StatisticType, t: OneRowData): React.ReactNod
     const icon = st.icon ? { prefix: getIcon(st.icon) } : undefined
     const title: string = makeMessage(st.title, t) as string
     const valuestyle = st.valueStyle ? { valueStyle: st.valueStyle } : undefined
-    const props : PropsType = {precision : defaults.moneydot, ...st.props}
+    const props: PropsType = { precision: defaults.moneydot, ...st.props }
     return <Statistic title={title} {...icon} value={st.value as string | number} {...props} {...valuestyle} ></Statistic>
 }

@@ -79,6 +79,7 @@ export type ShowDetails = ReadDefType & PropSupportedType & {
     title?: HeaderTitleType
     toolbar?: TableToolBar
     collist: ColumnList
+    varsrestaction?:  TRestVars
 }
 
 // =============================  
@@ -235,9 +236,14 @@ export type ColumnList = JSSupportedType & PropSupportedType & {
 // details card/description
 // ===========================
 
+export type TRestVars = JSSupportedType & RESTMETH & {
+   list: string
+}
+
 export type TDetailsCard = ColumnList & OneRowData & {
     isSelected?: FIsSelected
     onRowClick?: OnRowClick
+    varsrestaction?:  TRestVars
 }
 
 // =========================
