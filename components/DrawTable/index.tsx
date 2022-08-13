@@ -7,7 +7,7 @@ import type { TableRowSelection } from "antd/lib/table/interface";
 import lstring from "../../ts/localize";
 import { ClickActionProps, emptyModalListProps, FieldValue, ModalFormProps, OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
-import type { ButtonAction, ClickResult, ColumnList, FActionResult, FShowDetails, ShowDetails, TAsyncRestCall, TColumn } from "../ts/typing";
+import type { ButtonAction, ClickResult, ColumnList, FActionResult, FShowDetails, ShowDetails, TAsyncRestCall, TColumn, TRestVars } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton } from "./js/helper";
 import { findColDetails, makeHeader } from "../ts/helper";
@@ -18,10 +18,11 @@ import readlist, { DataSourceState } from '../ts/readlist'
 import ReadListError from '../errors/ReadListError'
 import SummaryTable from './SummaryTable'
 import defaults from "../../ts/defaults";
-import { isNumber } from "../../ts/j";
+import { isNumber, isObject } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 import SearchButton, { FSetFilter } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
+import { defaultIconPrefixCls } from "antd/lib/config-provider";
 
 function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefined | PropsType {
     let pageSize: number | undefined = props.pageSize ? props.pageSize : defaults.defpageSize
@@ -162,6 +163,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         undefined
 
     const detcol: TColumn | undefined = findColDetails(props)
+    const varrestaction = detcol && detcol.showdetails && isObject(detcol.showdetails) ? { varsrestaction: (detcol.showdetails as ShowDetails).varsrestaction } : {}
 
     return (
         <React.Fragment>
@@ -193,7 +195,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 onClose={() => setShowDetail(false)}
                 closable={false}
             >
-                <OneRowTable r={currentRow as TRow} {...props} varsrestaction={(detcol?.showdetails as ShowDetails).varsrestaction} />
+                <OneRowTable r={currentRow as TRow} {...props} {...varrestaction} />
             </Drawer>
         </React.Fragment>
     );
