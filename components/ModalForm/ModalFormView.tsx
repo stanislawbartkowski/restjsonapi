@@ -573,6 +573,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
 
     const [f]: [FormInstance] = Form.useForm()
+    //const f: FormInstance = Form.useFormInstance()
 
     const onFinish = (values: TRow) => {
         ltrace('Success, data validated')
@@ -621,7 +622,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             ltrace("useEffect initvals")
             console.log(props.initvals)
             vals = transformValuesTo(props.initvals, props.list);
-            f.setFieldsValue(vals);
+            // commented out 2022/08/14            
+            //            f.setFieldsValue(vals);
             ltrace("useEffect initvals transformed")
             console.log(vals)
         }
@@ -638,7 +640,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
         if (vals !== undefined) {
             f.setFieldsValue(vals);
-            ltrace("useEffect initvals transformed")
+            ltrace("useEffect initvals transformed only value")
             console.log(vals)
         }
 
@@ -754,7 +756,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             return fchanges.current;
         },
         fieldChanged: function (id: string): void {
-            console.log(id + " change escalated");
             props.onFieldChange(id);
         },
         getValues: function (): TRow {
@@ -776,6 +777,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     }
 
     // must be preserve=true (default)
+    ltrace(`Render`)
     const form = <Form
         form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges} preserve={false}
         layout="horizontal" scrollToFirstError {...props.formprops} onFieldsChange={onFieldsChanges} >

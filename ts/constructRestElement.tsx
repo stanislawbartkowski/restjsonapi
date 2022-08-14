@@ -24,7 +24,7 @@ export function addMenuRestElement(p: MenuElem) {
     const e: ReactNode = p.menudir ? <MenuDirComponent {...pr} ispage pathid={p.id} /> : <RestComponent {...pr} ispage />
     addMenuElement(p.id, e)
     if (p.menudir) {
-        const sube: ReactNode = <MenuDirElemComponent {...p} />
+        const sube: ReactNode = <MenuDirElemComponent key={p.id} {...p} />
         dirmenu.push(p.id)
         submenuF.set(p.id, sube)
     }
