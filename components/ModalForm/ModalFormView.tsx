@@ -570,9 +570,18 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
     const [multiselect, setMultiSelect] = useState<TMultiSelect>(new Map())
     const [tableR, setTableRefresh] = useState<TableRefresh>(new Map())
-
+//    const [[f], setForm] = useState(Form.useForm())
 
     const [f]: [FormInstance] = Form.useForm()
+
+//    console.log("f:------")
+//    console.log(f)
+//    const x = f.getFieldsValue()
+//    console.log(x)
+//    console.log("-------------")
+
+
+//    const [f]: [FormInstance] = Form.useForm()
     //const f: FormInstance = Form.useFormInstance()
 
     const onFinish = (values: TRow) => {
