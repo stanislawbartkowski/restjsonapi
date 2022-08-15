@@ -19,7 +19,7 @@ function transformCell(c: TColumn, props: OneRowData): FieldValue {
 
 
 export function copyAndTransform(columns: TColumns, props: OneRowData): TRow {
-    const nrow: TRow = columns.reduce<TRow>((m: TRow, e: TColumn) => { m[e.field] = transformCol(e) ? transformCell(e, { r: m, vars: props.vars }) : getVal(e, props); return m }, {})
+    const nrow: TRow = columns.reduce<TRow>((m: TRow, e: TColumn) => { m[e.field] = transformCol(e) ? transformCell(e, { r: {...props.r,...m}, vars: props.vars }) : getVal(e, props); return m }, {})
     return nrow
 }
 
