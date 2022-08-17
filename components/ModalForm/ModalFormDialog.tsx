@@ -108,12 +108,12 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     });
 
     const [restview, setRestView] = useState<PopDialogView>({ visible: false });
+    const [initvals, psetInitVals] = useState<TRow>({ ...props.vars });
 
     function setState(p: DataFormState) {
         psetState(p)
     }
 
-    const [initvals, psetInitVals] = useState<TRow>({ ...props.vars });
 
     const isTop: boolean = props.setInitValues === undefined
 

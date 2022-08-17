@@ -570,19 +570,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
     const [multiselect, setMultiSelect] = useState<TMultiSelect>(new Map())
     const [tableR, setTableRefresh] = useState<TableRefresh>(new Map())
-//    const [[f], setForm] = useState(Form.useForm())
+    //    const [[f], setForm] = useState(Form.useForm())
 
     const [f]: [FormInstance] = Form.useForm()
 
-//    console.log("f:------")
-//    console.log(f)
-//    const x = f.getFieldsValue()
-//    console.log(x)
-//    console.log("-------------")
-
-
-//    const [f]: [FormInstance] = Form.useForm()
-    //const f: FormInstance = Form.useFormInstance()
 
     const onFinish = (values: TRow) => {
         ltrace('Success, data validated')
@@ -655,23 +646,33 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     }, [props.initvals])
 
+    const jsinitvals = () => {
 
-    // 2022/06/22 - jsrestapi after initvals, order is important
-    useEffect(() => {
         // 2022/06/22 - ignore
         if (istrue(props.ignorerestapivals)) {
             if (props.jsrestapivals) ltrace("Ignore jsrestapivals for the second time")
-            return;
+            return undefined
         }
         if (props.jsrestapivals) {
             var initvals: TRow = callJSFunction(props.jsrestapivals as string, { r: {}, vars: props.vars as TRow });
             ltrace("useEffect jsrestapivals")
             console.log(initvals)
-            const vals = transformValuesTo(initvals, props.list);
-            f.setFieldsValue(vals)
-            props.setInitValues(initvals)
-            ltrace("useEffect jsrestapivals transformed")
-            console.log(vals)
+            // const vals = transformValuesTo(initvals, props.list);
+            // Data: 2022/08/17
+            // f.setFieldsValue(vals)
+            return initvals
+            //ltrace("useEffect jsrestapivals transformed")
+            //console.log(vals)
+        }
+        return undefined
+    }
+
+    // 2022/06/22 - jsrestapi after initvals, order is important
+    useEffect(() => {
+        // if definitvals - will be covered in definitvals
+        if (!props.definitvars) {
+            const initvals: TRow | undefined = jsinitvals()
+            if (initvals) props.setInitValues(initvals);
         }
 
     }, [props.jsrestapivals])
@@ -681,7 +682,9 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     useEffect(() => {
         // 2022/06/22 - ignore
         if (props.definitvars) {
-            props.setInitValues(props.definitvars)
+            const initvals: TRow | undefined = jsinitvals()
+            const ar: TRow = initvals ? { ...initvals, ...props.definitvars } : props.definitvars
+            props.setInitValues(ar)
         }
 
     }, [props.restapiinitname])
