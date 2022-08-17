@@ -22,7 +22,6 @@ import { isNumber, isObject } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 import SearchButton, { FSetFilter } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
-import { defaultIconPrefixCls } from "antd/lib/config-provider";
 
 function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefined | PropsType {
     let pageSize: number | undefined = props.pageSize ? props.pageSize : defaults.defpageSize

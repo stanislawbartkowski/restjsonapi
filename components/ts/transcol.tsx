@@ -208,7 +208,8 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
 
 
 function constructRenderCell(c: TColumn, r: TableHookParam, vars?: TRow) {
-    return (dom: any, entity: TRow): ReactElement => { return renderCell(c, dom, entity, r, vars) }
+    // 2022/08/17 {...entity} added
+    return (dom: any, entity: TRow): ReactElement => { return renderCell(c, dom, {...entity}, r, vars) }
 };
 
 // =============================  

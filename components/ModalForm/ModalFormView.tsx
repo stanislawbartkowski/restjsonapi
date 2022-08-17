@@ -646,6 +646,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     }, [props.initvals])
 
+/*    
     const jsinitvals = () => {
 
         // 2022/06/22 - ignore
@@ -688,7 +689,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         }
 
     }, [props.restapiinitname])
-
+*/
 
     const buttonstop: ReactNode = props.buttonsextratop ? <React.Fragment><Form.Item><Space>{props.buttonsextratop}</Space></Form.Item><Divider /></React.Fragment> : undefined
     const buttonsbottom: ReactNode = props.buttonsextrabottom ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextrabottom}</Space></Form.Item></React.Fragment> : undefined
