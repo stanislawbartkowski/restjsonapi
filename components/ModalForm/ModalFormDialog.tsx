@@ -119,7 +119,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
     function setInitVals(r: TRow) {
         if (isTop)
-            psetInitVals(r);
+            psetInitVals({...r});
     }
 
 
@@ -307,12 +307,13 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
 
+    // initvals dodane 2022/08/18
     useEffect(() => {
         if (!props.ispage && props.mhooks) {
             const buttons: ReactNode = createB(formdef.tabledata, formdef.loading)
             props.mhooks.setButtons(buttons, formdef.loading as boolean)
         }
-    }, [formdef.tabledata, formdef.loading])
+    }, [formdef.tabledata, formdef.loading, initvals])
 
     // -------------------------
 
