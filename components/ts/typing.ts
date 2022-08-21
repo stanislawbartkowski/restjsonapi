@@ -266,7 +266,7 @@ export type TCard = {
 export type TItemsRest = {
     restaction: string;
     value: string
-    label: string
+    label: FormMessage
 }
 
 export type TRadioCheckItem = PropSupportedType & {

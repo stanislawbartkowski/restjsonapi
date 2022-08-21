@@ -1,6 +1,6 @@
 import { FSetValues, PreseForms, TField, TForm, TItemsRest, TPreseEnum, TRadioCheck } from "./typing";
 import { log } from "../../ts/l";
-import { callJSFunction, commonVars, isOArray, isString } from "../../ts/j";
+import { callJSFunction, commonVars, isOArray, isString, makeMessage } from "../../ts/j";
 import type { FormMessage, HTTPMETHOD, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
 import { restapilistdef, restapijs, restapishowdetils, restapilist, restaction } from "../../services/api";
 import { Status, ColumnList, ShowDetails } from "./typing";
@@ -45,12 +45,23 @@ async function resolveRest(tl: TField[]): Promise<TField[]> {
             return c;
         }
 
+        const getLabel = (rest: TItemsRest, r: TRow) => {
+            const f: FormMessage = rest.label
+            if (f === undefined) return r[rest.label]
+            return isString(f) ? r[rest.value] + " " + r[(f as string)] : makeMessage(f, { r: r }) as string
+        }
+
         if (tr) {
             const rest: TItemsRest | undefined = !isOArray(tr.items) ? tr.items as TItemsRest : undefined
             if (rest) {
                 const resta: Record<string, any> = await restapilist(rest.restaction)
                 const rlist: RowData = resta.res
-                tr.items = rlist.map(r => { return { value: r[rest.value] as string, label: { messagedirect: r[rest.label] } as FormMessage } })
+                tr.items = rlist.map(r => {
+                    return {
+                        value: r[rest.value] as string,
+                        label: { messagedirect: getLabel(rest, r) } as FormMessage
+                    }
+                })
                 console.log(tr)
                 if (c.checkbox) c.checkbox = { ...tr }
                 if (c.radio) c.radio = { ...tr }
