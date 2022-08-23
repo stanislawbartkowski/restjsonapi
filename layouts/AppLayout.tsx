@@ -9,7 +9,6 @@ import LeftMenu from "./LeftMenu";
 import HeaderLine from './HeaderLine'
 import { getAppData } from "../ts/readresource";
 
-
 const { Header, Sider, Content } = Layout;
 
 const AppLayout: React.FC = () => {
