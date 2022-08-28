@@ -10,7 +10,8 @@ interface Defaults {
   currentfield: string,
   verstring: string,
   directprefix: string,
-  multichoicevar: string
+  multichoicevar: string,
+  listpos: string
 };
 
 const defaults: Defaults = {
@@ -23,9 +24,10 @@ const defaults: Defaults = {
   displayprintrouterid: "/printingdisplayer",
   cookieage : 7,
   currentfield: "currentfield",
-  verstring: "Wersja 1.0 (r:21) z dnia 22 sierpnia 2022 roku",
+  verstring: "Wersja 1.0 (r:22) z dnia 28 sierpnia 2022 roku",
   directprefix: "~",
-  multichoicevar: "multichoice"
+  multichoicevar: "multichoice",
+  listpos : "listpos"
 };
 
 export default defaults;

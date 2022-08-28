@@ -322,7 +322,7 @@ export type RestValidatorResult = {
     err?: FormMessage;
 }
 
-export type ValidatorType = {
+export type ValidatorType =JSSupportedType & {
     required?: true
     pattern?: string
     message?: FormMessage

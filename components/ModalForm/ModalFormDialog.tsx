@@ -52,7 +52,6 @@ type DataFormState = {
     err: ErrorMessages
     loading?: boolean
     initvals: TRow | undefined
-    definitvars: TRow | undefined
     propsinitvals?: TRow
 };
 
@@ -103,7 +102,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         tabledata: emptyTForm,
         err: [],
         initvals: undefined,
-        definitvars: undefined
         // propsinitvals: props.initvals
     });
 
@@ -119,7 +117,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
     function setInitVals(r: TRow) {
         if (isTop)
-            psetInitVals({...r});
+            psetInitVals({ ...r });
     }
 
 
@@ -299,9 +297,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         setVarsCookies(props, b, v);
     }
 
-    //function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {setVals
-    //}IRefCa
-
     function onButtonClicked(r: TRow): void {
         clickButton(buttonclicked.current, r)
     }
@@ -315,50 +310,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         }
     }, [formdef.tabledata, formdef.loading, initvals])
 
-    // -------------------------
-
-    /*
-    const jsinitvals = (table: TForm) => {
-
-        // 2022/06/22 - ignore
-
-        if (istrue(props.ignorerestapivals)) {
-            if (formdef.tabledata?.jsrestapivals) ltrace("Ignore jsrestapivals for the second time")
-            return undefined
-        }
-        if (table.jsrestapivals) {
-            var initvals: TRow = callJSFunction(table.jsrestapivals as string, { r: {}, vars: props.vars as TRow });
-            ltrace("useEffect jsrestapivals")
-            console.log(initvals)
-            // const vals = transformValuesTo(initvals, props.list);
-            // Data: 2022/08/17
-            // f.setFieldsValue(vals)
-            return initvals
-            //ltrace("useEffect jsrestapivals transformed")
-            //console.log(vals)
-        }
-        return undefined
-    }
-    */
-
-    //    useEffect(() => {
-    // if definitvals - will be covered in definitvals
-    //        if (!formdef.definitvars) {
-    //            const initvals: TRow | undefined = jsinitvals()
-    //            if (initvals) setInitValues(initvals);
-    //        }
-
-    //    }, [formdef.tabledata?.jsrestapivals])
-
-    //    useEffect(() => {
-    //        // 2022/06/22 - ignore
-    //        if (formdef.tabledata.definitvars) {
-    //            const initvals: TRow | undefined = jsinitvals()
-    //            const ar: TRow = initvals ? { ...initvals, ...props.definitvars } : props.definitvars
-    //            props.setInitValues(ar)
-    //        }
-
-    //    }, [props.restapiinitname])
 
     useEffect(() => {
 
@@ -373,22 +324,13 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 if (vars !== undefined) {
                     ltrace("readdefs")
                     console.log(vars)
-                    // 2022/06/28
-                    // push up
-                    // if (thooks.setInitValues) thooks.setInitValues(vars)
-                    // Import: initvars are passed as definitvars to ModalFormView and pushed up later
-                    // running setInitValues here is a risk to overlap rendering
                 }
-                //const jsvars: TRow | undefined = jsinitvals(tabledata)
                 setState({
                     status: Status.READY,
                     tabledata: tabledata,
                     js: d.js,
                     err: [],
                     initvals: vars,
-                    // TODO REMOVE
-                    definitvars: d.initvar
-                    //propsinitvals: props.initvals
                 });
                 if (istrue(props.ignorerestapivals)) {
                     if (formdef.tabledata?.jsrestapivals) ltrace("Ignore jsrestapivals for the second time")
@@ -406,8 +348,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
             }
             else {
                 logG.error(`Error while reading definition`)
-                setState({ status: Status.ERROR, err: [], initvals: undefined, definitvars: undefined })
-                //                setState({ status: Status.ERROR, err: [], initvals: undefined, propsinitvals: props.initvals })
+                setState({ status: Status.ERROR, err: [], initvals: undefined })
             }
 
         }
@@ -419,20 +360,11 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     // important: to run trigger button exactly once
     useEffect(() => {
         if (buttontrigger) {
-            // do not use            
-            //            setButtonTrigger(undefined)
             fclick(buttontrigger)
         }
 
     }, [buttontrigger]);
 
-    // 2022/06/28
-    // TODO: remove
-    //useEffect(() => {
-
-    //    setState({ ...formdef, propsinitvals: props.initvals })
-
-    //}, [props.initvals])
 
     if (formdef.status === Status.PENDING) return null
     if (formdef.status === Status.ERROR) return <ReadDefError />
@@ -451,29 +383,22 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     const onFieldChange: FOnFieldChanged = (id: string) => {
-        console.log(id + " field changed")
         const fields: FFieldElem[] = createF();
         const f: FFieldElem | undefined = fields.find(e => e.field === id)
         if (f === undefined) return
+        const v: TRow = ref.current.getValues()
+        console.log(v)
         if (f.onchange) {
-            const v: TRow = ref.current.getValues()
             clickButton(f.onchange, v)
         }
     }
 
-    // const loading: boolean = (formdef.loading !== undefined && formdef.loading)
-
-    //    const buttons: React.ReactNode | undefined = formdef.tabledata?.buttons ?
-    //        formdef.tabledata.buttons.map(e => constructButton(e, fclick, loading, loading && e.id === buttonclicked.current?.id)) :
-    //        undefined
 
     if (ftype === TPreseEnum.TForm && buttontrigger === undefined) {
         const tr: ButtonAction | undefined = formd.buttons ? formd.buttons.find(e => e.trigger) : undefined
         if (tr) setButtonTrigger(tr)
     }
 
-    // <TemplateFormDialog vars={props.vars} refreshaction={props.refreshaction} {...(formd as any as StepsForm)} isform={false} /> :
-    // <StepsFormView {...thooks} ref={ref} vars={(props as ModalFormProps).vars} {...props as StepsForm} initvals={initvals} />
 
 
     //    const ivals: TRow = thooks.getValues ? thooks.getValues() : initvals
@@ -502,7 +427,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 ignorerestapivals={props.ignorerestapivals}
                 getValues={thooks.getValues as FGetValues}
                 setInitValues={thooks.setInitValues as FSetValues}
-                definitvars={formdef.definitvars}
                 restapiinitname={restapiname}
 
                 {...thooks}

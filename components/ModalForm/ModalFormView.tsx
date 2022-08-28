@@ -18,11 +18,12 @@ import {
     message,
     Upload,
     UploadProps,
-    Badge
+    Badge,
+    FormListFieldData
 } from 'antd';
 import { FormInstance, Rule } from 'antd/es/form';
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
-import { CloseOutlined, CheckOutlined, MinusCircleOutlined, PropertySafetyFilled, UploadOutlined } from '@ant-design/icons';
+import { CloseOutlined, CheckOutlined, MinusCircleOutlined, PlusOutlined, PropertySafetyFilled, UploadOutlined } from '@ant-design/icons';
 
 
 import { ButtonAction, FGetValues, FieldRestList, FOnFieldChanged, FOnValuesChanged, FSetValues, MultiChoiceButton, RestValidatorResult, StatisticType, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, UploadType, ValidatorType } from '../ts/typing'
@@ -43,6 +44,7 @@ import { getHost } from '../../services/api';
 import { constructButtonElem } from '../ts/constructbutton';
 import { UploadFile } from 'antd/lib/upload/interface';
 import RestTable from "../RestTable"
+import { Field } from 'rc-field-form';
 
 type FSearchAction = (s: string, t: FField) => void
 type FMultiAction = (t: FField) => void
@@ -55,7 +57,7 @@ type FField = TField & {
     searchF: FSearchAction
     multiF: FMultiAction
     tableR: TableRefresh
-    name?: number
+    listfield?: FormListFieldData
     groupT?: TField
 }
 
@@ -180,7 +182,7 @@ function enterButton(t: TField) {
 }
 
 
-function searchItem(ir: IFieldContext, t: FField, name?: number): React.ReactNode {
+function searchItem(ir: IFieldContext, t: FField, listfield?: FormListFieldData): React.ReactNode {
 
     const onBlur: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
         const id: string = c.target.id
@@ -189,7 +191,7 @@ function searchItem(ir: IFieldContext, t: FField, name?: number): React.ReactNod
     }
 
     function onSearchButton(value: string) {
-        t.searchF(value, { ...t, name: name });
+        t.searchF(value, { ...t, listfield: listfield });
     }
 
     return <Input.Search onBlur={onBlur} {...placeHolder(t)}  {...t.iprops}  {...enterButton(t)} onSearch={onSearchButton} />
@@ -217,7 +219,7 @@ function checkchange(ir: IFieldContext, id: string) {
 
 }
 
-function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: number): [React.ReactNode, PropsType | undefined] {
+function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: FormListFieldData): [React.ReactNode, PropsType | undefined] {
 
     const onBlur: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
         const id: string = c.target.id
@@ -227,7 +229,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
 
     if (isItemGroup(t)) {
         return [<React.Fragment>
-            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR }, err, name))}
+            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR }, err, field))}
         </React.Fragment>,
             undefined]
     }
@@ -248,13 +250,6 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
     let valuep = {}
     let disabledp = {}
 
-    //    if (t.value) {
-    //        const value: FieldValue = getValue(t.value, { r: ir.getValues() });
-    //        const v = transformSingleValue(value, t, false);
-    //        valuep = fieldtype !== FIELDTYPE.BOOLEAN ? valuep = { initialValue: v } :
-    //            (v as boolean) ? { initialValue: "checked" } : {}
-    //        if (fieldtype !== FIELDTYPE.HTML) disabledp = { disabled: true }
-    //    }
 
     // set value here only for boolean
     if (t.value) {
@@ -278,7 +273,8 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
         case FIELDTYPE.HTML: return [<HTMLControl />, { ...valuep }]
     }
 
-    return t.enterbutton ? [searchItem(ir, t, name), undefined] :
+
+    return t.enterbutton ? [searchItem(ir, t, field), undefined] :
         [<Input onBlur={onBlur} {...placeHolder(t)}  {...t.iprops} {...disabledp} />, { ...valuep }]
 }
 
@@ -311,17 +307,27 @@ function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, boolean
             if (e.pattern) {
                 rules.push({ pattern: new RegExp(e.pattern), message: message })
             }
-            if (e.restaction) {
+            if (e.restaction || e.js) {
                 rules.push(
                     ({ getFieldValue }) => ({
-                        async validator(_, value) {
+                        async validator(f: any, value) {
                             if (value === undefined) return Promise.resolve();
                             const data: TRow = {}
                             data[t.field] = value
                             data[defaults.currentfield] = value
-                            const h: RESTMETH = e.restaction as RESTMETH;
-                            const dat: TRow = await ir.aRest(h, data)
-
+                            const a: Array<string> = f.field.split('.')
+                            if (a.length === 3) {
+                                const pos: number = +a[1]
+                                data[defaults.listpos] = pos
+                            }
+                            let dat: TRow = {}
+                            if (e.restaction) {
+                                const h: RESTMETH = e.restaction as RESTMETH;
+                                dat = await ir.aRest(h, data)
+                            }
+                            else {
+                                dat = callJSFunction(e.js as string, { r: { ...ir.getValues(), ...data } });
+                            }
                             const res: RestValidatorResult = dat
                             if (res.err === undefined) return Promise.resolve();
                             const errmess: string = makeMessage(res.err as FormMessage) as string
@@ -339,7 +345,7 @@ function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, boolean
 }
 
 
-function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: number): React.ReactNode {
+function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, listfield?: FormListFieldData): React.ReactNode {
 
     const [rules, required] = createRules(ir, t)
     const props = { ...t.props }
@@ -351,14 +357,19 @@ function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?
     // checked for boolean and not radio (important)
     const addprops = (t.fieldtype === FIELDTYPE.BOOLEAN && t.radio === undefined) ? { valuePropName: "checked" } : undefined
 
-    const elemp = produceElem(ir, t, err, name)
+    const elemp = produceElem(ir, t, err, listfield)
 
     const requiredprops = required ? { required: true } : undefined
 
+
     const mess: string = fieldTitle(t, { r: {} });
-    return <Form.Item {...props} {...requiredprops} id={t.field} name={name !== undefined ? [name, t.field] : t.field} key={t.field} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]}>
+
+    const nameT = listfield === undefined ? { name: t.field } : { name: [listfield.name, t.field] }
+
+    return <Form.Item {...props}  {...nameT} id={t.field} key={t.field} {...requiredprops} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]} >
         {elemp[0]}
     </Form.Item>
+
 }
 
 // ================================
@@ -366,6 +377,8 @@ function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?
 // ================================
 
 
+/*
+// OK 
 function createList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {
 
     const addButton: ButtonElem = t.list?.addbutton as ButtonElem
@@ -374,28 +387,68 @@ function createList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode
 
     const addname = getButtonName(addButton)
 
-    return <Card bordered {...cardProps(t.list?.card)}><Form.List name={t.field} key={t.field} {...t.list?.props} >
-        {(fields, { add, remove }) => (
-            <>
-                {fields.map(({ key, name, ...restField }) => (
-                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-                        {produceFormItem(ir, t, err, name)}
-                        <MinusCircleOutlined onClick={() => remove(name)} />
-                    </Space>
-                ))}
-                <Form.Item>
-                    <Button type="dashed" onClick={() => add()} block {...addButton.props} icon={plusicon}>
-                        {addname}
+    return <Card bordered {...cardProps(t.list?.card)}>
+        <Form.List name="names">
+            {(fields, { add, remove }, { errors }) =>
+                <div>
+                    {fields.map((field,index) => (
+                        <Form.Item {...field}>
+                            <Input />
+                            <MinusCircleOutlined
+                                className="dynamic-delete-button"
+                                onClick={() => remove(field.name)}
+                            />
+                        </Form.Item>
+                    ))}
+                    <Button
+                        type="dashed"
+                        onClick={() => add()}
+                        style={{ width: '60%' }}
+                        icon={<PlusOutlined />}
+                    >
+                        Add field
                     </Button>
-                </Form.Item>
-            </>
-        )}
+                </div>
 
-    </Form.List>
+            }
+
+
+        </Form.List>
     </Card>
 }
+*/
 
 
+// CURRENT
+function createList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {
+
+    const addButton: ButtonElem = t.list?.addbutton as ButtonElem
+
+    const plusicon: ReactNode = getIcon(addButton.icon ? addButton.icon : 'plusoutlined');
+
+    const addname = getButtonName(addButton)
+
+    return <Card bordered {...cardProps(t.list?.card)}>
+        <Form.List name={t.field} key={t.field} {...t.list?.props} >
+            {(fields, { add, remove }) => (
+                <React.Fragment>
+                    {fields.map((field: FormListFieldData, index) => (
+                        <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                            {produceFormItem(ir, t, err, field)}
+                            <MinusCircleOutlined onClick={() => remove(field.name)} />
+                        </Space>
+                    ))}
+                    <Form.Item>
+                        <Button type="dashed" onClick={() => add()} block {...addButton.props} icon={plusicon}>
+                            {addname}
+                        </Button>
+                    </Form.Item>
+                </React.Fragment>
+            )}
+
+        </Form.List>
+    </Card>
+}
 
 function transformToListItem(t: FField, li: TListItems, r: TRow): React.ReactNode {
 
@@ -484,10 +537,6 @@ function produceUploadItem(ir: IFieldContext, t: FField): ReactNode {
 
     const bu = constructButtonElem(upload, (b: ButtonAction) => { })
 
-    //    return <Upload {...props }>
-    //        <Button icon={<UploadOutlined />}>Click to Upload</Button>        
-    //    </Upload>
-
     return <Upload {...props}>
         {bu}
     </Upload>
@@ -527,7 +576,7 @@ function produceRestTable(ir: IFieldContext, t: FField): ReactNode {
     </Form.Item>
 }
 
-function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: number): ReactNode {
+function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: FormListFieldData): ReactNode {
 
     if (t.multichoice) return produceMultiChoiceButton(ir, t)
     if (t.itemlist) return createItemList(ir, t, err);
@@ -544,7 +593,7 @@ function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: nu
 
 type SearchDialogProps = TField & {
     visible: boolean
-    name?: number
+    listfield?: FormListFieldData
     groupT?: TField
     addpars?: TRow
 }
@@ -561,8 +610,7 @@ const emptySearch = { field: "", visible: false }
 // getValues: used only to get values for field list
 // setInitValues: used to pass values set during jsinitvals (JSON)
 // restapiinitname: the name is passed only to useEffect to be raised only once
-// if definitvars is used in the userEffect, it is raised once per every rendering and overwrites variables
-const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, definitvars?: TRow, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const [multiselectD, setMultiSelectD] = useState<MultiSelectProps>(emptySearch);
@@ -646,51 +694,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     }, [props.initvals])
 
-/*    
-    const jsinitvals = () => {
-
-        // 2022/06/22 - ignore
-        if (istrue(props.ignorerestapivals)) {
-            if (props.jsrestapivals) ltrace("Ignore jsrestapivals for the second time")
-            return undefined
-        }
-        if (props.jsrestapivals) {
-            var initvals: TRow = callJSFunction(props.jsrestapivals as string, { r: {}, vars: props.vars as TRow });
-            ltrace("useEffect jsrestapivals")
-            console.log(initvals)
-            // const vals = transformValuesTo(initvals, props.list);
-            // Data: 2022/08/17
-            // f.setFieldsValue(vals)
-            return initvals
-            //ltrace("useEffect jsrestapivals transformed")
-            //console.log(vals)
-        }
-        return undefined
-    }
-
-    // 2022/06/22 - jsrestapi after initvals, order is important
-    useEffect(() => {
-        // if definitvals - will be covered in definitvals
-        if (!props.definitvars) {
-            const initvals: TRow | undefined = jsinitvals()
-            if (initvals) props.setInitValues(initvals);
-        }
-
-    }, [props.jsrestapivals])
-
-    // 2022/06/28 
-    //definitvars: used restapiinitname to be raised only once
-    useEffect(() => {
-        // 2022/06/22 - ignore
-        if (props.definitvars) {
-            const initvals: TRow | undefined = jsinitvals()
-            const ar: TRow = initvals ? { ...initvals, ...props.definitvars } : props.definitvars
-            props.setInitValues(ar)
-        }
-
-    }, [props.restapiinitname])
-*/
-
     const buttonstop: ReactNode = props.buttonsextratop ? <React.Fragment><Form.Item><Space>{props.buttonsextratop}</Space></Form.Item><Divider /></React.Fragment> : undefined
     const buttonsbottom: ReactNode = props.buttonsextrabottom ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextrabottom}</Space></Form.Item></React.Fragment> : undefined
 
@@ -736,11 +739,11 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         setSearchT(emptySearch)
         log(`${val} selected`)
         const x: TRow = f.getFieldsValue()
-        if (searchD.name === undefined) x[searchD.field] = val
+        if (searchD.listfield === undefined) x[searchD.field] = val
         else {
             // list
             const a: TRow[] = (x[searchD.groupT ? searchD.groupT.field : searchD.field] as any)
-            const elem: TRow = a[searchD.name]
+            const elem: TRow = a[searchD.listfield.name]
             elem[searchD.field] = val
         }
         f.setFieldsValue(x)
@@ -749,11 +752,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     // ===================
 
-    //const initvals = {paramsrequired: "aaa"}
     const initvals = { ...commonVars(), ...(props.initvals ? transformValuesTo(props.initvals as TRow, props.list) : undefined) }
 
-    //ltrace("initvals")
-    //console.log(initvals)
 
     const onFieldsChanges = (changedFields: Record<string, any>, _: any) => {
         if (isEmpty(changedFields)) return

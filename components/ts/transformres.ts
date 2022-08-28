@@ -29,10 +29,14 @@ export function transformSingleValue(v: any, t: FFieldElem, from: boolean) {
 
 function transformValues(row: TRow, tf: FFieldElem[], from: boolean): TRow {
     const res: TRow = {}
+    // 2022/08/28 --- !!! is supposed to throw exception
+    // otherwise the list is not preserving rows while removing row
+    // TODO: required investigation
+    //if (row === undefined) return {}
     tf.forEach((t: FFieldElem) => {
         if (row[t.field] !== undefined) {
             res[t.field] = transformSingleValue(row[t.field], t, from)
-        } 
+        }
     })
     return res;
 }
