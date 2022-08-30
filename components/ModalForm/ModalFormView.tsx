@@ -44,7 +44,6 @@ import { getHost } from '../../services/api';
 import { constructButtonElem } from '../ts/constructbutton';
 import { UploadFile } from 'antd/lib/upload/interface';
 import RestTable from "../RestTable"
-import { Field } from 'rc-field-form';
 
 type FSearchAction = (s: string, t: FField) => void
 type FMultiAction = (t: FField) => void

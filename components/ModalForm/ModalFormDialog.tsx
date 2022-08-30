@@ -320,7 +320,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
             if (d.status === Status.READY) {
                 const tabledata: TForm = { ...(d.res as TForm) }
 
-                const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : isModalFormCookies(tabledata) ? getCookiesFormListDefVars(props.listdef as string) : props.initvals
+                // 2022/08/30 (bez cookie)
+                const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : props.initvals
+//                const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : isModalFormCookies(tabledata) ? getCookiesFormListDefVars(props.listdef as string) : props.initvals
                 if (vars !== undefined) {
                     ltrace("readdefs")
                     console.log(vars)

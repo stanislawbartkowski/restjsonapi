@@ -4,7 +4,7 @@ import { callJSFunction, commonVars, isOArray, isString, makeMessage } from "../
 import type { FormMessage, HTTPMETHOD, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
 import { restapilistdef, restapijs, restapishowdetils, restapilist, restaction } from "../../services/api";
 import { Status, ColumnList, ShowDetails } from "./typing";
-import { isItemGroup, istrue, preseT } from './helper'
+import { isItemGroup, isnotdefined, istrue, preseT } from './helper'
 import { internalerrorlog } from '../../ts/l'
 import analyzeresponse from "./anayzeresponse";
 
@@ -48,7 +48,11 @@ async function resolveRest(tl: TField[]): Promise<TField[]> {
         const getLabel = (rest: TItemsRest, r: TRow) => {
             const f: FormMessage = rest.label
             if (f === undefined) return r[rest.label]
-            return isString(f) ? r[rest.value] + " " + r[(f as string)] : makeMessage(f, { r: r }) as string
+            if (isString(f)) {
+                const ff: string = f as string
+                return (isnotdefined(r[ff])) ? r[rest.value] : r[rest.value] + " " + r[(ff)]
+            }
+            return makeMessage(f, { r: r }) as string
         }
 
         if (tr) {
