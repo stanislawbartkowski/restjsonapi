@@ -1,8 +1,9 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 
 import { MenuElem, TComponentProps } from "./typing";
 import RestComponent from "../components/RestComponent";
 import { createRestParam, MenuDirComponent, MenuDirElemComponent } from "../components/MenuComps";
+import InLine from "./inline";
 
 const menuF: Map<String, ReactNode> = new Map<String, ReactNode>()
 

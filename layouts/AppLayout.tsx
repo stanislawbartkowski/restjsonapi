@@ -7,7 +7,7 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import AppContent from "./AppContent";
 import LeftMenu from "./LeftMenu";
 import HeaderLine from './HeaderLine'
-import { getAppData } from "../ts/readresource";
+import { getAppData, getAppJSS } from "../ts/readresource";
 
 const { Header, Sider, Content } = Layout;
 
@@ -18,6 +18,14 @@ const AppLayout: React.FC = () => {
   useEffect(() => {
     document.title = getAppData()['title']
   }, [])
+
+  // define global jscript code
+  getAppJSS().forEach ( j =>{
+    const script = document.createElement('script');
+    script.innerHTML = j;
+    script.async = true;
+    document.body.appendChild(script);  
+  })
 
   return (
     <Layout>

@@ -1,5 +1,6 @@
 import { Modal } from "antd";
 import React, { ReactNode, useEffect, useState } from "react";
+import InLine from "../../ts/inline";
 
 import { ModalFormProps, PropsType, TRow } from "../../ts/typing";
 import { ismaskClicked } from "../ts/helper";
@@ -15,7 +16,7 @@ const ModalDialog: React.FC<ModalFormProps> = (props) => {
 
     const ihooks: ModalHooks = {
 
-        setButtons: function (buttons: ReactNode, loading:  boolean): void {
+        setButtons: function (buttons: ReactNode, loading: boolean): void {
             setState({ ...moddef, buttons: buttons })
         },
     }

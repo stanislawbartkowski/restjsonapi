@@ -322,7 +322,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
                 // 2022/08/30 (bez cookie)
                 const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : props.initvals
-//                const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : isModalFormCookies(tabledata) ? getCookiesFormListDefVars(props.listdef as string) : props.initvals
+                //                const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : isModalFormCookies(tabledata) ? getCookiesFormListDefVars(props.listdef as string) : props.initvals
                 if (vars !== undefined) {
                     ltrace("readdefs")
                     console.log(vars)
@@ -368,7 +368,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }, [buttontrigger]);
 
 
-    if (formdef.status === Status.PENDING) return null
+    if (formdef.status === Status.PENDING) return null;
+
+
     if (formdef.status === Status.ERROR) return <ReadDefError />
 
 

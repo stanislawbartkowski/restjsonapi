@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { restapiresource } from "../services/api";
+import { restapijs, restapiresource } from "../services/api";
 import { log } from "./l";
 import { setStrings } from "./localize";
 import type { MenuLeft } from "./typing";
@@ -23,6 +23,19 @@ export function getAppData(): any | undefined {
   return appdata
 }
 
+let jsscript: string[] = []
+
+export function getAppJSS() : string[] {
+  return jsscript
+}
+
+async function readJS(jnames: string) {
+  const js: string[] = jnames.split(",")
+  jsscript = await Promise.all(js.map(async j => {
+    return await restapijs(j)
+  })
+  )
+}
 
 async function readResource() {
   const lm: MenuLeft = (await restapiresource("leftmenu")) as MenuLeft;
@@ -32,6 +45,13 @@ async function readResource() {
   log("Resource leftmenu read");
   appdata = await restapiresource("appdata");
   log("Resource appdata read");
+
+  const js: string | undefined = appdata.js
+
+  if (js) {
+    log(`JS scripts to read ${js}`)
+    await readJS(js)
+  }
 
   const language: string | undefined = appdata.language
 
