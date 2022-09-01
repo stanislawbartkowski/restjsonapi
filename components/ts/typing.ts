@@ -15,7 +15,7 @@ export enum Status {
 // ===========================
 
 export type FShowDetails = (entity: TRow) => void
-export type FActionResult = (entity: TRow, r: ClickResult) => void
+export type FActionResult = (entity: TRow, r: TAction) => void
 
 export type TableHookParam = {
     fdetails?: FShowDetails;
@@ -144,6 +144,7 @@ export type ClickResult = RestTableParam & ActionResult & {
 // click action, statis or dynamic jsclick
 export type ClickAction = ClickResult & {
     jsclick?: string
+    button?: ButtonAction
 }
 
 // single action, message or click action

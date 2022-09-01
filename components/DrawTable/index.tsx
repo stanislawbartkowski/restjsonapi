@@ -7,7 +7,7 @@ import type { TableRowSelection } from "antd/lib/table/interface";
 import lstring from "../../ts/localize";
 import { ClickActionProps, emptyModalListProps, FieldValue, ModalFormProps, OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
-import type { ButtonAction, ClickResult, ColumnList, FActionResult, FShowDetails, ShowDetails, TAsyncRestCall, TColumn, TRestVars } from "../ts/typing";
+import type { ButtonAction, ClickAction, ClickResult, ColumnList, FActionResult, FShowDetails, ShowDetails, TAction, TAsyncRestCall, TColumn, TRestVars } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton } from "./js/helper";
 import { findColDetails, makeHeader } from "../ts/helper";
@@ -22,6 +22,7 @@ import { isNumber, isObject } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 import SearchButton, { FSetFilter } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
+import { createII, executB, IIButtonAction } from "../ts/executeaction";
 
 function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefined | PropsType {
     let pageSize: number | undefined = props.pageSize ? props.pageSize : defaults.defpageSize
@@ -70,12 +71,17 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         setIsModalVisible({ visible: false });
     };
 
-    const fresult: FActionResult = (entity: TRow, r: ClickResult) => {
+    const fresult: FActionResult = (entity: TRow, r: TAction) => {
+        if (r.button) {
+            const ii: IIButtonAction = createII(r.button, entity)
+            executB(ii, () => refreshtable())
+            return
+        }
         setIsModalVisible({
             visible: true,
             closeAction: fmodalhook,
             vars: entity,
-            ...r,
+            ...(r as ClickAction),
         });
     };
 

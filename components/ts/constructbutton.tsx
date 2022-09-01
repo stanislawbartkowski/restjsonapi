@@ -5,7 +5,7 @@ import lstring from "../../ts/localize";
 import { BUTTONACTION } from "./typing";
 import { getButtonName, isBool, makeMessage } from '../../ts/j'
 import { ButtonAction } from "./typing";
-import { ButtonElem, FormMessage } from "../../ts/typing";
+import { FormMessage } from "../../ts/typing";
 
 export type FClickButton = (b: ButtonAction) => void;
 
@@ -51,7 +51,7 @@ export function constructButtonElem(b: ButtonAction, onclick: FClickButton, disa
     case BUTTONACTION.UPLOAD:
       messid = 'upload'
       iconid = 'uploadoutlined'
-      break;  
+      break;
   }
 
   const bname: String = messid !== "" ? lstring(messid) : getButtonName(b)
@@ -59,8 +59,8 @@ export function constructButtonElem(b: ButtonAction, onclick: FClickButton, disa
   const loadingprop: Record<string, any> = loading ? { loading: true } : {}
   const disabledprop: Record<string, any> = disabled ? { disabled: true } : {}
   const onclickprops: Record<string, any> = { onClick: () => onclick(b) }
-  
-  
+
+
   const icon: React.ReactNode | undefined = iconid
     ? getIcon(iconid)
     : undefined;
@@ -71,20 +71,18 @@ export function constructButtonElem(b: ButtonAction, onclick: FClickButton, disa
     </Button>
     ;
 
-  return bu;  
+  return bu;
 
 }
 
-function constructButton(b: ButtonAction, onclick: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
+function constructButton(b: ButtonAction, click: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
 
 
-  const bu = constructButtonElem(b,b.confirm? () => {} : onclick,disabled,loading);
-  
-  if (!b.confirm) return bu
+  if (!b.confirm) return constructButtonElem(b, click, disabled, loading);
 
   const title: string = isBool(b.confirm) ? lstring('areyousure') : makeMessage(b.confirm as FormMessage, { r: {} }) as string
 
-  return <Popconfirm title={title} onConfirm={() => onclick(b)} > {bu} </Popconfirm>
+  return <Popconfirm title={title} onConfirm={() => click(b)}  > {constructButtonElem(b, () => { }, disabled, loading)} </Popconfirm>
 }
 
 export default constructButton

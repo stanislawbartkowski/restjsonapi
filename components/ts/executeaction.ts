@@ -1,18 +1,48 @@
 import { restaction } from "../../services/api";
-import { makeMessage } from "../../ts/j";
+import { commonVars, makeMessage } from "../../ts/j";
 import { fatalexceptionerror, trace } from "../../ts/l";
-import { TRow, OneRowData, HTTPMETHOD, TComponentProps } from "../../ts/typing";
+import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue } from "../../ts/typing";
 import openNotification from "../Notification";
 import { ErrorMessage, ErrorMessages, IIRefCall } from "../ModalForm/ModalFormDialog";
 import { clickAction } from "./helper";
-import type { ButtonAction, FieldError, TAction } from "./typing";
+import type { ButtonAction, ClickAction, FieldError, TAction } from "./typing";
 import { FAction, ClickActionProps } from '../../ts/typing'
 import analyzeresponse from './anayzeresponse'
 import { setPrintContent } from './helper'
 import defaults from "../../ts/defaults";
 import { history } from '../../ts/CustomRouter'
 
-export function ispopupDialog(res: TAction) : boolean {
+export type IIButtonAction = {
+    res: TAction
+    ii: IIRefCall
+    rr: TRow
+    vars: TRow
+}
+
+export function createII(b: ButtonAction, vars: TRow, selectedM?: FieldValue): IIButtonAction {
+    const rr: TRow = {}
+    rr[defaults.multichoicevar] = selectedM
+    const res: TAction = clickAction(b, { r: { ...commonVars(), ...rr }, vars: vars })
+    const ii: IIRefCall = {
+        setMode: function (loading: boolean, errors: ErrorMessages): void {
+        },
+        getVals: function (): TRow {
+            return {}
+        },
+        setVals: function (r: TRow): void {
+        },
+        formGetVals: function (): TRow {
+            return vars as TRow;
+        }
+    }
+    return { res: res, ii: ii, rr: { ...commonVars(), ...rr }, vars: vars }
+}
+
+export function executB(i: IIButtonAction, refreshaction?: FAction) {
+    clickButton({ refreshaction , ...(i.res as ClickAction), i: i.ii }, i.res, { ...i.rr, ...i.vars })
+}
+
+export function ispopupDialog(res: TAction): boolean {
     return res.list !== undefined || res.listdef !== undefined
 }
 
@@ -43,9 +73,9 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
 
 
     function doaction(r: TAction, presult?: string) {
-//        ltrace("REST/API returned, validate the action result")
-//        validateObject(ObjectType.ACTIONRESULT, `Result ${res.restaction}`, r)
-//        ltrace("Action result")
+        //        ltrace("REST/API returned, validate the action result")
+        //        validateObject(ObjectType.ACTIONRESULT, `Result ${res.restaction}`, r)
+        //        ltrace("Action result")
         if (r.error) {
             props.i.setMode(false, transformErrors(r.error, toPars()))
         } else {
@@ -82,7 +112,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
             ({ data, response }) => {
                 const da = analyzeresponse(data, response)
                 const reobject: TAction = da[0] as TAction
-                const resobject: TAction = (res.retprops) ? Object.assign(reobject,res.retprops) : reobject
+                const resobject: TAction = (res.retprops) ? Object.assign(reobject, res.retprops) : reobject
                 doaction(resobject, da[1])
             }
         ).catch(((e) => {

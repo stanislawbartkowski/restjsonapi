@@ -9,7 +9,7 @@ import { clickAction, istrue } from "./ts/helper";
 import OneRowTable from './ShowDetails/OneRowTable'
 import RestComponent from "./RestComponent";
 import { commonVars, isObject, makeMessage } from "../ts/j";
-import executeAction, { ispopupDialog } from './ts/executeaction'
+import executeAction, { createII, executB, IIButtonAction, ispopupDialog } from './ts/executeaction'
 import { ErrorMessages, IIRefCall } from "./ModalForm/ModalFormDialog";
 import defaults from "../ts/defaults";
 
@@ -43,6 +43,15 @@ const HeaderTable: React.FC<ShowDetails & { refreshaction: FAction, vars?: TRow,
 
   function clickButton(b: ButtonAction) {
     ltrace(b.id)
+    const ii: IIButtonAction = createII(b, props.vars as TRow, props.selectedM)
+    if (isChooseButton(ii.res, props.r)) props.fbutton(b, ii.rr)
+    if (ispopupDialog(ii.res)) setIsModalVisible({ vars: { ...props.vars }, ...(ii.res as ClickAction), visible: true, closeAction: fmodalhook })
+    else executB(ii)
+  }
+
+  // TODO: remove
+  function old_clickButton(b: ButtonAction) {
+    ltrace(b.id)
     const rr: TRow = {}
     rr[defaults.multichoicevar] = props.selectedM
     const res: TAction = clickAction(b, { r: { ...commonVars(), ...rr }, vars: props.vars })
@@ -62,7 +71,7 @@ const HeaderTable: React.FC<ShowDetails & { refreshaction: FAction, vars?: TRow,
     // Data: 2022/07/23
     // pass vars from action to dialog invoked
     // vars: vars: {...props.vars}
-    if (ispopupDialog(res)) setIsModalVisible({ vars: {...props.vars}, ...(res as ClickAction), visible: true, closeAction: fmodalhook })
+    if (ispopupDialog(res)) setIsModalVisible({ vars: { ...props.vars }, ...(res as ClickAction), visible: true, closeAction: fmodalhook })
     else executeAction({ ...(res as ClickAction), i: ii }, res, { ...rr, ...props.vars })
   }
 

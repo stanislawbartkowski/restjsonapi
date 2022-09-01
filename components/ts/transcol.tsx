@@ -1,16 +1,17 @@
 import { ColumnType } from "antd/lib/table";
-import React from "react";
+import React, { ReactNode } from "react";
 import { Badge, Button, Divider, Dropdown, Menu, Space, Statistic, Switch, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
-import { AddStyle, ClickResult, ColumnList, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TTag, TTags } from "./typing";
+import { AddStyle, ButtonAction, ClickResult, ColumnList, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue } from "./helper";
 import { callJSFunction, isString, makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
+import constructButton from "./constructbutton";
 
 
 // =====================
@@ -83,11 +84,14 @@ function sort(c: TColumn, cols: ColumnList): boolean {
 // ==============================
 
 function clickActionHook(t: TAction, r: TableHookParam, pars: OneRowData) {
-    const res: ClickResult = clickAction(t, pars);
+    const res: TAction = clickAction(t, pars);
     if (r.fresult) r.fresult(pars.r, res);
 }
 
-function constructAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ReactElement {
+function constructAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ReactNode {
+    if (t.button) {
+        return constructButton(t.button as ButtonAction, () => clickActionHook(t, r, pars));
+    }
     return (
         <Button style={{ padding: 0 }} type="link" key={key} onClick={() => clickActionHook(t, r, pars)}>{makeMessage(t, pars)}</Button>
     );
@@ -209,7 +213,7 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
 
 function constructRenderCell(c: TColumn, r: TableHookParam, vars?: TRow) {
     // 2022/08/17 {...entity} added
-    return (dom: any, entity: TRow): ReactElement => { return renderCell(c, dom, {...entity}, r, vars) }
+    return (dom: any, entity: TRow): ReactElement => { return renderCell(c, dom, { ...entity }, r, vars) }
 };
 
 // =============================  
