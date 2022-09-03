@@ -28,7 +28,7 @@ import { CloseOutlined, CheckOutlined, MinusCircleOutlined, PlusOutlined, Proper
 
 import { ButtonAction, FGetValues, FieldRestList, FOnFieldChanged, FOnValuesChanged, FSetValues, MultiChoiceButton, RestValidatorResult, StatisticType, TAsyncRestCall, TField, TForm, TListItems, TRadioCheckItem, UploadType, ValidatorType } from '../ts/typing'
 import { log, trace } from '../../ts/l'
-import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, RestTableParam, TRow } from '../../ts/typing'
+import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, RestTableParam, TRow, VAction } from '../../ts/typing'
 import { fieldTitle, fieldType, HTMLElem, makeDivider, makeStatItem } from '../ts/transcol';
 import { callJSFunction, commonVars, copyMap, getButtonName, getSessionId, isEmpty, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
@@ -56,6 +56,7 @@ type FField = TField & {
     searchF: FSearchAction
     multiF: FMultiAction
     tableR: TableRefresh
+    setvarsaction: VAction
     listfield?: FormListFieldData
     groupT?: TField
 }
@@ -228,7 +229,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
 
     if (isItemGroup(t)) {
         return [<React.Fragment>
-            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR }, err, field))}
+            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR, setvarsaction: t.setvarsaction }, err, field))}
         </React.Fragment>,
             undefined]
     }
@@ -571,7 +572,7 @@ function produceRestTable(ir: IFieldContext, t: FField): ReactNode {
     const refreshno: number = t.tableR.has(t.field) ? t.tableR.get(t.field) as number : 0
 
     return <Form.Item id={t.field} name={t.field} {...t.props} >
-        <RestTable {...pars} vars={vars} refreshno={refreshno} />
+        <RestTable {...pars} vars={vars} refreshno={refreshno} setvarsaction={t.setvarsaction} />
     </Form.Item>
 }
 
@@ -609,7 +610,7 @@ const emptySearch = { field: "", visible: false }
 // getValues: used only to get values for field list
 // setInitValues: used to pass values set during jsinitvals (JSON)
 // restapiinitname: the name is passed only to useEffect to be raised only once
-const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, setvarsaction: VAction, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const [multiselectD, setMultiSelectD] = useState<MultiSelectProps>(emptySearch);
@@ -796,7 +797,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
         {buttonstop}
 
-        {props.fields.map(e => produceItem(fieldContext, { ...e, searchF: searchF, multiF: multiF, tableR: tableR }, props.err))}
+        {props.fields.map(e => produceItem(fieldContext, { ...e, searchF: searchF, multiF: multiF, tableR: tableR, setvarsaction: props.setvarsaction }, props.err))}
 
         {buttonsbottom}
 

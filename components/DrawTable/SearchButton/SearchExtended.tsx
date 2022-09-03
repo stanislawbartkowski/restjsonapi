@@ -58,8 +58,8 @@ const SearchExtended = forwardRef<IIRefCall, SearchDialog>((props, iref) => {
 
     }
 
-    return <ModalFormView aRest={aRest} getValues={getValues} ref={refm} fields={fields} buttonClicked={buttonClickded} 
-       initvals={props.filtervalues} list={ffields} buttons={[]} buttonsextratop={props.buttons} err={err} onValuesChanges={onValuesChanges} onFieldChange={onFieldChange} setInitValues={() => {}}/>
+    return <ModalFormView aRest={aRest} getValues={getValues} ref={refm} fields={fields} buttonClicked={buttonClickded} setvarsaction={(r?: TRow) => { }}
+        initvals={props.filtervalues} list={ffields} buttons={[]} buttonsextratop={props.buttons} err={err} onValuesChanges={onValuesChanges} onFieldChange={onFieldChange} setInitValues={() => { }} />
 
 })
 

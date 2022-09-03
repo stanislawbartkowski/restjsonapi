@@ -1,7 +1,7 @@
 import { restaction } from "../../services/api";
 import { commonVars, makeMessage } from "../../ts/j";
 import { fatalexceptionerror, trace } from "../../ts/l";
-import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue } from "../../ts/typing";
+import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction } from "../../ts/typing";
 import openNotification from "../Notification";
 import { ErrorMessage, ErrorMessages, IIRefCall } from "../ModalForm/ModalFormDialog";
 import { clickAction } from "./helper";
@@ -38,8 +38,8 @@ export function createII(b: ButtonAction, vars: TRow, selectedM?: FieldValue): I
     return { res: res, ii: ii, rr: { ...commonVars(), ...rr }, vars: vars }
 }
 
-export function executB(i: IIButtonAction, refreshaction?: FAction) {
-    clickButton({ refreshaction , ...(i.res as ClickAction), i: i.ii }, i.res, { ...i.rr, ...i.vars })
+export function executeB(i: IIButtonAction, refreshaction?: FAction, setvarsaction?: VAction) {
+    clickButton({ refreshaction, ...(i.res as ClickAction), i: i.ii, setvarsaction }, i.res, { ...i.rr, ...i.vars })
 }
 
 export function ispopupDialog(res: TAction): boolean {

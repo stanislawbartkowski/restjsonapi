@@ -22,7 +22,7 @@ import { isNumber, isObject } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 import SearchButton, { FSetFilter } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
-import { createII, executB, IIButtonAction } from "../ts/executeaction";
+import { createII, executeB, IIButtonAction } from "../ts/executeaction";
 
 function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefined | PropsType {
     let pageSize: number | undefined = props.pageSize ? props.pageSize : defaults.defpageSize
@@ -74,7 +74,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     const fresult: FActionResult = (entity: TRow, r: TAction) => {
         if (r.button) {
             const ii: IIButtonAction = createII(r.button, entity)
-            executB(ii, () => refreshtable())
+            executeB(ii, () => refreshtable())
             return
         }
         setIsModalVisible({
@@ -172,7 +172,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     return (
         <React.Fragment>
-            {props.header ? <HeaderTable {...props.header} vars={props.vars} refreshaction={refreshtable} r={props} fbutton={buttonAction} selectedM={multichoice} /> : undefined}
+            {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction}  refreshaction={refreshtable} r={props} fbutton={buttonAction} selectedM={multichoice} /> : undefined}
             {extendedSearch}
             <Table
                 {...rowSelection({ ...props })

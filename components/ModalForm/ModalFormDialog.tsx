@@ -11,7 +11,7 @@ import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
 import { FFieldElem, flattenTForm, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT, istrue } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FAction, FIELDTYPE, FieldValue, ModalFormProps, RESTMETH, TComponentProps, TRow } from '../../ts/typing'
+import { FAction, FIELDTYPE, FieldValue, ModalFormProps, RESTMETH, TComponentProps, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
@@ -141,6 +141,20 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         return data
     }
 
+    const setvarsaction : VAction = (vars: TRow) => {
+        if (formdef.tabledata?.fields)
+        formdef.tabledata?.fields.forEach(t => {
+            if (t.restlist) {
+                if (istrue(vars[t.field] as boolean)) {
+                    ref.current.refreshTable(t.field);
+                    vars[t.field] = false;
+                }
+            }
+        })
+        if (props.setvarsaction) props.setvarsaction(vars)
+    }
+
+
     const iiref: IIRefCall = {
         setMode: (loading: boolean, errors: ErrorMessages) => {
             if (ftype === TPreseEnum.Steps)
@@ -157,6 +171,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
             // check for refresh table
             // in "steps" fields can be undefined
+
+/*            
             if (formdef.tabledata?.fields)
                 formdef.tabledata?.fields.forEach(t => {
                     if (t.restlist) {
@@ -166,8 +182,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                         }
                     }
                 })
-
-
+*/
+            setvarsaction(vars)                
             setInitVals(vars);
         },
         doAction: (b: ClickResult) => {
@@ -424,6 +440,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 buttonClicked={onButtonClicked}
                 buttonsextrabottom={props.ispage ? createB(formdef.tabledata, formdef.loading) : undefined}
                 onValuesChanges={onValuesChange}
+                setvarsaction={setvarsaction}
                 initvals={ivals}
                 onFieldChange={onFieldChange}
                 list={createF()}
