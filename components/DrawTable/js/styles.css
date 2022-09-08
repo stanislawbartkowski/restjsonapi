@@ -3,6 +3,6 @@
 }
 
 .tagbutton:hover {
-    filter: brightness(93%);
-    border-radius: 5px;
+  filter: brightness(93%);
+  border-radius: 5px;
 }

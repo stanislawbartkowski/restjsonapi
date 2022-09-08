@@ -7,8 +7,8 @@ import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
 import { AddStyle, ButtonAction, ClickResult, ColumnList, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
-import { clickAction, getValue } from "./helper";
-import { callJSFunction, isString, makeMessage } from "../../ts/j";
+import { clickAction, getValue, isnotdefined } from "./helper";
+import { callJSFunction, makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
@@ -39,24 +39,24 @@ export function fieldTitle(t: TFieldBase, pars: OneRowData): string {
 
 function sortinc(a: TRow, b: TRow, field: string): number {
     const fielda: string | undefined = a[field] as string | undefined;
-    if (fielda === undefined) return 1;
+    if (isnotdefined(fielda)) return 1;
     const fieldb: string = b[field] as string;
-    return fielda.localeCompare(fieldb);
+    return (fielda as string).localeCompare(fieldb);
 }
 
 function sortnumberinc(a: TRow, b: TRow, field: string): number {
     const fielda: number | undefined = a[field] as number | undefined;
-    if (fielda === undefined) return 1;
+    if (isnotdefined(fielda)) return 1;
     const fieldb: number = b[field] as number;
-    if (fieldb === undefined) return -1;
-    return fielda - fieldb;
+    if (isnotdefined(fieldb)) return -1;
+    return (fielda as number) - fieldb;
 }
 
 function sortboolinc(a: TRow, b: TRow, field: string): number {
     const fielda: boolean | undefined = a[field] as boolean | undefined;
-    if (fielda === undefined) return 1;
+    if (isnotdefined(fielda)) return 1;
     const fieldb: boolean = b[field] as boolean;
-    if (fieldb === undefined) return -1;
+    if (isnotdefined(fieldb)) return -1;
     if (fielda && fieldb) return 0;
     if (fielda) return 1;
     return -1;

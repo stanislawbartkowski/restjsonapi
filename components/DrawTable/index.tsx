@@ -175,8 +175,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
             {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction}  refreshaction={refreshtable} r={props} fbutton={buttonAction} selectedM={multichoice} /> : undefined}
             {extendedSearch}
             <Table
-                {...rowSelection({ ...props })
-                }
+                {...rowSelection({ ...props }) }
                 title={() => title}
                 rowKey={datasource.rowkey}
                 dataSource={dsource}

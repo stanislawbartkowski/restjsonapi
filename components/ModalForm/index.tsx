@@ -1,8 +1,7 @@
 import { Modal } from "antd";
-import React, { ReactNode, useEffect, useState } from "react";
-import InLine from "../../ts/inline";
+import React, { ReactNode, useState } from "react";
 
-import { ModalFormProps, PropsType, TRow } from "../../ts/typing";
+import { ModalFormProps } from "../../ts/typing";
 import { ismaskClicked } from "../ts/helper";
 import ModalFormDialog, { ModalHooks } from "./ModalFormDialog";
 
