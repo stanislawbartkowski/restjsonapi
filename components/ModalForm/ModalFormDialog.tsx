@@ -169,20 +169,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
             // setVals(r);
             const vars: TRow = constructCurVals(r);
 
-            // check for refresh table
-            // in "steps" fields can be undefined
-
-/*            
-            if (formdef.tabledata?.fields)
-                formdef.tabledata?.fields.forEach(t => {
-                    if (t.restlist) {
-                        if (istrue(vars[t.field] as boolean)) {
-                            ref.current.refreshTable(t.field);
-                            vars[t.field] = false;
-                        }
-                    }
-                })
-*/
             setvarsaction(vars)                
             setInitVals(vars);
         },

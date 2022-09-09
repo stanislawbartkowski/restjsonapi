@@ -51,8 +51,9 @@ const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshacti
 
   const detaDescr = {
     r: props.vars as TRow,
-    ...props.collist
-  }
+    varsrestaction: props.varsrestaction,
+    ...props.collist  
+ }
 
   const headerprops = props.collist ? { ...props.collist.props } : undefined
 
