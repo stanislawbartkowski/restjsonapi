@@ -19,7 +19,8 @@ const Logo: React.FC<TLeftMenu> = (props) => {
   const text = <span>{lstring('version')}</span>;
   const content = (
     <div>
-      {defaults.verstring}
+      {defaults.verstring}<br />
+      {getAppData().version}
     </div>
   );
 
@@ -27,10 +28,10 @@ const Logo: React.FC<TLeftMenu> = (props) => {
 
   const logo: string | undefined = getAppData() ? getAppData()[logkey] ? getAppData()[logkey] : undefined : undefined
 
-  if (logo === undefined) return <span/>
+  if (logo === undefined) return <span />
 
   const image: ReactElement = props.collapsed ? <Image style={{ paddingLeft: '1px' }} src={logo} width="100%" height='32px' /> :
-                              <Image style={{ paddingLeft: '20px' }} src={logo} width="60%" height='32px' /> 
+    <Image style={{ paddingLeft: '20px' }} src={logo} width="60%" height='32px' />
 
   return <Popover placement="left" title={text} content={content} trigger="click">{image} </Popover>
 
