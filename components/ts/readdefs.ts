@@ -19,7 +19,8 @@ type FSetState = (res: ReadDefsResult) => void
 
 async function readvals(initval: string | RESTMETH, vars?: TRow): Promise<Record<string, any>> {
     if (isString(initval)) return await restapilist(initval as string)
-    const r: RESTMETH = initval as RESTMETH
+    const rr: RESTMETH = initval as RESTMETH
+    const r: RESTMETH = rr.jsaction ? callJSFunction(rr.jsaction, { r: {}, vars: vars }) as RESTMETH : rr
     return restaction(r.method as HTTPMETHOD, r.restaction as string, r.params, vars)
 }
 

@@ -79,7 +79,7 @@ export type ShowDetails = ReadDefType & PropSupportedType & {
     title?: HeaderTitleType
     toolbar?: TableToolBar
     collist: ColumnList
-    varsrestaction?:  TRestVars
+    varsrestaction?: TRestVars
 }
 
 // =============================  
@@ -238,13 +238,13 @@ export type ColumnList = JSSupportedType & PropSupportedType & {
 // ===========================
 
 export type TRestVars = JSSupportedType & RESTMETH & {
-   list: string
+    list: string
 }
 
 export type TDetailsCard = ColumnList & OneRowData & {
     isSelected?: FIsSelected
     onRowClick?: OnRowClick
-    varsrestaction?:  TRestVars
+    varsrestaction?: TRestVars
 }
 
 // =========================
@@ -302,7 +302,7 @@ export type TListItem = PropSupportedType & {
 // enter/ search button
 
 export type SearchChooseButton = FormMessage & RestTableParam & {
-    jsrest? : string
+    jsrest?: string
 }
 
 export type MultiChoiceButton = SearchChooseButton & ButtonElem
@@ -323,7 +323,7 @@ export type RestValidatorResult = {
     err?: FormMessage;
 }
 
-export type ValidatorType =JSSupportedType & {
+export type ValidatorType = JSSupportedType & {
     required?: true
     pattern?: string
     message?: FormMessage
@@ -333,7 +333,7 @@ export type ValidatorType =JSSupportedType & {
 export type StatisticType = PropSupportedType & JSSupportedType & {
     title: FormMessage
     icon?: string
-    valueStyle? : PropsType
+    valueStyle?: PropsType
     value: FieldValue
 }
 
@@ -424,5 +424,6 @@ export enum BUTTONACTION {
     CHOOSE = 'CHOOSE',
     NEXT = 'NEXT',
     PREV = 'PREV',
-    UPLOAD = 'UPLOAD'
+    UPLOAD = 'UPLOAD',
+    OK = "OK"
 }

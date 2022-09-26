@@ -63,6 +63,7 @@ export type ButtonElem = PropSupportedType & {
 // ===========================
 
 export type RESTMETH = {
+  jsaction? : string
   restaction?: string
   method?: HTTPMETHOD;
   upload?: boolean;

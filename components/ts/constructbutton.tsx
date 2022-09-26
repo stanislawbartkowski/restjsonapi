@@ -52,6 +52,10 @@ export function constructButtonElem(b: ButtonAction, onclick: FClickButton, disa
       messid = 'upload'
       iconid = 'uploadoutlined'
       break;
+    case BUTTONACTION.OK:
+      messid = 'ok';
+      iconid = 'checkoutlined';
+      break
   }
 
   const bname: String = messid !== "" ? lstring(messid) : getButtonName(b)

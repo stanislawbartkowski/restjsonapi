@@ -34,7 +34,8 @@ const embedded = {
     upload: "Upload",
     fileuploadedsuccess: "{0} plik przesłany",
     fileuploadedfailure: "{0} przesłanie pliku nie udało się",
-    fullprint: "Cały ekran"
+    fullprint: "Cały ekran",
+    ok: "OK"
   },
   en: {
     empty: '',
@@ -66,8 +67,8 @@ const embedded = {
     upload: "Upload",
     fileuploadedsuccess: `{0} file uploaded successfully`,
     fileuploadedfailure: "{0} file upload failed",
-    fullprint: "Full print"
-
+    fullprint: "Full print",
+    ok: "OK"
   }
 };
 
@@ -96,12 +97,12 @@ const lstring = (id: string, ...args: any): string => {
     switch (a.length) {
       case 0: ss = s; break;
       case 1: ss = strings.formatString(s, a[0]).toString(); break;
-      case 2: ss = strings.formatString(s, a[0],a[1]).toString(); break;
-      case 3: ss = strings.formatString(s, a[0],a[1],a[2]).toString(); break;
-      case 4: ss = strings.formatString(s, a[0],a[1],a[2],a[3]).toString(); break;
+      case 2: ss = strings.formatString(s, a[0], a[1]).toString(); break;
+      case 3: ss = strings.formatString(s, a[0], a[1], a[2]).toString(); break;
+      case 4: ss = strings.formatString(s, a[0], a[1], a[2], a[3]).toString(); break;
     }
     return ss;
-  
+
   }
 
   const ss = strings.formatString(s, args).toString();

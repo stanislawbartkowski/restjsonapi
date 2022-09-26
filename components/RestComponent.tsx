@@ -5,7 +5,6 @@ import RestTable from './RestTable'
 import ModalForm from './ModalForm'
 import { getComponent } from './ts/complist';
 import { TComponentProps } from '../ts/typing';
-import InLine from '../ts/inline';
 
 const ModalTableList: React.FC<TComponentProps> = (props) => {
 
