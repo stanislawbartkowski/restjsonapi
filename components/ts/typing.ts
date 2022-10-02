@@ -43,7 +43,7 @@ export type AddStyle = JSSupportedType & {
 // summary feature
 // ============================
 
-export type TSummary = ColumnList
+export type TSummary = ColumnList | ColumnList[]
 
 
 // =============================

@@ -9,8 +9,8 @@ import lstring from "./localize";
 import type { ButtonElem, FormMessage, OneRowData, TRow } from "./typing";
 
 export function callJSFunction(jsAction: string, par: OneRowData): any {
-  const clickaction = new Function("p,vars", "return " + jsAction + "(p,vars)");
-  const res = clickaction(par.r, par.vars);
+  const clickaction = new Function("p,vars,t", "return " + jsAction + "(p,vars,t)");
+  const res = clickaction(par.r, par.vars, par.t);
   return res;
 }
 

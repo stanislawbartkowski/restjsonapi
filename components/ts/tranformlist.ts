@@ -12,7 +12,7 @@ function transformCol(e: TColumn): boolean {
 }
 
 
-function transformCell(c: TColumn, props: OneRowData): FieldValue {
+export function transformCell(c: TColumn, props: OneRowData): FieldValue {
     const val: FieldValue = c.value ? getValue(c.value as ColumnValue, props) : getVal(c, props)
     return fieldType(c) === FIELDTYPE.MONEY ? tomoney(val as string | number) : val
 }

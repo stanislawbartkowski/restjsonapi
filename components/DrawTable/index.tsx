@@ -170,12 +170,14 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     const detcol: TColumn | undefined = findColDetails(props)
     const varrestaction = detcol && detcol.showdetails && isObject(detcol.showdetails) ? { varsrestaction: (detcol.showdetails as ShowDetails).varsrestaction } : {}
 
+    const vars: TRow = { ...props.vars, ...datasource.vars }
+
     return (
         <React.Fragment>
-            {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction}  refreshaction={refreshtable} r={props} fbutton={buttonAction} selectedM={multichoice} /> : undefined}
+            {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction} selectedM={multichoice} /> : undefined}
             {extendedSearch}
             <Table
-                {...rowSelection({ ...props }) }
+                {...rowSelection({ ...props })}
                 title={() => title}
                 rowKey={datasource.rowkey}
                 dataSource={dsource}
@@ -184,7 +186,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 columns={columns}
                 {...paging}
                 {...extend}
-                summary={isSummary() ? () => (<SummaryTable {...props} list={datasource.res} />) : undefined}
+                summary={isSummary() ? () => (<SummaryTable {...props} list={datasource.res} vars={vars} />) : undefined}
                 onRow={(r) => ({
                     onClick: () => {
                         if (props.onRowClick) props.onRowClick(r);
