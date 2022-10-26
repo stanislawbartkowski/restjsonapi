@@ -24,7 +24,7 @@ const defaults: Defaults = {
   displayprintrouterid: "/printingdisplayer",
   cookieage : 7,
   currentfield: "currentfield",
-  verstring: "JS: wersja 1.0 (r:31) z dnia 3 października 2022",
+  verstring: "JS: wersja 1.0 (r:32) z dnia 28 października 2022",
   directprefix: "~",
   multichoicevar: "multichoice",
   listpos : "listpos"

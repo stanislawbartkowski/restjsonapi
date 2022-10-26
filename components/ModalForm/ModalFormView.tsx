@@ -181,6 +181,14 @@ function enterButton(t: TField) {
     return undefined
 }
 
+function curryOnInput(t: TField) {
+    const onInput: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
+        if (t.toupper) (c.target as HTMLInputElement).value = (c.target as HTMLInputElement).value.toUpperCase()
+        if (t.tolower) (c.target as HTMLInputElement).value = (c.target as HTMLInputElement).value.toLowerCase()
+    }
+    return onInput
+}
+
 
 function searchItem(ir: IFieldContext, t: FField, listfield?: FormListFieldData): React.ReactNode {
 
@@ -194,7 +202,7 @@ function searchItem(ir: IFieldContext, t: FField, listfield?: FormListFieldData)
         t.searchF(value, { ...t, listfield: listfield });
     }
 
-    return <Input.Search onBlur={onBlur} {...placeHolder(t)}  {...t.iprops}  {...enterButton(t)} onSearch={onSearchButton} />
+    return <Input.Search onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...t.iprops}  {...enterButton(t)} onSearch={onSearchButton} />
 }
 
 // ===========================================
@@ -273,9 +281,8 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
         case FIELDTYPE.HTML: return [<HTMLControl />, { ...valuep }]
     }
 
-
     return t.enterbutton ? [searchItem(ir, t, field), undefined] :
-        [<Input onBlur={onBlur} {...placeHolder(t)}  {...t.iprops} {...disabledp} />, { ...valuep }]
+        [<Input onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...t.iprops} {...disabledp} />, { ...valuep }]
 }
 
 export function findErrField(field: string, err: ErrorMessages): ErrorMessage | undefined {
@@ -377,49 +384,6 @@ function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, listf
 // ================================
 
 
-/*
-// OK 
-function createList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {
-
-    const addButton: ButtonElem = t.list?.addbutton as ButtonElem
-
-    const plusicon: ReactNode = getIcon(addButton.icon ? addButton.icon : 'plusoutlined');
-
-    const addname = getButtonName(addButton)
-
-    return <Card bordered {...cardProps(t.list?.card)}>
-        <Form.List name="names">
-            {(fields, { add, remove }, { errors }) =>
-                <div>
-                    {fields.map((field,index) => (
-                        <Form.Item {...field}>
-                            <Input />
-                            <MinusCircleOutlined
-                                className="dynamic-delete-button"
-                                onClick={() => remove(field.name)}
-                            />
-                        </Form.Item>
-                    ))}
-                    <Button
-                        type="dashed"
-                        onClick={() => add()}
-                        style={{ width: '60%' }}
-                        icon={<PlusOutlined />}
-                    >
-                        Add field
-                    </Button>
-                </div>
-
-            }
-
-
-        </Form.List>
-    </Card>
-}
-*/
-
-
-// CURRENT
 function createList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {
 
     const addButton: ButtonElem = t.list?.addbutton as ButtonElem

@@ -361,6 +361,8 @@ export type TField = PropSupportedType & TFieldBase & {
     upload?: UploadType
     multichoice?: MultiChoiceButton
     restlist?: FieldRestList
+    toupper?: boolean
+    tolower?: boolean
 }
 
 // the whole form
