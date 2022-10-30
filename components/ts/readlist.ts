@@ -5,7 +5,8 @@ import { transformList, addRowKey } from "./tranformlist"
 import { fatalexceptionerror } from '../../ts/l'
 import defaults from '../../ts/defaults'
 import analyzeresponse from "./anayzeresponse"
-import { REPLWriter } from "repl"
+import { readvals } from "./readdefs"
+import { isString } from "../../ts/j"
 
 export type DataSourceState = JsonTableResult & {
     status: Status;
@@ -13,7 +14,7 @@ export type DataSourceState = JsonTableResult & {
 };
 
 export type TReadListParam = RESTMETH & {
-    list? : string
+    list?: string
     vars?: TRow
 
 }
@@ -22,14 +23,19 @@ type FSetState = (s: DataSourceState) => void
 
 function readlist(props: TReadListParam & ColumnList, f: FSetState) {
 
-    (props.method === undefined ?
-        restapilist(props.list as string, props.params) :
-        restaction(props.method as HTTPMETHOD, props.list as string, props.params, props.vars))
+    function isGet() {
+        return props.method === undefined && props.jsaction === undefined
+    }
 
+    //(props.method === undefined ?
+    //    restapilist(props.list as string, props.params) :
+    //    restaction(props.method as HTTPMETHOD, props.list as string, props.params, props.vars))
+    const initval: string | RESTMETH = isGet() ? (props.list as string) : { ...props as RESTMETH, restaction: props.restaction ? props.restaction : props.list }
+    readvals(initval, props.vars, props.params)
         .then((rres) => {
             let lres = rres.res
             let vars = rres.vars
-            if (props.method !== undefined) {
+            if (!isGet()) {
                 const da = analyzeresponse(rres.data, rres.response)
                 lres = da[0].res
                 vars = da[0].vars

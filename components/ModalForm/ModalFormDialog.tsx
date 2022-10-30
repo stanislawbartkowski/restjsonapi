@@ -406,7 +406,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
 
-
     //    const ivals: TRow = thooks.getValues ? thooks.getValues() : initvals
     const _mvals: TRow = isTop ? { ...initvals } : {}
     const ivals: TRow = { ...props.initvals, ..._mvals }

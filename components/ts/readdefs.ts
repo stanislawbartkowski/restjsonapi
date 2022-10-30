@@ -1,7 +1,7 @@
 import { FSetValues, PreseForms, TField, TForm, TItemsRest, TPreseEnum, TRadioCheck } from "./typing";
 import { log } from "../../ts/l";
 import { callJSFunction, commonVars, isOArray, isString, makeMessage } from "../../ts/j";
-import type { FormMessage, HTTPMETHOD, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
+import type { FieldValue, FormMessage, HTTPMETHOD, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
 import { restapilistdef, restapijs, restapishowdetils, restapilist, restaction } from "../../services/api";
 import { Status, ColumnList, ShowDetails } from "./typing";
 import { isItemGroup, isnotdefined, istrue, preseT } from './helper'
@@ -17,8 +17,8 @@ export type ReadDefsResult = {
 
 type FSetState = (res: ReadDefsResult) => void
 
-async function readvals(initval: string | RESTMETH, vars?: TRow): Promise<Record<string, any>> {
-    if (isString(initval)) return await restapilist(initval as string)
+export async function readvals(initval: string | RESTMETH, vars?: TRow,params?: Record<string, FieldValue>): Promise<Record<string, any>> {
+    if (isString(initval)) return await restapilist(initval as string,params)
     const rr: RESTMETH = initval as RESTMETH
     const r: RESTMETH = rr.jsaction ? callJSFunction(rr.jsaction, { r: {}, vars: vars }) as RESTMETH : rr
     return restaction(r.method as HTTPMETHOD, r.restaction as string, r.params, vars)

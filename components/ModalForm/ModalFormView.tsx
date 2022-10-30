@@ -63,7 +63,8 @@ type FField = TField & {
 
 type TFieldChange = {
     fieldchange: Set<string>;
-    notescalatewhenchange: Set<string>
+    notescalatewhenchange: Set<string>;
+    nullfields: Set<string>;
 }
 
 const { RangePicker } = DatePicker;
@@ -579,21 +580,30 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const [multiselectD, setMultiSelectD] = useState<MultiSelectProps>(emptySearch);
     const [fileupload, setFileUpload] = useState<UploadStore>(new Map())
-    const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>() });
+    const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>(), nullfields: new Set<string> });
     const [multiselect, setMultiSelect] = useState<TMultiSelect>(new Map())
     const [tableR, setTableRefresh] = useState<TableRefresh>(new Map())
     //    const [[f], setForm] = useState(Form.useForm())
 
     const [f]: [FormInstance] = Form.useForm()
 
-
     const onFinish = (values: TRow) => {
         ltrace('Success, data validated')
         props.buttonClicked(transformValuesFrom(values, props.list))
     };
 
-    const getVals = (): TRow => {
+    const getV = (): TRow => {
         const r: TRow = f.getFieldsValue()
+        // enrich wilth nulls
+        for (let id of fchanges.current.nullfields) {
+            const f: FFieldElem | undefined = props.fields.find(e => e.field === id)
+            if (f !== undefined &&  fieldType(f) === FIELDTYPE.STRING) r[id] = ""
+        }
+        return r
+    }
+
+    const getVals = (): TRow => {
+        const r: TRow = getV()
 
         // extract uploads
         const uuid = getSessionId()
@@ -702,7 +712,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         if (val === undefined) return;
         setSearchT(emptySearch)
         log(`${val} selected`)
-        const x: TRow = f.getFieldsValue()
+        const x: TRow = getV()
         if (searchD.listfield === undefined) x[searchD.field] = val
         else {
             // list
@@ -723,6 +733,13 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         if (isEmpty(changedFields)) return
         const id: string = changedFields[0]["name"][0]
         log(id + " changed")
+        // check, if field is null
+        const r: TRow = f.getFieldsValue()
+        if (r[id] === undefined) {
+            fchanges.current.nullfields.add(id)
+        }
+        else fchanges.current.nullfields.delete(id)
+
         // if field is not triggered when blurred, escalates immediately
         if (!fchanges.current.notescalatewhenchange.has(id)) props.onFieldChange(id)
         else fchanges.current.fieldchange.add(id)
