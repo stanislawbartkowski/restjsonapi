@@ -13,7 +13,7 @@ function getExtendableProps(cols: ColumnList, vars?: TRow): TExtendable {
   function expand(r: TRow): ReactNode {
     const rr: TRow = { ...commonVars(), ...r }
     const res: ClickResult = clickAction(cols.extendable as TAction, { r: r, vars: vars });
-    return <RestTableList {...res} vars={rr} />
+    return <RestTableList  {...res} vars={rr} />
   }
 
   return {

@@ -4,7 +4,6 @@ import React, { ReactElement } from "react"
 import { ColumnList, TColumn, TColumns, TSummary } from "../../ts/typing"
 import { sumnumbers, visibleColumns } from '../js/helper'
 import { FieldValue, RowData, TRow } from '../../../ts/typing'
-import { getValue } from "../../ts/helper";
 import { modifyColProps } from "../../ts/transcol";
 import { isOArray } from "../../../ts/j";
 import { transformCell } from "../../ts/tranformlist";
@@ -46,9 +45,9 @@ const SummaryTable: React.FC<TSummaryTable> = (props) => {
 
   const lines: ColumnList[] = isOArray(summary) ? (summary as ColumnList[]) : [summary as ColumnList]
 
-  return <Table.Summary fixed>
+  return <Table.Summary fixed >
     {lines.map(sumline =>
-      <Table.Summary.Row>
+      <Table.Summary.Row {...sumline.rowprops}>
         {props.extendable ? <Table.Summary.Cell index={i++}></Table.Summary.Cell> : undefined}
         {cols?.map(e => produceCell(i++, e, props, sumline, props.vars))}
       </Table.Summary.Row>
