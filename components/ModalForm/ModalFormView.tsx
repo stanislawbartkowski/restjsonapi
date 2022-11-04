@@ -21,6 +21,7 @@ import {
     Badge,
     FormListFieldData
 } from 'antd';
+
 import { FormInstance, Rule } from 'antd/es/form';
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined, MinusCircleOutlined, PlusOutlined, PropertySafetyFilled, UploadOutlined } from '@ant-design/icons';
@@ -271,7 +272,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
     switch (fieldtype) {
         case FIELDTYPE.NUMBER: return [<InputNumber onBlur={onBlur} {...placeHolder(t)} {...t.iprops} {...disabledp} />, { ...valuep }]
         case FIELDTYPE.DATE:
-            if (t.range) return [<RangePicker {...t.iprops} />, undefined]
+            if (t.range) return [<RangePicker  onBlur={onBlur} {...t.iprops} />, undefined]
             return [<DatePicker  {...t.iprops} {...disabledp} />, { ...valuep }]
         case FIELDTYPE.BOOLEAN: return [<Switch {...t.iprops}
             checkedChildren={<CheckOutlined />}
@@ -597,7 +598,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         // enrich wilth nulls
         for (let id of fchanges.current.nullfields) {
             const f: FFieldElem | undefined = props.fields.find(e => e.field === id)
-            if (f !== undefined &&  fieldType(f) === FIELDTYPE.STRING) r[id] = ""
+            if (f !== undefined && fieldType(f) === FIELDTYPE.STRING) r[id] = ""
         }
         return r
     }
@@ -644,8 +645,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             ltrace("useEffect initvals")
             console.log(props.initvals)
             vals = transformValuesTo(props.initvals, props.list);
-            // commented out 2022/08/14            
-            //            f.setFieldsValue(vals);
             ltrace("useEffect initvals transformed")
             console.log(vals)
         }

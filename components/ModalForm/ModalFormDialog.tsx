@@ -141,16 +141,16 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         return data
     }
 
-    const setvarsaction : VAction = (vars: TRow) => {
+    const setvarsaction: VAction = (vars: TRow) => {
         if (formdef.tabledata?.fields)
-        formdef.tabledata?.fields.forEach(t => {
-            if (t.restlist) {
-                if (istrue(vars[t.field] as boolean)) {
-                    ref.current.refreshTable(t.field);
-                    vars[t.field] = false;
+            formdef.tabledata?.fields.forEach(t => {
+                if (t.restlist) {
+                    if (istrue(vars[t.field] as boolean)) {
+                        ref.current.refreshTable(t.field);
+                        vars[t.field] = false;
+                    }
                 }
-            }
-        })
+            })
         if (props.setvarsaction) props.setvarsaction(vars)
     }
 
@@ -169,7 +169,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
             // setVals(r);
             const vars: TRow = constructCurVals(r);
 
-            setvarsaction(vars)                
+            setvarsaction(vars)
             setInitVals(vars);
         },
         doAction: (b: ClickResult) => {
@@ -376,14 +376,20 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     if (formdef.status === Status.ERROR) return <ReadDefError />
 
 
-    function onValuesChange(changedFields: Record<string, any>, _: any) {
+    function onValuesChange(changedFields: Record<string, any>, allFields: Record<string, any>) {
 
         if (formdef.err.length === 0) return;
         const remove: Set<string> = new Set<string>()
-        for (const e of Object.keys(changedFields))
+        for (const e of Object.keys(changedFields)) {
             if (findErrField(e, formdef.err)) remove.add(e)
+        }
 
         if (remove.size === 0) return
+
+        // 2022/11/04 -- error
+        const v = constructCurVals()
+        setInitVals(v)
+
         const err: ErrorMessages = formdef.err.filter(e => !remove.has(e.field))
         setState({ ...formdef, err: err })
     }
