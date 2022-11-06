@@ -4,7 +4,7 @@ import { FIsSelected, MenuElem, OnRowClick, RestTableParam, TComponentProps, TRo
 import { history } from "../ts/CustomRouter";
 import RestComponent from "./RestComponent";
 import { useEffect, useState } from "react";
-import readlist,{ DataSourceState } from "./ts/readlist";
+import readlist, { DataSourceState } from "./ts/readlist";
 import { useParams } from "react-router-dom";
 import { ColumnList, Status, TColumn } from "./ts/typing";
 import readdefs, { ReadDefsResult } from "./ts/readdefs";
@@ -15,11 +15,11 @@ let resttableProps: RestTableParam = {}
 
 // last menu name
 let lastmenu: MenuElem | undefined = undefined
-let coldetails : TColumn | undefined = undefined
+let coldetails: TColumn | undefined = undefined
 
-export function getLastMenuName() : string | undefined {
+export function getLastMenuName(): string | undefined {
     if (lastmenu === undefined || coldetails === undefined) return undefined
-    const r : TRow = (lastmenu as any) as TRow
+    const r: TRow = (lastmenu as any) as TRow
     return r[coldetails.field] as string | undefined
 }
 // -------------------
@@ -87,10 +87,10 @@ export const MenuDirElemComponent: React.FC<MenuElem> = (props) => {
                 coldetails = findColDetails(c)
 
 
-                readlist({...pr, ...c}, (s: DataSourceState) => { setDataSource({ ...s }) })
-                
+                readlist({ ...pr, ...c }, (s: DataSourceState) => { setDataSource({ ...s }) })
+
             }
-            else setDataSource({...d, res: []})
+            else setDataSource({ ...d, res: [] })
 
         }
 
@@ -101,7 +101,7 @@ export const MenuDirElemComponent: React.FC<MenuElem> = (props) => {
     if (datasource.status === Status.PENDING) return null
     if (datasource.status === Status.ERROR) return <ReadListError />
 
-    const lmenu : MenuElem[] = (datasource.res as any) as MenuElem[]
+    const lmenu: MenuElem[] = (datasource.res as any) as MenuElem[]
     lastmenu = lmenu.find(e => e.id === id)
 
     if (lastmenu === undefined) {
@@ -109,7 +109,7 @@ export const MenuDirElemComponent: React.FC<MenuElem> = (props) => {
         return <ReadListError />
     }
 
-    const restpr: TComponentProps = { ...createRestParam({...lastmenu}) }
+    const restpr: TComponentProps = { ...createRestParam({ ...lastmenu }) }
 
     return <RestComponent {...restpr} ispage />
 }

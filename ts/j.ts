@@ -129,3 +129,17 @@ export function copyMap(m: Map<any, any>): Map<any, any> {
   }
   return mm;
 }
+
+// ==========================
+// init sec
+// ==========================
+
+let issec: boolean = false
+
+export function setSec(sec: boolean) {
+  issec = sec
+}
+
+export function isSec(): boolean {
+  return issec
+}

@@ -5,6 +5,9 @@ import RestTable from './RestTable'
 import ModalForm from './ModalForm'
 import { getComponent } from './ts/complist';
 import { TComponentProps } from '../ts/typing';
+import { isAuthenticated } from '../ts/keyclock';
+import { erralert, log } from '../ts/l';
+import lstring from '../ts/localize';
 
 const ModalTableList: React.FC<TComponentProps> = (props) => {
 
@@ -22,6 +25,15 @@ const ModalTableList: React.FC<TComponentProps> = (props) => {
 
 
 const RestComponent: React.FC<TComponentProps> = (props) => {
+
+  const auth = isAuthenticated()
+  log("auth=" + auth)
+
+  if (!auth) {
+    const errmess : string = lstring("youarenotauthorized")
+    erralert(errmess)
+    return <h1>{errmess}</h1>
+  }
 
   if (props.component) {
     const comp: React.FC<TComponentProps> = getComponent(props.component)

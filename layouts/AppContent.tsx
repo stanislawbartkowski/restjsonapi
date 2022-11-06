@@ -12,6 +12,6 @@ const AppContent: React.FC = () =>
         {getRouterContent()}
         {getRouterContentDir()}
         <Route path="*" element={<Page404 />} />
-    </Routes>;
+    </Routes>
 
 export default AppContent;

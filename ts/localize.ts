@@ -35,7 +35,8 @@ const embedded = {
     fileuploadedsuccess: "{0} plik przesłany",
     fileuploadedfailure: "{0} przesłanie pliku nie udało się",
     fullprint: "Cały ekran",
-    ok: "OK"
+    ok: "OK",
+    youarenotauthorized: "Nie masz uprawnień lub nie jesteś zalogowany"
   },
   en: {
     empty: '',
@@ -68,7 +69,9 @@ const embedded = {
     fileuploadedsuccess: `{0} file uploaded successfully`,
     fileuploadedfailure: "{0} file upload failed",
     fullprint: "Full print",
-    ok: "OK"
+    ok: "OK",
+    youarenotauthorized: "You are not authorized"
+
   }
 };
 

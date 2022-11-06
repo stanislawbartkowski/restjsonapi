@@ -94,21 +94,3 @@ export async function restaction(method: HTTPMETHOD, restaction: string, pars?: 
   });
 }
 
-export async function getPagePort() {
-
-  const url: string = getOriginURL();
-  const urll : string = `${url}/PORT`
-
-  log(`Fething ${urll}`)
-
-  const response = await fetch(urll);
-  const data = await response.text()
-  log(`Receiving ${data}`)
-  // verify number
-  const port : number = +data
-  if (isNaN(port)) {
-    internalerrorlog(`Incorrect value as port number received, number expected`)
-  }
-  return port;
-}
-
