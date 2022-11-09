@@ -36,7 +36,8 @@ const embedded = {
     fileuploadedfailure: "{0} przesłanie pliku nie udało się",
     fullprint: "Cały ekran",
     ok: "OK",
-    youarenotauthorized: "Nie masz uprawnień lub nie jesteś zalogowany"
+    youarenotauthorized: "Nie masz uprawnień lub nie jesteś zalogowany",
+    errorinitauthorization: "Nie mogę nawiązać połączenia z serwerem autentykacyjnym {0}"
   },
   en: {
     empty: '',
@@ -70,8 +71,8 @@ const embedded = {
     fileuploadedfailure: "{0} file upload failed",
     fullprint: "Full print",
     ok: "OK",
-    youarenotauthorized: "You are not authorized"
-
+    youarenotauthorized: "You are not authorized",
+    errorinitauthorization: "Error during connection to authentication server {0}"
   }
 };
 

@@ -3,6 +3,7 @@ import Keycloak, { KeycloakConfig, KeycloakProfile } from 'keycloak-js'
 import { getkeycloak } from '../services/readconf';
 import { isSec } from './j'
 import { log } from './l';
+import lstring from './localize';
 
 let keycloak: Keycloak | undefined = undefined
 let isready: boolean = false
@@ -23,12 +24,17 @@ export async function initkeyclock() {
         url: params.url
     }
     keycloak = new Keycloak(pars)
-    log("start init")
+    log("Keycloak init")
     // await necessary
     await keycloak.init({ onLoad: 'login-required' }).then(
         () => {
             log("Keyclock initialized and ready")
             isready = true
+        }
+    ).catch(
+        error => {
+            const errmess: string = lstring("errorinitauthorization", error.error);
+            throw new Error(errmess);
         }
     )
     keycloak.onTokenExpired = () => {
