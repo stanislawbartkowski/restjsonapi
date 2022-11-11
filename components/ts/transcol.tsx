@@ -103,6 +103,12 @@ export interface IActionHook {
     text: string | undefined
 }
 
+export function getActions(a : TActions, pars: OneRowData) : TActions {
+    let act: TActions = a
+    if (a.js) act = callJSFunction(a.js as string, pars);
+    return act
+}
+
 export function extractActionHook(t: TAction, r: TableHookParam, pars: OneRowData): IActionHook {
 
     return {
@@ -120,12 +126,11 @@ function constructMenuAction(key: number, t: TAction, r: TableHookParam, pars: O
 }
 
 function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRowData): ReactElement | undefined {
-    let act: TActions = a
     let numb: number = 0
-    if (a.js) act = callJSFunction(a.js as string, pars);
+    const act = getActions(a,pars)
     if (act === undefined) return undefined
     const actions: TAction[] = act.actions as TAction[]
-    if (actions === undefined) return undefined
+    if (actions.length === 0) return undefined
     if (act.dropdown) {
         const menu = (
             <Menu {...act.props}>
