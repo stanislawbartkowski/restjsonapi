@@ -272,7 +272,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
     switch (fieldtype) {
         case FIELDTYPE.NUMBER: return [<InputNumber onBlur={onBlur} {...placeHolder(t)} {...t.iprops} {...disabledp} />, { ...valuep }]
         case FIELDTYPE.DATE:
-            if (t.range) return [<RangePicker  onBlur={onBlur} {...t.iprops} />, undefined]
+            if (t.range) return [<RangePicker onBlur={onBlur} {...t.iprops} />, undefined]
             return [<DatePicker  {...t.iprops} {...disabledp} />, { ...valuep }]
         case FIELDTYPE.BOOLEAN: return [<Switch {...t.iprops}
             checkedChildren={<CheckOutlined />}
@@ -416,16 +416,57 @@ function createList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode
     </Card>
 }
 
-function transformToListItem(t: FField, li: TListItems, r: TRow): React.ReactNode {
+// -------------------------------
+// data as display list
+// -------------------------------
+
+function transformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, li: TListItems, r: TRow): React.ReactNode {
 
     const ftype: FIELDTYPE = fieldType(t)
-    const value: FieldValue = isnotdefined(r[t.field]) ? lstring("notdefined") : r[t.field]
+    const isnot: boolean = isnotdefined(r[t.field]) || r[t.field] === ""
+    const value: FieldValue = isnot ? lstring("notdefined") : r[t.field]
     let values: string = value as string
-    if (ftype === FIELDTYPE.BOOLEAN && !isnotdefined(r[t.field])) values = (value as boolean) ? lstring("yes") : lstring("no")
+    if (ftype === FIELDTYPE.BOOLEAN && !isnot) values = (value as boolean) ? lstring("yes") : lstring("no")
 
     const title: string = fieldTitle(t, { r: r })
 
+    function findLabel(value: FieldValue, i: TRadioCheckItem[]): string {
+        const item: TRadioCheckItem | undefined = i.find(e => e.value === value)
+        return item ? itemName(item) as string : value as string
+    }
+
+    if (!isnot) {
+        if (t.radio) {
+            const i: TRadioCheckItem[] = t.radio.items as TRadioCheckItem[]
+            values = findLabel(value, i)
+        }
+        if (t.checkbox) {
+            const i: TRadioCheckItem[] = t.checkbox.items as TRadioCheckItem[]
+            const v: FieldValue[] = r[t.field] as FieldValue[]
+            if (v.length === 0) values = lstring("notdefined")
+            else {
+                values = v.reduce(
+                    (pvalue: string, avalue: FieldValue) => pvalue === "" ? findLabel(avalue, i) : pvalue + " , " + findLabel(avalue, i),
+                    "")
+            }
+        }
+
+    }
+
+
     return <List.Item {...li.iprops}><Space {...li.lprops}>{title}</Space><Space {...li.vprops}> {values}</Space></List.Item>
+}
+
+
+// TODO: remove
+function NEWtransformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, li: TListItems, r: TRow): React.ReactNode {
+
+
+    const title: string = fieldTitle(t, { r: r })
+
+    const d = produceFormItem(ir, t, err);
+
+    return <List.Item {...li.iprops}><Space {...li.lprops}>{title}</Space><Space {...li.vprops}> {d}</Space></List.Item>
 }
 
 
@@ -435,8 +476,12 @@ function createItemList(ir: IFieldContext, t: FField, err: ErrorMessages): React
     const dsource: FField[] = t.items as FField[]
     const header = li.header ? makeMessage(li.header, { r: r }) : undefined
     const footer = li.footer ? makeMessage(li.footer, { r: r }) : undefined
-    return <List size="small" header={header} footer={footer} dataSource={dsource} {...li.props} renderItem={(item: FField) => transformToListItem(item, li, r)} />
+    return <List size="small" header={header} footer={footer} dataSource={dsource} {...li.props} renderItem={(item: FField) => transformToListItem(ir, item, err, li, r)} />
 }
+
+// --------------------------
+// stat item
+// --------------------------
 
 function produceStatIem(ir: IFieldContext, t: FField): React.ReactNode {
     return makeStatItem(t.stat as StatisticType, { r: ir.getValues() })

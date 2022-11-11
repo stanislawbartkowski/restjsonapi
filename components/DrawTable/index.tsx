@@ -7,7 +7,7 @@ import type { TableRowSelection } from "antd/lib/table/interface";
 import lstring from "../../ts/localize";
 import { ClickActionProps, emptyModalListProps, FieldValue, ModalFormProps, OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
-import type { ButtonAction, ClickAction, ClickResult, ColumnList, FActionResult, FShowDetails, ShowDetails, TAction, TAsyncRestCall, TColumn, TRestVars } from "../ts/typing";
+import type { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, ShowDetails, TableHookParam, TAction, TColumn } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton } from "./js/helper";
 import { findColDetails, makeHeader } from "../ts/helper";
@@ -23,6 +23,7 @@ import OneRowTable from "../ShowDetails/OneRowTable"
 import SearchButton, { FSetFilter } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
 import { createII, executeB, IIButtonAction } from "../ts/executeaction";
+import ButtonStack from "./ButtonStack";
 
 function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefined | PropsType {
     let pageSize: number | undefined = props.pageSize ? props.pageSize : defaults.defpageSize
@@ -85,10 +86,12 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         });
     };
 
-    const columns: ColumnType<any>[] = transformColumns(props, {
+    const thook: TableHookParam = {
         fdetails: f,
         fresult: fresult,
-    }, props.vars);
+    }
+
+    const columns: ColumnType<any>[] = transformColumns(props, thook, props.vars);
 
     function toPars(): OneRowData {
         return { vars: props.vars, r: {}, t: datasource.res }
@@ -201,6 +204,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 onClose={() => setShowDetail(false)}
                 closable={false}
             >
+                <ButtonStack cols={props.columns} pars={{ r: currentRow as TRow }} r={thook} />
                 <OneRowTable r={currentRow as TRow} {...props} {...varrestaction} />
             </Drawer>
         </React.Fragment>

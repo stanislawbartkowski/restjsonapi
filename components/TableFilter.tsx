@@ -132,7 +132,7 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
   return {
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
-        <SearchInput visible prefixCls='' setSelectedKeys={setSelectedKeys} selectedKeys={selectedKeys} confirm={confirm} clearFilters={clearFilters} />
+        <SearchInput close= {() => {} } visible prefixCls='' setSelectedKeys={setSelectedKeys} selectedKeys={selectedKeys} confirm={confirm} clearFilters={clearFilters} />
         <Space>
           <Button
             type="primary"

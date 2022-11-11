@@ -8,7 +8,7 @@ import { fieldTitle, renderCell } from '../ts/transcol';
 
 function toDescritionItem(c: TColumn, pars: OneRowData) {
   const f: TableHookParam = { fdetails: undefined, fresult: undefined }
-  const elem: ReactElement = renderCell(c, <div>{pars.r[c.field]}</div>, pars.r, f, pars.vars)
+  const elem: ReactElement = renderCell(c, <div>{pars.r[c.field]}</div>, pars.r, f, pars.vars, true)
   return <Descriptions.Item key={c.field} label={fieldTitle(c, pars)} {...c.props}>
     {elem}
   </Descriptions.Item>

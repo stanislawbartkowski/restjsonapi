@@ -12,6 +12,7 @@ import { callJSFunction, makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
+import { MenuClickEventHandler } from "rc-menu/lib/interface";
 
 
 // =====================
@@ -97,10 +98,24 @@ function constructAction(key: number, t: TAction, r: TableHookParam, pars: OneRo
     );
 }
 
+export interface IActionHook {
+    onClick: () => void,
+    text: string | undefined
+}
+
+export function extractActionHook(t: TAction, r: TableHookParam, pars: OneRowData): IActionHook {
+
+    return {
+        onClick: () => clickActionHook(t, r, pars),
+        text: makeMessage(t, pars)
+    }
+}
+
 
 function constructMenuAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ReactElement {
+    const h: IActionHook = extractActionHook(t, r, pars)
     return (
-        <Menu.Item key={key} onClick={() => clickActionHook(t, r, pars)}>{makeMessage(t, pars)}</Menu.Item>
+        <Menu.Item key={key} onClick={h.onClick}>{h.text}</Menu.Item>
     );
 }
 
@@ -168,9 +183,9 @@ function constructBadge(badge: TBadge, pars: OneRowData): ReactElement {
     return <Badge title={title} {...ba.props} />
 }
 
-function constructBoolean(c: TColumn, r: TRow, vars?: TRow): ReactElement {
+function constructBoolean(c: TColumn, r: TRow, vars?: TRow, disabled?: boolean): ReactElement {
     const checked: boolean = r[c.field] as boolean
-    return <Switch checked={checked} />
+    return <Switch checked={checked} disabled={disabled} />
 }
 
 export function getVal(c: TColumn, props: OneRowData): FieldValue {
@@ -180,7 +195,7 @@ export function getVal(c: TColumn, props: OneRowData): FieldValue {
 }
 
 
-export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam, vars?: TRow): ReactElement {
+export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam, vars?: TRow, disabled?: boolean): ReactElement {
     let style: CSSProperties = {};
     let rendered = dom;
     const parms: OneRowData = { r: r, vars: vars }
@@ -204,7 +219,7 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
 
     if (c.showdetails && rhook.fdetails !== undefined)
         return <Button type="link" onClick={() => { if (rhook.fdetails) rhook.fdetails(r) }}>{rendered}</Button>;
-    if (c.fieldtype === FIELDTYPE.BOOLEAN) return constructBoolean(c, r, vars);
+    if (c.fieldtype === FIELDTYPE.BOOLEAN) return constructBoolean(c, r, vars, disabled);
     if (c.fieldtype === FIELDTYPE.HTML) return HTMLElem(getVal(c, parms) as string);
     return rendered;
 
