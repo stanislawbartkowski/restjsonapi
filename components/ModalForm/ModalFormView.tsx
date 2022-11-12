@@ -766,6 +766,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         }
         f.setFieldsValue(x)
         props.onFieldChange(searchD.field)
+        // 2022/11/12 - validate form after choosing
+        f.validateFields()
     }
 
     // ===================

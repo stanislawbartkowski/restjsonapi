@@ -27,7 +27,7 @@ const ModalTableList: React.FC<TComponentProps> = (props) => {
 const RestComponent: React.FC<TComponentProps> = (props) => {
 
   const auth = isAuthenticated()
-  log("auth=" + auth)
+  //log("auth=" + auth)
 
   if (!auth) {
     const errmess : string = lstring("youarenotauthorized")
