@@ -31,7 +31,7 @@ import { ButtonAction, FGetValues, FieldRestList, FOnFieldChanged, FOnValuesChan
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FormMessage, PropsType, RESTMETH, RestTableParam, TRow, VAction } from '../../ts/typing'
 import { fieldTitle, fieldType, HTMLElem, makeDivider, makeStatItem } from '../ts/transcol';
-import { callJSFunction, commonVars, copyMap, getButtonName, getSessionId, isEmpty, makeMessage } from '../../ts/j';
+import { callJSFunction, commonVars, copyMap, getButtonName, getSessionId, isEmpty, isNumber, makeMessage } from '../../ts/j';
 import getIcon from '../../ts/icons';
 import lstring from '../../ts/localize';
 import { FFieldElem, getValue, isItemGroup, isnotdefined, istrue } from '../ts/helper';
@@ -430,7 +430,8 @@ function transformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, l
 
     const title: string = fieldTitle(t, { r: r })
 
-    function findLabel(value: FieldValue, i: TRadioCheckItem[]): string {
+    function findLabel(valuef: FieldValue, i: TRadioCheckItem[]): string {
+        const value : string = isNumber(valuef) ? (valuef as number)?.toString() : valuef as string
         const item: TRadioCheckItem | undefined = i.find(e => e.value === value)
         return item ? itemName(item) as string : value as string
     }
@@ -456,19 +457,6 @@ function transformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, l
 
     return <List.Item {...li.iprops}><Space {...li.lprops}>{title}</Space><Space {...li.vprops}> {values}</Space></List.Item>
 }
-
-
-// TODO: remove
-function NEWtransformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, li: TListItems, r: TRow): React.ReactNode {
-
-
-    const title: string = fieldTitle(t, { r: r })
-
-    const d = produceFormItem(ir, t, err);
-
-    return <List.Item {...li.iprops}><Space {...li.lprops}>{title}</Space><Space {...li.vprops}> {d}</Space></List.Item>
-}
-
 
 function createItemList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {
     const li: TListItems = t.itemlist as TListItems
