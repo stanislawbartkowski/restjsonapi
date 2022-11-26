@@ -73,7 +73,7 @@ type MModalFormProps = ModalFormProps & {
 }
 
 function isCookiesButton(b: ButtonAction): boolean {
-    return (b.print !== undefined && b.print) || (b.cookie !== undefined && b.cookie)
+    return (b.cookie !== undefined && b.cookie)
 }
 
 function setVarsCookies(p: MModalFormProps, b: ButtonAction, r: TRow) {
