@@ -27,7 +27,7 @@ import {
 
 import { ReactNode } from "react";
 
-const map = new Map<string, ReactNode>([
+const map = new Map<string, ReactNode >([
   ["useroutlines", <UserOutlined/>],
   ["videocameraoutlined", <VideoCameraOutlined/>],
   ["uploadoutlined", <UploadOutlined/>],

@@ -64,7 +64,7 @@ const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: numb
                     <React.Fragment>
                         <InLine js={state.js} />
                         {isCard(state.res as ColumnList) && (state.res as ColumnList).onerow === undefined ?
-                            <Cards {...(state.res as ColumnList)} {...props}></Cards> :
+                            <Cards {...(state.res as ColumnList)} {...props} refreshno={props.refreshno}></Cards> :
                             <RestTableView {...(state.res as ColumnList)} {...props} refreshno={props.refreshno} />}
                     </React.Fragment>
                 );

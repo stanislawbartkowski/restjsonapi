@@ -1,16 +1,22 @@
 import React, { CSSProperties, ReactNode } from "react";
-import { Card, Col, Row } from 'antd'
+import { Card, Col, Dropdown, Menu, Row } from 'antd'
 import { blue } from '@ant-design/colors';
+import { PlusCircleOutlined } from "@ant-design/icons";
 
-import { TColumn, TDetailsCard } from "../ts/typing"
+import { ButtonAction, ColumnList, TColumn, TDetailsCard } from "../ts/typing"
 import { detailsTitle, findColDetails, appendStyle, cardProps, } from "../ts/helper";
 import { fieldTitle, fieldType, HTMLElem, makeDivider } from '../ts/transcol';
 import { FIELDTYPE, OneRowData } from "../../ts/typing";
+import { getButtonName } from "../../ts/j";
+import lstring from "../../ts/localize";
+import getIcon from "../../ts/icons";
+
+export type OnCardClick = (b: ButtonAction) => void
 
 function toCardRow(e: TColumn, t: TDetailsCard, pars: OneRowData): ReactNode {
 
-    const ftype : FIELDTYPE = fieldType(e)    
-    const content : React.ReactElement = ftype === FIELDTYPE.HTML ? HTMLElem(t.r[e.field] as string) : <span>{t.r[e.field]}</span>
+    const ftype: FIELDTYPE = fieldType(e)
+    const content: React.ReactElement = ftype === FIELDTYPE.HTML ? HTMLElem(t.r[e.field] as string) : <span>{t.r[e.field]}</span>
 
     return <Row key={e.field} {...t.rowprops}>
         {e.divider ? makeDivider(e.divider, { r: t.r, vars: t.vars }) : undefined}
@@ -19,12 +25,21 @@ function toCardRow(e: TColumn, t: TDetailsCard, pars: OneRowData): ReactNode {
     </Row>
 }
 
+const DropMenu: React.FC = () => {
+    const menu =
+        <Menu >
+            <Menu.Item> Hello </Menu.Item>
+        </Menu>
+    return <Dropdown.Button icon={getIcon('moreoutlined')} overlay={menu} type ='text'>
+    </Dropdown.Button>
+}
+
 const RecordCard: React.FC<TDetailsCard> = (props) => {
 
     const pars: OneRowData = { vars: props.vars, r: props.r }
 
     const [isfield, title] = detailsTitle(props, pars)
-    const rtitle: React.ReactElement = isfield ? <span style= {{wordWrap : "break-word", whiteSpace: "pre-wrap"}}>{title}</span> :<span></span>
+    const rtitle: React.ReactElement = isfield ? <span style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}>{title}</span> : <span></span>
     const tcol: TColumn | undefined = findColDetails(props)
     const cols: TColumn[] = (tcol !== undefined && isfield) ? props.columns.filter(e => e.field !== tcol.field) : props.columns
 
@@ -35,6 +50,8 @@ const RecordCard: React.FC<TDetailsCard> = (props) => {
 
     const propsC = appendStyle(cardProps(props.card), selectedcolors)
 
+    const extra = <DropMenu />
+
     return <Card onClick={() => { if (props.onRowClick) props.onRowClick(props.r) }}
         title={rtitle}
         {...propsC} >
@@ -42,6 +59,23 @@ const RecordCard: React.FC<TDetailsCard> = (props) => {
             cols.map(e => toCardRow(e, props, pars))
         }
     </Card>
+}
+
+export const AddCard: React.FC<ColumnList & { b: ButtonAction, cardClick: OnCardClick }> = (props) => {
+
+    const b: ButtonAction = props.b
+
+    const propsC = cardProps(props.card)
+    const name: string = b.name !== undefined ? getButtonName(b) : lstring('addaction')
+
+    const iadd = <PlusCircleOutlined style={{ fontSize: '300%' }} />
+
+    return <Card onClick={() => props.cardClick(b)}
+        title={name}
+        {...propsC} >
+        <Row align="middle" justify="center"><Col>{iadd}</Col></Row>
+    </Card>
+
 }
 
 export default RecordCard

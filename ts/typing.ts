@@ -169,7 +169,8 @@ export enum FIELDTYPE {
 // Localized message
 // ==============================
 
-export type FormMessage = JSSupportedType & (string | undefined) & {
+//export type FormMessage = JSSupportedType & (string | undefined) & {
+export type FormMessage = JSSupportedType & {
   messagedirect?: string
   message?: string
   params?: string[]

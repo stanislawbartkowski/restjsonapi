@@ -273,7 +273,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
         case FIELDTYPE.NUMBER: return [<InputNumber onBlur={onBlur} {...placeHolder(t)} {...t.iprops} {...disabledp} />, { ...valuep }]
         case FIELDTYPE.DATE:
             if (t.range) return [<RangePicker onBlur={onBlur} {...t.iprops} />, undefined]
-            return [<DatePicker  {...t.iprops} {...disabledp} />, { ...valuep }]
+            return [<DatePicker {...placeHolder(t)} {...t.iprops} {...disabledp} />, { ...valuep }]
         case FIELDTYPE.BOOLEAN: return [<Switch {...t.iprops}
             checkedChildren={<CheckOutlined />}
             unCheckedChildren={<CloseOutlined />}

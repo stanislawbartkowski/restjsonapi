@@ -67,7 +67,8 @@ export function isDev(): boolean {
 export function makeMessage(m: FormMessage, pars: OneRowData = { r: {} }): string | undefined {
 
   if (isString(m)) {
-    if (m.startsWith(defaults.directprefix)) return m.substring(defaults.directprefix.length)
+    const mm : string = m as string
+    if (mm.startsWith(defaults.directprefix)) return mm.substring(defaults.directprefix.length)
     return lstring(m as string)
   }
 

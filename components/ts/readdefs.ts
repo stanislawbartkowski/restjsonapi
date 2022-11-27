@@ -1,4 +1,4 @@
-import { FSetValues, PreseForms, TField, TForm, TItemsRest, TPreseEnum, TRadioCheck } from "./typing";
+import { PreseForms, TField, TForm, TItemsRest, TPreseEnum, TRadioCheck } from "./typing";
 import { log } from "../../ts/l";
 import { callJSFunction, commonVars, isOArray, isString, makeMessage } from "../../ts/j";
 import type { FieldValue, FormMessage, HTTPMETHOD, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
@@ -48,7 +48,7 @@ async function resolveRest(tl: TField[]): Promise<TField[]> {
 
         const getLabel = (rest: TItemsRest, r: TRow) => {
             const f: FormMessage = rest.label
-            if (f === undefined) return r[rest.label]
+            if (f === undefined) return r[rest.label as string]
             if (isString(f)) {
                 const ff: string = f as string
                 return (isnotdefined(r[ff])) ? r[rest.value] : r[rest.value] + " " + r[(ff)]
