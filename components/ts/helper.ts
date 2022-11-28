@@ -2,7 +2,7 @@ import React, { CSSProperties } from "react";
 
 import { callJSFunction, isObject, isString, makeMessage } from "../../ts/j";
 import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
-import { ActionResult, ButtonAction, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TField, TForm, TPreseEnum } from "./typing";
+import { ActionResult, ButtonAction, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TColumns, TField, TForm, TPreseEnum } from "./typing";
 import defaults from "../../ts/defaults";
 import { setCookieR, getCookieR } from '../../ts/cookies'
 import { HTMLElem } from "./transcol";
@@ -112,18 +112,18 @@ export function getPrintContent(): PrintResult {
 
 // ========================
 
-export function isnotdefined(t : any) : boolean {
+export function isnotdefined(t: any): boolean {
     return t === undefined || t === null;
 }
 
-export function istrue(t : boolean|undefined) : boolean {
+export function istrue(t: boolean | undefined): boolean {
     if (isnotdefined(t)) return false;
     return t as boolean
 }
 
 export function tomoney(t: string | number | undefined): undefined | string {
     if (isnotdefined(t)) return undefined
-    if (isString(t)) return (+(t as string|number)).toFixed(defaults.moneydot)
+    if (isString(t)) return (+(t as string | number)).toFixed(defaults.moneydot)
     return (t as number).toFixed(defaults.moneydot)
 }
 
@@ -184,6 +184,21 @@ export function cardProps(p?: TCard) {
         ...cardprops
     }
 }
+
+// ======================================
+// visible columns 
+// ======================================
+
+
+function includeColumn(col: TColumn,removeactions? : boolean): boolean {
+    if (removeactions && col.actions !== undefined) return false;
+    return (col.tablenodef === undefined) || !col.tablenodef
+}
+
+export function visibleColumns(cols: TColumns, removeactions?: boolean): TColumns {
+    return cols.filter(e => includeColumn(e,removeactions))
+}
+
 
 // =======================================
 // cookies

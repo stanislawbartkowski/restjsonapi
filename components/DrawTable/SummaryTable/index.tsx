@@ -2,11 +2,12 @@ import { Table } from "antd"
 import type { ColumnType } from "antd/lib/table";
 import React, { ReactElement } from "react"
 import { ColumnList, TColumn, TColumns, TSummary } from "../../ts/typing"
-import { sumnumbers, visibleColumns } from '../js/helper'
+import { sumnumbers } from '../js/helper'
 import { FieldValue, RowData, TRow } from '../../../ts/typing'
 import { modifyColProps } from "../../ts/transcol";
 import { isOArray } from "../../../ts/j";
 import { transformCell } from "../../ts/tranformlist";
+import { visibleColumns } from "../../ts/helper";
 
 type TSummaryTable = ColumnList & {
   list: RowData,

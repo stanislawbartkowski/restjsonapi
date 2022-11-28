@@ -3,10 +3,10 @@ import { Row, Col, Card } from 'antd'
 
 import { emptyModalListProps, FAction, ModalFormProps, RestTableParam, TRow } from "../../ts/typing"
 import readlist, { DataSourceState } from "../ts/readlist";
-import { BUTTONACTION, ButtonAction, ClickAction, ColumnList, Status, TableToolBar } from "../ts/typing";
+import { BUTTONACTION, ButtonAction, ClickAction, ColumnList, Status, TableHookParam, FActionResult, TableToolBar, TAction, TActions, TColumn, TColumns } from "../ts/typing";
 import ReadListError from "../errors/ReadListError";
-import RecordCard, { AddCard, OnCardClick } from './RecordCard'
-import { makeHeader } from "../ts/helper";
+import RecordCard, { AddCard } from './RecordCard'
+import { makeHeader, visibleColumns } from "../ts/helper";
 import RestComponent from "../RestComponent";
 import { log } from "../../ts/l";
 import { createII, executeB, IIButtonAction, ispopupDialog } from "../ts/executeaction";
@@ -27,6 +27,13 @@ const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number }> =
     setIsModalVisible(emptyModalListProps);
   };
 
+  const znajdzA = (): TActions | undefined => {
+    const c: TColumn | undefined = props.columns.find(c => c.actions)
+    if (c === undefined) return undefined
+    return c.actions
+  }
+
+  const a: TActions | undefined = znajdzA()
 
   useEffect(() => readlist(props, (s: DataSourceState) => { setDataSource({ ...s }) })
     , [props.list, props.listdef, props.refreshno, refreshnumber]);
@@ -48,10 +55,9 @@ const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number }> =
 
   const b: ButtonAction | undefined = getAdd()
 
-  const bClick: OnCardClick = (b: ButtonAction) => {
-    log(b.id)
-    const ii: IIButtonAction = createII(b, props.vars as TRow)
-    if (ispopupDialog(ii.res)) setIsModalVisible({ vars: { ...props.vars }, ...(ii.res as ClickAction), visible: true, closeAction: fmodalhook })
+  const bClick: FActionResult = (r: TRow, b: TAction) => {
+    const ii: IIButtonAction = createII(b, r)
+    if (ispopupDialog(ii.res)) setIsModalVisible({ vars: { ...r }, ...(ii.res as ClickAction), visible: true, closeAction: fmodalhook })
     else executeB(ii)
   }
 
@@ -61,8 +67,15 @@ const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number }> =
 
   const addCard = b ? <AddCard {...props as ColumnList} {...b} cardClick={bClick} b={b} /> : undefined
 
+  const thook: TableHookParam = {
+    fdetails: (r : TRow) => { 
+      log("fdetails")
+    },
+    fresult : bClick    
+  }
+
   return <React.Fragment><Card title={makeHeader(props, undefined, { vars: props.vars, r: {} })}><Row gutter={[8, 8]}>
-    {datasource.res.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isSelected={props.isSelected} onRowClick={props.onRowClick} /> </Col>)}
+    {datasource.res.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isSelected={props.isSelected} onRowClick={props.onRowClick} a={a} h={thook} /> </Col>)}
     {addCard}
   </Row>
   </Card>

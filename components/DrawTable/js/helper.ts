@@ -5,7 +5,7 @@ import { TRow, RowData, OneRowData } from '../../../ts/typing'
 import { callJSFunction } from "../../../ts/j";
 import './styles.css'
 import { transformOneColumn } from "../../ts/transcol";
-import { tomoney } from "../../ts/helper";
+import { tomoney, visibleColumns } from "../../ts/helper";
 import { ExtendedFilter } from "../SearchButton/SearchExtended";
 import { constructTableFilter, FFilter } from '../../TableFilter'
 
@@ -14,13 +14,6 @@ import { constructTableFilter, FFilter } from '../../TableFilter'
 // create ProColumns from columns
 // =================================
 
-function includeColumn(col: TColumn): boolean {
-  return col.tablenodef === undefined || !col.tablenodef
-}
-
-export function visibleColumns(cols: TColumns): TColumns {
-  return cols.filter(e => includeColumn(e))
-}
 
 export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRow): ColumnType<any>[] {
 

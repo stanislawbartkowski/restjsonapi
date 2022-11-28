@@ -19,7 +19,7 @@ export type IIButtonAction = {
     vars: TRow
 }
 
-export function createII(b: ButtonAction, vars: TRow, selectedM?: FieldValue): IIButtonAction {
+export function createII(b: TAction, vars: TRow, selectedM?: FieldValue): IIButtonAction {
     const rr: TRow = {}
     rr[defaults.multichoicevar] = selectedM
     const res: TAction = clickAction(b, { r: { ...commonVars(), ...rr }, vars: vars })

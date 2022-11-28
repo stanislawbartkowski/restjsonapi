@@ -3,15 +3,13 @@ import { Card, Col, Dropdown, Menu, Row } from 'antd'
 import { blue } from '@ant-design/colors';
 import { PlusCircleOutlined } from "@ant-design/icons";
 
-import { ButtonAction, ColumnList, TColumn, TDetailsCard } from "../ts/typing"
-import { detailsTitle, findColDetails, appendStyle, cardProps, } from "../ts/helper";
-import { fieldTitle, fieldType, HTMLElem, makeDivider } from '../ts/transcol';
+import { ButtonAction, ColumnList, FActionResult, TableHookParam, TAction, TActions, TColumn, TColumns, TDetailsCard } from "../ts/typing"
+import { detailsTitle, findColDetails, appendStyle, cardProps, visibleColumns, } from "../ts/helper";
+import { fieldTitle, fieldType, HTMLElem, makeDivider, constructactionsCol } from '../ts/transcol';
 import { FIELDTYPE, OneRowData } from "../../ts/typing";
 import { getButtonName } from "../../ts/j";
 import lstring from "../../ts/localize";
 import getIcon from "../../ts/icons";
-
-export type OnCardClick = (b: ButtonAction) => void
 
 function toCardRow(e: TColumn, t: TDetailsCard, pars: OneRowData): ReactNode {
 
@@ -30,18 +28,22 @@ const DropMenu: React.FC = () => {
         <Menu >
             <Menu.Item> Hello </Menu.Item>
         </Menu>
-    return <Dropdown.Button icon={getIcon('moreoutlined')} overlay={menu} type ='text'>
+    return <Dropdown.Button icon={getIcon('moreoutlined')} overlay={menu} type='text'>
     </Dropdown.Button>
 }
 
-const RecordCard: React.FC<TDetailsCard> = (props) => {
+const RecordCard: React.FC<TDetailsCard & { a?: TActions, h?: TableHookParam }> = (props) => {
+
 
     const pars: OneRowData = { vars: props.vars, r: props.r }
+
+    const extram = (props.a !== undefined) ? constructactionsCol(props.a, props.h as TableHookParam, pars) : undefined
 
     const [isfield, title] = detailsTitle(props, pars)
     const rtitle: React.ReactElement = isfield ? <span style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}>{title}</span> : <span></span>
     const tcol: TColumn | undefined = findColDetails(props)
-    const cols: TColumn[] = (tcol !== undefined && isfield) ? props.columns.filter(e => e.field !== tcol.field) : props.columns
+    const fcols: TColumns = visibleColumns(props.columns,true);
+    const cols: TColumn[] = (tcol !== undefined && isfield) ? fcols.filter(e => e.field !== tcol.field) : fcols
 
     const selectedcolors: CSSProperties =
         props.isSelected && props.isSelected(props.r) ?
@@ -52,7 +54,7 @@ const RecordCard: React.FC<TDetailsCard> = (props) => {
 
     const extra = <DropMenu />
 
-    return <Card onClick={() => { if (props.onRowClick) props.onRowClick(props.r) }}
+    return <Card extra={extram} onClick={() => { if (props.onRowClick) props.onRowClick(props.r) }}
         title={rtitle}
         {...propsC} >
         {
@@ -61,7 +63,7 @@ const RecordCard: React.FC<TDetailsCard> = (props) => {
     </Card>
 }
 
-export const AddCard: React.FC<ColumnList & { b: ButtonAction, cardClick: OnCardClick }> = (props) => {
+export const AddCard: React.FC<ColumnList & { b: ButtonAction, cardClick: FActionResult }> = (props) => {
 
     const b: ButtonAction = props.b
 
@@ -70,7 +72,7 @@ export const AddCard: React.FC<ColumnList & { b: ButtonAction, cardClick: OnCard
 
     const iadd = <PlusCircleOutlined style={{ fontSize: '300%' }} />
 
-    return <Card onClick={() => props.cardClick(b)}
+    return <Card onClick={() => props.cardClick({}, b)}
         title={name}
         {...propsC} >
         <Row align="middle" justify="center"><Col>{iadd}</Col></Row>

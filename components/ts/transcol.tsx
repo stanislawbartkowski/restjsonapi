@@ -125,7 +125,7 @@ function constructMenuAction(key: number, t: TAction, r: TableHookParam, pars: O
     );
 }
 
-function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRowData): ReactElement | undefined {
+export function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRowData): ReactElement | undefined {
     let numb: number = 0
     const act = getActions(a,pars)
     if (act === undefined) return undefined
@@ -145,8 +145,6 @@ function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRowData): 
     return (
         <Space size="middle">{actions.map((t) => constructAction(numb++, t, r, pars))}</Space>
     );
-
-
 }
 
 
