@@ -3,9 +3,10 @@ import { StepProps, Steps } from 'antd'
 
 import type { ClickResult, StepsElem, StepsForm } from "../ts/typing"
 import { makeMessage } from "../../ts/j"
-import ModalFormDialog, { ErrorMessages, IIRefCall, THooks } from "./ModalFormDialog"
+import ModalFormDialog, { IIRefCall, THooks } from "./ModalFormDialog"
 import { log } from "../../ts/l"
 import { TRow } from "../../ts/typing"
+import { ErrorMessages } from "./formview/types"
 
 function constructStep(p: StepsElem, key: number, last: boolean, errorstep: boolean): React.ReactNode {
 

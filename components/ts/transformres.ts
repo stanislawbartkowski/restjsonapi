@@ -1,7 +1,9 @@
 import { dateremoveT, dateparseS } from "../../ts/d";
-import { FIELDTYPE, TRow } from "../../ts/typing";
-import { FFieldElem } from "./helper";
+import { FIELDTYPE, TRow, RowData, FieldValue } from "../../ts/typing";
+import { FFieldElem, genColIdedit, genEditClickedRowKey, getEditList, isEditList } from "./helper";
 import { fieldType } from "./transcol";
+import { TField } from "./typing";
+
 
 // =====================
 // transform result
@@ -27,7 +29,7 @@ export function transformSingleValue(v: any, t: FFieldElem, from: boolean) {
     return datetransform(v, from)
 }
 
-function transformValues(row: TRow, tf: FFieldElem[], from: boolean): TRow {
+function transformValues(row: TRow, tf: FFieldElem[], from: boolean, initvalsedit? : TRow): TRow {
     const res: TRow = {}
     // 2022/08/28 --- !!! is supposed to throw exception
     // otherwise the list is not preserving rows while removing row
@@ -37,12 +39,50 @@ function transformValues(row: TRow, tf: FFieldElem[], from: boolean): TRow {
         if (row[t.field] !== undefined) {
             res[t.field] = transformSingleValue(row[t.field], t, from)
         }
+
+        if (isEditList(t) && from) {
+            const ta : RowData | undefined = getEditList(t.field,initvalsedit as TRow)
+            const newta : RowData = []
+            if (ta !== undefined) {
+                const items: TField[] = t.items as TField[]                
+                for (let rowkey = 0; rowkey < ta.length; rowkey++) {
+                    const r: TRow = ta[rowkey]
+                    for (let f of items) {
+                        const id: string = genColIdedit(t.field, f.field, rowkey)
+                        if (row[id] !== undefined) r[f.field] = transformSingleValue(row[id], f, from)
+                    }
+                    newta.push(r)
+                }
+            // TODO: something strange here, requires attention, it modifies initvalsedit which is not correct
+            // res[t.field] = (newta as any) as FieldValue
+            }
+            const l = genEditClickedRowKey(t.field)
+            res[l] = row[l]
+        }
+        if (isEditList(t) && !from) {
+            const ta : RowData | undefined = getEditList(t.field,row)
+            if (ta !== undefined) {
+                const items: TField[] = t.items as TField[]                
+                for (let rowkey = 0; rowkey < ta.length; rowkey++) {
+                    const r: TRow = ta[rowkey]
+                    for (let f of items) {
+                        const id: string = genColIdedit(t.field, f.field, rowkey)
+                        const v : FieldValue = r[f.field]
+                        res[id] = transformSingleValue(v, f, from)
+                    }
+                }
+
+            }
+
+        }
+
     })
+
     return res;
 }
 
-export function transformValuesFrom(row: TRow, tf: FFieldElem[]): TRow {
-    return transformValues(row, tf, true);
+export function transformValuesFrom(row: TRow, tf: FFieldElem[], initvalsedit? : TRow): TRow {
+    return transformValues(row, tf, true, initvalsedit);
 }
 
 export function transformValuesTo(row: TRow, tf: FFieldElem[]): TRow {

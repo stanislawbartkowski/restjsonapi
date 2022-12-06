@@ -3,7 +3,7 @@ import { Card, Col, Dropdown, Menu, Row } from 'antd'
 import { blue } from '@ant-design/colors';
 import { PlusCircleOutlined } from "@ant-design/icons";
 
-import { ButtonAction, ColumnList, FActionResult, TableHookParam, TAction, TActions, TColumn, TColumns, TDetailsCard } from "../ts/typing"
+import { ButtonAction, ColumnList, FActionResult, TableHookParam, TActions, TColumn, TColumns, TDetailsCard } from "../ts/typing"
 import { detailsTitle, findColDetails, appendStyle, cardProps, visibleColumns, } from "../ts/helper";
 import { fieldTitle, fieldType, HTMLElem, makeDivider, constructactionsCol } from '../ts/transcol';
 import { FIELDTYPE, OneRowData } from "../../ts/typing";

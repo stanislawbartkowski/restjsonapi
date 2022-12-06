@@ -12,7 +12,6 @@ import { callJSFunction, makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
-import { MenuClickEventHandler } from "rc-menu/lib/interface";
 
 
 // =====================
@@ -89,13 +88,17 @@ function clickActionHook(t: TAction, r: TableHookParam, pars: OneRowData) {
     if (r.fresult) r.fresult(pars.r, res);
 }
 
+function genButtonFromAction(t: TAction, key: number): ButtonAction {
+    const props: PropsType = { style: { padding: "0px" }, type: "link" }
+    const b: ButtonAction = { ...t, id: (key as any) as string, name: (t as FormMessage), props: { ...props, ...t.props } }
+    return b
+}
+
 function constructAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ReactNode {
-    if (t.button) {
-        return constructButton(t.button as ButtonAction, () => clickActionHook(t, r, pars));
-    }
-    return (
-        <Button style={{ padding: 0 }} type="link" key={key} onClick={() => clickActionHook(t, r, pars)}>{makeMessage(t, pars)}</Button>
-    );
+
+    const b: ButtonAction = t.button ? t.button as ButtonAction : genButtonFromAction(t, key)
+
+    return constructButton(b, () => clickActionHook(t, r, pars));
 }
 
 export interface IActionHook {
@@ -103,7 +106,7 @@ export interface IActionHook {
     text: string | undefined
 }
 
-export function getActions(a : TActions, pars: OneRowData) : TActions {
+export function getActions(a: TActions, pars: OneRowData): TActions {
     let act: TActions = a
     if (a.js) act = callJSFunction(a.js as string, pars);
     return act
@@ -120,14 +123,15 @@ export function extractActionHook(t: TAction, r: TableHookParam, pars: OneRowDat
 
 function constructMenuAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ReactElement {
     const h: IActionHook = extractActionHook(t, r, pars)
+    const ic = t.icon ? { icon: getIcon(t.icon) } : {}
     return (
-        <Menu.Item key={key} onClick={h.onClick}>{h.text}</Menu.Item>
+        <Menu.Item key={key} {...ic} onClick={h.onClick}>{h.text}</Menu.Item>
     );
 }
 
 export function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRowData): ReactElement | undefined {
     let numb: number = 0
-    const act = getActions(a,pars)
+    const act = getActions(a, pars)
     if (act === undefined) return undefined
     const actions: TAction[] = act.actions as TAction[]
     if (actions.length === 0) return undefined

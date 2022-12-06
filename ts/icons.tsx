@@ -22,35 +22,41 @@ import {
   BuildOutlined,
   LikeOutlined,
   FullscreenOutlined,
-  EnterOutlined
+  EnterOutlined,
+  InsertRowAboveOutlined,
+  InsertRowBelowOutlined,
+  DeleteRowOutlined
 } from "@ant-design/icons";
 
 import { ReactNode } from "react";
 
-const map = new Map<string, ReactNode >([
-  ["useroutlines", <UserOutlined/>],
-  ["videocameraoutlined", <VideoCameraOutlined/>],
-  ["uploadoutlined", <UploadOutlined/>],
-  ["questionoutlined", <QuestionOutlined/>],
-  ["tableoutlined", <TableOutlined/>],
-  ["pluscircleoutlined",<PlusCircleOutlined />],
-  ['deleteoutlined',<DeleteOutlined />],
-  ['editoutlines',<EditOutlined />],
-  ['smileoutlined',<SmileOutlined />],
-  ['moreoutlined',<MoreOutlined />],
-  ['printoutlined',<PrinterOutlined />],
-  ['stepbackwardoutlined',<StepBackwardOutlined />],
-  ['minuscircleoutlined',<MinusCircleOutlined/>],
-  ['plusoutlined',<PlusOutlined/>],
-  ['checkoutlined',<CheckOutlined />],
-  ['profileoutlined',<ProfileOutlined />],
-  ['stepsforwardoutlined',<StepForwardOutlined />],
-  ['stepsbackwardoutlined',<StepBackwardOutlined />],
-  ['loadingoutlined',<LoadingOutlined/> ],
-  ['buildoutlined',<BuildOutlined />],
-  ['likeoutlined',<LikeOutlined />],
-  ['fullscreenoutlined',<FullscreenOutlined />],
-  ['enteroutlined',<EnterOutlined />]
+const map = new Map<string, ReactNode>([
+  ["useroutlines", <UserOutlined />],
+  ["videocameraoutlined", <VideoCameraOutlined />],
+  ["uploadoutlined", <UploadOutlined />],
+  ["questionoutlined", <QuestionOutlined />],
+  ["tableoutlined", <TableOutlined />],
+  ["pluscircleoutlined", <PlusCircleOutlined />],
+  ['deleteoutlined', <DeleteOutlined />],
+  ['editoutlines', <EditOutlined />],
+  ['smileoutlined', <SmileOutlined />],
+  ['moreoutlined', <MoreOutlined />],
+  ['printoutlined', <PrinterOutlined />],
+  ['stepbackwardoutlined', <StepBackwardOutlined />],
+  ['minuscircleoutlined', <MinusCircleOutlined />],
+  ['plusoutlined', <PlusOutlined />],
+  ['checkoutlined', <CheckOutlined />],
+  ['profileoutlined', <ProfileOutlined />],
+  ['stepsforwardoutlined', <StepForwardOutlined />],
+  ['stepsbackwardoutlined', <StepBackwardOutlined />],
+  ['loadingoutlined', <LoadingOutlined />],
+  ['buildoutlined', <BuildOutlined />],
+  ['likeoutlined', <LikeOutlined />],
+  ['fullscreenoutlined', <FullscreenOutlined />],
+  ['enteroutlined', <EnterOutlined />],
+  ['insertrowaboveoutlined', <InsertRowAboveOutlined />],
+  ['insertrowbelowoutlined', <InsertRowBelowOutlined />],
+  ['deleterowoutlined', <DeleteRowOutlined />]
 ]);
 
 function getIcon(id?: string, defaultid?: string): ReactNode {

@@ -36,6 +36,6 @@ export function transformList(columns: TColumns, props: OneRowData) {
 }
 
 export function addRowKey(t: RowData, rowkey: string) {
-    let number = 0
-    t.forEach(e => e[rowkey] = number++)
+    let num : number = 0
+    t.forEach(e => e[rowkey] = num++)
 }

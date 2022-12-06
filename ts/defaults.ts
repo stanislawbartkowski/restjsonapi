@@ -8,6 +8,7 @@ interface Defaults {
   displayprintrouterid: string,
   cookieage : number,
   currentfield: string,
+  currentrowkey: string,
   verstring: string,
   directprefix: string,
   multichoicevar: string,
@@ -24,7 +25,8 @@ const defaults: Defaults = {
   displayprintrouterid: "/printingdisplayer",
   cookieage : 7,
   currentfield: "currentfield",
-  verstring: "JS: wersja 1.0 (r:37) z dnia 27 listopada 2022",
+  currentrowkey: "currentrowkey",
+  verstring: "JS: wersja 1.1 (r:01) z dnia 3 grudnia 2022",
   directprefix: "~",
   multichoicevar: "multichoice",
   listpos : "listpos"

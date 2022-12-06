@@ -1,17 +1,20 @@
 import { Table } from "antd"
 import type { ColumnType } from "antd/lib/table";
 import React, { ReactElement } from "react"
-import { ColumnList, TColumn, TColumns, TSummary } from "../../ts/typing"
-import { sumnumbers } from '../js/helper'
-import { FieldValue, RowData, TRow } from '../../../ts/typing'
-import { modifyColProps } from "../../ts/transcol";
-import { isOArray } from "../../../ts/j";
-import { transformCell } from "../../ts/tranformlist";
-import { visibleColumns } from "../../ts/helper";
+import { ColumnList, TColumn, TColumns, TSummary } from "./ts/typing"
+import { sumnumbers } from './DrawTable/js/helper'
+import { FieldValue, RowData, TRow } from '../ts/typing'
+import { modifyColProps } from "./ts/transcol";
+import { isOArray } from "../ts/j";
+import { transformCell } from "./ts/tranformlist";
+import { visibleColumns } from "./ts/helper";
 
-type TSummaryTable = ColumnList & {
+type TSummaryTable = {
+  columns: TColumns
+  summary?: TSummary;
   list: RowData,
   vars?: TRow
+  isextendable: boolean
 }
 
 function getSummaryValue(h: TColumn, p: TSummaryTable, vars?: TRow): FieldValue {
@@ -49,7 +52,7 @@ const SummaryTable: React.FC<TSummaryTable> = (props) => {
   return <Table.Summary fixed >
     {lines.map(sumline =>
       <Table.Summary.Row {...sumline.rowprops}>
-        {props.extendable ? <Table.Summary.Cell index={i++}></Table.Summary.Cell> : undefined}
+        {props.isextendable ? <Table.Summary.Cell index={i++}></Table.Summary.Cell> : undefined}
         {cols?.map(e => produceCell(i++, e, props, sumline, props.vars))}
       </Table.Summary.Row>
     )

@@ -1,7 +1,7 @@
 import React, { CSSProperties } from "react";
 
 import { callJSFunction, isObject, isString, makeMessage } from "../../ts/j";
-import { FieldValue, OneRowData, PropsType, TRow } from "../../ts/typing";
+import { FieldValue, OneRowData, PropsType, RowData, TRow } from "../../ts/typing";
 import { ActionResult, ButtonAction, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TColumns, TField, TForm, TPreseEnum } from "./typing";
 import defaults from "../../ts/defaults";
 import { setCookieR, getCookieR } from '../../ts/cookies'
@@ -153,12 +153,16 @@ function isList(t: TField): boolean {
     return t.list !== undefined
 }
 
+export function isEditList(t: TField): boolean {
+    return t.items !== undefined && t.editlist !== undefined
+}
+
 export function flattenTForm(tlist: TField[]): FFieldElem[] {
     let res: FFieldElem[] = []
 
     tlist.forEach(t => {
         const e: FFieldElem = { ...t }
-        if (isItemGroup(t)) {
+        if (isItemGroup(t) && !isEditList) {
             const i: FFieldElem[] = flattenTForm(t.items as TField[])
             if (isList(t)) e.elemlist = i;
             else {
@@ -190,13 +194,13 @@ export function cardProps(p?: TCard) {
 // ======================================
 
 
-function includeColumn(col: TColumn,removeactions? : boolean): boolean {
+function includeColumn(col: TColumn, removeactions?: boolean): boolean {
     if (removeactions && col.actions !== undefined) return false;
     return (col.tablenodef === undefined) || !col.tablenodef
 }
 
 export function visibleColumns(cols: TColumns, removeactions?: boolean): TColumns {
-    return cols.filter(e => includeColumn(e,removeactions))
+    return cols.filter(e => includeColumn(e, removeactions))
 }
 
 
@@ -218,5 +222,29 @@ export function getCookiesFormListDefVars(listdef: string): TRow | undefined {
 
 export function preseT(p: PreseForms): TPreseEnum {
     return (p as any as StepsForm).steps !== undefined ? TPreseEnum.Steps : (p as TForm).fields !== undefined ? TPreseEnum.TForm : TPreseEnum.ColumnList
+}
+
+// =================================
+// compose and decompose edit list
+// =================================
+
+
+export function genColIdedit(editid: string, field: string, rowkey: number): string {
+    return editid + "_" + field + "_" + rowkey
+}
+
+export function genEditClickedRowKey(editid: string): string {
+    return editid + "_rowkey"
+}
+
+export function decomposeEditId(id: string): [string, string, number] | undefined {
+    const s: string[] = id.split('_')
+    if (s.length !== 3) return undefined
+    return [s[0], s[1], +s[2]]
+}
+
+export function getEditList(editid: string, r: TRow): RowData | undefined {
+    const values: RowData | undefined = (r[editid] as any) as RowData
+    return values
 }
 

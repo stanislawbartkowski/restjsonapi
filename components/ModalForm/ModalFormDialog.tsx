@@ -1,5 +1,5 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
-import { Card, TransferProps } from 'antd';
+import { Card } from 'antd';
 
 import { ClickResult, FGetValues, FOnFieldChanged, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TClickButton, TField, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
@@ -8,10 +8,10 @@ import { Status } from '../ts/typing'
 import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
-import ModalFormView, { IRefCall, ErrorMessages, findErrField } from './ModalFormView';
-import { FFieldElem, flattenTForm, okmoney, cardProps, setCookiesFormListDefVars, getCookiesFormListDefVars, preseT, istrue } from '../ts/helper'
+import ModalFormView, { IRefCall } from './ModalFormView';
+import { FFieldElem, flattenTForm, okmoney, cardProps, setCookiesFormListDefVars, preseT, istrue, decomposeEditId } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FAction, FIELDTYPE, FieldValue, ModalFormProps, RESTMETH, TComponentProps, TRow, VAction } from '../../ts/typing'
+import { FAction, FIELDTYPE, ModalFormProps, RESTMETH, TComponentProps, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
@@ -20,8 +20,8 @@ import executeAction from '../ts/executeaction'
 import { readvalsdata } from "../ts/readdefs";
 import { callJSFunction, commonVars, isString } from '../../ts/j';
 import RestComponent from '../RestComponent';
-
-export type { ErrorMessage, ErrorMessages } from './ModalFormView';
+import { findErrField } from './formview/helper';
+import { ErrorMessages } from './formview/types';
 
 export type THooks = {
     aRest?: TAsyncRestCall,
@@ -82,12 +82,6 @@ function setVarsCookies(p: MModalFormProps, b: ButtonAction, r: TRow) {
     }
 }
 
-function isModalFormCookies(p: TForm): boolean {
-    if (p.buttons === undefined || p.buttons === null) return false
-    const b: ButtonAction | undefined = p.buttons.find(b => isCookiesButton(b))
-    return b !== undefined
-}
-
 type PopDialogView = {
     def?: TComponentProps
     visible: boolean
@@ -135,6 +129,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
             (sref.current === undefined || sref.current === null) ? {} : sref.current.getVals() :
             (ref.current === undefined || ref.current === null) ? {} : ref.current.getValues()
     }
+
 
     const constructCurVals = (r?: TRow): TRow => {
         const data: TRow = isTop ? { ...commonVars(), ...formdef.initvals, ...initvals, ...getVals(), ...r } : { ...getVals(), ...r }
@@ -394,9 +389,24 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         setState({ ...formdef, err: err })
     }
 
-    const onFieldChange: FOnFieldChanged = (id: string) => {
+    function findFField(id: string): [FFieldElem | undefined, string | undefined, number | undefined] {
         const fields: FFieldElem[] = createF();
-        const f: FFieldElem | undefined = fields.find(e => e.field === id)
+        const edittable: [string, string, number] | undefined = decomposeEditId(id)
+        if (edittable === undefined) return [fields.find(e => e.field === id), undefined, undefined]
+        const tf: TField | undefined = formdef.tabledata?.fields.find(e => e.field === edittable[0])
+        if (tf === undefined) return [undefined, undefined, undefined]
+        return [tf.items?.find(e => e.field === edittable[1]), edittable[0], edittable[2]]
+    }
+
+    const onFieldChange: FOnFieldChanged = (id: string) => {
+        //        const fields: FFieldElem[] = createF();
+
+        //        const edittable: [string, string, number] | undefined = decomposeEditId(id)
+        //        const searchid: string = edittable === undefined ? id : edittable[1]
+
+        //        const f: FFieldElem | undefined = fields.find(e => e.field === searchid)
+        const felem = findFField(id)
+        const f: FFieldElem | undefined = felem[0]
         if (f === undefined) return
         const v: TRow = ref.current.getValues()
         console.log(v)
@@ -440,7 +450,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 getValues={thooks.getValues as FGetValues}
                 setInitValues={thooks.setInitValues as FSetValues}
                 restapiinitname={restapiname}
-
+                clickButton={clickButton}
                 {...thooks}
             />
         : undefined

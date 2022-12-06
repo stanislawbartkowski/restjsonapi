@@ -2,9 +2,10 @@ import { forwardRef, MutableRefObject, useImperativeHandle, useRef } from "react
 
 import { RESTMETH, TRow } from "../../../ts/typing"
 import type { ColumnList, FGetValues, FOnFieldChanged, FOnValuesChanged, TAsyncRestCall, TField } from "../../ts/typing"
-import ModalFormView, { ErrorMessages, IRefCall } from "../../ModalForm/ModalFormView";
+import ModalFormView, { IRefCall } from "../../ModalForm/ModalFormView";
 import { FFieldElem, flattenTForm } from "../../ts/helper";
 import { convertColumnsToFields } from "./helper";
+import { ErrorMessages } from "../../ModalForm/formview/types";
 
 
 export interface IIRefCall {
@@ -58,7 +59,7 @@ const SearchExtended = forwardRef<IIRefCall, SearchDialog>((props, iref) => {
 
     }
 
-    return <ModalFormView aRest={aRest} getValues={getValues} ref={refm} fields={fields} buttonClicked={buttonClickded} setvarsaction={(r?: TRow) => { }}
+    return <ModalFormView aRest={aRest} getValues={getValues} ref={refm} fields={fields} buttonClicked={buttonClickded} setvarsaction={(r?: TRow) => { }} clickButton={() => { }}
         initvals={props.filtervalues} list={ffields} buttons={[]} buttonsextratop={props.buttons} err={err} onValuesChanges={onValuesChanges} onFieldChange={onFieldChange} setInitValues={() => { }} />
 
 })

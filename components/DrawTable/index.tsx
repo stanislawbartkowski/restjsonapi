@@ -16,7 +16,7 @@ import getExtendableProps from "./Expendable";
 import HeaderTable from "../HeaderTable";
 import readlist, { DataSourceState } from '../ts/readlist'
 import ReadListError from '../errors/ReadListError'
-import SummaryTable from './SummaryTable'
+import SummaryTable from '../SummaryTable'
 import defaults from "../../ts/defaults";
 import { isNumber, isObject } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
@@ -189,7 +189,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 columns={columns}
                 {...paging}
                 {...extend}
-                summary={isSummary() ? () => (<SummaryTable {...props} list={datasource.res} vars={vars} />) : undefined}
+                summary={isSummary() ? () => (<SummaryTable isextendable={props.extendable !== undefined} {...props} list={datasource.res} vars={vars} />) : undefined}
                 onRow={(r) => ({
                     onClick: () => {
                         if (props.onRowClick) props.onRowClick(r);

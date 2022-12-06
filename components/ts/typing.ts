@@ -63,7 +63,6 @@ export type TFieldBase = {
 export type ButtonAction = ButtonElem & TAction & {
     cookie?: boolean
     validate?: boolean
-    confirm?: FormMessage | boolean
 }
 
 export type TableToolBar = ButtonAction[]
@@ -148,8 +147,10 @@ export type ClickAction = ClickResult & {
 }
 
 // single action, message or click action
-export type TAction = ClickAction & FormMessage & {
+export type TAction = ClickAction & FormMessage & PropsType & {
+    icon?: string
     retprops?: TAction
+    confirm?: FormMessage | boolean
 }
 
 // list actions e.g. action columne
@@ -295,8 +296,9 @@ export type TCheckBox = TRadioCheck
 // list
 
 export type TListItem = PropSupportedType & {
-    addbutton: ButtonElem
+    addbutton: ButtonAction
     card?: TCard
+    summary?: TSummary
 }
 
 // enter/ search button
@@ -356,6 +358,7 @@ export type TField = PropSupportedType & TFieldBase & {
     validate?: ValidatorType[]
     divider?: TDivider
     itemlist?: TListItem
+    editlist?: TListItem
     value?: ColumnValue
     stat?: StatisticType
     upload?: UploadType
@@ -363,6 +366,7 @@ export type TField = PropSupportedType & TFieldBase & {
     restlist?: FieldRestList
     toupper?: boolean
     tolower?: boolean
+    actions?: TActions    
 }
 
 // the whole form

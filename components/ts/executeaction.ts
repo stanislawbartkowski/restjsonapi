@@ -3,7 +3,7 @@ import { commonVars, makeMessage } from "../../ts/j";
 import { fatalexceptionerror, trace } from "../../ts/l";
 import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction } from "../../ts/typing";
 import openNotification from "../Notification";
-import { ErrorMessage, ErrorMessages, IIRefCall } from "../ModalForm/ModalFormDialog";
+import { IIRefCall } from "../ModalForm/ModalFormDialog";
 import { clickAction } from "./helper";
 import type { ButtonAction, ClickAction, FieldError, TAction } from "./typing";
 import { FAction, ClickActionProps } from '../../ts/typing'
@@ -11,6 +11,7 @@ import analyzeresponse from './anayzeresponse'
 import { setPrintContent } from './helper'
 import defaults from "../../ts/defaults";
 import { history } from '../../ts/CustomRouter'
+import { ErrorMessages, ErrorMessage } from "../ModalForm/formview/types";
 
 export type IIButtonAction = {
     res: TAction
