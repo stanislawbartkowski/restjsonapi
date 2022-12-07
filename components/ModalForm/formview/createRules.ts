@@ -2,9 +2,10 @@ import { Rule } from "antd/lib/form"
 import defaults from "../../../ts/defaults"
 import { makeMessage, callJSFunction } from "../../../ts/j"
 import lstring from "../../../ts/localize"
-import { FIELDTYPE, TRow, RESTMETH, FormMessage } from "../../../ts/typing"
-import { decomposeEditId } from "../../ts/helper"
+import { FIELDTYPE, TRow, RESTMETH, FormMessage, FieldValue } from "../../../ts/typing"
+import { decomposeEditId, isnotdefined } from "../../ts/helper"
 import { fieldType } from "../../ts/transcol"
+import { transformSingleValue } from "../../ts/transformres"
 import { RestValidatorResult } from "../../ts/typing"
 import { IFieldContext, FField } from "./types"
 
@@ -31,10 +32,11 @@ export function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, 
                 rules.push(
                     ({ getFieldValue }) => ({
                         async validator(f: any, value) {
-                            if (value === undefined) return Promise.resolve();
+                            if (isnotdefined(value)) return Promise.resolve();
                             const data: TRow = {}
-                            data[t.field] = value
-                            data[defaults.currentfield] = value
+                            const v : FieldValue = transformSingleValue(value,t,true)
+                            data[t.field] = v
+                            data[defaults.currentfield] = v
                             const a: Array<string> = f.field.split('.')
                             if (a.length === 3) {
                                 const pos: number = +a[1]
