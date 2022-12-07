@@ -15,12 +15,12 @@ import {
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 
-import { TRow, PropsType, FIELDTYPE, FieldValue } from '../../../ts/typing';
-import { FFieldElem, getValue, isEditList, isItemGroup } from '../../ts/helper';
-import { FGetValues, TForm, TClickButton, TField, TRadioCheckItem, ValidatorType } from '../../ts/typing';
+import { PropsType, FIELDTYPE, FieldValue } from '../../../ts/typing';
+import { getValue, isEditList, isItemGroup, tomoney } from '../../ts/helper';
+import { FGetValues, TField, TRadioCheckItem, ValidatorType } from '../../ts/typing';
 import { IFieldContext, FField, TFieldChange } from './types';
 import { makeMessage } from '../../../ts/j';
-import { trace, log } from '../../../ts/l';
+import { log } from '../../../ts/l';
 import { HTMLElem, fieldType, fieldTitle, makeDivider } from '../../ts/transcol';
 import { transformSingleValue } from '../../ts/transformres';
 import { findErrField, itemName } from './helper';
@@ -42,25 +42,11 @@ export type ErrorMessage = {
 
 export type ErrorMessages = ErrorMessage[]
 
-function ltrace(mess: string) {
-    trace('ModalFormView', mess)
-}
 
 export interface IRefCall {
     validate: () => void
     getValues: FGetValues
     refreshTable: (field: string) => void
-}
-
-type TFormView = TForm & {
-    buttonClicked: (row: TRow) => void
-    buttonsextratop?: ReactNode
-    buttonsextrabottom?: ReactNode
-    initvals?: TRow
-    list: FFieldElem[]
-    vars?: TRow
-    ignorerestapivals?: boolean
-    clickButton: TClickButton
 }
 
 
@@ -147,7 +133,7 @@ function searchItem(ir: IFieldContext, t: FField, listfield?: FormListFieldData)
     const onBlur: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
         const id: string = c.target.id
         log(id + " on blur")
-        checkchange(ir, c.target.id)
+        checkchange(ir, c.target.id, t)
     }
 
     function onSearchButton(value: string) {
@@ -168,13 +154,14 @@ const HTMLControl: React.FC<HTMLProps> = (props) => {
     return HTMLElem(props.value);
 }
 
-function checkchange(ir: IFieldContext, id: string) {
+function checkchange(ir: IFieldContext, id: string, t: FField) {
 
     const ch: TFieldChange = ir.getChanges()
     const exist: boolean = ch.fieldchange.has(id)
     if (exist) {
         ch.fieldchange.delete(id)
-        ir.fieldChanged(id)
+        //ir.fieldChanged(id)
+        ir.fieldChanged(t)
     }
 
 }
@@ -184,7 +171,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
     const onBlur: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
         const id: string = c.target.id
         log(id + " on blur")
-        checkchange(ir, c.target.id)
+        checkchange(ir, c.target.id,t)
     }
 
     if (isItemGroup(t)) {

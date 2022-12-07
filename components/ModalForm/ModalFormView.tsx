@@ -15,13 +15,13 @@ import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import { callJSFunction, commonVars, copyMap, getSessionId, isEmpty } from '../../ts/j';
-import { FFieldElem, genEditClickedRowKey, getValue } from '../ts/helper';
+import { FFieldElem, genEditClickedRowKey, getValue, okmoney, tomoney } from '../ts/helper';
 import { transformSingleValue, transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import defaults from '../../ts/defaults';
 import HeaderTable from '../HeaderTable'
 import { ErrorMessages, FField, FMultiAction, FSearchAction, IFieldContext, TableEditClick, TableRefresh, TFieldChange, TMultiSelect, UploadStore } from './formview/types';
-import {produceItem} from './formview/EditItems'
+import { produceItem } from './formview/EditItems'
 
 
 function ltrace(mess: string) {
@@ -246,12 +246,26 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         else fchanges.current.fieldchange.add(id)
     }
 
+    function modifyMoney(t : FField) {
+        if (fieldType(t) !== FIELDTYPE.MONEY) return
+        const r: TRow = f.getFieldsValue()
+        const mval = r[t.field] as string
+        if (! okmoney(mval)) return
+        const m = tomoney(mval)
+        log(m as string)
+        f.setFieldValue(t.field,m)
+    }
+
     const fieldContext: IFieldContext = {
         getChanges: function (): TFieldChange {
             return fchanges.current;
         },
-        fieldChanged: function (id: string): void {
-            props.onFieldChange(id);
+        //        fieldChanged: function (id: string): void {
+        //            props.onFieldChange(id);
+        //        },
+        fieldChanged: function (t: FField): void {
+            modifyMoney(t)
+            props.onFieldChange(t.field);
         },
         getValues: function (): TRow {
             return props.getValues();

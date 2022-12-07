@@ -33,8 +33,9 @@ export function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, 
                     ({ getFieldValue }) => ({
                         async validator(f: any, value) {
                             if (isnotdefined(value)) return Promise.resolve();
+                            if ((fieldtype === FIELDTYPE.STRING) && value === "") return Promise.resolve();
                             const data: TRow = {}
-                            const v : FieldValue = transformSingleValue(value,t,true)
+                            const v: FieldValue = transformSingleValue(value, t, true)
                             data[t.field] = v
                             data[defaults.currentfield] = v
                             const a: Array<string> = f.field.split('.')
@@ -42,7 +43,7 @@ export function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, 
                                 const pos: number = +a[1]
                                 data[defaults.listpos] = pos
                             }
-                            const editpos : [string,string,number] | undefined = decomposeEditId(f.field)
+                            const editpos: [string, string, number] | undefined = decomposeEditId(f.field)
                             if (editpos !== undefined) {
                                 data[defaults.currentrowkey] = editpos[2]
                             }

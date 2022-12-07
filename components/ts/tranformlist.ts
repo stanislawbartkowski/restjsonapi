@@ -35,7 +35,8 @@ export function transformList(columns: TColumns, props: OneRowData) {
     t.forEach((r: TRow) => { filteredCols.forEach((c: TColumn) => { r[c.field] = transformCell(c, { r: r, vars: props.vars }) }) })
 }
 
-export function addRowKey(t: RowData, rowkey: string) {
+export function addRowKey(t: RowData | undefined, rowkey: string) {
+    if (t === undefined) return
     let num : number = 0
     t.forEach(e => e[rowkey] = num++)
 }

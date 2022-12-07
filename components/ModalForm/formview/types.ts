@@ -30,7 +30,7 @@ export type TMultiSelect = Map<string, FieldValue[]>;
 
 export interface IFieldContext {
     getChanges: () => TFieldChange
-    fieldChanged: (id: string) => void
+    fieldChanged: (f : FField) => void
     getValues: FGetValues
     aRest: TAsyncRestCall
     upGet: () => UploadStore
