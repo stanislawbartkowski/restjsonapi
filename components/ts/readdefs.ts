@@ -17,16 +17,16 @@ export type ReadDefsResult = {
 
 type FSetState = (res: ReadDefsResult) => void
 
-export async function readvals(initval: string | RESTMETH, vars?: TRow,params?: Record<string, FieldValue>): Promise<Record<string, any>> {
-    if (isString(initval)) return await restapilist(initval as string,params)
+export async function readvals(initval: string | RESTMETH, vars?: TRow, params?: Record<string, FieldValue>): Promise<Record<string, any>> {
+    if (isString(initval)) return await restapilist(initval as string, params)
     const rr: RESTMETH = initval as RESTMETH
     const r: RESTMETH = rr.jsaction ? callJSFunction(rr.jsaction, { r: {}, vars: vars }) as RESTMETH : rr
     return restaction(r.method as HTTPMETHOD, r.restaction as string, r.params, vars)
 }
 
 
-export async function readvalsdata(initval: string | RESTMETH, vars?: TRow): Promise<Record<string, any>> {
-    const dat: any = await readvals(initval, vars)
+export async function readvalsdata(initval: string | RESTMETH, vars?: TRow, params?: Record<string, FieldValue>): Promise<Record<string, any>> {
+    const dat: any = await readvals(initval, vars, params)
     // dat.data === undefinded means GET method only
     if (dat.data === undefined) return Promise.resolve(dat)
     const da = analyzeresponse(dat.data, dat.response)
@@ -59,7 +59,8 @@ async function resolveRest(tl: TField[]): Promise<TField[]> {
         if (tr) {
             const rest: TItemsRest | undefined = !isOArray(tr.items) ? tr.items as TItemsRest : undefined
             if (rest) {
-                const resta: Record<string, any> = await restapilist(rest.restaction)
+                //const resta: Record<string, any> = await restapilist(rest.restaction)
+                const resta: Record<string, any> = await readvalsdata(rest, {}, rest.params)
                 const rlist: RowData = resta.res
                 tr.items = rlist.map(r => {
                     return {

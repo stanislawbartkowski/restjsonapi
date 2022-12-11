@@ -17,6 +17,11 @@ import { IFieldContext, FField, ErrorMessages } from "./types"
 
 function transformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, li: TListItems, r: TRow): React.ReactNode {
 
+    function toS(f: FieldValue): string {
+        const value: string = isNumber(f) ? (f as number)?.toString() : f as string
+        return value
+    }
+
     const ftype: FIELDTYPE = fieldType(t)
     const isnot: boolean = isnotdefined(r[t.field]) || r[t.field] === ""
     const value: FieldValue = isnot ? lstring("notdefined") : r[t.field]
@@ -26,8 +31,8 @@ function transformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, l
     const title: string = fieldTitle(t, { r: r })
 
     function findLabel(valuef: FieldValue, i: TRadioCheckItem[]): string {
-        const value: string = isNumber(valuef) ? (valuef as number)?.toString() : valuef as string
-        const item: TRadioCheckItem | undefined = i.find(e => e.value === value)
+        const value: string = toS(valuef)
+        const item: TRadioCheckItem | undefined = i.find(e => toS(e.value) === value)
         return item ? itemName(item) as string : value as string
     }
 

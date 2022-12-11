@@ -265,8 +265,8 @@ export type TCard = {
 
 // radio&check
 
-export type TItemsRest = {
-    restaction: string;
+export type TItemsRest = RESTMETH & {
+//    restaction: string;
     value: string
     label: FormMessage
 }
