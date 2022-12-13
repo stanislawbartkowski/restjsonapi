@@ -162,7 +162,7 @@ export function flattenTForm(tlist: TField[]): FFieldElem[] {
 
     tlist.forEach(t => {
         const e: FFieldElem = { ...t }
-        if (isItemGroup(t) && !isEditList) {
+        if (isItemGroup(t) && !isEditList(t)) {
             const i: FFieldElem[] = flattenTForm(t.items as TField[])
             if (isList(t)) e.elemlist = i;
             else {
