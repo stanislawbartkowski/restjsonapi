@@ -10,7 +10,8 @@ import {
     Checkbox,
     Select,
     SelectProps,
-    FormListFieldData} from 'antd';
+    FormListFieldData
+} from 'antd';
 
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
@@ -171,12 +172,12 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
     const onBlur: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
         const id: string = c.target.id
         log(id + " on blur")
-        checkchange(ir, c.target.id,t)
+        checkchange(ir, c.target.id, t)
     }
 
     if (isItemGroup(t)) {
         return [<React.Fragment>
-            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR, setvarsaction: t.setvarsaction, editTRow: t.editTRow }, err, field))}
+            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR, setvarsaction: t.setvarsaction, seteditRow: t.seteditRow, rerenderD: t.rerenderD }, err, field))}
         </React.Fragment>,
             undefined]
     }

@@ -5,7 +5,7 @@ import { FGetValues, TAsyncRestCall, TClickButton, TField } from "../../ts/typin
 export type FSearchAction = (s: string, t: FField) => void
 export type FMultiAction = (t: FField) => void
 export type TableRefresh = Map<string, number>;
-export type TableEditClick = Map<string, number>;
+export type FSetEditRow = (s : string, rownumber: number) => void
 
 export type FField = TField & {
 
@@ -15,7 +15,8 @@ export type FField = TField & {
     setvarsaction: VAction
     listfield?: FormListFieldData
     groupT?: TField
-    editTRow: TableEditClick
+    seteditRow: FSetEditRow
+    rerenderD: () => void
 }
 
 export type TFieldChange = {

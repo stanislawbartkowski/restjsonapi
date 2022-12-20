@@ -248,3 +248,12 @@ export function getEditList(editid: string, r: TRow): RowData | undefined {
     return values
 }
 
+export function findEditField(field : string, t : TField[]) : TField | undefined {
+    const d = decomposeEditId(field)
+    if (d === undefined) return undefined
+    const editit : TField | undefined = t.find(t => t.field === d[0])
+    if (editit === undefined) return undefined
+    const e : TField | undefined = editit.items?.find( t => t.field === d[1])
+    return e
+}
+

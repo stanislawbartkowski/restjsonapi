@@ -94,6 +94,13 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
         if (r.vars) props.i.setVals(r.vars)
     }
 
+
+    async function dorestaction(res: TAction) {
+        props.i.setMode(true, []);
+        if (res.restaction) return restaction(res.method as HTTPMETHOD, res.restaction, res.params, t);
+        return Promise.resolve(({ data: res, response: undefined}))
+    }
+
     const close: FAction = () => {
         if (props.closeAction) props.closeAction()
     }
@@ -107,26 +114,43 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
     }
     const res: TAction = clickAction(button, toPars())
     if (res.close) close()
-    if (res.restaction) {
-        props.i.setMode(true, []);
-        restaction(res.method as HTTPMETHOD, res.restaction, res.params, t).then(
-            ({ data, response }) => {
-                const da = analyzeresponse(data, response)
-                const reobject: TAction = da[0] as TAction
-                const resobject: TAction = (res.retprops) ? Object.assign(reobject, res.retprops) : reobject
-                doaction(resobject, da[1])
-            }
-        ).catch(((e) => {
-            fatalexceptionerror(`Error while running ${res.restaction}`, e)
-            props.i.setMode(false, []);
-        })
-        )
+    dorestaction(res).then(
+        ({ data, response }) => {
+            const da = analyzeresponse(data, response)
+            const reobject: TAction = da[0] as TAction
+            const resobject: TAction = (res.retprops) ? Object.assign(reobject, res.retprops) : reobject
+            doaction(resobject, da[1])
+        }
+    ).catch(((e) => {
+        fatalexceptionerror(`Error while running ${res.restaction}`, e)
+        props.i.setMode(false, []);
         return undefined
-    }
-    doaction(res)
+    }))
     if (ispopupDialog(res)) return { ...res as TComponentProps }
-    //if (props.i.doAction) props.i.doAction(res)
     return undefined
+    
+    /*    
+        if (res.restaction) {
+            props.i.setMode(true, []);
+            restaction(res.method as HTTPMETHOD, res.restaction, res.params, t).then(
+                ({ data, response }) => {
+                    const da = analyzeresponse(data, response)
+                    const reobject: TAction = da[0] as TAction
+                    const resobject: TAction = (res.retprops) ? Object.assign(reobject, res.retprops) : reobject
+                    doaction(resobject, da[1])
+                }
+            ).catch(((e) => {
+                fatalexceptionerror(`Error while running ${res.restaction}`, e)
+                props.i.setMode(false, []);
+            })
+            )
+            return undefined
+        }
+        doaction(res)
+        if (ispopupDialog(res)) return { ...res as TComponentProps }
+        //if (props.i.doAction) props.i.doAction(res)
+        return undefined
+    */
 }
 
 export default clickButton

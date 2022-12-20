@@ -241,6 +241,7 @@ function constructRenderCell(c: TColumn, r: TableHookParam, vars?: TRow) {
 // =============================  
 
 export function modifyColProps(c: TColumn, p: ColumnType<any>) {
+    if (p.align !== undefined) return;
     const fieldtype: FIELDTYPE = fieldType(c)
     if (fieldtype === FIELDTYPE.NUMBER || fieldtype === FIELDTYPE.MONEY) p.align = "right";
 }

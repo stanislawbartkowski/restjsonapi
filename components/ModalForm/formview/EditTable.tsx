@@ -1,4 +1,4 @@
-import { Card, Table } from 'antd';
+import { Card, PaginationProps, Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import React, { ReactElement, ReactNode } from 'react';
 
@@ -8,9 +8,11 @@ import { constructButtonElem } from '../../ts/constructbutton';
 import { genColIdedit, getEditList, cardProps } from '../../ts/helper';
 import { addRowKey } from '../../ts/tranformlist';
 import { constructactionsCol, fieldTitle } from '../../ts/transcol';
-import { TableHookParam, TAction, TActions, TField, ButtonAction, ColumnList, TColumns } from '../../ts/typing';
+import { TableHookParam, TAction, TActions, TField, ButtonAction, TColumns, TClickButton } from '../../ts/typing';
 import { produceFormItem } from './EditItems';
 import { ErrorMessages, FField, IFieldContext, ROWKEY } from './types';
+import propsPaging from "../../ts/tablepaging"
+
 
 
 function genAddButton(it: IFieldContext, c: FField) {
@@ -55,6 +57,8 @@ function fieldsToColumns(fields: TField[]): TColumns {
 
 export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {
 
+    // to force rerender when page os changed
+    //const [currentnumber, setCurrentNumber] = useState<number>(0);
 
     const items: TField[] = t.items as TField[]
 
@@ -70,6 +74,16 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
         return t.editlist?.summary !== undefined
     }
 
+    const clickB: TClickButton = (clickbutton?: ButtonAction, row?: TRow) => {
+        clickedRow(row as TRow)
+        ir.clickButton(clickbutton, row)
+    }
+
+    const irC: IFieldContext = {
+        ...ir,
+        clickButton: clickB
+    }
+
 
     const fpart = {
         searchF: t.searchF,
@@ -78,22 +92,37 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
         setvarsaction: t.setvarsaction,
         listfield: t.listfield,
         groupT: t.groupT,
-        editTRow: t.editTRow
+        seteditRow: t.seteditRow,
+        rerenderD: t.rerenderD
     }
 
     const vars: TRow = ir.getValues()
 
-    const columns: ColumnType<any>[] = items.map(c => contructColumn(ir, { ...fpart, ...c }, editid, err))
+    const columns: ColumnType<any>[] = items.map(c => contructColumn(irC, { ...fpart, ...c }, editid, err))
 
     const cols: TColumns = fieldsToColumns(items)
 
     function clickedRow(r: TRow) {
         const rowkey: number = r[ROWKEY] as number
-        t.editTRow.set(t.field, rowkey)
+        t.seteditRow(t.field, rowkey)
+
     }
+
+    const onChange: PaginationProps['onChange'] = (pageNumber) => {
+        console.log('Page: ', pageNumber);
+        t.rerenderD()
+    };
+
+    const pagination = propsPaging(t.editlist,values ? values.length : 0);
+    if (pagination.pagination) {
+        pagination.pagination.onChange = onChange
+    }
+
+
 
     return <Card bordered {...cardProps(t.editlist?.card)} extra={genAddButton(ir, t)}>
         <Table
+            {...pagination}
             columns={columns}
             dataSource={values}
             onRow={(r, i) => { return { onClick: (event) => clickedRow(r) } }}

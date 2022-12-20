@@ -214,7 +214,13 @@ export type TColumn = TFieldBase & PropSupportedType & {
 
 export type TColumns = TColumn[]
 
-export type ColumnList = JSSupportedType & PropSupportedType & {
+export type PagingC = {
+    nopaging?: boolean | number,
+    pageSize?: number
+
+}
+
+export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
     rowkey?: string;
     header?: ShowDetails;
     headertitle?: FormMessage;
@@ -222,10 +228,8 @@ export type ColumnList = JSSupportedType & PropSupportedType & {
     iscard?: boolean
     extendable?: TAction;
     summary?: TSummary;
-    nopaging?: boolean | number,
     nofilter?: boolean
     nosort?: boolean
-    pageSize?: number
     card?: TCard
     rowprops?: PropsType
     filterJS?: string
@@ -358,7 +362,7 @@ export type TField = PropSupportedType & TFieldBase & {
     validate?: ValidatorType[]
     divider?: TDivider
     itemlist?: TListItem
-    editlist?: TListItem
+    editlist?: TListItem & PagingC
     value?: ColumnValue
     stat?: StatisticType
     upload?: UploadType
@@ -366,7 +370,8 @@ export type TField = PropSupportedType & TFieldBase & {
     restlist?: FieldRestList
     toupper?: boolean
     tolower?: boolean
-    actions?: TActions    
+    actions?: TActions
+    refreshsum? : boolean
 }
 
 // the whole form

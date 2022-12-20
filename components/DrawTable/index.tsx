@@ -24,21 +24,8 @@ import SearchButton, { FSetFilter } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
 import { createII, executeB, IIButtonAction } from "../ts/executeaction";
 import ButtonStack from "./ButtonStack";
+import propsPaging from "../ts/tablepaging"
 
-function propsPaging(props: RestTableParam & ColumnList, dsize: number): undefined | PropsType {
-    let pageSize: number | undefined = props.pageSize ? props.pageSize : defaults.defpageSize
-    let nopaging: boolean = false;
-    if (props.nopaging) {
-        if (isNumber(props.nopaging)) {
-            const ps: number = props.nopaging as number
-            if (dsize <= ps) nopaging = true
-            else pageSize = ps
-        }
-        else nopaging = true;
-    }
-
-    return nopaging ? { pagination: false } : { pagination: { defaultPageSize: pageSize } }
-}
 
 function tranformtoSel(sel: FieldValue[] | undefined): (string | number)[] {
     if (sel === undefined) return []

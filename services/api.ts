@@ -1,9 +1,8 @@
 import request, { ResponseError } from "umi-request";
 
 import type { FieldValue, FUrlModifier } from "../ts/typing";
-import { log, internalerrorlog, logG, erralert } from '../ts/l'
+import { log, internalerrorlog, logG}  from '../ts/l'
 import { HTTPMETHOD } from "../ts/typing";
-import { getOriginURL } from "../ts/j";
 
 const rrequest = request;
 let prefix: string = "/"

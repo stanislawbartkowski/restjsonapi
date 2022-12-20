@@ -15,12 +15,12 @@ import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import { callJSFunction, commonVars, copyMap, getSessionId, isEmpty } from '../../ts/j';
-import { FFieldElem, genEditClickedRowKey, getValue, okmoney, tomoney } from '../ts/helper';
+import { FFieldElem, findEditField, genEditClickedRowKey, getValue, istrue, okmoney, tomoney } from '../ts/helper';
 import { transformSingleValue, transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import defaults from '../../ts/defaults';
 import HeaderTable from '../HeaderTable'
-import { ErrorMessages, FField, FMultiAction, FSearchAction, IFieldContext, TableEditClick, TableRefresh, TFieldChange, TMultiSelect, UploadStore } from './formview/types';
+import { ErrorMessages, FField, FMultiAction, FSearchAction, FSetEditRow, IFieldContext, TableRefresh, TFieldChange, TMultiSelect, UploadStore } from './formview/types';
 import { produceItem } from './formview/EditItems'
 
 
@@ -58,6 +58,8 @@ type MultiSelectProps = TField & {
     addpars?: TRow
 }
 
+type TableEditClick = Map<string, number>;
+
 
 const emptySearch = { field: "", visible: false }
 
@@ -74,6 +76,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const flastRowkey = useRef<TableEditClick>(new Map());
     const [multiselect, setMultiSelect] = useState<TMultiSelect>(new Map())
     const [tableR, setTableRefresh] = useState<TableRefresh>(new Map())
+    const [refreshno, setRefreno] = useState<number>(0)
     //    const [editTRow, setEditTRow] = useState<TableEditClick>(new Map())
     //    const [[f], setForm] = useState(Form.useForm())
 
@@ -84,8 +87,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         ltrace('Success, data validated')
         props.buttonClicked(transformValuesFrom(values, props.list, props.initvals))
     };
-
-
 
     const getV = (): TRow => {
         const r: TRow = f.getFieldsValue()
@@ -165,7 +166,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             console.log(vals)
         }
 
-    }, [props.initvals])
+    }, [props.initvals, refreshno])
 
     const buttonstop: ReactNode = props.buttonsextratop ? <React.Fragment><Form.Item><Space>{props.buttonsextratop}</Space></Form.Item><Divider /></React.Fragment> : undefined
     const buttonsbottom: ReactNode = props.buttonsextrabottom ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextrabottom}</Space></Form.Item></React.Fragment> : undefined
@@ -233,6 +234,12 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const onFieldsChanges = (changedFields: Record<string, any>, _: any) => {
         if (isEmpty(changedFields)) return
         const id: string = changedFields[0]["name"][0]
+        // check if edit field
+        const efield : TField | undefined = findEditField(id,props.fields)
+        if (efield !== undefined && istrue(efield.refreshsum)) {
+            // refesh
+            renderD()
+        }
         log(id + " changed")
         // check, if field is null
         const r: TRow = f.getFieldsValue()
@@ -246,14 +253,14 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         else fchanges.current.fieldchange.add(id)
     }
 
-    function modifyMoney(t : FField) {
+    function modifyMoney(t: FField) {
         if (fieldType(t) !== FIELDTYPE.MONEY) return
         const r: TRow = f.getFieldsValue()
         const mval = r[t.field] as string
-        if (! okmoney(mval)) return
+        if (!okmoney(mval)) return
         const m = tomoney(mval)
         log(m as string)
-        f.setFieldValue(t.field,m)
+        f.setFieldValue(t.field, m)
     }
 
     const fieldContext: IFieldContext = {
@@ -288,6 +295,15 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         }
     }
 
+    const setEditRow: FSetEditRow = (t: string, num: number) => {
+        flastRowkey.current.set(t, num)
+    }
+
+    const renderD = () => {
+        const currnumb: number = refreshno
+        setRefreno(currnumb + 1)
+    }
+
     // must be preserve=true (default)
     ltrace(`Render`)
     const form = <Form
@@ -296,7 +312,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
         {buttonstop}
 
-        {props.fields.map(e => produceItem(fieldContext, { ...e, searchF: searchF, multiF: multiF, tableR: tableR, setvarsaction: props.setvarsaction, editTRow: flastRowkey.current }, props.err))}
+        {props.fields.map(e => produceItem(fieldContext, { ...e, searchF: searchF, multiF: multiF, tableR: tableR, setvarsaction: props.setvarsaction, seteditRow: setEditRow, rerenderD: renderD }, props.err))}
 
         {buttonsbottom}
 

@@ -12,8 +12,8 @@ function getBoundary(response: Response): string | undefined {
     return undefined
 }
 
-function analyzeresponse(data: any, response: Response): [Record<string, any>, string | undefined] {
-    const boundary: string | undefined = getBoundary(response);
+function analyzeresponse(data: any, response: Response | undefined): [Record<string, any>, string | undefined] {
+    const boundary: string | undefined = response ? getBoundary(response) : undefined
 
     // if not multipart - data is JSON object
     if (boundary === undefined || boundary === "") return [data, undefined]
