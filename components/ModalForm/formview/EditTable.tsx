@@ -7,8 +7,8 @@ import SummaryTable from '../../SummaryTable';
 import { constructButtonElem } from '../../ts/constructbutton';
 import { genColIdedit, getEditList, cardProps } from '../../ts/helper';
 import { addRowKey } from '../../ts/tranformlist';
-import { constructactionsCol, fieldTitle } from '../../ts/transcol';
-import { TableHookParam, TAction, TActions, TField, ButtonAction, TColumns, TClickButton } from '../../ts/typing';
+import { constructactionsCol, fieldTitle, transformOneColumn } from '../../ts/transcol';
+import { TableHookParam, TAction, TActions, TField, ButtonAction, TColumns, TClickButton, TColumn, ColumnList } from '../../ts/typing';
 import { produceFormItem } from './EditItems';
 import { ErrorMessages, FField, IFieldContext, ROWKEY } from './types';
 import propsPaging from "../../ts/tablepaging"
@@ -24,12 +24,17 @@ function genAddButton(it: IFieldContext, c: FField) {
     return b
 }
 
-function constructRenderAction(it: IFieldContext, c: FField, err: ErrorMessages, editid: string, vars?: TRow) {
+function createHookParam(it: IFieldContext): TableHookParam {
     const h: TableHookParam = {
         fresult: (entity: TRow, r: TAction) => {
             it.clickButton(r as ButtonAction, entity)
         }
     }
+    return h
+}
+
+function constructRenderAction(it: IFieldContext, c: FField, err: ErrorMessages, editid: string, vars?: TRow) {
+    const h: TableHookParam = createHookParam(it);
     return (dom: any, entity: TRow): ReactElement => {
         return constructactionsCol(c.actions as TActions, h, { r: entity }) as ReactElement
     }
@@ -42,7 +47,7 @@ function constructRenderCell(it: IFieldContext, c: FField, err: ErrorMessages, e
     }
 };
 
-function contructColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages): ColumnType<any> {
+function constructTColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, vars: TRow): ColumnType<any> {
     const mess: string = fieldTitle(t, { r: {} });
     return {
         title: <React.Fragment>{mess}</React.Fragment>,
@@ -50,6 +55,25 @@ function contructColumn(it: IFieldContext, t: FField, editid: string, err: Error
         render: t.actions ? constructRenderAction(it, t, err, editid) : constructRenderCell(it, t, err, editid)
     }
 }
+
+function contructCColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, vars: TRow): ColumnType<any> {
+
+    const col: TColumn = { ...t.col as TColumn }
+    col.field = t.field
+    const h: TableHookParam = createHookParam(it);
+    const colu: ColumnList = {
+        nosort: true,
+        nofilter: true,
+        columns: []
+    }
+    return transformOneColumn(col, h, colu, vars)
+}
+
+
+function contructColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, vars: TRow): ColumnType<any> {
+    return t.col ? contructCColumn(it, t, editid, err, vars) : constructTColumn(it, t, editid, err, vars)
+}
+
 
 function fieldsToColumns(fields: TField[]): TColumns {
     return fields.map(t => t)
@@ -98,7 +122,7 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
 
     const vars: TRow = ir.getValues()
 
-    const columns: ColumnType<any>[] = items.map(c => contructColumn(irC, { ...fpart, ...c }, editid, err))
+    const columns: ColumnType<any>[] = items.map(c => contructColumn(irC, { ...fpart, ...c }, editid, err, vars))
 
     const cols: TColumns = fieldsToColumns(items)
 
@@ -113,12 +137,10 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
         t.rerenderD()
     };
 
-    const pagination = propsPaging(t.editlist,values ? values.length : 0);
+    const pagination = propsPaging(t.editlist, values ? values.length : 0);
     if (pagination.pagination) {
         pagination.pagination.onChange = onChange
     }
-
-
 
     return <Card bordered {...cardProps(t.editlist?.card)} extra={genAddButton(ir, t)}>
         <Table

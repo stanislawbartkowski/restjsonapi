@@ -372,6 +372,7 @@ export type TField = PropSupportedType & TFieldBase & {
     tolower?: boolean
     actions?: TActions
     refreshsum? : boolean
+    col?: TColumn
 }
 
 // the whole form
