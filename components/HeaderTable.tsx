@@ -3,7 +3,7 @@ import { PageHeader, Space } from "antd";
 
 import { trace } from "../ts/l";
 import constructButton from "./ts/constructbutton";
-import { emptyModalListProps, FAction, FieldValue, ModalFormProps, RestTableParam, TRow, VAction } from '../ts/typing'
+import { emptyModalListProps, FAction, FieldValue, ModalFormProps, RAction, RestTableParam, TRow, VAction } from '../ts/typing'
 import { TableToolBar, ButtonAction, ClickResult, ShowDetails, ClickAction } from "./ts/typing";
 import { istrue } from "./ts/helper";
 import OneRowTable from './ShowDetails/OneRowTable'
@@ -30,7 +30,7 @@ function headerTitle(p: ShowDetails, vars?: TRow) {
   else return { title: title }
 }
 
-const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshaction: FAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[] }> = (props) => {
+const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[] }> = (props) => {
   const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
 
   const h: TableToolBar = props.toolbar as TableToolBar;

@@ -57,7 +57,8 @@ function transformValues(row: TRow, tf: FFieldElem[], from: boolean, initvalsedi
             // res[t.field] = (newta as any) as FieldValue
             }
             const l = genEditClickedRowKey(t.field)
-            res[l] = row[l]
+            // Data: 2023/01/05
+            if (row[l] !== undefined) res[l] = row[l]
         }
         if (isEditList(t) && !from) {
             const ta : RowData | undefined = getEditList(t.field,row)

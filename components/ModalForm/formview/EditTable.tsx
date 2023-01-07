@@ -99,7 +99,8 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
     }
 
     const clickB: TClickButton = (clickbutton?: ButtonAction, row?: TRow) => {
-        clickedRow(row as TRow)
+        const rr : TRow = row as TRow
+        clickedRow(rr)
         ir.clickButton(clickbutton, row)
     }
 

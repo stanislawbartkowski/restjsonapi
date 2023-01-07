@@ -1,7 +1,7 @@
 import { restaction } from "../../services/api";
 import { commonVars, makeMessage } from "../../ts/j";
 import { fatalexceptionerror, trace } from "../../ts/l";
-import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction } from "../../ts/typing";
+import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAction } from "../../ts/typing";
 import openNotification from "../Notification";
 import { IIRefCall } from "../ModalForm/ModalFormDialog";
 import { clickAction } from "./helper";
@@ -39,7 +39,7 @@ export function createII(b: TAction, vars: TRow, selectedM?: FieldValue): IIButt
     return { res: res, ii: ii, rr: { ...commonVars(), ...rr }, vars: vars }
 }
 
-export function executeB(i: IIButtonAction, refreshaction?: FAction, setvarsaction?: VAction) {
+export function executeB(i: IIButtonAction, refreshaction?: RAction, setvarsaction?: VAction) {
     clickButton({ refreshaction, ...(i.res as ClickAction), i: i.ii, setvarsaction }, i.res, { ...i.rr, ...i.vars })
 }
 
@@ -83,7 +83,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
             props.i.setMode(false, []);
             if (r.close) close()
             if (r.notification) openNotification(r.notification, { vars: props.vars, r: t as TRow });
-            if (r.refresh && props.refreshaction) props.refreshaction()
+            if (r.refresh && props.refreshaction) props.refreshaction(r)
             if (button?.print) {
                 close()
                 setPrintContent({ result: r, content: (presult as string), button: (button as ButtonAction) });
@@ -98,7 +98,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
     async function dorestaction(res: TAction) {
         props.i.setMode(true, []);
         if (res.restaction) return restaction(res.method as HTTPMETHOD, res.restaction, res.params, t);
-        return Promise.resolve(({ data: res, response: undefined}))
+        return Promise.resolve(({ data: res, response: undefined }))
     }
 
     const close: FAction = () => {
@@ -128,7 +128,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
     }))
     if (ispopupDialog(res)) return { ...res as TComponentProps }
     return undefined
-    
+
     /*    
         if (res.restaction) {
             props.i.setMode(true, []);

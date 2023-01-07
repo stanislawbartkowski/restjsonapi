@@ -5,7 +5,7 @@ import { Table, Drawer, Space, Divider } from "antd";
 import type { TableRowSelection } from "antd/lib/table/interface";
 
 import lstring from "../../ts/localize";
-import { ClickActionProps, emptyModalListProps, FieldValue, ModalFormProps, OneRowData, PropsType, RestTableParam, RowData, TRow } from "../../ts/typing";
+import { ClickActionProps, emptyModalListProps, FieldValue, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
 import type { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, ShowDetails, TableHookParam, TAction, TColumn } from "../ts/typing";
 import { Status } from "../ts/typing";
@@ -17,7 +17,6 @@ import HeaderTable from "../HeaderTable";
 import readlist, { DataSourceState } from '../ts/readlist'
 import ReadListError from '../errors/ReadListError'
 import SummaryTable from '../SummaryTable'
-import defaults from "../../ts/defaults";
 import { isNumber, isObject } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 import SearchButton, { FSetFilter } from "./SearchButton";

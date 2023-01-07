@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Card } from 'antd'
 
-import { emptyModalListProps, FAction, ModalFormProps, RestTableParam, TRow } from "../../ts/typing"
+import { emptyModalListProps, FAction, ModalFormProps, RAction, RestTableParam, TRow } from "../../ts/typing"
 import readlist, { DataSourceState } from "../ts/readlist";
 import { BUTTONACTION, ButtonAction, ClickAction, ColumnList, Status, TableHookParam, FActionResult, TableToolBar, TAction, TActions, TColumn, TColumns } from "../ts/typing";
 import ReadListError from "../errors/ReadListError";
@@ -61,7 +61,7 @@ const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number }> =
     else executeB(ii)
   }
 
-  const refreshAction: FAction = () => {
+  const refreshAction: RAction = () => {
     setRefreshNumber(refreshnumber + 1)
   }
 

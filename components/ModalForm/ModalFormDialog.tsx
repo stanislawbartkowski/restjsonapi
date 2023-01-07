@@ -11,7 +11,7 @@ import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall } from './ModalFormView';
 import { FFieldElem, flattenTForm, okmoney, cardProps, setCookiesFormListDefVars, preseT, istrue, decomposeEditId } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FAction, FIELDTYPE, ModalFormProps, RESTMETH, TComponentProps, TRow, VAction } from '../../ts/typing'
+import { FAction, FIELDTYPE, ModalFormProps, RAction, RESTMETH, TComponentProps, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
@@ -399,12 +399,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     const onFieldChange: FOnFieldChanged = (id: string) => {
-        //        const fields: FFieldElem[] = createF();
-
-        //        const edittable: [string, string, number] | undefined = decomposeEditId(id)
-        //        const searchid: string = edittable === undefined ? id : edittable[1]
-
-        //        const f: FFieldElem | undefined = fields.find(e => e.field === searchid)
         const felem = findFField(id)
         const f: FFieldElem | undefined = felem[0]
         if (f === undefined) return
@@ -430,7 +424,14 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     // if more then once then it will overwrite variable to the beginning values
     const restapiname = formdef.tabledata?.restapivals ? isString(formdef.tabledata?.restapivals) ? formdef.tabledata?.restapivals as string : (formdef.tabledata?.restapivals as RESTMETH).restaction : undefined
 
-    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} /> : undefined
+    const refreshAction: RAction = (r?: TAction) => {
+        console.log("refreshAction")
+        if (r?.vars) {
+            iiref.setVals(r.vars)
+        }
+    }
+
+    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} refreshaction={refreshAction} /> : undefined
 
     const modalFormView: ReactNode = formdef.status === Status.READY ?
         ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={ivals} /> :

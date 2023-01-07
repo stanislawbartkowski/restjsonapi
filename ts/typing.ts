@@ -2,7 +2,7 @@
 // general types
 // ==========================================================
 
-import { ButtonAction } from "../components/ts/typing"
+import { ButtonAction, TAction } from "../components/ts/typing"
 
 export type PropsType = Record<string, any>
 
@@ -91,10 +91,11 @@ export type RestTableParam = RESTMETH & {
 
 export type FAction = (b?: ButtonAction, r?: TRow) => void
 export type VAction = (r : TRow) => void
+export type RAction = (r? : TAction) => void
 
 export interface ClickActionProps {
   closeAction?: FAction
-  refreshaction?: FAction
+  refreshaction?: RAction
   setvarsaction?: VAction
 }
 

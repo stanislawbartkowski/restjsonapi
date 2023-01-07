@@ -68,7 +68,7 @@ export function getValue(a: ColumnValue, pars: OneRowData): FieldValue {
         // recursive
         return getValue(v, pars);
     }
-    if (a.value) return a.value;
+    if (a.value !== undefined) return a.value;
     return makeMessage(a, pars);
 }
 

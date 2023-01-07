@@ -304,6 +304,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         setRefreno(currnumb + 1)
     }
 
+
     // must be preserve=true (default)
     ltrace(`Render`)
     const form = <Form
@@ -319,7 +320,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     </Form>
 
     const header: ReactNode | undefined = props.header ?
-        <HeaderTable {...props.header} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} ></HeaderTable> :
+        <HeaderTable {...props.header} vars={props.vars} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} ></HeaderTable> :
         undefined
 
     return <React.Fragment>
