@@ -64,5 +64,5 @@ export function createItemList(ir: IFieldContext, t: FField, err: ErrorMessages)
     const dsource: FField[] = t.items as FField[]
     const header = li.header ? makeMessage(li.header, { r: r }) : undefined
     const footer = li.footer ? makeMessage(li.footer, { r: r }) : undefined
-    return <List size="small" header={header} footer={footer} dataSource={dsource} {...li.props} renderItem={(item: FField) => transformToListItem(ir, item, err, li, r)} />
+    return <List size="small" header={header} footer={footer} dataSource={dsource} {...t.props} renderItem={(item: FField) => transformToListItem(ir, item, err, li, r)} />
 }
