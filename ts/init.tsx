@@ -7,8 +7,8 @@ import { getPagePort, isSecEnabled } from '../services/readconf'
 import { setSec } from './j'
 import { initkeyclock } from './keyclock'
 
-async function init(hostname : string) {
-    const PORT = await getPagePort()
+async function init(hostname : string, port : number | undefined) {
+    const PORT = (port !== undefined) ? port : await getPagePort()
     console.log(PORT)
     setHost(`http://${hostname}:${PORT}`);
     await readResource();
