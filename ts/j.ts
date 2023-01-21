@@ -47,8 +47,8 @@ export function isObject(p: any): boolean {
 // origin
 // ===============================
 
-export function getOrigin(): [string, string] {
-  return [window.location.hostname, window.location.port]
+export function getOrigin(): [string, string, number] {
+  return [window.location.hostname, window.location.protocol, +window.location.port]
 }
 
 export function getOriginURL(): string {

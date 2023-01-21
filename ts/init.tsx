@@ -7,10 +7,10 @@ import { getPagePort, isSecEnabled } from '../services/readconf'
 import { setSec } from './j'
 import { initkeyclock } from './keyclock'
 
-async function init(hostname : string, port : number | undefined) {
+async function init(hostname : string, protocol : string, port : number | undefined) {
     const PORT = (port !== undefined) ? port : await getPagePort()
     console.log(PORT)
-    setHost(`http://${hostname}:${PORT}`);
+    setHost(`${protocol}//${hostname}:${PORT}`);
     await readResource();
     addRouterElem(defaults.displayprintrouterid,<PrintDisplay/>)
     const sec : boolean = await isSecEnabled() 
