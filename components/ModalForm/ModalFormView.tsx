@@ -1,11 +1,15 @@
 import React, { forwardRef, ReactNode, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import {
-    Form,
+//    Form,
     Space,
     Divider,
     FormListFieldData
 } from 'antd';
+
+import Form  from 'antd/lib/form'
+import { Callbacks, FieldData, NamePath } from 'rc-field-form/lib/interface';
+
 
 import { FormInstance } from 'antd/es/form';
 
@@ -231,9 +235,16 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const initvals = { ...commonVars(), ...(props.initvals ? transformValuesTo(props.initvals as TRow, props.list) : undefined) }
 
 
-    const onFieldsChanges = (changedFields: Record<string, any>, _: any) => {
+    const onFieldsChanges = (changedFields: FieldData[], allFields: FieldData[]) => {
         if (isEmpty(changedFields)) return
-        const id: string = changedFields[0]["name"][0]
+
+        // do not call if error
+        // 2023/01/22
+        for (var ff of changedFields) {
+            if (ff.errors !== undefined && ff.errors.length > 0) return;
+        }
+
+        const id : NamePath = changedFields[0]["name"] as string
         // check if edit field
         const efield : TField | undefined = findEditField(id,props.fields)
         if (efield !== undefined && istrue(efield.refreshsum)) {
@@ -303,7 +314,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         const currnumb: number = refreshno
         setRefreno(currnumb + 1)
     }
-
 
     // must be preserve=true (default)
     ltrace(`Render`)

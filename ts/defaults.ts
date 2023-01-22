@@ -26,7 +26,7 @@ const defaults: Defaults = {
   cookieage : 7,
   currentfield: "currentfield",
   currentrowkey: "currentrowkey",
-  verstring: "JS: wersja 1.1 (r:07) z dnia 21 stycznia 2023",
+  verstring: "JS: wersja 1.1 (r:08) z dnia 22 stycznia 2023",
   directprefix: "~",
   multichoicevar: "multichoice",
   listpos : "listpos"
