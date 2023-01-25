@@ -18,7 +18,7 @@ import { ButtonAction, FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
-import { callJSFunction, commonVars, copyMap, getSessionId, isEmpty } from '../../ts/j';
+import { callJSFunction, commonVars, copyMap, getSessionId, isEmpty, isString } from '../../ts/j';
 import { FFieldElem, findEditField, genEditClickedRowKey, getValue, istrue, okmoney, tomoney } from '../ts/helper';
 import { transformSingleValue, transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
@@ -244,7 +244,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             if (ff.errors !== undefined && ff.errors.length > 0) return;
         }
 
-        const id : NamePath = changedFields[0]["name"] as string
+        const idn : NamePath = changedFields[0]["name"]
+        const id : string  = (isString(idn)) ? idn as string : (idn as string[])[0]
         // check if edit field
         const efield : TField | undefined = findEditField(id,props.fields)
         if (efield !== undefined && istrue(efield.refreshsum)) {
