@@ -237,11 +237,23 @@ export function genEditClickedRowKey(editid: string): string {
     return editid + "_rowkey"
 }
 
-export function decomposeEditId(id: string): [string, string, number] | undefined {
+export function OLD_decomposeEditId(id: string): [string, string, number] | undefined {
     const s: string[] = id.split('_')
     if (s.length !== 3) return undefined
     return [s[0], s[1], +s[2]]
 }
+
+export function decomposeEditId(id: string): [string, string, number] | undefined {
+    const f : number = id.indexOf('_')
+    if ( f === -1) return undefined
+    const l : number = id.lastIndexOf('_')
+    if (f === l) return undefined
+    const ta: string = id.substring(0,f)
+    const fie: string = id.substring(f+1,l)
+    const num: number = +id.substring(l+1)
+    return [ta, fie, num]
+}
+
 
 export function getEditList(editid: string, r: TRow): RowData | undefined {
     const values: RowData | undefined = (r[editid] as any) as RowData

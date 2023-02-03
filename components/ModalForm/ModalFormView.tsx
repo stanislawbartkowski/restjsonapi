@@ -8,7 +8,7 @@ import {
 } from 'antd';
 
 import Form  from 'antd/lib/form'
-import { Callbacks, FieldData, NamePath } from 'rc-field-form/lib/interface';
+import { FieldData, NamePath } from 'rc-field-form/lib/interface';
 
 
 import { FormInstance } from 'antd/es/form';
@@ -81,8 +81,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const [multiselect, setMultiSelect] = useState<TMultiSelect>(new Map())
     const [tableR, setTableRefresh] = useState<TableRefresh>(new Map())
     const [refreshno, setRefreno] = useState<number>(0)
-    //    const [editTRow, setEditTRow] = useState<TableEditClick>(new Map())
-    //    const [[f], setForm] = useState(Form.useForm())
 
     const [f]: [FormInstance] = Form.useForm()
 

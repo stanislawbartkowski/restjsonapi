@@ -58,7 +58,20 @@ function transformValues(row: TRow, tf: FFieldElem[], from: boolean, initvalsedi
             }
             const l = genEditClickedRowKey(t.field)
             // Data: 2023/01/05
-            if (row[l] !== undefined) res[l] = row[l]
+            const rowkey : number | undefined = row[l] as number
+            if (rowkey !== undefined) {
+                res[l] = rowkey
+                // Data: 2023/02/02
+                // copy content of the current row - risky
+                if (newta.length > 0) {
+                    const row : TRow = newta[rowkey]
+                    const items: TField[] = t.items as TField[]                
+                    for (let f of items) {
+                        res[f.field] = row[f.field]
+                    }
+                }
+            }
+
         }
         if (isEditList(t) && !from) {
             const ta : RowData | undefined = getEditList(t.field,row)
