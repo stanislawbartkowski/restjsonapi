@@ -63,7 +63,7 @@ function transformValues(row: TRow, tf: FFieldElem[], from: boolean, initvalsedi
                 res[l] = rowkey
                 // Data: 2023/02/02
                 // copy content of the current row - risky
-                if (newta.length > 0) {
+                if (rowkey < newta.length) {
                     const row : TRow = newta[rowkey]
                     const items: TField[] = t.items as TField[]                
                     for (let f of items) {
