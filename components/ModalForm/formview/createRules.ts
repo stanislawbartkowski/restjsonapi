@@ -3,7 +3,7 @@ import defaults from "../../../ts/defaults"
 import { makeMessage, callJSFunction } from "../../../ts/j"
 import lstring from "../../../ts/localize"
 import { FIELDTYPE, TRow, RESTMETH, FormMessage, FieldValue } from "../../../ts/typing"
-import { decomposeEditId, isnotdefined } from "../../ts/helper"
+import { decomposeEditId, genEditClickedRowKey, isnotdefined } from "../../ts/helper"
 import { fieldType } from "../../ts/transcol"
 import { transformSingleValue } from "../../ts/transformres"
 import { RestValidatorResult } from "../../ts/typing"
@@ -45,7 +45,8 @@ export function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, 
                             }
                             const editpos: [string, string, number] | undefined = decomposeEditId(f.field)
                             if (editpos !== undefined) {
-                                data[defaults.currentrowkey] = editpos[2]
+                                const currentrow =  genEditClickedRowKey(editpos[0])
+                                data[currentrow] = editpos[2]
                             }
 
                             let dat: TRow = {}
