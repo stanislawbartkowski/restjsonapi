@@ -27,6 +27,7 @@ export type TFieldChange = {
 
 export type UploadStore = Map<string, UploadFile[]>
 export type TMultiSelect = Map<string, FieldValue[]>;
+export type SetMultiSelect = (t : TField, sel: FieldValue[]) => void
 
 
 export interface IFieldContext {
@@ -38,6 +39,7 @@ export interface IFieldContext {
     upSet: (p: UploadStore) => void
     getMulti: () => TMultiSelect
     clickButton: TClickButton
+    setMulti: SetMultiSelect
 }
 
 export type ErrorMessage = {

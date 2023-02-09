@@ -1,13 +1,13 @@
 import React, { forwardRef, ReactNode, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import {
-//    Form,
+    //    Form,
     Space,
     Divider,
     FormListFieldData
 } from 'antd';
 
-import Form  from 'antd/lib/form'
+import Form from 'antd/lib/form'
 import { FieldData, NamePath } from 'rc-field-form/lib/interface';
 
 
@@ -191,17 +191,26 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         setMultiSelectD({ ...t, addpars: transform(t), visible: true })
     }
 
+    function setMulti(f: string, sel: FieldValue[]) {
+        const s = new Map(multiselect)
+        s.set(f, sel);
+        setMultiSelect(s);
+        props.onFieldChange(multiselectD.field)
+        setMultiSelectD(emptySearch)
+    }
+
     const closeMultiD: FAction = (b?: ButtonElem, r?: TRow) => {
         if (b?.choosefield === undefined) {
             setMultiSelectD(emptySearch)
             return;
         }
         const sel: FieldValue[] = (r as TRow)[defaults.multichoicevar] as FieldValue[]
-        const s = new Map(multiselect)
-        s.set(multiselectD.field, sel);
-        setMultiSelect(s);
-        props.onFieldChange(multiselectD.field)
-        setMultiSelectD(emptySearch)
+        setMulti(multiselectD.field, sel)
+        //const s = new Map(multiselect)
+        //s.set(multiselectD.field, sel);
+        //setMultiSelect(s);
+        //props.onFieldChange(multiselectD.field)
+        //setMultiSelectD(emptySearch)
     }
 
     const closeF: FAction = (b?: ButtonElem, r?: TRow) => {
@@ -242,10 +251,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             if (ff.errors !== undefined && ff.errors.length > 0) return;
         }
 
-        const idn : NamePath = changedFields[0]["name"]
-        const id : string  = (isString(idn)) ? idn as string : (idn as string[])[0]
+        const idn: NamePath = changedFields[0]["name"]
+        const id: string = (isString(idn)) ? idn as string : (idn as string[])[0]
         // check if edit field
-        const efield : TField | undefined = findEditField(id,props.fields)
+        const efield: TField | undefined = findEditField(id, props.fields)
         if (efield !== undefined && istrue(efield.refreshsum)) {
             // refesh
             renderD()
@@ -281,7 +290,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         //            props.onFieldChange(id);
         //        },
         fieldChanged: function (t: FField): void {
-            modifyMoney(t)
+            modifyMoney(t);
             props.onFieldChange(t.field);
         },
         getValues: function (): TRow {
@@ -301,7 +310,11 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             return multiselect;
         },
         clickButton: function (clickbutton?: ButtonAction | undefined, row?: TRow | undefined): void {
-            props.clickButton(clickbutton, row)
+            props.clickButton(clickbutton, row);
+        },
+        setMulti: function (t: TField, sel: FieldValue[]): void {
+            console.log(sel)
+            setMulti(t.field, sel)
         }
     }
 

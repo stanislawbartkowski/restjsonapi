@@ -139,6 +139,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 onChange: (r: React.Key[]) => {
                     // if (props.multiSelect) props.multiSelect(r)
                     setMultiChoice(r)
+                    if (props.setmulti)  props.setmulti(r)
                     if (r.length > 0) {
                         const key: React.Key = r[0]
                         console.log(key)

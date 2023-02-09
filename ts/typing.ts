@@ -92,11 +92,13 @@ export type RestTableParam = RESTMETH & {
 export type FAction = (b?: ButtonAction, r?: TRow) => void
 export type VAction = (r : TRow) => void
 export type RAction = (r? : TAction) => void
+export type SetMAction = (sel : FieldValue[]) => void
 
 export interface ClickActionProps {
   closeAction?: FAction
   refreshaction?: RAction
   setvarsaction?: VAction
+  setmulti?: SetMAction
 }
 
 export type ModalFormProps = ClickActionProps & {
