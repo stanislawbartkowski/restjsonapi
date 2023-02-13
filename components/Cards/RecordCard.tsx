@@ -9,7 +9,7 @@ import { fieldTitle, fieldType, HTMLElem, makeDivider, constructactionsCol } fro
 import { FIELDTYPE, OneRowData } from "../../ts/typing";
 import { getButtonName } from "../../ts/j";
 import lstring from "../../ts/localize";
-import getIcon from "../../ts/icons";
+//import getIcon from "../../ts/icons";
 
 function toCardRow(e: TColumn, t: TDetailsCard, pars: OneRowData): ReactNode {
 
@@ -23,6 +23,7 @@ function toCardRow(e: TColumn, t: TDetailsCard, pars: OneRowData): ReactNode {
     </Row>
 }
 
+/*
 const DropMenu: React.FC = () => {
     const menu =
         <Menu >
@@ -31,6 +32,7 @@ const DropMenu: React.FC = () => {
     return <Dropdown.Button icon={getIcon('moreoutlined')} overlay={menu} type='text'>
     </Dropdown.Button>
 }
+*/
 
 const RecordCard: React.FC<TDetailsCard & { a?: TActions, h?: TableHookParam }> = (props) => {
 
@@ -51,8 +53,6 @@ const RecordCard: React.FC<TDetailsCard & { a?: TActions, h?: TableHookParam }> 
             : {}
 
     const propsC = appendStyle(cardProps(props.card), selectedcolors)
-
-    const extra = <DropMenu />
 
     return <Card extra={extram} onClick={() => { if (props.onRowClick) props.onRowClick(props.r) }}
         title={rtitle}
