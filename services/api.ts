@@ -1,17 +1,26 @@
-import request, { ResponseError } from "umi-request";
+import request, { extend, ResponseError } from "umi-request";
 
 import type { FieldValue, FUrlModifier } from "../ts/typing";
-import { log, internalerrorlog, logG}  from '../ts/l'
+import { log, internalerrorlog, logG } from '../ts/l'
 import { HTTPMETHOD } from "../ts/typing";
+import { getSessionId } from "../ts/j";
+import { getUserName } from "../ts/keyclock";
+
 
 const rrequest = request;
+//const rrequest = extend({
+//  headers: {
+//    'sessionid': getSessionId(),
+//  }
+//}
+//)
 let prefix: string = "/"
 
-let host : string = ""
+let host: string = ""
 
 // /restapi
 
-export function enhanceLink(url: string) : string {
+export function enhanceLink(url: string): string {
   const o = host;
   if (url.startsWith("/")) return `${o}${url}`
   else return `${o}/${url}`
@@ -22,7 +31,7 @@ export function setPrefix(p: string) {
   prefix = p
 }
 
-export function getHost() : string {
+export function getHost(): string {
   return host;
 }
 
@@ -44,8 +53,17 @@ export function setUrlModifier(u: FUrlModifier) {
   urlModifier = u
 }
 
-export function getUrlModifier() : FUrlModifier | undefined {
+export function getUrlModifier(): FUrlModifier | undefined {
   return urlModifier
+}
+
+function userHeader() : Record<string,string> {
+  const sessionH = {'sessionid': getSessionId()}
+  if (getUserName() == undefined) return sessionH
+  return  {
+      ...sessionH,
+      'user' : getUserName()
+  }
 }
 
 export async function restapilist(list: string, pars?: Record<string, FieldValue>) {
@@ -53,7 +71,8 @@ export async function restapilist(list: string, pars?: Record<string, FieldValue
   const para: any = urlModifier === undefined ? {} : urlModifier(list);
   return rrequest<Record<string, any>>(url, {
     method: "GET",
-    ...{ params: { ...para, ...pars } },
+    params: { ...para, ...pars  },
+    headers: userHeader()
   });
 }
 
@@ -65,31 +84,36 @@ export async function restapilistdef(resource: string) {
   // listdef
   return rrequest<Record<string, any>>(`${prefix}compdef`, {
     method: "GET",
-    ...{ params: { resource: resource } },
+    params: { resource: resource } ,
+    headers: userHeader()
   });
 }
 
 export async function restapiresource(resource: string) {
   return rrequest<Record<string, any>>(`${prefix}resource`, {
     method: "GET",
-    ...{ params: { resource: resource } },
+    params: { resource: resource },
+    headers: userHeader()
   });
 }
 
 export async function restapijs(resource: string) {
   return rrequest<string>(`${prefix}getjs`, {
     method: "GET",
-    ...{ params: { resource: resource } },
+    params: { resource: resource } ,
+    headers: userHeader()
   });
 }
 
 export async function restaction(method: HTTPMETHOD, restaction: string, pars?: Record<string, FieldValue>, data?: any) {
   const para: any = urlModifier === undefined ? {} : urlModifier(restaction);
   return rrequest<Record<string, any>>(`${prefix}${restaction}`, {
-    
+
     method: method,
     data: data,
-    ...{ getResponse: true, params: { ...para, ...pars } },
+    getResponse: true, 
+    params: { ...para, ...pars },
+    headers: userHeader()
   });
 }
 

@@ -1,4 +1,3 @@
-import { read } from "fs";
 import { getOriginURL } from "../ts/j";
 import { internalerrorlog, log } from "../ts/l";
 
@@ -16,15 +15,6 @@ async function readR(file : string) : Promise<string> {
 }
 
 async function readN(file : string) : Promise<number> {
-//    const url: string = getOriginURL();
-//    const urll : string = `${url}/${file}`
-  
-//    log(`Fething ${urll}`)
-  
-//    const response = await fetch(urll);
-//    const data = await response.text()
-//    log(`Receiving ${data}`)
-    // verify number
     const data = +await readR(file)
     if (isNaN(data)) {
       internalerrorlog(`Incorrect value, number expected`)

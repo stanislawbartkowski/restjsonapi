@@ -1,4 +1,3 @@
-import { lookup } from 'dns';
 import Keycloak, { KeycloakConfig, KeycloakProfile } from 'keycloak-js'
 import { getkeycloak } from '../services/readconf';
 import { isSec } from './j'
