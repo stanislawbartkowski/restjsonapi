@@ -14,7 +14,6 @@ import { ErrorMessages, FField, IFieldContext, ROWKEY } from './types';
 import propsPaging from "../../ts/tablepaging"
 
 
-
 function genAddButton(it: IFieldContext, c: FField) {
 
     if (c.editlist?.addbutton === undefined) return undefined

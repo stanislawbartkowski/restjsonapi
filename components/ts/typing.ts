@@ -349,6 +349,9 @@ export type UploadType = JSSupportedType & ButtonAction & {
 
 export type FieldRestList = JSSupportedType & RestTableParam
 
+export type TGridRow = PropSupportedType
+export type TGridCol = PropSupportedType
+
 export type TField = PropSupportedType & TFieldBase & {
     items?: TField[]
     iprops?: PropsType
@@ -373,6 +376,8 @@ export type TField = PropSupportedType & TFieldBase & {
     actions?: TActions
     refreshsum? : boolean
     col?: TColumn
+    gridrow?: TGridRow
+    gridcol?: TGridCol
 }
 
 // the whole form

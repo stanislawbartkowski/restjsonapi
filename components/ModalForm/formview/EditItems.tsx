@@ -10,7 +10,7 @@ import {
     Checkbox,
     Select,
     SelectProps,
-    FormListFieldData
+    FormListFieldData,
 } from 'antd';
 
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
@@ -18,7 +18,7 @@ import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 
 import { PropsType, FIELDTYPE, FieldValue } from '../../../ts/typing';
 import { getValue, isEditList, isItemGroup, tomoney } from '../../ts/helper';
-import { FGetValues, TField, TRadioCheckItem, ValidatorType } from '../../ts/typing';
+import { FGetValues, TField, TGridRow, TRadioCheckItem, ValidatorType } from '../../ts/typing';
 import { IFieldContext, FField, TFieldChange } from './types';
 import { makeMessage } from '../../../ts/j';
 import { log } from '../../../ts/l';
@@ -58,6 +58,8 @@ export function placeHolder(t: TField) {
     }
     return undefined;
 }
+
+export type elemFactory = (t: TField) => ReactNode
 
 // -------- radio
 
@@ -258,7 +260,6 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
 
 }
 
-
 export function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: FormListFieldData): ReactNode {
 
     if (t.multichoice) return produceMultiChoiceButton(ir, t)
@@ -272,5 +273,4 @@ export function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, na
         {t.divider ? makeDivider(t.divider, { r: {} }) : undefined}
         {produceFormItem(ir, t, err, name)}
     </React.Fragment>
-
 }

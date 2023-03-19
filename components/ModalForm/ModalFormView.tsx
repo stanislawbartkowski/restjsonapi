@@ -26,6 +26,7 @@ import defaults from '../../ts/defaults';
 import HeaderTable from '../HeaderTable'
 import { ErrorMessages, FField, FMultiAction, FSearchAction, FSetEditRow, IFieldContext, TableRefresh, TFieldChange, TMultiSelect, UploadStore } from './formview/types';
 import { produceItem } from './formview/EditItems'
+import { produceBody } from './formview/FormBody';
 
 
 function ltrace(mess: string) {
@@ -327,6 +328,14 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         setRefreno(currnumb + 1)
     }
 
+    function produceFormItem(f: TField) : ReactNode {
+        return produceItem(
+            fieldContext, 
+            { ...f, searchF: searchF, multiF: multiF, tableR: tableR, setvarsaction: props.setvarsaction, seteditRow: setEditRow, rerenderD: renderD }, 
+            props.err
+        )
+    }
+
     // must be preserve=true (default)
     ltrace(`Render`)
     const form = <Form
@@ -335,7 +344,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
         {buttonstop}
 
-        {props.fields.map(e => produceItem(fieldContext, { ...e, searchF: searchF, multiF: multiF, tableR: tableR, setvarsaction: props.setvarsaction, seteditRow: setEditRow, rerenderD: renderD }, props.err))}
+        {produceBody(props.fields, produceFormItem)}
+
 
         {buttonsbottom}
 
