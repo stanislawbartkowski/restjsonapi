@@ -20,7 +20,7 @@ const openNotification = (t: TNotification, pars: OneRowData) => {
             case NotificationKind.ERROR: notification.error({ ...content }); return;
             case NotificationKind.INFO: notification.info({ ...content }); return;
             case NotificationKind.SUCCESS: notification.success({ ...content }); return;
-            case NotificationKind.WARN: notification.warn({ ...content }); return;
+            case NotificationKind.WARN: notification.warning({ ...content }); return;
             case NotificationKind.WARNING: notification.warning({ ...content }); return;
         }
     notification.open({ ...content })

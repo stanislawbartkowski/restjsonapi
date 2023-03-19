@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { PageHeader, Space } from "antd";
+import { Space } from "antd";
+import { PageHeader } from '@ant-design/pro-layout';
 
 import { trace } from "../ts/l";
 import constructButton from "./ts/constructbutton";

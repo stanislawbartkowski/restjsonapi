@@ -1,6 +1,7 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, DatePicker, Input, InputNumber, Space } from "antd";
-import type { Moment } from 'moment'
+//import type { Moment } from 'moment'
+import dayjs from 'dayjs';
 import { FilterConfirmProps, FilterDropdownProps } from "antd/lib/table/interface";
 
 import type { TColumn } from './ts/typing'
@@ -96,13 +97,13 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
   const SearchInput: React.FC<FilterDropdownProps> = ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => {
     switch (c.fieldtype) {
       case FIELDTYPE.DATE: {
-        const d: Moment | undefined = selectedKeys[0] ? dateparseS(selectedKeys[0].toString()) : undefined
+        const d: dayjs.Dayjs | undefined = selectedKeys[0] ? dateparseS(selectedKeys[0].toString()) : undefined
         return <DatePicker mode='date' format={defaults.dateformat}
           placeholder={lstring('searchprompt', coltitle)}
           value={d}
           onChange={
             e => {
-              const s: string | undefined = datetoS(e as Moment)
+              const s: string | undefined = datetoS(e as dayjs.Dayjs)
               setSelectedKeys(e ? [s as string] : [])
             }
           }
