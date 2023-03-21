@@ -25,14 +25,14 @@ export async function initkeyclock() {
     keycloak = new Keycloak(pars)
     log("Keycloak init")
     // await necessary
-    await keycloak.init({ onLoad: 'login-required' }).then(
+    await keycloak.init({ onLoad: 'login-required', flow: 'implicit' }).then(
         () => {
             log("Keyclock initialized and ready")
             isready = true
         }
     ).catch(
         error => {
-            const errmess: string = lstring("errorinitauthorization", error.error);
+            const errmess: string = lstring("errorinitauthorization", error === undefined ? 'unauthorized' : error.error);
             throw new Error(errmess);
         }
     )
