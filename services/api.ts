@@ -1,6 +1,6 @@
 import request, { extend, ResponseError } from "umi-request";
 
-import type { FieldValue, FUrlModifier } from "../ts/typing";
+import type { FHeaderModifier, FieldValue, FUrlModifier } from "../ts/typing";
 import { log, internalerrorlog, logG } from '../ts/l'
 import { HTTPMETHOD } from "../ts/typing";
 import { getSessionId } from "../ts/j";
@@ -48,6 +48,11 @@ export function setHost(prefix: string) {
 }
 
 let urlModifier: FUrlModifier | undefined = undefined;
+let headerModifier: FHeaderModifier| undefined = undefined;
+
+export function setHeaderModifier(u : FHeaderModifier) {
+  headerModifier = u;
+}
 
 export function setUrlModifier(u: FUrlModifier) {
   urlModifier = u
@@ -58,11 +63,13 @@ export function getUrlModifier(): FUrlModifier | undefined {
 }
 
 function userHeader() : Record<string,string> {
-  const sessionH = {'sessionid': getSessionId()}
-  if (getUserName() == undefined) return sessionH
+  const sessionH : Record<string,string> = {'sessionid': getSessionId()}
+  const userH : Record<string,string> = (getUserName() === undefined) ? {} : {'user' : (getUserName() as string)}
+  const modifH: Record<string,string> = (headerModifier === undefined) ? {} : headerModifier()
   return  {
       ...sessionH,
-      'user' : getUserName()
+      ...userH,
+      ...modifH
   }
 }
 

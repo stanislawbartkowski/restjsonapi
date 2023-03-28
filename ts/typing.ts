@@ -25,6 +25,7 @@ export type FIsSelected = (t: TRow) => boolean;
 export type OnRowClick = (r: TRow) => void
 
 export type FUrlModifier = (list: string) => undefined | Record<string, string>;
+export type FHeaderModifier = () => Record<string, string>;
 
 
 // ============================================================
