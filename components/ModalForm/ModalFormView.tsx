@@ -88,7 +88,13 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     const onFinish = (values: TRow) => {
         ltrace('Success, data validated')
-        props.buttonClicked(transformValuesFrom(values, props.list, props.initvals))
+
+        // do not copy restlist
+        // Data: 2023/03/29
+        const rlist : FFieldElem[] = props.list.filter( t => t.restlist === undefined)
+        const tvals : TRow = transformValuesFrom(values, rlist, props.initvals) 
+
+        props.buttonClicked(tvals)
     };
 
     const getV = (): TRow => {
