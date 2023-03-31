@@ -70,9 +70,17 @@ function createRadioItem(e: TRadioCheckItem, button?: boolean): ReactNode {
 
 }
 
+function createProps(t: TField) {
+    const props = t.iprops ? { ...t.iprops } : {}
+    if (t.disabled) {
+        props["disabled"] = true
+    }
+    return props
+}
+
 function createRadioGroup(t: TField): ReactNode {
 
-    return <Radio.Group {...t.iprops}>
+    return <Radio.Group {...createProps(t)}>
         {
             (t.radio?.items as TRadioCheckItem[]).map(e => createRadioItem(e, t.radio?.button))
         }
@@ -91,7 +99,7 @@ function createSelectGroup(t: TField, items: TRadioCheckItem[], multi: boolean):
     const clear: SelectProps = isNotRequired(t) ? { allowClear: true } : { allowClear: false }
     const p: SelectProps = multi ? { mode: "multiple" } : {}
 
-    return <Select {...p} {...clear} {...t.iprops} {...placeHolder(t)} >
+    return <Select {...p} {...clear} {...createProps(t)} {...placeHolder(t)} >
         {
             items.map(e => <Select.Option value={e.value} {...e.props}>{itemName(e)}</Select.Option>)
         }
@@ -130,6 +138,14 @@ function curryOnInput(t: TField) {
     return onInput
 }
 
+function curryOnTextAreaInput(t: TField) {
+    const onInput: FocusEventHandler<HTMLTextAreaElement> = (c: React.FocusEvent) => {
+        if (t.toupper) (c.target as HTMLTextAreaElement).value = (c.target as HTMLTextAreaElement).value.toUpperCase()
+        if (t.tolower) (c.target as HTMLTextAreaElement).value = (c.target as HTMLTextAreaElement).value.toLowerCase()
+    }
+    return onInput
+}
+
 
 function searchItem(ir: IFieldContext, t: FField, listfield?: FormListFieldData): React.ReactNode {
 
@@ -143,7 +159,7 @@ function searchItem(ir: IFieldContext, t: FField, listfield?: FormListFieldData)
         t.searchF(value, { ...t, listfield: listfield });
     }
 
-    return <Input.Search onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...t.iprops}  {...enterButton(t)} onSearch={onSearchButton} />
+    return <Input.Search onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...createProps(t)}  {...enterButton(t)} onSearch={onSearchButton} />
 }
 
 // ===========================================
@@ -177,6 +193,12 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
         checkchange(ir, c.target.id, t)
     }
 
+    const onBlurTextArea: FocusEventHandler<HTMLTextAreaElement> = (c: React.FocusEvent) => {
+        const id: string = c.target.id
+        log(id + " on blur")
+        checkchange(ir, c.target.id, t)
+    }
+
     if (isItemGroup(t)) {
         return [<React.Fragment>
             {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR, setvarsaction: t.setvarsaction, seteditRow: t.seteditRow, rerenderD: t.rerenderD }, err, field))}
@@ -193,6 +215,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
         else return [createCheckBoxGroup(t), undefined]
 
     const fieldtype: FIELDTYPE = fieldType(t)
+    const iprops = createProps(t)
 
     // except boolean/switch - change reported when blurred
     if (fieldtype !== FIELDTYPE.BOOLEAN && fieldtype !== FIELDTYPE.DATE) ir.getChanges().notescalatewhenchange.add(t.field)
@@ -210,11 +233,11 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
     }
 
     switch (fieldtype) {
-        case FIELDTYPE.NUMBER: return [<InputNumber onBlur={onBlur} {...placeHolder(t)} {...t.iprops} {...disabledp} />, { ...valuep }]
+        case FIELDTYPE.NUMBER: return [<InputNumber onBlur={onBlur} {...placeHolder(t)} {...iprops} {...disabledp} />, { ...valuep }]
         case FIELDTYPE.DATE:
-            if (t.range) return [<RangePicker onBlur={onBlur} {...t.iprops} />, undefined]
-            return [<DatePicker {...placeHolder(t)} {...t.iprops} {...disabledp} />, { ...valuep }]
-        case FIELDTYPE.BOOLEAN: return [<Switch {...t.iprops}
+            if (t.range) return [<RangePicker onBlur={onBlur} {...iprops} />, undefined]
+            return [<DatePicker {...placeHolder(t)} {...iprops} {...disabledp} />, { ...valuep }]
+        case FIELDTYPE.BOOLEAN: return [<Switch {...iprops}
             checkedChildren={<CheckOutlined />}
             unCheckedChildren={<CloseOutlined />}
             {...disabledp}
@@ -224,7 +247,8 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
     }
 
     return t.enterbutton ? [searchItem(ir, t, field), undefined] :
-        [<Input onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...t.iprops} {...disabledp} />, { ...valuep }]
+        t.istextarea ? [<Input.TextArea onInput={curryOnTextAreaInput(t)} onBlur={onBlurTextArea} {...placeHolder(t)}  {...iprops} {...disabledp} />, { ...valuep }]
+            : [<Input onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...iprops} {...disabledp} />, { ...valuep }]
 }
 
 function errorMessage(t: FField, err: ErrorMessages): {} | { validateStatus: ValidateStatus, help: string[] } {

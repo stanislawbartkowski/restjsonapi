@@ -378,6 +378,8 @@ export type TField = PropSupportedType & TFieldBase & {
     col?: TColumn
     gridrow?: TGridRow
     gridcol?: TGridCol
+    disabled?: boolean
+    istextarea?: boolean
 }
 
 // the whole form
