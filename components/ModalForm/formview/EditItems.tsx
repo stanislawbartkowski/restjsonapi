@@ -17,8 +17,8 @@ import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 
 import { PropsType, FIELDTYPE, FieldValue } from '../../../ts/typing';
-import { getValue, isEditList, isItemGroup, tomoney } from '../../ts/helper';
-import { FGetValues, TField, TGridRow, TRadioCheckItem, ValidatorType } from '../../ts/typing';
+import { getValue, isEditList, isItemGroup } from '../../ts/helper';
+import { FGetValues, TField, TRadioCheckItem, ValidatorType } from '../../ts/typing';
 import { IFieldContext, FField, TFieldChange } from './types';
 import { makeMessage } from '../../../ts/j';
 import { log } from '../../../ts/l';
@@ -130,18 +130,34 @@ function enterButton(t: TField) {
     return undefined
 }
 
+function changetoMoney(val: string): string {
+    return val.replace(',', '.')
+}
+
+function onTextInput(c: React.FocusEvent, t: TField) {
+
+    const inputVal: string = (fieldType(t) === FIELDTYPE.MONEY) ?
+        changetoMoney((c.target as HTMLInputElement).value) :
+        (c.target as HTMLInputElement).value
+
+
+    if (t.toupper) (c.target as HTMLInputElement).value = inputVal.toUpperCase()
+    else
+        if (t.tolower) (c.target as HTMLInputElement).value = inputVal.toLowerCase()
+        else (c.target as HTMLInputElement).value = inputVal
+
+}
+
 function curryOnInput(t: TField) {
     const onInput: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
-        if (t.toupper) (c.target as HTMLInputElement).value = (c.target as HTMLInputElement).value.toUpperCase()
-        if (t.tolower) (c.target as HTMLInputElement).value = (c.target as HTMLInputElement).value.toLowerCase()
+        onTextInput(c, t)
     }
     return onInput
 }
 
 function curryOnTextAreaInput(t: TField) {
     const onInput: FocusEventHandler<HTMLTextAreaElement> = (c: React.FocusEvent) => {
-        if (t.toupper) (c.target as HTMLTextAreaElement).value = (c.target as HTMLTextAreaElement).value.toUpperCase()
-        if (t.tolower) (c.target as HTMLTextAreaElement).value = (c.target as HTMLTextAreaElement).value.toLowerCase()
+        onTextInput(c, t)
     }
     return onInput
 }

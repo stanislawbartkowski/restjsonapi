@@ -51,6 +51,7 @@ function constructTColumn(it: IFieldContext, t: FField, editid: string, err: Err
     return {
         title: <React.Fragment>{mess}</React.Fragment>,
         dataIndex: t.field,
+        ...t.props,
         render: t.actions ? constructRenderAction(it, t, err, editid) : constructRenderCell(it, t, err, editid)
     }
 }
