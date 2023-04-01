@@ -37,6 +37,7 @@ export interface IIRefCall {
     // used while setting variables during execute actions
     setVals: FSetValues
     formGetVals: FGetValues
+    retAction?: (b: TAction, row: TRow) => void
 }
 
 export interface ModalHooks {
@@ -150,6 +151,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
 
+
     const iiref: IIRefCall = {
         setMode: (loading: boolean, errors: ErrorMessages) => {
             if (ftype === TPreseEnum.Steps)
@@ -174,7 +176,12 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         },
         formGetVals: function (): TRow {
             return getVals();
+        },
+        retAction: (b: TAction, row: TRow) => {
+            const a = "aaaa"
+            _clickButton(b as ButtonAction, row)
         }
+
     }
 
     useImperativeHandle(iref, () => (iiref)
