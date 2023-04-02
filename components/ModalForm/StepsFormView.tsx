@@ -19,7 +19,7 @@ function constructStep(p: StepsElem, key: number, last: boolean, errorstep: bool
 
 type TData = {
   current: number,
-//  vars?: TRow
+  //  vars?: TRow
   errorstep: number | undefined
   // TODO: remove
   aftermove?: boolean
@@ -34,8 +34,8 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
   const ref: MutableRefObject<IIRefCall | undefined> = useRef<IIRefCall>();
 
   function setC(current: number, vars: TRow | undefined, b: ClickResult, visited: Set<number>) {
-//    const v: TRow | undefined = ref.current?.getVals();
-//    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined, aftermove: true, visited: visited })
+    //    const v: TRow | undefined = ref.current?.getVals();
+    //    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined, aftermove: true, visited: visited })
     setCurrent({ current: current, errorstep: b.steperror ? current : undefined, aftermove: true, visited: visited })
   }
 
@@ -45,14 +45,13 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
     },
     getVals: () => {
       const ar: TRow | undefined = ref.current?.getVals()
-//      return { ...c.vars, ...ar }
-      return {...ar }
+      //      return { ...c.vars, ...ar }
+      return { ...ar }
     },
     doAction: (b: ClickResult) => {
-      log(`doaction`)
       let current: number = c.current
       // ---------- refresh global vars
-      const va : TRow = ref.current?.formGetVals() as TRow
+      const va: TRow = ref.current?.formGetVals() as TRow
       if (props.setInitValues) props.setInitValues(va);
       // -----------------------------
       const visited: Set<number> = new Set<number>(c.visited)
@@ -74,21 +73,12 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
     setVals: (r: TRow) => {
       ref.current?.setVals(r)
     },
-    formGetVals : () => {
+    formGetVals: () => {
       return ref.current?.formGetVals() as TRow
     }
   })
   )
 
-//  const clickB: TClickButton = (b?: ButtonAction, row?: TRow) => {
-//    const v: TRow | undefined = ref.current?.getVals();
-//    if (props.clickButton) props.clickButton(b, { ...v, ...c.vars, ...row })
-//  }
-
-//<ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} clickButton={clickB} visible ispage initvals={initvals} ignorerestapivals={c.visited.has(c.current)} />
-
-//  const initvals: TRow = { ...props.initvals, ...c.vars }
-  //const vals : TRow = props.getValues ? props.getValues() : {}
   const vals: TRow = {}
   const initvals: TRow = { ...props.initvals, ...vals }
 

@@ -1,9 +1,9 @@
-import { getOriginURL } from "../ts/j";
+import { getConfigURL } from "../ts/j";
 import { internalerrorlog, log } from "../ts/l";
 
 
 async function readR(file : string) : Promise<string> {
-    const url: string = getOriginURL();
+    const url: string = await getConfigURL();
     const urll : string = `${url}/${file}`
   
     log(`Fething ${urll}`)

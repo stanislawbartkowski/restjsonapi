@@ -12,6 +12,11 @@ import { TableHookParam, TAction, TActions, TField, ButtonAction, TColumns, TCli
 import { produceFormItem } from './EditItems';
 import { ErrorMessages, FField, IFieldContext, ROWKEY } from './types';
 import propsPaging from "../../ts/tablepaging"
+import { trace } from '../../../ts/l';
+
+function ltrace(mess: string) {
+    trace('EditTable', mess)
+}
 
 
 function genAddButton(it: IFieldContext, c: FField) {
@@ -129,12 +134,11 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
 
     function clickedRow(r: TRow) {
         const rowkey: number = r[ROWKEY] as number
+        ltrace(`Clicked row ${rowkey}`)
         t.seteditRow(t.field, rowkey)
-
     }
 
     const onChange: PaginationProps['onChange'] = (pageNumber) => {
-        console.log('Page: ', pageNumber);
         t.rerenderD()
     };
 

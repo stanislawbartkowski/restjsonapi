@@ -202,7 +202,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         const nvars: TRow = constructCurVals(row)
         setInitVals(nvars);
         const res: TComponentProps | undefined = executeAction({ ...props, i: iiref }, button, nvars);
-        console.log(row)
         if (res) {
             setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF } })
         }
@@ -286,11 +285,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
 
     const fclick: FClickButton = (b: ButtonAction) => {
-        ltrace(`Button clicked: ${b.id}`)
         buttonclicked.current = b
         const v: TRow = ref.current.getValues()
         if (b.validate) {
-            ltrace('Button with validate props, call form validation')
             if (!formvalidate(v)) return;
             const iref: IRefCall = ref.current
             iref.validate()
@@ -328,8 +325,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : props.initvals
                 //                const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : isModalFormCookies(tabledata) ? getCookiesFormListDefVars(props.listdef as string) : props.initvals
                 if (vars !== undefined) {
-                    ltrace("readdefs")
-                    console.log(vars)
                 }
                 setState({
                     status: Status.READY,
@@ -339,13 +334,11 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                     initvals: vars,
                 });
                 if (istrue(props.ignorerestapivals)) {
-                    if (formdef.tabledata?.jsrestapivals) ltrace("Ignore jsrestapivals for the second time")
                     return undefined
                 } else {
                     let jsvars: TRow | undefined = undefined
                     if (tabledata.jsrestapivals) {
                         jsvars = callJSFunction(tabledata.jsrestapivals as string, { r: {}, vars: props.vars as TRow });
-                        ltrace("useEffect jsrestapivals")
                         console.log(initvals)
                     }
                     const ar: TRow = { ...d.initvar, ...jsvars }
@@ -410,7 +403,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         const f: FFieldElem | undefined = felem[0]
         if (f === undefined) return
         const v: TRow = ref.current.getValues()
-        console.log(v)
         if (f.onchange) {
             clickButton(f.onchange, v)
         }
@@ -432,7 +424,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     const restapiname = formdef.tabledata?.restapivals ? isString(formdef.tabledata?.restapivals) ? formdef.tabledata?.restapivals as string : (formdef.tabledata?.restapivals as RESTMETH).restaction : undefined
 
     const refreshAction: RAction = (r?: TAction) => {
-        console.log("refreshAction")
         if (r?.vars) {
             iiref.setVals(r.vars)
         }

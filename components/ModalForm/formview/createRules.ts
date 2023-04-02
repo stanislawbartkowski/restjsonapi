@@ -1,13 +1,32 @@
-import { Rule } from "antd/lib/form"
+import { Rule, RuleObject } from "antd/lib/form"
+
 import defaults from "../../../ts/defaults"
 import { makeMessage, callJSFunction } from "../../../ts/j"
 import lstring from "../../../ts/localize"
-import { FIELDTYPE, TRow, RESTMETH, FormMessage, FieldValue } from "../../../ts/typing"
+import { FIELDTYPE, TRow, RESTMETH, FormMessage, FieldValue, FieldDefaults } from "../../../ts/typing"
 import { decomposeEditId, genEditClickedRowKey, isnotdefined } from "../../ts/helper"
 import { fieldType } from "../../ts/transcol"
 import { transformSingleValue } from "../../ts/transformres"
 import { RestValidatorResult } from "../../ts/typing"
 import { IFieldContext, FField } from "./types"
+import { findLabel } from "../../../ts/readresource"
+
+
+function updateRulesbyLabel(t: FField, rules: Rule[]) {
+    if (t.label === undefined) return
+    const d: FieldDefaults | undefined = findLabel(t.label)
+    if (d === undefined) return
+    if (d.len !== undefined) {
+        // find len
+        if (rules.find(r => (r as RuleObject).len !== undefined) === undefined) 
+            rules.push({ len: d.len })
+    }
+    if (d.max !== undefined) {
+        // find max
+        if (rules.find(r => (r as RuleObject).max !== undefined) === undefined) 
+            rules.push({ max: d.max })
+    }
+}
 
 export function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, boolean] {
 
@@ -45,7 +64,7 @@ export function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, 
                             }
                             const editpos: [string, string, number] | undefined = decomposeEditId(f.field)
                             if (editpos !== undefined) {
-                                const currentrow =  genEditClickedRowKey(editpos[0])
+                                const currentrow = genEditClickedRowKey(editpos[0])
                                 data[currentrow] = editpos[2]
                             }
 
@@ -68,6 +87,8 @@ export function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, 
             }
 
         })
+
+    updateRulesbyLabel(t, rules)
 
     return [rules.length === 0 ? undefined : rules, required]
 

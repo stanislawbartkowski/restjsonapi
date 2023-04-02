@@ -53,7 +53,6 @@ function ltrace(mess: string) {
 
 function transformError(e: FieldError, pars: OneRowData): ErrorMessage {
     const mess: string = makeMessage(e.err, pars) as string
-    ltrace(`${e.field} error message: ${mess}`)
     return { field: e.field, message: mess }
 }
 
@@ -102,7 +101,6 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
     const close: FAction = () => {
         if (props.closeAction) props.closeAction()
     }
-    ltrace('clickButton function')
     if (button === undefined) {
         close()
         return;

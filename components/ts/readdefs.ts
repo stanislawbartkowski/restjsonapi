@@ -68,7 +68,6 @@ async function resolveRest(tl: TField[]): Promise<TField[]> {
                         label: { messagedirect: getLabel(rest, r) } as FormMessage
                     }
                 })
-                console.log(tr)
                 if (c.checkbox) c.checkbox = { ...tr }
                 if (c.radio) c.radio = { ...tr }
             }
@@ -82,7 +81,6 @@ async function resolveRest(tl: TField[]): Promise<TField[]> {
 async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: boolean) {
 
     const def: string = props.listdef ? props.listdef : props.list as string
-    log(`Reading definition ${def}`)
 
     try {
         const idef: PreseForms = await restapilistdef(def) as PreseForms

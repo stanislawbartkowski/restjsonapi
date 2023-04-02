@@ -16,7 +16,7 @@ import {
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 
-import { PropsType, FIELDTYPE, FieldValue } from '../../../ts/typing';
+import { PropsType, FIELDTYPE, FieldValue, FieldDefaults } from '../../../ts/typing';
 import { getValue, isEditList, isItemGroup } from '../../ts/helper';
 import { FGetValues, TField, TRadioCheckItem, ValidatorType } from '../../ts/typing';
 import { IFieldContext, FField, TFieldChange } from './types';
@@ -33,6 +33,7 @@ import { produceStatIem } from './StatItem';
 import { produceUploadItem } from './UploadItem';
 import { produceMultiChoiceButton } from './MultiChoiceButton';
 import { createRules } from './createRules';
+import { findLabel } from '../../../ts/readresource';
 
 const { RangePicker } = DatePicker;
 
@@ -167,7 +168,6 @@ function searchItem(ir: IFieldContext, t: FField, listfield?: FormListFieldData)
 
     const onBlur: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
         const id: string = c.target.id
-        log(id + " on blur")
         checkchange(ir, c.target.id, t)
     }
 
@@ -205,13 +205,11 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
 
     const onBlur: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
         const id: string = c.target.id
-        log(id + " on blur")
         checkchange(ir, c.target.id, t)
     }
 
     const onBlurTextArea: FocusEventHandler<HTMLTextAreaElement> = (c: React.FocusEvent) => {
         const id: string = c.target.id
-        log(id + " on blur")
         checkchange(ir, c.target.id, t)
     }
 
@@ -273,10 +271,20 @@ function errorMessage(t: FField, err: ErrorMessages): {} | { validateStatus: Val
     return { validateStatus: 'error', help: [e.message] }
 }
 
+function prepareStyleByLabel(t: FField) {
+    if (t.label == undefined) return undefined
+    const d: FieldDefaults | undefined = findLabel(t.label)
+    if (d === undefined || d.width === undefined) return undefined
+    const css: React.CSSProperties = { width: d.width }
+    return {
+        style: css
+    }
+}
+
 export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, listfield?: FormListFieldData): React.ReactNode {
 
     const [rules, required] = createRules(ir, t)
-    const props = { ...t.props }
+    const props: PropsType = { ...t.props }
     if (props.rules && rules) {
         props.rules = rules.concat(props.rules)
     }
@@ -294,7 +302,7 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
 
     const nameT = listfield === undefined ? { name: t.field } : { name: [listfield.name, t.field] }
 
-    return <Form.Item {...props} {...nameT} id={t.field} key={t.field} {...requiredprops} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]} >
+    return <Form.Item {...prepareStyleByLabel(t)} {...props} {...nameT} id={t.field} key={t.field} {...requiredprops} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]} >
         {elemp[0]}
     </Form.Item>
 

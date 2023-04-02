@@ -2,9 +2,17 @@ import { ReactNode } from "react";
 import { restapijs, restapiresource } from "../services/api";
 import { log } from "./l";
 import { setStrings } from "./localize";
-import type { MenuLeft } from "./typing";
+import type { AppDefaults, FieldDefaults, MenuLeft } from "./typing";
 import { setLeftMenu } from './leftmenu'
 
+
+let appdefaults : AppDefaults| undefined = undefined
+
+export function findLabel(label: string) : FieldDefaults | undefined {
+
+  return appdefaults?.fields.find( e => e.label === label)
+
+}
 
 let headerLine: ReactNode | undefined = undefined
 
@@ -45,6 +53,9 @@ async function readResource() {
   log("Resource leftmenu read");
   appdata = await restapiresource("appdata");
   log("Resource appdata read");
+
+  appdefaults = await restapiresource("defaults") as AppDefaults
+  log("App defaults read")
 
   const js: string | undefined = appdata.js
 

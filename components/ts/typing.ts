@@ -270,7 +270,7 @@ export type TCard = {
 // radio&check
 
 export type TItemsRest = RESTMETH & {
-//    restaction: string;
+    //    restaction: string;
     value: string
     label: FormMessage
 }
@@ -374,12 +374,13 @@ export type TField = PropSupportedType & TFieldBase & {
     toupper?: boolean
     tolower?: boolean
     actions?: TActions
-    refreshsum? : boolean
+    refreshsum?: boolean
     col?: TColumn
     gridrow?: TGridRow
     gridcol?: TGridCol
     disabled?: boolean
     istextarea?: boolean
+    label?: string
 }
 
 // the whole form

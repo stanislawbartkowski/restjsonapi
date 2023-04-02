@@ -41,8 +41,7 @@ const LeftMenu: React.FC<TLeftMenu> = (props) => {
 
 
   const location = useLocation();
-  //console.log(location.pathname);
-
+  
   return (
     <React.Fragment>
       <div className="logo">

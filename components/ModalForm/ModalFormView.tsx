@@ -87,8 +87,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
 
     const onFinish = (values: TRow) => {
-        ltrace('Success, data validated')
-
         // do not copy restlist
         // Data: 2023/03/29
         const rlist : FFieldElem[] = props.list.filter( t => t.restlist === undefined)
@@ -136,11 +134,9 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             return getVals()
         },
         validate: () => {
-            ltrace('submit');
             f.submit()
         },
         refreshTable(field: string) {
-            ltrace('Refresh table {field}')
             const ntableR: TableRefresh = copyMap(tableR)
             ntableR.set(field, ntableR.get(field) !== undefined ? ntableR.get(field) as number + 1 : 1);
             setTableRefresh(ntableR)
@@ -149,14 +145,9 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     useEffect(() => {
 
-        console.log(props.initvals)
         let vals: TRow | undefined
         if (props.initvals) {
-            ltrace("useEffect initvals")
-            console.log(props.initvals)
             vals = transformValuesTo(props.initvals, props.list);
-            ltrace("useEffect initvals transformed")
-            console.log(vals)
         }
         // recalculate getVal
         const l: FFieldElem[] = props.list
@@ -171,8 +162,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
         if (vals !== undefined) {
             f.setFieldsValue(vals);
-            ltrace("useEffect initvals transformed only value")
-            console.log(vals)
         }
 
     }, [props.initvals, refreshno])
@@ -266,7 +255,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             // refesh
             renderD()
         }
-        log(id + " changed")
         // check, if field is null
         const r: TRow = f.getFieldsValue()
         if (r[id] === undefined) {
@@ -320,7 +308,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             props.clickButton(clickbutton, row);
         },
         setMulti: function (t: TField, sel: FieldValue[]): void {
-            console.log(sel)
             setMulti(t.field, sel)
         }
     }
@@ -343,7 +330,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     }
 
     // must be preserve=true (default)
-    ltrace(`Render`)
     const form = <Form
         form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges} preserve={false}
         layout="horizontal" scrollToFirstError {...props.formprops} onFieldsChange={onFieldsChanges} >

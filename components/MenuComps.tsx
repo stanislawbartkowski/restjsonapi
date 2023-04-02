@@ -74,7 +74,6 @@ export const MenuDirElemComponent: React.FC<MenuElem> = (props) => {
     });
 
     const { id } = useParams();
-    console.log(id)
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {

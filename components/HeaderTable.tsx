@@ -41,7 +41,6 @@ const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshacti
   };
 
   function clickButton(b: ButtonAction) {
-    ltrace(b.id)
     const ii: IIButtonAction = createII(b, props.vars as TRow, props.selectedM)
     if (isChooseButton(ii.res, props.r)) props.fbutton(b, ii.rr)
     if (ispopupDialog(ii.res)) setIsModalVisible({ vars: { ...props.vars }, ...(ii.res as ClickAction), visible: true, closeAction: fmodalhook })

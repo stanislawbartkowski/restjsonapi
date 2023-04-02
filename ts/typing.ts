@@ -64,7 +64,7 @@ export type ButtonElem = PropSupportedType & {
 // ===========================
 
 export type RESTMETH = {
-  jsaction? : string
+  jsaction?: string
   restaction?: string
   method?: HTTPMETHOD;
   upload?: boolean;
@@ -81,7 +81,7 @@ export type RestTableParam = RESTMETH & {
   component?: string
   modalprops?: PropsType
   choosing?: boolean
-  initsel? : FieldValue[]
+  initsel?: FieldValue[]
   multiselect?: boolean
 };
 
@@ -91,9 +91,9 @@ export type RestTableParam = RESTMETH & {
 
 
 export type FAction = (b?: ButtonAction, r?: TRow) => void
-export type VAction = (r : TRow) => void
-export type RAction = (r? : TAction) => void
-export type SetMAction = (sel : FieldValue[]) => void
+export type VAction = (r: TRow) => void
+export type RAction = (r?: TAction) => void
+export type SetMAction = (sel: FieldValue[]) => void
 
 export interface ClickActionProps {
   closeAction?: FAction
@@ -173,10 +173,24 @@ export enum FIELDTYPE {
 // Localized message
 // ==============================
 
-//export type FormMessage = JSSupportedType & (string | undefined) & {
 export type FormMessage = JSSupportedType & {
   messagedirect?: string
   message?: string
   params?: string[]
+}
+
+// ==========================
+// defaults
+// ==========================
+
+export type FieldDefaults = {
+  label: string
+  len?: number
+  max?: number
+  width?: number|string
+}
+
+export type AppDefaults = {
+  fields: FieldDefaults[]
 }
 
