@@ -56,6 +56,10 @@ export function getOriginURL(): string {
   return window.location.origin;
 }
 
+export function getOriginHREF(): string {
+  return window.location.href
+}
+
 export function isDev(): boolean {
   return process.env.NODE_ENV !== 'production'
 }
@@ -64,7 +68,7 @@ export async function getServerUrl() : Promise<string> {
   if (isDev()) {
     return getDevServer()    
   }
-  return getOriginURL()
+  return getOriginHREF()
 }
 
 // ==============================
