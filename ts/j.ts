@@ -56,6 +56,10 @@ export function getOriginURL(): string {
   return window.location.origin;
 }
 
+function transformURL(url: string): string {
+  return url[url.length - 1] === '/' ? url.slice(0, -1) : url
+}
+
 export function getOriginHREF(): string {
   return window.location.href
 }
@@ -64,11 +68,11 @@ export function isDev(): boolean {
   return process.env.NODE_ENV !== 'production'
 }
 
-export async function getServerUrl() : Promise<string> {
+export async function getServerUrl(): Promise<string> {
   if (isDev()) {
-    return getDevServer()    
+    return getDevServer()
   }
-  return getOriginHREF()
+  return transformURL(getOriginHREF())
 }
 
 // ==============================
@@ -79,7 +83,7 @@ export async function getServerUrl() : Promise<string> {
 export function makeMessage(m: FormMessage, pars: OneRowData = { r: {} }): string | undefined {
 
   if (isString(m)) {
-    const mm : string = m as string
+    const mm: string = m as string
     if (mm.startsWith(defaults.directprefix)) return mm.substring(defaults.directprefix.length)
     return lstring(m as string)
   }
