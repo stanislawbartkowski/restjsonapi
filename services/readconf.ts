@@ -23,8 +23,8 @@ async function readN(file : string) : Promise<number> {
 
 }
 
-export async function getPagePort() : Promise<number> {
-    return readN('PORT')
+export async function getDevServer() : Promise<string> {
+    return readR('DEVSERVER')
 }
 
 export async function isSecEnabled() : Promise<boolean> {

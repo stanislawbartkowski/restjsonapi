@@ -3,6 +3,7 @@
 // ====================
 
 import validateObject, { ObjectType } from "../components/ts/validateobject";
+import { getDevServer } from "../services/readconf";
 import defaults from "./defaults";
 import { log } from "./l";
 import lstring from "./localize";
@@ -57,6 +58,13 @@ export function getOriginURL(): string {
 
 export function isDev(): boolean {
   return process.env.NODE_ENV !== 'production'
+}
+
+export async function getServerUrl() : Promise<string> {
+  if (isDev()) {
+    return getDevServer()    
+  }
+  return getOriginURL()
 }
 
 // ==============================
