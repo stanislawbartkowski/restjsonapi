@@ -7,7 +7,7 @@ import { getDevServer } from "../services/readconf";
 import defaults from "./defaults";
 import { log } from "./l";
 import lstring from "./localize";
-import type { ButtonElem, FormMessage, OneRowData, TRow } from "./typing";
+import type { ButtonElem, FieldValue, FormMessage, OneRowData, TRow } from "./typing";
 
 export function callJSFunction(jsAction: string, par: OneRowData): any {
   const clickaction = new Function("p,vars,t", "return " + jsAction + "(p,vars,t)");
@@ -43,6 +43,12 @@ export function isBool(p: any): boolean {
 export function isObject(p: any): boolean {
   return typeof p === "object";
 }
+
+export function toS(f: FieldValue): string {
+  const value: string = isNumber(f) ? (f as number)?.toString() : f as string
+  return value
+}
+
 
 // ===============================
 // origin

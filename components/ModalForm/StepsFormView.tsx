@@ -34,8 +34,6 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
   const ref: MutableRefObject<IIRefCall | undefined> = useRef<IIRefCall>();
 
   function setC(current: number, vars: TRow | undefined, b: ClickResult, visited: Set<number>) {
-    //    const v: TRow | undefined = ref.current?.getVals();
-    //    setCurrent({ current: current, vars: { ...c.vars, ...v, ...vars }, errorstep: b.steperror ? current : undefined, aftermove: true, visited: visited })
     setCurrent({ current: current, errorstep: b.steperror ? current : undefined, aftermove: true, visited: visited })
   }
 

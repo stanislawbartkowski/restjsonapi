@@ -1,7 +1,8 @@
 import { PreseForms, TField, TForm, TItemsRest, TPreseEnum, TRadioCheck } from "./typing";
 import { log } from "../../ts/l";
 import { callJSFunction, commonVars, isOArray, isString, makeMessage } from "../../ts/j";
-import type { FieldValue, FormMessage, HTTPMETHOD, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
+import type { FieldValue, FormMessage, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
+import { HTTPMETHOD } from "../../ts/typing";
 import { restapilistdef, restapijs, restapishowdetils, restapilist, restaction } from "../../services/api";
 import { Status, ColumnList, ShowDetails } from "./typing";
 import { isItemGroup, isnotdefined, istrue, preseT } from './helper'
@@ -21,7 +22,7 @@ export async function readvals(initval: string | RESTMETH, vars?: TRow, params?:
     if (isString(initval)) return await restapilist(initval as string, params)
     const rr: RESTMETH = initval as RESTMETH
     const r: RESTMETH = rr.jsaction ? callJSFunction(rr.jsaction, { r: {}, vars: vars }) as RESTMETH : rr
-    return restaction(r.method as HTTPMETHOD, r.restaction as string, r.params, vars)
+    return restaction(r.method === undefined ? HTTPMETHOD.GET : r.method, r.restaction as string, r.params, vars)
 }
 
 

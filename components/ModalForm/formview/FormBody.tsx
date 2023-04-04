@@ -40,12 +40,6 @@ function createRowsSlices(num: number, fields: TField[]): [number,number][] {
     return slices
 }
 
-function remove_produceBody(fields: TField[], eFactory: elemFactory): ReactNode {
-    return <React.Fragment>
-        {fields.map(e => eFactory(e))}
-    </React.Fragment>
-}
-
 export function produceBody(fields: TField[], eFactory: elemFactory): ReactNode {
     const num: number = findFirstRow(fields);
     const rows: [number, number][] = createRowsSlices(num, fields)    

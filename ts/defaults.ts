@@ -6,12 +6,14 @@ interface Defaults {
   defpageSize: number,
   rowkeyS: string
   displayprintrouterid: string,
-  cookieage : number,
+  cookieage: number,
   currentfield: string,
   verstring: string,
   directprefix: string,
   multichoicevar: string,
-  listpos: string
+  listpos: string,
+  defstartnum: number,
+  maxdispauto: number
 };
 
 const defaults: Defaults = {
@@ -22,12 +24,14 @@ const defaults: Defaults = {
   defpageSize: 20,
   rowkeyS: "rowkey",
   displayprintrouterid: "/printingdisplayer",
-  cookieage : 7,
+  cookieage: 7,
   currentfield: "currentfield",
-  verstring: "JS: wersja 1.2 (r:3) z dnia 2 kwietnia 2023",
+  verstring: "JS: wersja 1.2 (r:4) z dnia 4 kwietnia 2023",
   directprefix: "~",
   multichoicevar: "multichoice",
-  listpos : "listpos"
+  listpos: "listpos",
+  defstartnum: 2,
+  maxdispauto: 30
 };
 
 export default defaults;

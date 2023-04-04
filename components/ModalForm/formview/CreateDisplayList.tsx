@@ -1,7 +1,7 @@
 import { List, Space } from "antd"
 import { ReactNode } from "react"
 
-import { isNumber, makeMessage } from "../../../ts/j"
+import { isNumber, makeMessage, toS } from "../../../ts/j"
 import lstring from "../../../ts/localize"
 import { TRow, FIELDTYPE, FieldValue } from "../../../ts/typing"
 import { isnotdefined } from "../../ts/helper"
@@ -16,11 +16,6 @@ import { IFieldContext, FField, ErrorMessages } from "./types"
 
 
 function transformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, li: TListItems, r: TRow): React.ReactNode {
-
-    function toS(f: FieldValue): string {
-        const value: string = isNumber(f) ? (f as number)?.toString() : f as string
-        return value
-    }
 
     const ftype: FIELDTYPE = fieldType(t)
     const isnot: boolean = isnotdefined(r[t.field]) || r[t.field] === ""

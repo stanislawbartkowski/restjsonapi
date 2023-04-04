@@ -1,6 +1,6 @@
 import { FormListFieldData, UploadFile } from "antd"
 import { FieldValue, VAction } from "../../../ts/typing"
-import { FGetValues, TAsyncRestCall, TClickButton, TField } from "../../ts/typing"
+import { FGetOptions, FGetValues, TAsyncRestCall, TClickButton, TField, TOptionLine } from "../../ts/typing"
 
 export type FSearchAction = (s: string, t: FField) => void
 export type FMultiAction = (t: FField) => void
@@ -9,6 +9,7 @@ export type FSetEditRow = (s : string, rownumber: number) => void
 
 export type FField = TField & {
 
+    options?: TOptionLine[]
     searchF: FSearchAction
     multiF: FMultiAction
     tableR: TableRefresh
@@ -28,6 +29,8 @@ export type TFieldChange = {
 export type UploadStore = Map<string, UploadFile[]>
 export type TMultiSelect = Map<string, FieldValue[]>;
 export type SetMultiSelect = (t : TField, sel: FieldValue[]) => void
+export type fSearchOptions = (t : TField, value: string) => void
+export type TOptions = Map<string,TOptionLine[]>
 
 
 export interface IFieldContext {
@@ -40,6 +43,7 @@ export interface IFieldContext {
     getMulti: () => TMultiSelect
     clickButton: TClickButton
     setMulti: SetMultiSelect
+    fGetOptions: fSearchOptions
 }
 
 export type ErrorMessage = {

@@ -1,10 +1,11 @@
 import { JsonTableResult, RESTMETH, RowData, TRow } from "../../ts/typing"
-import { ColumnList, Status } from "./typing"
+import { ColumnList, Status, TAutoComplete, TAutoCompleteMap } from "./typing"
 import { transformList, addRowKey } from "./tranformlist"
-import { fatalexceptionerror } from '../../ts/l'
+import { fatalexceptionerror, internalerrorlog } from '../../ts/l'
 import defaults from '../../ts/defaults'
 import analyzeresponse from "./anayzeresponse"
 import { readvals } from "./readdefs"
+import { callJSFunction } from "../../ts/j"
 
 export type DataSourceState = JsonTableResult & {
     status: Status;
@@ -25,9 +26,6 @@ function readlist(props: TReadListParam & ColumnList, f: FSetState) {
         return props.method === undefined && props.jsaction === undefined
     }
 
-    //(props.method === undefined ?
-    //    restapilist(props.list as string, props.params) :
-    //    restaction(props.method as HTTPMETHOD, props.list as string, props.params, props.vars))
     const initval: string | RESTMETH = isGet() ? (props.list as string) : { ...props as RESTMETH, restaction: props.restaction ? props.restaction : props.list }
     readvals(initval, props.vars, props.params)
         .then((rres) => {
@@ -47,6 +45,54 @@ function readlist(props: TReadListParam & ColumnList, f: FSetState) {
             f({ status: Status.ERROR, res: [] })
         }
         )
+}
+
+async function readAutocompleteasync(autocomplete: TAutoComplete[]): Promise<TAutoCompleteData[]> {
+    const autoc: TAutoCompleteData[] = await Promise.all(
+        autocomplete.map(async t => {
+            let lres = undefined
+            if (t.js !== undefined) {
+                const rdata = callJSFunction(t.js, { r: {} })
+                lres = rdata.res
+            }
+            else {
+                const rres = await readvals(t)
+                const da = analyzeresponse(rres.data, rres.response)
+                lres = da[0].res
+            }
+            const c: TAutoCompleteData = {
+                id: t.id,
+                options: lres
+            }
+            return c
+        })
+    )
+    return autoc
+}
+
+type TAutoCompleteData = {
+    id: string,
+    options: RowData
+}
+
+type FSetAutcomplete = (s: TAutoCompleteMap) => void
+
+
+export function readAutocomplete(autocomplete: TAutoComplete[], setResult: FSetAutcomplete) {
+
+    readAutocompleteasync(autocomplete).then(
+        (r: TAutoCompleteData[]) => {
+            const result: TAutoCompleteMap = new Map(r.map(i => [i.id, i.options]));
+            setResult(result)
+        }
+    ).catch(
+        () => {
+            const error = "Error while reading autocomplete data"
+            console.log(error)
+            internalerrorlog(error)
+        }
+    )
+
 }
 
 export default readlist;

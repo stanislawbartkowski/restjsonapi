@@ -14,7 +14,7 @@ import { FieldData, NamePath } from 'rc-field-form/lib/interface';
 import { FormInstance } from 'antd/es/form';
 
 
-import { ButtonAction, FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, TAsyncRestCall, TClickButton, TField, TForm } from '../ts/typing'
+import { ButtonAction, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, TAsyncRestCall, TAutoCompleteMap, TClickButton, TField, TForm, TOptionLine } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
@@ -24,7 +24,7 @@ import { transformSingleValue, transformValuesFrom, transformValuesTo } from '..
 import RestComponent from '../RestComponent';
 import defaults from '../../ts/defaults';
 import HeaderTable from '../HeaderTable'
-import { ErrorMessages, FField, FMultiAction, FSearchAction, FSetEditRow, IFieldContext, TableRefresh, TFieldChange, TMultiSelect, UploadStore } from './formview/types';
+import { ErrorMessages, FField, FMultiAction, FSearchAction, FSetEditRow, IFieldContext, TableRefresh, TFieldChange, TMultiSelect, TOptions, UploadStore } from './formview/types';
 import { produceItem } from './formview/EditItems'
 import { produceBody } from './formview/FormBody';
 
@@ -72,7 +72,7 @@ const emptySearch = { field: "", visible: false }
 // getValues: used only to get values for field list
 // setInitValues: used to pass values set during jsinitvals (JSON)
 // restapiinitname: the name is passed only to useEffect to be raised only once
-const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, setvarsaction: VAction, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues }>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, setvarsaction: VAction, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues, fGetOptions?: FGetOptions }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const [multiselectD, setMultiSelectD] = useState<MultiSelectProps>(emptySearch);
@@ -82,6 +82,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const [multiselect, setMultiSelect] = useState<TMultiSelect>(new Map())
     const [tableR, setTableRefresh] = useState<TableRefresh>(new Map())
     const [refreshno, setRefreno] = useState<number>(0)
+    const [options, setOptions] = useState<TOptions>(new Map())
 
     const [f]: [FormInstance] = Form.useForm()
 
@@ -89,8 +90,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const onFinish = (values: TRow) => {
         // do not copy restlist
         // Data: 2023/03/29
-        const rlist : FFieldElem[] = props.list.filter( t => t.restlist === undefined)
-        const tvals : TRow = transformValuesFrom(values, rlist, props.initvals) 
+        const rlist: FFieldElem[] = props.list.filter(t => t.restlist === undefined)
+        const tvals: TRow = transformValuesFrom(values, rlist, props.initvals)
 
         props.buttonClicked(tvals)
     };
@@ -202,11 +203,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         }
         const sel: FieldValue[] = (r as TRow)[defaults.multichoicevar] as FieldValue[]
         setMulti(multiselectD.field, sel)
-        //const s = new Map(multiselect)
-        //s.set(multiselectD.field, sel);
-        //setMultiSelect(s);
-        //props.onFieldChange(multiselectD.field)
-        //setMultiSelectD(emptySearch)
     }
 
     const closeF: FAction = (b?: ButtonElem, r?: TRow) => {
@@ -308,7 +304,14 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             props.clickButton(clickbutton, row);
         },
         setMulti: function (t: TField, sel: FieldValue[]): void {
-            setMulti(t.field, sel)
+            setMulti(t.field, sel);
+        },
+        fGetOptions: function (t: TField, value: string): void {
+            if (props.fGetOptions === undefined || t.autocomplete === undefined) return
+            const a: TOptionLine[] = props.fGetOptions(t.autocomplete, value)
+            const amap: TOptions = new Map(options);
+            amap.set(t.autocomplete, a)
+            setOptions(amap)
         }
     }
 
@@ -321,10 +324,12 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         setRefreno(currnumb + 1)
     }
 
-    function produceFormItem(f: TField) : ReactNode {
+    function produceFormItem(f: TField): ReactNode {
+
+        const aoptions: TOptionLine[] | undefined = f.autocomplete === undefined ? [] : options.get(f.autocomplete)
         return produceItem(
-            fieldContext, 
-            { ...f, searchF: searchF, multiF: multiF, tableR: tableR, setvarsaction: props.setvarsaction, seteditRow: setEditRow, rerenderD: renderD }, 
+            fieldContext,
+            { ...f, searchF: searchF, multiF: multiF, tableR: tableR, setvarsaction: props.setvarsaction, seteditRow: setEditRow, rerenderD: renderD, options: aoptions },
             props.err
         )
     }

@@ -1,4 +1,4 @@
-import React, { FocusEventHandler, ReactNode } from 'react';
+import React, { FocusEventHandler, ReactNode, useState } from 'react';
 
 import {
     Form,
@@ -11,6 +11,7 @@ import {
     Select,
     SelectProps,
     FormListFieldData,
+    AutoComplete,
 } from 'antd';
 
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
@@ -260,9 +261,24 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
         case FIELDTYPE.HTML: return [<HTMLControl />, { ...valuep }]
     }
 
-    return t.enterbutton ? [searchItem(ir, t, field), undefined] :
-        t.istextarea ? [<Input.TextArea onInput={curryOnTextAreaInput(t)} onBlur={onBlurTextArea} {...placeHolder(t)}  {...iprops} {...disabledp} />, { ...valuep }]
-            : [<Input onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...iprops} {...disabledp} />, { ...valuep }]
+    const fieldE: ReactNode = t.enterbutton ? searchItem(ir, t, field) :
+        t.istextarea ? <Input.TextArea onInput={curryOnTextAreaInput(t)} onBlur={onBlurTextArea} {...placeHolder(t)}  {...iprops} {...disabledp} />
+            : <Input onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...iprops} {...disabledp} />
+
+    //    return t.enterbutton ? [searchItem(ir, t, field), undefined] :
+    //        t.istextarea ? [<Input.TextArea onInput={curryOnTextAreaInput(t)} onBlur={onBlurTextArea} {...placeHolder(t)}  {...iprops} {...disabledp} />, { ...valuep }]
+    //            : [<Input onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...iprops} {...disabledp} />, { ...valuep }]
+
+    if (t.autocomplete) {
+        return [<AutoComplete
+            options={t.options}
+            onSearch={(value: string) => ir.fGetOptions(t, value)}
+        >
+            {fieldE}
+        </AutoComplete>, { ...valuep }]
+    }
+
+    return [fieldE, { ...valuep }]
 }
 
 function errorMessage(t: FField, err: ErrorMessages): {} | { validateStatus: ValidateStatus, help: string[] } {

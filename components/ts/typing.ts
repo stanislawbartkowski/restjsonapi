@@ -1,4 +1,4 @@
-import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType, RESTMETH } from '../../ts/typing';
+import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType, RESTMETH, RowData } from '../../ts/typing';
 
 // =========================
 // status for async reading
@@ -381,9 +381,17 @@ export type TField = PropSupportedType & TFieldBase & {
     disabled?: boolean
     istextarea?: boolean
     label?: string
+    autocomplete?: string
 }
 
 // the whole form
+
+export type TAutoComplete = RestTableParam & JSSupportedType & {
+    minlen?: number
+    maxdisp?: number
+    id: string
+    colname?: string
+}
 
 export type TForm = JSSupportedType & TCard & {
     fields: TField[]
@@ -392,6 +400,7 @@ export type TForm = JSSupportedType & TCard & {
     restapivals?: string | RESTMETH
     jsrestapivals?: string
     header?: ShowDetails
+    autocomplete?: TAutoComplete[]
 }
 
 // --------------------------------
@@ -430,6 +439,7 @@ export type FOnFieldChanged = (id: string) => void
 
 export type FGetValues = () => TRow
 export type FSetValues = (r: TRow) => void
+export type FGetOptions = (id: string, val: string) => TOptionLine[]
 
 // ============================
 // standard buttons 
@@ -447,3 +457,14 @@ export enum BUTTONACTION {
     UPLOAD = 'UPLOAD',
     OK = "OK"
 }
+
+// =================
+// autocomplete
+// =================
+
+export type TOptionLine = {
+    value: string
+}
+
+export type TAutoCompleteMap = Map<string, RowData>
+

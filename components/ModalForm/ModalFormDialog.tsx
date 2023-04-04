@@ -1,7 +1,7 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
 import { Card } from 'antd';
 
-import { ClickResult, FGetValues, FOnFieldChanged, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TClickButton, TField, TPreseEnum } from '../ts/typing'
+import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TField, TOptionLine, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
@@ -11,23 +11,26 @@ import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall } from './ModalFormView';
 import { FFieldElem, flattenTForm, okmoney, cardProps, setCookiesFormListDefVars, preseT, istrue, decomposeEditId } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FAction, FIELDTYPE, ModalFormProps, RAction, RESTMETH, TComponentProps, TRow, VAction } from '../../ts/typing'
+import { FAction, FIELDTYPE, FieldValue, ModalFormProps, RAction, RESTMETH, RowData, TComponentProps, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
 import StepsFormView from './StepsFormView';
 import executeAction from '../ts/executeaction'
 import { readvalsdata } from "../ts/readdefs";
-import { callJSFunction, commonVars, isString } from '../../ts/j';
+import { callJSFunction, commonVars, isNumber, isString, toS } from '../../ts/j';
 import RestComponent from '../RestComponent';
 import { findErrField } from './formview/helper';
 import { ErrorMessages } from './formview/types';
+import { readAutocomplete } from '../ts/readlist';
+import defaults from '../../ts/defaults';
 
 export type THooks = {
     aRest?: TAsyncRestCall,
     clickButton?: TClickButton
     getValues?: FGetValues
     setInitValues?: FSetValues
+    fGetOptions?: FGetOptions
 }
 
 export interface IIRefCall {
@@ -102,11 +105,11 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
     const [restview, setRestView] = useState<PopDialogView>({ visible: false });
     const [initvals, psetInitVals] = useState<TRow>({ ...props.vars });
+    const [auto, setAuto] = useState<TAutoCompleteMap | undefined>(undefined)
 
     function setState(p: DataFormState) {
         psetState(p)
     }
-
 
     const isTop: boolean = props.setInitValues === undefined
 
@@ -178,7 +181,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
             return getVals();
         },
         retAction: (b: TAction, row: TRow) => {
-            const a = "aaaa"
             _clickButton(b as ButtonAction, row)
         }
 
@@ -230,12 +232,42 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         },
         getValues: () => {
             if (props.getValues) return props.getValues();
-            //const r: TRow = { ...initvals, ...getVals() }
             const r: TRow = constructCurVals()
             return r
         },
         setInitValues: (r: TRow) => {
             _setInitValues(r);
+        },
+        fGetOptions: (id: string, val: string) => {
+
+            const autodef: TAutoComplete | undefined = formdef.tabledata?.autocomplete?.find(e => e.id === id)
+            if (autodef === undefined) return []
+
+            const colname: string = autodef.colname ? autodef.colname : "name"
+
+            function getN(r: TRow): string | undefined {
+                const t: FieldValue = r[colname]
+                if (t === undefined) return undefined
+                return toS(t)
+            }
+
+            function okVal(r: TRow): boolean {
+                const va: string | undefined = getN(r)
+                if (va === undefined) return false;
+                const v: string = va.toUpperCase()
+                return v.startsWith(val.toUpperCase())
+            }
+
+            const minlen: number = (autodef.minlen !== undefined) ? autodef.minlen : defaults.defstartnum
+            if (val.length < minlen) return []
+            const maxdispauto: number = (autodef.maxdisp !== undefined) ? autodef.maxdisp : defaults.maxdispauto
+            const rows: RowData | undefined = auto?.get(id)
+            if (rows == undefined) return []
+            const n: RowData = rows.filter(r => okVal(r))
+            const v: TOptionLine[] = n.slice(0, maxdispauto).map(r => {
+                return { value: getN(r) as string }
+            })
+            return v
         }
     }
 
@@ -302,14 +334,22 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         clickButton(buttonclicked.current, r)
     }
 
-
-    // initvals dodane 2022/08/18
     useEffect(() => {
         if (!props.ispage && props.mhooks) {
             const buttons: ReactNode = createB(formdef.tabledata, formdef.loading)
             props.mhooks.setButtons(buttons, formdef.loading as boolean)
         }
     }, [formdef.tabledata, formdef.loading, initvals])
+
+    useEffect(() => {
+        if (formdef.tabledata?.autocomplete === undefined) return
+        function setS(auto: TAutoCompleteMap) {
+            console.log(auto)
+            setAuto(auto)
+        }
+        readAutocomplete(formdef.tabledata.autocomplete, setS)
+
+    }, [formdef.tabledata?.autocomplete]);
 
 
     useEffect(() => {
