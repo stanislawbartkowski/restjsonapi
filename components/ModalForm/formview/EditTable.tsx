@@ -10,7 +10,7 @@ import { addRowKey } from '../../ts/tranformlist';
 import { constructactionsCol, fieldTitle, transformOneColumn } from '../../ts/transcol';
 import { TableHookParam, TAction, TActions, TField, ButtonAction, TColumns, TClickButton, TColumn, ColumnList } from '../../ts/typing';
 import { produceFormItem } from './EditItems';
-import { ErrorMessages, FField, IFieldContext, ROWKEY } from './types';
+import { ErrorMessages, FField, IFieldContext, ROWKEY, TOptions } from './types';
 import propsPaging from "../../ts/tablepaging"
 import { trace } from '../../../ts/l';
 
@@ -45,19 +45,19 @@ function constructRenderAction(it: IFieldContext, c: FField, err: ErrorMessages,
 }
 
 
-function constructRenderCell(it: IFieldContext, c: FField, err: ErrorMessages, editid: string, vars?: TRow) {
+function constructRenderCell(it: IFieldContext, c: FField, err: ErrorMessages, editid: string, options: TOptions, vars?: TRow) {
     return (dom: any, entity: TRow): ReactElement => {
-        return <React.Fragment><span className='listedit'>{produceFormItem(it, { ...c, coltitle: "empty", field: genColIdedit(editid, c.field, entity[ROWKEY] as number) }, err, undefined)}</span></React.Fragment>
+        return <React.Fragment><span className='listedit'>{produceFormItem(it, { ...c, coltitle: "empty", field: genColIdedit(editid, c.field, entity[ROWKEY] as number), options: options }, err, undefined)}</span></React.Fragment>
     }
 };
 
-function constructTColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, vars: TRow): ColumnType<any> {
+function constructTColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, options: TOptions, vars: TRow): ColumnType<any> {
     const mess: string = fieldTitle(t, { r: {} });
     return {
         title: <React.Fragment>{mess}</React.Fragment>,
         dataIndex: t.field,
         ...t.props,
-        render: t.actions ? constructRenderAction(it, t, err, editid) : constructRenderCell(it, t, err, editid)
+        render: t.actions ? constructRenderAction(it, t, err, editid) : constructRenderCell(it, t, err, editid, options)
     }
 }
 
@@ -75,8 +75,8 @@ function contructCColumn(it: IFieldContext, t: FField, editid: string, err: Erro
 }
 
 
-function contructColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, vars: TRow): ColumnType<any> {
-    return t.col ? contructCColumn(it, t, editid, err, vars) : constructTColumn(it, t, editid, err, vars)
+function contructColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, options: TOptions, vars: TRow): ColumnType<any> {
+    return t.col ? contructCColumn(it, t, editid, err, vars) : constructTColumn(it, t, editid, err, options, vars)
 }
 
 
@@ -85,9 +85,6 @@ function fieldsToColumns(fields: TField[]): TColumns {
 }
 
 export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {
-
-    // to force rerender when page os changed
-    //const [currentnumber, setCurrentNumber] = useState<number>(0);
 
     const items: TField[] = t.items as TField[]
 
@@ -104,7 +101,7 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
     }
 
     const clickB: TClickButton = (clickbutton?: ButtonAction, row?: TRow) => {
-        const rr : TRow = row as TRow
+        const rr: TRow = row as TRow
         clickedRow(rr)
         ir.clickButton(clickbutton, row)
     }
@@ -128,7 +125,7 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
 
     const vars: TRow = ir.getValues()
 
-    const columns: ColumnType<any>[] = items.map(c => contructColumn(irC, { ...fpart, ...c }, editid, err, vars))
+    const columns: ColumnType<any>[] = items.map(c => contructColumn(irC, { ...fpart, ...c }, editid, err, t.options as TOptions, vars))
 
     const cols: TColumns = fieldsToColumns(items)
 

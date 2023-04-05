@@ -326,10 +326,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     function produceFormItem(f: TField): ReactNode {
 
-        const aoptions: TOptionLine[] | undefined = f.autocomplete === undefined ? [] : options.get(f.autocomplete)
+        //const aoptions: TOptionLine[] | undefined = f.autocomplete === undefined ? [] : options.get(f.autocomplete)
         return produceItem(
             fieldContext,
-            { ...f, searchF: searchF, multiF: multiF, tableR: tableR, setvarsaction: props.setvarsaction, seteditRow: setEditRow, rerenderD: renderD, options: aoptions },
+            { ...f, searchF: searchF, multiF: multiF, tableR: tableR, setvarsaction: props.setvarsaction, seteditRow: setEditRow, rerenderD: renderD, options: options },
             props.err
         )
     }

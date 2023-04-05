@@ -19,7 +19,7 @@ import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 
 import { PropsType, FIELDTYPE, FieldValue, FieldDefaults } from '../../../ts/typing';
 import { getValue, isEditList, isItemGroup } from '../../ts/helper';
-import { FGetValues, TField, TRadioCheckItem, ValidatorType } from '../../ts/typing';
+import { FGetValues, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
 import { IFieldContext, FField, TFieldChange } from './types';
 import { makeMessage } from '../../../ts/j';
 import { log } from '../../../ts/l';
@@ -216,7 +216,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
 
     if (isItemGroup(t)) {
         return [<React.Fragment>
-            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR, setvarsaction: t.setvarsaction, seteditRow: t.seteditRow, rerenderD: t.rerenderD }, err, field))}
+            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR, setvarsaction: t.setvarsaction, seteditRow: t.seteditRow, rerenderD: t.rerenderD, options: t.options }, err, field))}
         </React.Fragment>,
             undefined]
     }
@@ -265,13 +265,13 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
         t.istextarea ? <Input.TextArea onInput={curryOnTextAreaInput(t)} onBlur={onBlurTextArea} {...placeHolder(t)}  {...iprops} {...disabledp} />
             : <Input onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...iprops} {...disabledp} />
 
-    //    return t.enterbutton ? [searchItem(ir, t, field), undefined] :
-    //        t.istextarea ? [<Input.TextArea onInput={curryOnTextAreaInput(t)} onBlur={onBlurTextArea} {...placeHolder(t)}  {...iprops} {...disabledp} />, { ...valuep }]
-    //            : [<Input onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...iprops} {...disabledp} />, { ...valuep }]
 
     if (t.autocomplete) {
+
+        const aoptions: TOptionLine[] | undefined = t.autocomplete === undefined ? [] : t.options?.get(t.autocomplete)
+
         return [<AutoComplete
-            options={t.options}
+            options={aoptions}
             onSearch={(value: string) => ir.fGetOptions(t, value)}
         >
             {fieldE}

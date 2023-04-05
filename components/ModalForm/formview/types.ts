@@ -9,7 +9,7 @@ export type FSetEditRow = (s : string, rownumber: number) => void
 
 export type FField = TField & {
 
-    options?: TOptionLine[]
+    options?: TOptions
     searchF: FSearchAction
     multiF: FMultiAction
     tableR: TableRefresh

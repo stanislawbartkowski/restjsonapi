@@ -1,7 +1,7 @@
 import { List, Space } from "antd"
 import { ReactNode } from "react"
 
-import { isNumber, makeMessage, toS } from "../../../ts/j"
+import { makeMessage, toS } from "../../../ts/j"
 import lstring from "../../../ts/localize"
 import { TRow, FIELDTYPE, FieldValue } from "../../../ts/typing"
 import { isnotdefined } from "../../ts/helper"
