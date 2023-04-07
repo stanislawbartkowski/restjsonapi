@@ -19,7 +19,7 @@ import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 
 import { PropsType, FIELDTYPE, FieldValue, FieldDefaults } from '../../../ts/typing';
 import { getValue, isEditList, isItemGroup } from '../../ts/helper';
-import { FGetValues, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
+import { ButtonAction, FGetValues, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
 import { IFieldContext, FField, TFieldChange } from './types';
 import { makeMessage } from '../../../ts/j';
 import { log } from '../../../ts/l';
@@ -35,6 +35,7 @@ import { produceUploadItem } from './UploadItem';
 import { produceMultiChoiceButton } from './MultiChoiceButton';
 import { createRules } from './createRules';
 import { findLabel } from '../../../ts/readresource';
+import constructButton from '../../ts/constructbutton';
 
 const { RangePicker } = DatePicker;
 
@@ -297,6 +298,12 @@ function prepareStyleByLabel(t: FField) {
     }
 }
 
+function produceButton(ir: IFieldContext, t: FField, err: ErrorMessages, field?: FormListFieldData): React.ReactNode {
+
+    return constructButton(t.button as ButtonAction, ir.clickButton)
+    
+}
+
 export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, listfield?: FormListFieldData): React.ReactNode {
 
     const [rules, required] = createRules(ir, t)
@@ -333,6 +340,7 @@ export function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, na
     if (t.upload) return produceUploadItem(ir, t)
     if (t.restlist) return produceRestTable(ir, t);
     if (isEditList(t)) return produceEditTable(ir, t, err);
+    if (t.button) return produceButton(ir, t, err, name)
     return <React.Fragment>
         {t.divider ? makeDivider(t.divider, { r: {} }) : undefined}
         {produceFormItem(ir, t, err, name)}

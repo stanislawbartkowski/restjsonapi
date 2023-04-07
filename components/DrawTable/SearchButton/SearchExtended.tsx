@@ -13,14 +13,12 @@ export interface IIRefCall {
 }
 
 
-export type SearchButtonType = ColumnList & ExtendedFilter & {
-}
+export type SearchButtonType = ColumnList & ExtendedFilter 
 
 type SearchDialog = SearchButtonType & {
     buttons: React.ReactNode[]
     onValuesChanges?: FOnValuesChanged
 }
-
 
 export type ExtendedFilter = {
     isfilter: boolean

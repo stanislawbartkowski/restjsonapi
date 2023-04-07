@@ -18,12 +18,13 @@ import ReadDefError from '../errors/ReadDefError';
 import StepsFormView from './StepsFormView';
 import executeAction from '../ts/executeaction'
 import { readvalsdata } from "../ts/readdefs";
-import { callJSFunction, commonVars, isNumber, isString, toS } from '../../ts/j';
+import { callJSFunction, commonVars, isBool, isNumber, isString, toS } from '../../ts/j';
 import RestComponent from '../RestComponent';
 import { findErrField } from './formview/helper';
 import { ErrorMessages } from './formview/types';
 import { readAutocomplete } from '../ts/readlist';
 import defaults from '../../ts/defaults';
+import { TRefreshTable } from '../DrawTable';
 
 export type THooks = {
     aRest?: TAsyncRestCall,
@@ -144,16 +145,21 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         if (formdef.tabledata?.fields)
             formdef.tabledata?.fields.forEach(t => {
                 if (t.restlist) {
-                    if (istrue(vars[t.field] as boolean)) {
-                        ref.current.refreshTable(t.field);
+                    let tData: TRefreshTable | undefined = (vars[t.field] as any) as TRefreshTable
+                    let refresh: boolean = true
+                    if (tData !== undefined) {
+                        if (isBool(tData)) {
+                            refresh = (tData as any) as boolean
+                            tData = undefined
+                        }
+                        if (refresh)
+                            ref.current.refreshTable(t.field, tData);
                         vars[t.field] = false;
                     }
                 }
             })
         if (props.setvarsaction) props.setvarsaction(vars)
     }
-
-
 
     const iiref: IIRefCall = {
         setMode: (loading: boolean, errors: ErrorMessages) => {

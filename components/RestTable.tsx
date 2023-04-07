@@ -4,7 +4,7 @@ import InLine from "../ts/inline";
 import { ClickActionProps, RestTableParam } from "../ts/typing";
 import Cards from "./Cards";
 import readdefs, { ReadDefsResult } from "./ts/readdefs";
-import RestTableView from "./DrawTable";
+import RestTableView, { TRefreshTable } from "./DrawTable";
 import RestTableError from "./errors/ReadDefError";
 import { isCard } from "./ts/helper";
 import { ColumnList, Status } from "./ts/typing";
@@ -13,7 +13,7 @@ type ListState = ReadDefsResult & {
     list: string;
 };
 
-const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: number }> = (props) => {
+const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable }> = (props) => {
     const [state, setState] = useState<ListState>({
         status: Status.PENDING,
         list: props.list as string,
@@ -65,7 +65,7 @@ const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: numb
                         <InLine js={state.js} />
                         {isCard(state.res as ColumnList) && (state.res as ColumnList).onerow === undefined ?
                             <Cards {...(state.res as ColumnList)} {...props} refreshno={props.refreshno}></Cards> :
-                            <RestTableView {...(state.res as ColumnList)} {...props} refreshno={props.refreshno} />}
+                            <RestTableView {...(state.res as ColumnList)} {...props} refreshno={props.refreshno} refreshD={props.refreshD} />}
                     </React.Fragment>
                 );
             } else return null;

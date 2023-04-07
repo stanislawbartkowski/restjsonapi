@@ -1,9 +1,16 @@
+import { PaginationProps } from "antd";
 import defaults from "../../ts/defaults";
 import { isNumber } from "../../ts/j";
 import { PropsType } from "../../ts/typing";
 import { PagingC } from "./typing";
 
-function propsPaging(props: PagingC | undefined, dsize: number): PropsType {
+type TablePagination = {
+    pagination : false | PaginationProps
+}
+
+export type OnPageChange = (page: number, pageSize: number ) => void
+
+function propsPaging(props: PagingC | undefined, dsize: number, onChange?: OnPageChange, current?: number): [TablePagination, number|undefined] {
     let pageSize: number | undefined = props?.pageSize ? props.pageSize : defaults.defpageSize
     let nopaging: boolean = false;
     if (props?.nopaging) {
@@ -15,7 +22,7 @@ function propsPaging(props: PagingC | undefined, dsize: number): PropsType {
         else nopaging = true;
     }
 
-    return nopaging ? { pagination: false } : { pagination: { defaultPageSize: pageSize } }
+    return nopaging ? [{ pagination: false }, undefined] : [{ pagination: { defaultPageSize: pageSize, onChange : onChange, current: current } }, pageSize]
 }
 
 export default propsPaging

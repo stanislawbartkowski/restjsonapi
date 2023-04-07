@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, MutableRefObject, useRef } from "react";
+
 
 import type { ColumnType } from "antd/lib/table";
 import { Table, Drawer, Space, Divider } from "antd";
@@ -7,9 +8,9 @@ import type { TableRowSelection } from "antd/lib/table/interface";
 import lstring from "../../ts/localize";
 import { ClickActionProps, emptyModalListProps, FieldValue, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
-import type { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, ShowDetails, TableHookParam, TAction, TColumn } from "../ts/typing";
+import { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn } from "../ts/typing";
 import { Status } from "../ts/typing";
-import { transformColumns, filterDataSource, filterDataSourceButton } from "./js/helper";
+import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow } from "./js/helper";
 import { findColDetails, makeHeader } from "../ts/helper";
 import ModalList from "../RestComponent";
 import getExtendableProps from "./Expendable";
@@ -19,11 +20,18 @@ import ReadListError from '../errors/ReadListError'
 import SummaryTable from '../SummaryTable'
 import { isNumber, isObject } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
-import SearchButton, { FSetFilter } from "./SearchButton";
+import SearchButton, { FSetFilter, FSetSearch } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
 import { createII, executeB, IIButtonAction } from "../ts/executeaction";
 import ButtonStack from "./ButtonStack";
-import propsPaging from "../ts/tablepaging"
+import propsPaging, { OnPageChange } from "../ts/tablepaging"
+import openNotification from "../Notification";
+import { TableRefreshData } from "../ModalForm/formview/types";
+
+export type TRefreshTable = {
+    searchF: TRow
+    first: boolean
+}
 
 
 function tranformtoSel(sel: FieldValue[] | undefined): (string | number)[] {
@@ -31,14 +39,20 @@ function tranformtoSel(sel: FieldValue[] | undefined): (string | number)[] {
     return sel.map((e: FieldValue) => isNumber(e) ? e as number : e as string)
 }
 
-const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number }> = (props) => {
+interface IRefCall {
+    pageSize: number | undefined,
+    search: ExtendedFilter | undefined
+}
+
+
+const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable }> = (props) => {
 
     const [extendedFilter, setExtendedFilter] = useState<ExtendedFilter>(noExtendedFilter)
 
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [currentRow, setCurrentRow] = useState<TRow>();
     const [multichoice, setMultiChoice] = useState<FieldValue[]>(props.initsel as FieldValue[])
-
+    const [page, setCurrentPage] = useState<number>(1)
 
     const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
     const [datasource, setDataSource] = useState<DataSourceState>({
@@ -47,6 +61,8 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     });
 
     const [refreshnumber, setRefreshNumber] = useState<number>(0);
+
+    const ref: MutableRefObject<IRefCall> = useRef<IRefCall>({ pageSize: undefined, search: undefined }) as MutableRefObject<IRefCall>
 
 
     const f: FShowDetails = (entity: TRow) => {
@@ -85,8 +101,14 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const title = makeHeader(props, lstring("empty"), toPars())
 
-    useEffect(() => readlist(props, (s: DataSourceState) => { setDataSource({ ...s }) })
-        , [props.list, props.listdef, refreshnumber, props.refreshno]);
+    useEffect(() => {
+        readlist(props, (s: DataSourceState) => { setDataSource({ ...s }) })
+        if (props.refreshD !== undefined) {
+            const refreshD: TRefreshTable = props.refreshD as TRefreshTable
+            searchRow({ isfilter: false, filtervalues: refreshD.searchF }, refreshD.first)
+        }
+    }
+        , [props.list, props.listdef, refreshnumber, props.refreshno, props.refreshD]);
 
 
     const extend: TExtendable | undefined = props.extendable
@@ -100,6 +122,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     const refreshFilter: FSetFilter = (p: ExtendedFilter) => {
         setExtendedFilter({ isfilter: p.isfilter, filtervalues: JSON.parse(JSON.stringify(p.filtervalues)) })
     }
+
 
     if (datasource.status === Status.ERROR) return <ReadListError />
 
@@ -115,9 +138,26 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const dsource: RowData = filterDataSourceButton(props, ddsource, extendedFilter)
 
+    const searchRow: FSetSearch = (p: ExtendedFilter, first: boolean) => {
+        ref.current.search = p
+        const foundPos: CurrentPos | undefined = searchDataSource(props, first ? undefined : currentRow, dsource, p, ref.current.pageSize)
+        if (foundPos === undefined) {
+            openNotification({ kind: NotificationKind.WARNING, title: { message: "notfoundtitle" }, description: { message: first ? "notfoundsearch" : "notfoundnext" } }, { r: currentRow as TRow })
+            return
+        }
+        setCurrentPage(foundPos?.pageno as number)
+        setCurrentRow(dsource[foundPos.pos])
+    }
+
     if (props.onTableRead) props.onTableRead({ res: dsource, vars: datasource.vars });
 
-    const paging = propsPaging(props, dsource.length)
+    const onPageChange: OnPageChange = (page, pageSize) => {
+        setCurrentPage(page)
+        ref.current.pageSize = pageSize
+    }
+
+    const pagingD = propsPaging(props, dsource.length, onPageChange, page)
+    ref.current.pageSize = pagingD[1]
 
 
     function buttonAction(b?: ButtonAction, r?: TRow) {
@@ -131,6 +171,12 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         return datasource.res.find(r => r[k] === key)
     }
 
+    const rowClassName = (record: TRow, index: number) => {
+        if (currentRow === undefined) return ""
+        return eqRow(props, record, currentRow) ? "selectedrow" : ""
+    }
+
+
     function rowSelection(t: RestTableParam): { rowSelection: TableRowSelection<TRow> } | undefined {
 
         return (t.choosing || props.multiselect) ? {
@@ -139,7 +185,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 onChange: (r: React.Key[]) => {
                     // if (props.multiSelect) props.multiSelect(r)
                     setMultiChoice(r)
-                    if (props.setmulti)  props.setmulti(r)
+                    if (props.setmulti) props.setmulti(r)
                     if (r.length > 0) {
                         const key: React.Key = r[0]
                         const ro: TRow | undefined = findRowByKey(key);
@@ -153,7 +199,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     }
 
     const extendedSearch: React.ReactNode = props.extendedsearch ? <Space style={{ float: "right" }} split={<Divider type="vertical" />}>
-        <SearchButton {...props} {...extendedFilter} refreshFilter={refreshFilter} /></Space> :
+        <SearchButton {...props} {...extendedFilter} refreshFilter={refreshFilter} searchRow={searchRow} /></Space> :
         undefined
 
     const detcol: TColumn | undefined = findColDetails(props)
@@ -173,8 +219,9 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 size="small"
                 loading={datasource.status === Status.PENDING}
                 columns={columns}
-                {...paging}
+                {...pagingD[0]}
                 {...extend}
+                rowClassName={rowClassName}
                 summary={isSummary() ? () => (<SummaryTable isextendable={props.extendable !== undefined} {...props} list={datasource.res} vars={vars} />) : undefined}
                 onRow={(r) => ({
                     onClick: () => {

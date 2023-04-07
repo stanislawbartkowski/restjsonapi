@@ -2,10 +2,10 @@ import type { ColumnType } from "antd/lib/table";
 
 import type { ColumnList, TableHookParam, TColumn, TColumns } from "../../ts/typing";
 import { TRow, RowData, OneRowData } from '../../../ts/typing'
-import { callJSFunction } from "../../../ts/j";
+import { callJSFunction, toS } from "../../../ts/j";
 import './styles.css'
 import { transformOneColumn } from "../../ts/transcol";
-import { tomoney, visibleColumns } from "../../ts/helper";
+import { getRowKey, tomoney, visibleColumns } from "../../ts/helper";
 import { ExtendedFilter } from "../SearchButton/SearchExtended";
 import { constructTableFilter, FFilter } from '../../TableFilter'
 
@@ -53,20 +53,90 @@ function okextendedfilter(p: ColumnList, r: TRow, valf: TRow, f: Record<string, 
 
   for (let v in valf) {
     const ff: FFilter = f[v]
-//    console.log(v)
-//    console.log(ff)
     if (!ff(valf[v] as string | number | boolean, r)) return false;
   }
   return true;
 }
 
+function createFilters(p: ColumnList, pars: ExtendedFilter): Record<string, FFilter> {
+  const f: Record<string, FFilter> = {}
+  const v: TRow = (pars.filtervalues as TRow)
+  p.columns.filter(c => v[c.field] !== undefined).forEach(c => f[c.field] = constructTableFilter(c))
+  return f;
+}
+
 export function filterDataSourceButton(p: ColumnList, rows: RowData, pars: ExtendedFilter): RowData {
   if (pars.isfilter) {
-    const f: Record<string, FFilter> = {}
+    const f: Record<string, FFilter> = createFilters(p, pars)
     const v: TRow = (pars.filtervalues as TRow)
-    p.columns.filter(c => v[c.field] !== undefined).forEach(c => f[c.field] = constructTableFilter(c))
     return rows.filter(e => okextendedfilter(p, e, v, f))
   }
   return rows
 }
 
+// ========================
+// search
+// ========================
+
+export type CurrentPos = {
+  pageno: number,
+  onpage: number,
+  pos: number
+}
+
+const initPos: CurrentPos = {
+  pageno: 1,
+  onpage: 0,
+  pos: 0
+}
+
+function incPos(curr: CurrentPos, pagesize: number | undefined, rows: RowData): CurrentPos | undefined {
+  const nextPos: CurrentPos =
+    ((pagesize !== undefined) && curr.onpage + 1 === pagesize) ?
+      {
+        pageno: curr.pageno + 1,
+        onpage: 0,
+        pos: curr.pos + 1
+      }
+      :
+      {
+        pageno: curr.pageno,
+        onpage: curr.onpage + 1,
+        pos: curr.pos + 1
+      }
+  return (nextPos.pos >= rows.length) ? undefined : nextPos
+
+}
+
+function findcurrentRow(current: CurrentPos, rows: RowData, pagesize: number | undefined, okF: (r: TRow) => boolean): CurrentPos | undefined {
+  let curPos: CurrentPos | undefined = current
+  while (curPos !== undefined && !okF(rows[curPos.pos])) {
+    curPos = incPos(curPos, pagesize, rows)
+  }
+  return curPos
+}
+
+export function eqRow(p: ColumnList, r1: TRow, r2: TRow): boolean {
+  const rowkey: string = getRowKey(p)
+  const currentRowValue = toS(r1[rowkey])
+  const rowVal = toS(r2[rowkey])
+  return rowVal === currentRowValue
+}
+
+export function searchDataSource(p: ColumnList, currentRow: TRow | undefined, rows: RowData, pars: ExtendedFilter, pagesize: number | undefined): CurrentPos | undefined {
+  if (rows.length == 0) return undefined
+  let currentPos: CurrentPos | undefined = initPos
+  if (currentRow !== undefined) {
+    currentPos = findcurrentRow(currentPos, rows, pagesize, (r: TRow) => eqRow(p, r, currentRow))
+    if (currentPos === undefined) return undefined
+    currentPos = incPos(currentPos, pagesize, rows)
+  }
+  if (currentPos === undefined) return undefined
+
+  const f: Record<string, FFilter> = createFilters(p, pars)
+
+  const okFilter = (r: TRow) => {
+    return okextendedfilter(p, r, pars.filtervalues, f)
+  }
+  return findcurrentRow(currentPos, rows, pagesize, okFilter)
+}

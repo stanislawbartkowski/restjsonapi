@@ -139,7 +139,7 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
         t.rerenderD()
     };
 
-    const pagination = propsPaging(t.editlist, values ? values.length : 0);
+    const pagination = propsPaging(t.editlist, values ? values.length : 0)[0]
     if (pagination.pagination) {
         pagination.pagination.onChange = onChange
     }

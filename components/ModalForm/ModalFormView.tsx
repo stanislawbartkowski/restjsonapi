@@ -18,15 +18,16 @@ import { ButtonAction, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChange
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
-import { callJSFunction, commonVars, copyMap, getSessionId, isEmpty, isString } from '../../ts/j';
+import { callJSFunction, commonVars, copyMap, getSessionId, isBool, isEmpty, isString } from '../../ts/j';
 import { FFieldElem, findEditField, genEditClickedRowKey, getValue, istrue, okmoney, tomoney } from '../ts/helper';
 import { transformSingleValue, transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import defaults from '../../ts/defaults';
 import HeaderTable from '../HeaderTable'
-import { ErrorMessages, FField, FMultiAction, FSearchAction, FSetEditRow, IFieldContext, TableRefresh, TFieldChange, TMultiSelect, TOptions, UploadStore } from './formview/types';
+import { ErrorMessages, FField, FMultiAction, FSearchAction, FSetEditRow, IFieldContext, TableRefresh, TableRefreshData, TFieldChange, TMultiSelect, TOptions, UploadStore } from './formview/types';
 import { produceItem } from './formview/EditItems'
 import { produceBody } from './formview/FormBody';
+import { TRefreshTable } from '../DrawTable';
 
 
 function ltrace(mess: string) {
@@ -36,7 +37,7 @@ function ltrace(mess: string) {
 export interface IRefCall {
     validate: () => void
     getValues: FGetValues
-    refreshTable: (field: string) => void
+    refreshTable: (field: string, refreshD?: TRefreshTable) => void
 }
 
 type TFormView = TForm & {
@@ -137,9 +138,16 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         validate: () => {
             f.submit()
         },
-        refreshTable(field: string) {
+        refreshTable(field: string, searchD: TRefreshTable | undefined) {
+
             const ntableR: TableRefresh = copyMap(tableR)
-            ntableR.set(field, ntableR.get(field) !== undefined ? ntableR.get(field) as number + 1 : 1);
+            const tableRE: TableRefreshData | undefined = ntableR.get(field)
+            const refreshno = tableRE === undefined ? 0 : tableRE.refreshno + 1
+            const newTableRE: TableRefreshData = {
+                searchR : searchD,
+                refreshno: refreshno
+            }
+            ntableR.set(field, newTableRE)
             setTableRefresh(ntableR)
         },
     }));
@@ -167,7 +175,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     }, [props.initvals, refreshno])
 
-    const buttonstop: ReactNode = props.buttonsextratop ? <React.Fragment><Form.Item><Space>{props.buttonsextratop}</Space></Form.Item><Divider /></React.Fragment> : undefined
+    const buttonstop: ReactNode = props.buttonsextratop ? <React.Fragment><Form.Item><Space wrap>{props.buttonsextratop}</Space></Form.Item><Divider /></React.Fragment> : undefined
     const buttonsbottom: ReactNode = props.buttonsextrabottom ? <React.Fragment><Divider /><Form.Item><Space>{props.buttonsextrabottom}</Space></Form.Item></React.Fragment> : undefined
 
     // ==================

@@ -47,6 +47,12 @@ export function detailsTitle(c: ColumnList, pars: OneRowData): [boolean, string 
     return [false, makeMessage(s.title, pars), s.props]
 }
 
+export function getRowKey(c: ColumnList): string {
+    const rowkey: string = c.rowkey ? c.rowkey : defaults.rowkeyS
+    return rowkey
+}
+
+
 
 // =================
 // action

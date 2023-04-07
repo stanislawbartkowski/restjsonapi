@@ -57,6 +57,10 @@ export function constructButtonElem(b: ButtonAction, onclick: FClickButton, disa
         messid = 'ok';
         iconid = 'checkoutlined';
         break
+      case BUTTONACTION.SEARCH:
+        messid = 'search';
+        iconid = 'searchoutlined'
+        break;
     }
 
   const bname: String = messid !== "" ? lstring(messid) : getButtonName(b)

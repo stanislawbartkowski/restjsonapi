@@ -382,6 +382,7 @@ export type TField = PropSupportedType & TFieldBase & {
     istextarea?: boolean
     label?: string
     autocomplete?: string
+    button?: ButtonAction
 }
 
 // the whole form
@@ -455,7 +456,8 @@ export enum BUTTONACTION {
     NEXT = 'NEXT',
     PREV = 'PREV',
     UPLOAD = 'UPLOAD',
-    OK = "OK"
+    OK = "OK",
+    SEARCH = "SEARCH"
 }
 
 // =================

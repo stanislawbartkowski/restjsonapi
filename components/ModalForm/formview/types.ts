@@ -1,10 +1,17 @@
 import { FormListFieldData, UploadFile } from "antd"
 import { FieldValue, VAction } from "../../../ts/typing"
-import { FGetOptions, FGetValues, TAsyncRestCall, TClickButton, TField, TOptionLine } from "../../ts/typing"
+import { FGetValues, TAsyncRestCall, TClickButton, TField, TOptionLine } from "../../ts/typing"
+import { TRefreshTable } from "../../DrawTable"
+
+
+export type TableRefreshData = {
+    refreshno: number
+    searchR?: TRefreshTable
+}
 
 export type FSearchAction = (s: string, t: FField) => void
 export type FMultiAction = (t: FField) => void
-export type TableRefresh = Map<string, number>;
+export type TableRefresh = Map<string, TableRefreshData>;
 export type FSetEditRow = (s : string, rownumber: number) => void
 
 export type FField = TField & {

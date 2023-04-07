@@ -6,6 +6,7 @@ import defaults from '../../ts/defaults'
 import analyzeresponse from "./anayzeresponse"
 import { readvals } from "./readdefs"
 import { callJSFunction } from "../../ts/j"
+import { getRowKey } from "./helper"
 
 export type DataSourceState = JsonTableResult & {
     status: Status;
@@ -37,7 +38,8 @@ function readlist(props: TReadListParam & ColumnList, f: FSetState) {
                 vars = da[0].vars
             }
             transformList(props.columns, { r: {}, t: lres, vars: props.vars })
-            const rowkey: string = props.rowkey ? props.rowkey : defaults.rowkeyS
+            //const rowkey: string = props.rowkey ? props.rowkey : defaults.rowkeyS
+            const rowkey: string = getRowKey(props)
             if (props.rowkey === undefined) addRowKey(lres as RowData, defaults.rowkeyS)
             f({ status: Status.READY, res: lres, vars: vars, rowkey: rowkey })
         }).catch((e) => {

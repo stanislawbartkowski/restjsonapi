@@ -25,7 +25,7 @@ const embedded = {
     chooseaction: "Wybierz",
     searchextended: "Wyszukiwanie zaawansowane",
     removefilter: "Usuń filtr",
-    searchclose: "Szukaj i zamknij",
+    filterclose: "Filtruj i zamknij",
     next: "Dalej",
     prev: "Poprzedni",
     version: "Wersja",
@@ -38,7 +38,11 @@ const embedded = {
     fullprint: "Cały ekran",
     ok: "OK",
     youarenotauthorized: "Nie masz uprawnień lub nie jesteś zalogowany",
-    errorinitauthorization: "Nie mogę nawiązać połączenia z serwerem autentykacyjnym {0}"
+    errorinitauthorization: "Nie mogę nawiązać połączenia z serwerem autentykacyjnym {0}",
+    searchnext: "Następny",
+    notfoundtitle: "Nie znaleziono",
+    notfoundsearch: "Nie znaleziono takiego wiersza",
+    notfoundnext: "Nie znaleziono następnego wiersza"
   },
   en: {
     empty: '',
@@ -61,7 +65,7 @@ const embedded = {
     chooseaction: "Choose",
     searchextended: "Extended searching",
     removefilter: "Remove filter",
-    searchclose: "Search and close",
+    filterclose: "Filter and close",
     next: "Next",
     prev: "Previous",
     version: "Version",
@@ -74,7 +78,11 @@ const embedded = {
     fullprint: "Full print",
     ok: "OK",
     youarenotauthorized: "You are not authorized",
-    errorinitauthorization: "Error during connection to authentication server {0}"
+    errorinitauthorization: "Error during connection to authentication server {0}",
+    searchnext: "Next",
+    notfoundtitle: "Not found",
+    notfoundsearch: "Row not found",
+    notfoundnext: "Next row not found"
   }
 };
 

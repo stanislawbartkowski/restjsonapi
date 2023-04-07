@@ -6,3 +6,7 @@
   filter: brightness(93%);
   border-radius: 5px;
 }
+
+.selectedrow {
+  background-color: #3bffb01c
+}

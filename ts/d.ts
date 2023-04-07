@@ -1,5 +1,3 @@
-//import moment from "moment";
-//import type { Moment } from "moment";
 import defaults from "./defaults";
 import dayjs from 'dayjs';
 

@@ -1,5 +1,5 @@
 import { SearchOutlined, CloseCircleOutlined } from "@ant-design/icons";
-import { Button, Modal, Tooltip } from "antd";
+import { Button, Divider, Modal, Space, Tooltip } from "antd";
 import { BaseButtonProps } from "antd/lib/button/button";
 import React, { MutableRefObject, useRef, useState } from "react";
 
@@ -9,6 +9,7 @@ import { TRow } from "../../../ts/typing";
 import { FOnValuesChanged } from "../../ts/typing";
 
 export type FSetFilter = (t: ExtendedFilter) => void
+export type FSetSearch = (t: ExtendedFilter, first: boolean) => void
 
 function isFilterSetEmpty(p: TRow): boolean {
   if (p === undefined) return true;
@@ -19,7 +20,7 @@ function isFilterSetEmpty(p: TRow): boolean {
 }
 
 
-const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter}> = (props) => {
+const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter, searchRow: FSetSearch }> = (props) => {
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [refreshnumber, setRefreshNumber] = useState<number>(0);
@@ -30,6 +31,17 @@ const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter}> = 
 
   function onCancel() {
     setIsModalVisible(false)
+  }
+
+  function searchRow() {
+    const v: TRow = ref.current.getValues()
+    props.searchRow({ isfilter: true, filtervalues: v }, true)
+
+  }
+
+  function searchRowNext() {
+    const v: TRow = ref.current.getValues()
+    props.searchRow({ isfilter: true, filtervalues: v }, false)
   }
 
   function setFilter() {
@@ -60,16 +72,20 @@ const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter}> = 
     undefined
 
   const buttons: React.ReactNode[] = [
-    <Button key="search" disabled={isFilterEmpty} onClick={setFilterNotClose}>{lstring("search")}</Button>,
+    <Button key="search" disabled={isFilterEmpty} onClick={searchRow}>{lstring("search")}</Button>,
+    <Button key="searchnext" disabled={isFilterEmpty} onClick={searchRowNext}>{lstring("searchnext")}</Button>,
+    <Divider type="vertical" />,
+    <Button key="filter" disabled={isFilterEmpty} onClick={setFilterNotClose}>{lstring("filter")}</Button>,
     <Button key="reset" disabled={isFilterEmpty} onClick={closeFilter}>{lstring("reset")}</Button>,
+    <Button key="filterclose" disabled={isFilterEmpty} type="primary" onClick={setFilter}>{lstring("filterclose")}</Button>,
+    <Divider type="vertical" />,
     <Button key="cancel" onClick={onCancel}>{lstring("cancelaction")}</Button>,
-    <Button key="searchclose" disabled={isFilterEmpty} type="primary" onClick={setFilter}>{lstring("searchclose")}</Button>,
   ]
 
   return <React.Fragment>
     <Tooltip title={lstring("searchextended")}><Button icon={<SearchOutlined />} size="small" {...primary} onClick={() => setIsModalVisible(true)} /> </Tooltip>
     {closeButton}
-    <Modal visible={isModalVisible} onCancel={onCancel} onOk={setFilter} destroyOnClose footer={null}>
+    <Modal open={isModalVisible} onCancel={onCancel} onOk={setFilter} destroyOnClose footer={null}>
       <SearchExtended ref={ref} {...props} onValuesChanges={onValuesChanges} buttons={buttons} />
     </Modal>
 
