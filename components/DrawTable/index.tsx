@@ -26,11 +26,10 @@ import { createII, executeB, IIButtonAction } from "../ts/executeaction";
 import ButtonStack from "./ButtonStack";
 import propsPaging, { OnPageChange } from "../ts/tablepaging"
 import openNotification from "../Notification";
-import { TableRefreshData } from "../ModalForm/formview/types";
 
 export type TRefreshTable = {
     searchF: TRow
-    first: boolean
+    next?: boolean
 }
 
 
@@ -42,6 +41,15 @@ function tranformtoSel(sel: FieldValue[] | undefined): (string | number)[] {
 interface IRefCall {
     pageSize: number | undefined,
     search: ExtendedFilter | undefined
+    searchF: TRefreshTable | undefined
+    refreshsearch: number
+}
+
+const empty: IRefCall = {
+    pageSize: undefined,
+    search: undefined,
+    searchF: undefined,
+    refreshsearch: -1
 }
 
 
@@ -62,7 +70,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const [refreshnumber, setRefreshNumber] = useState<number>(0);
 
-    const ref: MutableRefObject<IRefCall> = useRef<IRefCall>({ pageSize: undefined, search: undefined }) as MutableRefObject<IRefCall>
+    const ref: MutableRefObject<IRefCall> = useRef<IRefCall>(empty) as MutableRefObject<IRefCall>
 
 
     const f: FShowDetails = (entity: TRow) => {
@@ -102,21 +110,41 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     const title = makeHeader(props, lstring("empty"), toPars())
 
     useEffect(() => {
-        readlist(props, (s: DataSourceState) => { setDataSource({ ...s }) })
+        readlist(props, (s: DataSourceState) => {
+            setDataSource({ ...s });
+            if ((refreshnumber === ref.current.refreshsearch) && ref.current.searchF !== undefined) {
+                searchF(ref.current.searchF, genDSource(s.res))
+                ref.current.searchF = undefined
+            }
+        })
+    }, [props.list, props.listdef, refreshnumber, props.refreshno]);
+
+    useEffect(() => {
         if (props.refreshD !== undefined) {
             const refreshD: TRefreshTable = props.refreshD as TRefreshTable
-            searchRow({ isfilter: false, filtervalues: refreshD.searchF }, refreshD.first)
+            searchF(refreshD, dsource)
         }
-    }
-        , [props.list, props.listdef, refreshnumber, props.refreshno, props.refreshD]);
+    }, [props.refreshD]);
 
+
+
+    function searchF(refreshD: TRefreshTable, res: RowData) {
+        const first: boolean = (refreshD.next === undefined || !refreshD.next)
+        searchRowF({ isfilter: false, filtervalues: refreshD.searchF }, first, res)
+    }
 
     const extend: TExtendable | undefined = props.extendable
         ? getExtendableProps(props, props.vars)
         : undefined;
 
-    function refreshtable() {
+    function refreshtable(r?: TAction) {
         setRefreshNumber(refreshnumber + 1)
+        const vars: TRow | undefined = r?.vars
+        if (vars !== undefined && vars.searchF !== undefined) {
+            const refreshD: TRefreshTable = (vars.searchF as any) as TRefreshTable
+            ref.current.searchF = refreshD
+            ref.current.refreshsearch = refreshnumber + 1
+        }
     }
 
     const refreshFilter: FSetFilter = (p: ExtendedFilter) => {
@@ -134,11 +162,16 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         return <OneRowTable {...props} r={datasource.res.length === 0 ? {} : datasource.res[0]} />
     }
 
-    const ddsource: RowData = props.filterJS ? filterDataSource(props, { r: {}, t: datasource.res, vars: props.vars }) : datasource.res
+    function genDSource(res: RowData): RowData {
+        const ddsource: RowData = props.filterJS ? filterDataSource(props, { r: {}, t: res, vars: props.vars }) : res
 
-    const dsource: RowData = filterDataSourceButton(props, ddsource, extendedFilter)
+        const dsource: RowData = filterDataSourceButton(props, ddsource, extendedFilter)
 
-    const searchRow: FSetSearch = (p: ExtendedFilter, first: boolean) => {
+        return dsource
+
+    }
+
+    function searchRowF(p: ExtendedFilter, first: boolean, dsource: RowData) {
         ref.current.search = p
         const foundPos: CurrentPos | undefined = searchDataSource(props, first ? undefined : currentRow, dsource, p, ref.current.pageSize)
         if (foundPos === undefined) {
@@ -148,6 +181,14 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         setCurrentPage(foundPos?.pageno as number)
         setCurrentRow(dsource[foundPos.pos])
     }
+
+
+    const searchRow: FSetSearch = (p: ExtendedFilter, first: boolean) => {
+        searchRowF(p, first, dsource)
+    }
+
+    const dsource: RowData = genDSource(datasource.res)
+
 
     if (props.onTableRead) props.onTableRead({ res: dsource, vars: datasource.vars });
 
@@ -233,7 +274,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
             <ModalList {...modalProps} refreshaction={refreshtable} />
             <Drawer
                 width={600}
-                visible={showDetail}
+                open={showDetail}
                 onClose={() => setShowDetail(false)}
                 closable={false}
             >
