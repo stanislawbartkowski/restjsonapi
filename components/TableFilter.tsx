@@ -13,6 +13,7 @@ import type { TRow } from '../ts/typing'
 import { ReactNode } from "react";
 import { internalerrorlog, log } from "../ts/l";
 import { fieldType } from "./ts/transcol";
+import { toS } from "../ts/j";
 
 // ========================
 // filter/search
@@ -29,8 +30,9 @@ export type ColumnFilterSearch = {
 
 function eqString(row: TRow, field: string, filter: string): boolean {
   if (row === undefined || row[field] === undefined || row[field] === null) return false
-  log(row[field] as string)
-  return (row[field] as string).toString().toUpperCase().indexOf(filter.toUpperCase()) !== -1;
+  const f: string = toS(row[field])
+  //log(row[field] as string)
+  return f.toString().toUpperCase().indexOf(filter.toUpperCase()) !== -1;
 }
 
 function eqNumber(row: TRow, field: string, filter: string): boolean {
