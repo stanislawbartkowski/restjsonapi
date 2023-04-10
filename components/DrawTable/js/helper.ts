@@ -5,7 +5,7 @@ import { TRow, RowData, OneRowData } from '../../../ts/typing'
 import { callJSFunction, toS } from "../../../ts/j";
 import './styles.css'
 import { transformOneColumn } from "../../ts/transcol";
-import { getRowKey, tomoney, visibleColumns } from "../../ts/helper";
+import { getRowKey, isnotdefined, tomoney, visibleColumns } from "../../ts/helper";
 import { ExtendedFilter } from "../SearchButton/SearchExtended";
 import { constructTableFilter, FFilter } from '../../TableFilter'
 
@@ -51,9 +51,10 @@ export function filterDataSource(p: ColumnList, pars: OneRowData): RowData {
 
 function okextendedfilter(p: ColumnList, r: TRow, valf: TRow, f: Record<string, FFilter>) {
 
-  for (let v in valf) {
-    const ff: FFilter = f[v]
-    if (!ff(valf[v] as string | number | boolean, r)) return false;
+  // 2023/04/10 - loop through f
+  for (let v in f) {
+     const ff: FFilter = f[v]
+     if (!ff(valf[v] as string | number | boolean, r)) return false;    
   }
   return true;
 }
@@ -61,7 +62,7 @@ function okextendedfilter(p: ColumnList, r: TRow, valf: TRow, f: Record<string, 
 function createFilters(p: ColumnList, pars: ExtendedFilter): Record<string, FFilter> {
   const f: Record<string, FFilter> = {}
   const v: TRow = (pars.filtervalues as TRow)
-  p.columns.filter(c => v[c.field] !== undefined).forEach(c => f[c.field] = constructTableFilter(c))
+  p.columns.filter(c => (! isnotdefined(v[c.field]))).forEach(c => f[c.field] = constructTableFilter(c))
   return f;
 }
 

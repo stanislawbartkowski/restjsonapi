@@ -26,10 +26,13 @@ import { createII, executeB, IIButtonAction } from "../ts/executeaction";
 import ButtonStack from "./ButtonStack";
 import propsPaging, { OnPageChange } from "../ts/tablepaging"
 import openNotification from "../Notification";
+import { istrue } from '../ts/helper'
+
 
 export type TRefreshTable = {
     searchF: TRow
     next?: boolean
+    notwaitrefresh?: boolean
 }
 
 
@@ -122,7 +125,11 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     useEffect(() => {
         if (props.refreshD !== undefined) {
             const refreshD: TRefreshTable = props.refreshD as TRefreshTable
-            searchF(refreshD, dsource)
+            if (istrue(refreshD.notwaitrefresh)) searchF(refreshD, dsource)
+            else {
+                ref.current.searchF = { ...props.refreshD }
+                ref.current.refreshsearch = refreshnumber
+            }
         }
     }, [props.refreshD]);
 
