@@ -16,7 +16,7 @@ import { FormInstance } from 'antd/es/form';
 
 import { ButtonAction, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, TAsyncRestCall, TAutoCompleteMap, TClickButton, TField, TForm, TOptionLine } from '../ts/typing'
 import { log, trace } from '../../ts/l'
-import { ButtonElem, FAction, FIELDTYPE, FieldValue, RESTMETH, TRow, VAction } from '../../ts/typing'
+import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import { callJSFunction, commonVars, copyMap, getSessionId, isBool, isEmpty, isString } from '../../ts/j';
 import { FFieldElem, findEditField, genEditClickedRowKey, getValue, istrue, okmoney, tomoney } from '../ts/helper';
@@ -73,7 +73,7 @@ const emptySearch = { field: "", visible: false }
 // getValues: used only to get values for field list
 // setInitValues: used to pass values set during jsinitvals (JSON)
 // restapiinitname: the name is passed only to useEffect to be raised only once
-const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, setvarsaction: VAction, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues, fGetOptions?: FGetOptions }>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, setvarsaction: VAction, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues, fGetOptions?: FGetOptions, setTitle?: FSetTitle }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const [multiselectD, setMultiSelectD] = useState<MultiSelectProps>(emptySearch);
@@ -144,7 +144,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             const tableRE: TableRefreshData | undefined = ntableR.get(field)
             const refreshno = tableRE === undefined ? 0 : tableRE.refreshno + 1
             const newTableRE: TableRefreshData = {
-                searchR : searchD,
+                searchR: searchD,
                 refreshno: refreshno
             }
             ntableR.set(field, newTableRE)
@@ -357,7 +357,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     </Form>
 
     const header: ReactNode | undefined = props.header ?
-        <HeaderTable {...props.header} vars={props.vars} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} ></HeaderTable> :
+        <HeaderTable {...props.header} vars={props.vars} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} setTitle={props.setTitle}></HeaderTable> :
         undefined
 
     return <React.Fragment>

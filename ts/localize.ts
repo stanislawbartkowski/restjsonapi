@@ -42,7 +42,8 @@ const embedded = {
     searchnext: "Następny",
     notfoundtitle: "Nie znaleziono",
     notfoundsearch: "Nie znaleziono takiego wiersza",
-    notfoundnext: "Nie znaleziono następnego wiersza"
+    notfoundnext: "Nie znaleziono następnego wiersza",
+    searchfiltertitle: "Szukaj danych według parametrów"
   },
   en: {
     empty: '',
@@ -82,7 +83,8 @@ const embedded = {
     searchnext: "Next",
     notfoundtitle: "Not found",
     notfoundsearch: "Row not found",
-    notfoundnext: "Next row not found"
+    notfoundnext: "Next row not found",
+    searchfiltertitle: "Search or filter rows using criteria"
   }
 };
 

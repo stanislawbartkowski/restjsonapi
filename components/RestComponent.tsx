@@ -8,6 +8,7 @@ import { TComponentProps } from '../ts/typing';
 import { isAuthenticated } from '../ts/keyclock';
 import { erralert, log } from '../ts/l';
 import lstring from '../ts/localize';
+import DraggableModal from './DraggableModal'
 
 const ModalTableList: React.FC<TComponentProps> = (props) => {
 
@@ -17,10 +18,14 @@ const ModalTableList: React.FC<TComponentProps> = (props) => {
 
   if (props.ispage) return <RestTable {...props} />
   else
-    return <Modal destroyOnClose visible={props.visible} maskClosable={false}
-      onOk={onClose} onCancel={onClose} footer={null} {...props.modalprops}>
-      <RestTable {...props} />
-    </Modal >
+//    return <Modal destroyOnClose visible={props.visible} maskClosable={false}
+//      onOk={onClose} onCancel={onClose} footer={null} {...props.modalprops}>
+//      <RestTable {...props} />
+//    </Modal >
+  return <DraggableModal open={props.visible as boolean}
+        onOk={onClose} onClose={onClose} buttons={null} modalprops={props.modalprops}>
+        <RestTable {...props} />
+      </DraggableModal>
 }
 
 

@@ -1,5 +1,5 @@
 import { SearchOutlined, CloseCircleOutlined } from "@ant-design/icons";
-import { Button, Divider, Modal, Space, Tooltip } from "antd";
+import { Button, Divider, Tooltip } from "antd";
 import { BaseButtonProps } from "antd/lib/button/button";
 import React, { MutableRefObject, useRef, useState } from "react";
 
@@ -7,6 +7,7 @@ import lstring from '../../../ts/localize';
 import SearchExtended, { SearchButtonType, IIRefCall, ExtendedFilter } from './SearchExtended'
 import { TRow } from "../../../ts/typing";
 import { FOnValuesChanged } from "../../ts/typing";
+import DraggableModal from "../../DraggableModal"
 
 export type FSetFilter = (t: ExtendedFilter) => void
 export type FSetSearch = (t: ExtendedFilter, first: boolean) => void
@@ -83,13 +84,13 @@ const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter, sea
   ]
 
   return <React.Fragment>
-    <Tooltip title={lstring("searchextended")}><Button icon={<SearchOutlined />} size="small" {...primary} onClick={() => setIsModalVisible(true)} /> </Tooltip>
-    {closeButton}
-    <Modal open={isModalVisible} onCancel={onCancel} onOk={setFilter} destroyOnClose footer={null}>
-      <SearchExtended ref={ref} {...props} onValuesChanges={onValuesChanges} buttons={buttons} />
-    </Modal>
+  <Tooltip title={lstring("searchextended")}><Button icon={<SearchOutlined />} size="small" {...primary} onClick={() => setIsModalVisible(true)} /> </Tooltip>
+  {closeButton}
+  <DraggableModal open={isModalVisible} onClose={onCancel} onOk={setFilter} buttons={null} title={lstring('searchfiltertitle')}>
+    <SearchExtended ref={ref} {...props} onValuesChanges={onValuesChanges} buttons={buttons} />
+  </DraggableModal>
 
-  </React.Fragment>
+</React.Fragment>
 
 
 }

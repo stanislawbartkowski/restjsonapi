@@ -4,7 +4,7 @@ import { PageHeader } from '@ant-design/pro-layout';
 
 import { trace } from "../ts/l";
 import constructButton from "./ts/constructbutton";
-import { emptyModalListProps, FAction, FieldValue, ModalFormProps, RAction, RestTableParam, TRow, VAction } from '../ts/typing'
+import { emptyModalListProps, FAction, FieldValue, FSetTitle, ModalFormProps, RAction, RestTableParam, TRow, VAction } from '../ts/typing'
 import { TableToolBar, ButtonAction, ClickResult, ShowDetails, ClickAction } from "./ts/typing";
 import { istrue } from "./ts/helper";
 import OneRowTable from './ShowDetails/OneRowTable'
@@ -31,7 +31,7 @@ function headerTitle(p: ShowDetails, vars?: TRow) {
   else return { title: title }
 }
 
-const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[] }> = (props) => {
+const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[], setTitle?: FSetTitle }> = (props) => {
   const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
 
   const h: TableToolBar = props.toolbar as TableToolBar;
@@ -47,7 +47,12 @@ const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshacti
     else executeB(ii, undefined, props.setvarsaction)
   }
 
-  const title = headerTitle(props, props.vars);
+  const title = (props.setTitle === undefined) ? headerTitle(props, props.vars) : undefined
+
+  if (props.setTitle !== undefined) {
+    const title: string|undefined = props.title !== undefined ? makeMessage(props.title, { r: props.vars as TRow }) as string : undefined
+    if (title !== undefined) props.setTitle(title)
+  }
 
   const detaDescr = {
     r: props.vars as TRow,

@@ -11,7 +11,7 @@ import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall } from './ModalFormView';
 import { FFieldElem, flattenTForm, okmoney, cardProps, setCookiesFormListDefVars, preseT, istrue, decomposeEditId } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FAction, FIELDTYPE, FieldValue, ModalFormProps, RAction, RESTMETH, RowData, TComponentProps, TRow, VAction } from '../../ts/typing'
+import { FAction, FIELDTYPE, FSetTitle, FieldValue, ModalFormProps, RAction, RESTMETH, RowData, TComponentProps, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
@@ -47,6 +47,7 @@ export interface IIRefCall {
 export interface ModalHooks {
 
     setButtons: (buttons: ReactNode, loading: boolean) => void
+    setTitle?: FSetTitle
 }
 
 
@@ -496,6 +497,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 setInitValues={thooks.setInitValues as FSetValues}
                 restapiinitname={restapiname}
                 clickButton={clickButton}
+                setTitle={props.mhooks?.setTitle}
                 {...thooks}
             />
         : undefined
