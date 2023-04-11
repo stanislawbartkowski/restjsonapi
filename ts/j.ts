@@ -85,8 +85,10 @@ function isDev(): boolean {
 export async function getServerUrl(): Promise<string> {
   if (isDev()) {
     return getDevServer()
-  }
-  return getOriginHREF()
+  }  
+  //return getOriginHREF()
+  const u = getOriginURL()
+  return u
 }
 
 // ==============================
