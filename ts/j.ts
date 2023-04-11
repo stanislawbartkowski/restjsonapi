@@ -62,16 +62,20 @@ function getOriginURL(): string {
   return window.location.origin;
 }
 
+function getOriginURLPath() : string {
+  return transformURL(getOriginURL() + window.location.pathname)
+}
+
 function transformURL(url: string): string {
   return url[url.length - 1] === '/' ? url.slice(0, -1) : url
 }
 
 export async function getConfigURL() : Promise<string> {
   if (isDev()) {
-    return getOriginURL()
+    return getOriginURLPath()
   }
   //return getOriginHREF()
-  return getOriginURL()
+  return getOriginURLPath()
 }
 
 function getOriginHREF(): string {
@@ -87,7 +91,7 @@ export async function getServerUrl(): Promise<string> {
     return getDevServer()
   }  
   //return getOriginHREF()
-  const u = getOriginURL()
+  const u = getOriginURLPath()
   return u
 }
 
