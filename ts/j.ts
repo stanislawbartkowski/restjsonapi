@@ -70,8 +70,8 @@ export async function getConfigURL() : Promise<string> {
   if (isDev()) {
     return getOriginURL()
   }
-  return getOriginHREF()
-
+  //return getOriginHREF()
+  return getOriginURL()
 }
 
 function getOriginHREF(): string {
