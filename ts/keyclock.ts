@@ -25,8 +25,8 @@ export async function initkeyclock() {
     keycloak = new Keycloak(pars)
     log("Keycloak init")
     // await necessary
-    //await keycloak.init({ onLoad: 'login-required', flow: 'implicit' }).then(
-    await keycloak.init({ onLoad: 'login-required' }).then(
+    await keycloak.init({ onLoad: 'login-required', flow: 'implicit' }).then(
+    //await keycloak.init({ onLoad: 'login-required' }).then(
     
         () => {
             log("Keyclock initialized and ready")
