@@ -19,13 +19,14 @@ const ModalDialog: React.FC<ModalFormProps> = (props) => {
         setButtons: function (buttons: ReactNode, loading: boolean): void {
             setState({ ...moddef, buttons: buttons })
         },
-        setTitle: function(title: string): void {
+        setTitle: function(title: string|undefined): void {
             setModalTitle(title)
         }
     }
 
     function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {
         if (ismaskClicked(e)) return
+        setModalTitle(undefined)
         if (props.closeAction) props.closeAction()
     }
 

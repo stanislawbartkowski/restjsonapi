@@ -3,7 +3,7 @@ import { StepProps, Steps } from 'antd'
 
 import type { ClickResult, StepsElem, StepsForm } from "../ts/typing"
 import { makeMessage } from "../../ts/j"
-import ModalFormDialog, { IIRefCall, THooks } from "./ModalFormDialog"
+import ModalFormDialog, { IIRefCall, ModalHooks, THooks } from "./ModalFormDialog"
 import { log } from "../../ts/l"
 import { TRow } from "../../ts/typing"
 import { ErrorMessages } from "./formview/types"
@@ -26,7 +26,7 @@ type TData = {
   visited: Set<number>
 }
 
-const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) => {
+const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks & ModalHooks>((props, iref) => {
 
   const [c, setCurrent] = useState<TData>({ current: 0, errorstep: undefined, visited: new Set<number>() });
   let key: number = 0
@@ -80,10 +80,17 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks>((props, iref) =
   const vals: TRow = {}
   const initvals: TRow = { ...props.initvals, ...vals }
 
+  const ihooks: ModalHooks= {
+    ...props,
+    setTitle: (header: string|undefined) => {
+      if (props.setTitle !== undefined && c.current === 0 && header !== undefined) props.setTitle(header)
+    }
+  }
+
   return <React.Fragment><Steps current={c.current}>
     {props.steps.map(e => constructStep(e, key++, c.current === props.steps.length - 1, c.errorstep ? (key - 1) === c.errorstep : false))}
   </Steps>
-    <ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} visible ispage initvals={initvals} ignorerestapivals={c.visited.has(c.current)} />
+    <ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} visible ispage initvals={initvals} ignorerestapivals={c.visited.has(c.current)} mhooks={ihooks}/>
   </React.Fragment>
 })
 

@@ -39,7 +39,8 @@ const ModalDialog: React.FC<DraggablePros> = (props) => {
             cursor: 'move',
             background: '#f3f4e2',
             padding: '5px',
-            borderRadius: '7px'
+            borderRadius: '7px',
+            border: "1px solid rgb(209 217 193)" ,
         }
 
     if (props.title === undefined) {

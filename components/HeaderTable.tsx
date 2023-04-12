@@ -51,7 +51,7 @@ const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshacti
 
   if (props.setTitle !== undefined) {
     const title: string|undefined = props.title !== undefined ? makeMessage(props.title, { r: props.vars as TRow }) as string : undefined
-    if (title !== undefined) props.setTitle(title)
+    props.setTitle(title)
   }
 
   const detaDescr = {

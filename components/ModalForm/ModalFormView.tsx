@@ -356,10 +356,14 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     </Form>
 
+    if (props.setTitle !== undefined) {
+        props.setTitle(undefined)
+    }
+
     const header: ReactNode | undefined = props.header ?
         <HeaderTable {...props.header} vars={props.vars} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} setTitle={props.setTitle}></HeaderTable> :
         undefined
-
+    
     return <React.Fragment>
         {header}
         {form}
