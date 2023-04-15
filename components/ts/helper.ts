@@ -11,11 +11,21 @@ import { HTMLElem } from "./transcol";
 // =================
 // header
 // =================
-export function makeHeader(p: ColumnList, unheader: string | undefined, pars: OneRowData): React.ReactNode | undefined {
+
+export function makeHeaderString(p: ColumnList, unheader: string | undefined, pars: OneRowData): string | undefined {
 
     const title: string | undefined = p.headertitle
         ? makeMessage(p.headertitle, pars)
         : unheader
+
+    if (title === undefined) return undefined
+
+    return title
+}
+
+export function makeHeader(p: ColumnList, unheader: string | undefined, pars: OneRowData): React.ReactNode | undefined {
+
+    const title: string | undefined = makeHeaderString(p, unheader, pars)
 
     if (title === undefined) return undefined
 
@@ -120,6 +130,10 @@ export function getPrintContent(): PrintResult {
 
 export function isnotdefined(t: any): boolean {
     return t === undefined || t === null;
+}
+
+export function emptys(t: string|undefined): boolean {
+    return isnotdefined(t) || t === ""
 }
 
 export function istrue(t: boolean | undefined): boolean {
@@ -250,13 +264,13 @@ export function OLD_decomposeEditId(id: string): [string, string, number] | unde
 }
 
 export function decomposeEditId(id: string): [string, string, number] | undefined {
-    const f : number = id.indexOf('_')
-    if ( f === -1) return undefined
-    const l : number = id.lastIndexOf('_')
+    const f: number = id.indexOf('_')
+    if (f === -1) return undefined
+    const l: number = id.lastIndexOf('_')
     if (f === l) return undefined
-    const ta: string = id.substring(0,f)
-    const fie: string = id.substring(f+1,l)
-    const num: number = +id.substring(l+1)
+    const ta: string = id.substring(0, f)
+    const fie: string = id.substring(f + 1, l)
+    const num: number = +id.substring(l + 1)
     return [ta, fie, num]
 }
 
@@ -266,12 +280,12 @@ export function getEditList(editid: string, r: TRow): RowData | undefined {
     return values
 }
 
-export function findEditField(field : string, t : TField[]) : TField | undefined {
+export function findEditField(field: string, t: TField[]): TField | undefined {
     const d = decomposeEditId(field)
     if (d === undefined) return undefined
-    const editit : TField | undefined = t.find(t => t.field === d[0])
+    const editit: TField | undefined = t.find(t => t.field === d[0])
     if (editit === undefined) return undefined
-    const e : TField | undefined = editit.items?.find( t => t.field === d[1])
+    const e: TField | undefined = editit.items?.find(t => t.field === d[1])
     return e
 }
 

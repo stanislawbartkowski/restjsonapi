@@ -3,6 +3,8 @@ import React, { CSSProperties, ReactNode, useRef, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 
 import { PropsType } from "../ts/typing";
+import { emptys } from "./ts/helper";
+import { HTMLElem } from "./ts/transcol";
 
 type DraggablePros = {
     title?: string
@@ -43,11 +45,10 @@ const ModalDialog: React.FC<DraggablePros> = (props) => {
             border: "1px solid rgb(209 217 193)" ,
         }
 
-    if (props.title === undefined) {
+    if (emptys(props.title)) {
         style["height"] = '30px'
     }
     
-
     const title = <div
         style={style}
         onMouseOver={() => {
@@ -64,7 +65,7 @@ const ModalDialog: React.FC<DraggablePros> = (props) => {
         onBlur={() => { }}
     // end
     >
-        {props.title}
+        {HTMLElem(props.title)}
     </div>
 
 

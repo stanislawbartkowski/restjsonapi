@@ -1,4 +1,4 @@
-import React, { useState, useEffect, MutableRefObject, useRef } from "react";
+import React, { useState, useEffect, MutableRefObject, useRef, ReactNode } from "react";
 
 
 import type { ColumnType } from "antd/lib/table";
@@ -6,12 +6,12 @@ import { Table, Drawer, Space, Divider } from "antd";
 import type { TableRowSelection } from "antd/lib/table/interface";
 
 import lstring from "../../ts/localize";
-import { ClickActionProps, emptyModalListProps, FieldValue, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
+import { ClickActionProps, emptyModalListProps, FieldValue, FSetTitle, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
 import { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow } from "./js/helper";
-import { findColDetails, makeHeader } from "../ts/helper";
+import { emptys, findColDetails, makeHeader, makeHeaderString } from "../ts/helper";
 import ModalList from "../RestComponent";
 import getExtendableProps from "./Expendable";
 import HeaderTable from "../HeaderTable";
@@ -56,7 +56,7 @@ const empty: IRefCall = {
 }
 
 
-const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable }> = (props) => {
+const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle }> = (props) => {
 
     const [extendedFilter, setExtendedFilter] = useState<ExtendedFilter>(noExtendedFilter)
 
@@ -110,7 +110,15 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         return { vars: props.vars, r: {}, t: datasource.res }
     }
 
-    const title = makeHeader(props, lstring("empty"), toPars())
+    const title: ReactNode | undefined = (props.setTitle !== undefined) ? undefined : makeHeader(props, lstring("empty"), toPars())
+
+    let istitle: boolean = false
+
+    if (props.setTitle !== undefined) {
+        const headers: string | undefined = makeHeaderString(props, lstring("empty"), toPars())
+        props.setTitle(headers)
+        if (! emptys(headers)) istitle = true
+    }
 
     useEffect(() => {
         readlist(props, (s: DataSourceState) => {
@@ -257,7 +265,8 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     return (
         <React.Fragment>
-            {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction} selectedM={multichoice} /> : undefined}
+            {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction}
+                selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }} /> : undefined}
             {extendedSearch}
             <Table
                 {...rowSelection({ ...props })}
