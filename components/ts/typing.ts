@@ -290,6 +290,7 @@ export type TRadioCheck = PropSupportedType & JSSupportedType & {
 
 export type TRadio = TRadioCheck & {
     button?: boolean
+    segmented?: boolean
 }
 
 // check
@@ -352,6 +353,13 @@ export type FieldRestList = JSSupportedType & RestTableParam
 export type TGridRow = PropSupportedType
 export type TGridCol = PropSupportedType
 
+export type TPanel = PropSupportedType & {
+    header: FormMessage
+    items: TField[]
+    key: string
+}
+
+
 export type TField = PropSupportedType & TFieldBase & {
     items?: TField[]
     iprops?: PropsType
@@ -383,6 +391,7 @@ export type TField = PropSupportedType & TFieldBase & {
     label?: string
     autocomplete?: string
     button?: ButtonAction
+    collapse?: TPanel[]
 }
 
 // the whole form

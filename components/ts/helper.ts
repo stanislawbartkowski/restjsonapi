@@ -5,7 +5,7 @@ import { FieldValue, OneRowData, PropsType, RowData, TRow } from "../../ts/typin
 import { ActionResult, ButtonAction, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TColumns, TField, TForm, TPreseEnum } from "./typing";
 import defaults from "../../ts/defaults";
 import { setCookieR, getCookieR } from '../../ts/cookies'
-import { HTMLElem } from "./transcol";
+import { HTMLElem, fieldType } from "./transcol";
 
 
 // =================
@@ -189,6 +189,13 @@ export function flattenTForm(tlist: TField[]): FFieldElem[] {
                 res = res.concat(i);
                 return
             }
+        }
+        if (t.collapse) {
+            t.collapse.forEach( p=> {
+                const i : FFieldElem[] = flattenTForm(p.items)
+                res = res.concat(i)
+            })            
+            return
         }
         res.push(e)
     })

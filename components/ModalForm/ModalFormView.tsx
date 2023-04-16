@@ -25,7 +25,7 @@ import RestComponent from '../RestComponent';
 import defaults from '../../ts/defaults';
 import HeaderTable from '../HeaderTable'
 import { ErrorMessages, FField, FMultiAction, FSearchAction, FSetEditRow, IFieldContext, TableRefresh, TableRefreshData, TFieldChange, TMultiSelect, TOptions, UploadStore } from './formview/types';
-import { produceItem } from './formview/EditItems'
+import { elemFactory, produceItem } from './formview/EditItems'
 import { produceBody } from './formview/FormBody';
 import { TRefreshTable } from '../DrawTable';
 
@@ -332,13 +332,15 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         setRefreno(currnumb + 1)
     }
 
-    function produceFormItem(f: TField): ReactNode {
+    function produceFormItem(f: TField, eFactory: elemFactory): ReactNode {
 
         //const aoptions: TOptionLine[] | undefined = f.autocomplete === undefined ? [] : options.get(f.autocomplete)
         return produceItem(
             fieldContext,
             { ...f, searchF: searchF, multiF: multiF, tableR: tableR, setvarsaction: props.setvarsaction, seteditRow: setEditRow, rerenderD: renderD, options: options },
-            props.err
+            props.err,
+            undefined,
+            eFactory
         )
     }
 

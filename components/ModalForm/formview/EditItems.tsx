@@ -12,6 +12,7 @@ import {
     SelectProps,
     FormListFieldData,
     AutoComplete,
+    Segmented,
 } from 'antd';
 
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
@@ -36,6 +37,7 @@ import { produceMultiChoiceButton } from './MultiChoiceButton';
 import { createRules } from './createRules';
 import { findLabel } from '../../../ts/readresource';
 import constructButton from '../../ts/constructbutton';
+import { createCollapsePanels } from './CollapseItems';
 
 const { RangePicker } = DatePicker;
 
@@ -62,7 +64,7 @@ export function placeHolder(t: TField) {
     return undefined;
 }
 
-export type elemFactory = (t: TField) => ReactNode
+export type elemFactory = (t: TField, e: elemFactory) => ReactNode
 
 // -------- radio
 
@@ -89,6 +91,26 @@ function createRadioGroup(t: TField): ReactNode {
         }
 
     </Radio.Group>
+}
+
+
+function createSegmentOption(t: TRadioCheckItem) {
+    return {
+        label: makeMessage(t.label),
+        value: t.value
+    }
+
+}
+
+function createSegmented(ir: IFieldContext, t: FField): ReactNode {
+
+    function onChange(value: string | number) {
+        ir.fieldChanged(t)
+    }
+
+    const items: TRadioCheckItem[] = t.radio?.items as TRadioCheckItem[]
+    const options = items.map(e => createSegmentOption(e))
+    return <Segmented {...t.props} options={options} onChange={onChange}></Segmented>
 }
 
 function isNotRequired(t: TField): boolean {
@@ -222,9 +244,11 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
             undefined]
     }
 
-    if (t.radio)
+    if (t.radio) {
         if (t.radio.select) return [createSelectGroup(t, t.radio.items as TRadioCheckItem[], false), undefined]
-        else return [createRadioGroup(t), undefined]
+        if (t.radio.segmented) return [createSegmented(ir, t), undefined]
+        return [createRadioGroup(t), undefined]
+    }
 
     if (t.checkbox)
         if (t.checkbox.select) return [createSelectGroup(t, t.checkbox.items as TRadioCheckItem[], true), undefined]
@@ -301,7 +325,7 @@ function prepareStyleByLabel(t: FField) {
 function produceButton(ir: IFieldContext, t: FField, err: ErrorMessages, field?: FormListFieldData): React.ReactNode {
 
     return constructButton(t.button as ButtonAction, ir.clickButton)
-    
+
 }
 
 export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, listfield?: FormListFieldData): React.ReactNode {
@@ -331,7 +355,7 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
 
 }
 
-export function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: FormListFieldData): ReactNode {
+export function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: FormListFieldData, eFactory?: elemFactory): ReactNode {
 
     if (t.multichoice) return produceMultiChoiceButton(ir, t)
     if (t.itemlist) return createItemList(ir, t, err);
@@ -341,6 +365,7 @@ export function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, na
     if (t.restlist) return produceRestTable(ir, t);
     if (isEditList(t)) return produceEditTable(ir, t, err);
     if (t.button) return produceButton(ir, t, err, name)
+    if (t.collapse) return createCollapsePanels(ir, t, err, eFactory as elemFactory);
     return <React.Fragment>
         {t.divider ? makeDivider(t.divider, { r: {} }) : undefined}
         {produceFormItem(ir, t, err, name)}
