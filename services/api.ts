@@ -4,7 +4,7 @@ import type { FHeaderModifier, FieldValue, FUrlModifier } from "../ts/typing";
 import { log, internalerrorlog, logG } from '../ts/l'
 import { HTTPMETHOD } from "../ts/typing";
 import { getSessionId } from "../ts/j";
-import { getUserName } from "../ts/keyclock";
+import { getUserFullName, getUserName } from "../ts/keyclock";
 
 
 const rrequest = request;
@@ -64,12 +64,14 @@ export function getUrlModifier(): FUrlModifier | undefined {
 
 function userHeader() : Record<string,string> {
   const sessionH : Record<string,string> = {'sessionid': getSessionId()}
-  const userH : Record<string,string> = (getUserName() === undefined) ? {} : {'user' : (getUserName() as string)}
+  const userH : Record<string,string> = (getUserName() === undefined) ? {} : {'user' : (encodeURIComponent(getUserName() as string))}
+  const usernameH : Record<string,string> = (getUserFullName() === undefined) ? {} : {'username' : (encodeURIComponent(getUserFullName() as string))}
   const modifH: Record<string,string> = (headerModifier === undefined) ? {} : headerModifier()
   return  {
       ...sessionH,
       ...userH,
-      ...modifH
+      ...modifH,
+      ...usernameH
   }
 }
 

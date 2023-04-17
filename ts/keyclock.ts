@@ -56,6 +56,14 @@ export function isAuthenticated(): boolean {
     return keycloak?.authenticated as boolean
 }
 
-export function getUserName(): string {
-    return keycloak?.profile?.username as string
+export function getUserName(): string | undefined {
+    return keycloak?.profile?.username
+}
+
+export function getUserFullName(): string | undefined {
+    const firstname : string|undefined = keycloak?.profile?.firstName
+    const lastname : string|undefined = keycloak?.profile?.lastName
+    if (firstname === undefined && lastname === undefined) return undefined
+    if (firstname !== undefined && lastname !== undefined) return firstname + " " + lastname
+    return (firstname !== undefined) ? firstname : lastname as string
 }
