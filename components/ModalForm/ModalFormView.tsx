@@ -28,6 +28,7 @@ import { ErrorMessages, FField, FMultiAction, FSearchAction, FSetEditRow, IField
 import { elemFactory, produceItem } from './formview/EditItems'
 import { produceBody } from './formview/FormBody';
 import { TRefreshTable } from '../DrawTable';
+import { getCookie, setCookie } from '../../ts/cookies';
 
 
 function ltrace(mess: string) {
@@ -49,6 +50,7 @@ type TFormView = TForm & {
     vars?: TRow
     ignorerestapivals?: boolean
     clickButton: TClickButton
+    listdef?: string
 }
 
 
@@ -281,13 +283,16 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         f.setFieldValue(t.field, m)
     }
 
+    function gencookie(t: TField, addf?: string | undefined): string {
+        const f: string = (props.listdef as string) + "_" + t.field
+        return (addf === undefined) ? f : f + "_" + addf
+
+    }
+
     const fieldContext: IFieldContext = {
         getChanges: function (): TFieldChange {
             return fchanges.current;
         },
-        //        fieldChanged: function (id: string): void {
-        //            props.onFieldChange(id);
-        //        },
         fieldChanged: function (t: FField): void {
             modifyMoney(t);
             props.onFieldChange(t.field);
@@ -315,11 +320,19 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             setMulti(t.field, sel);
         },
         fGetOptions: function (t: TField, value: string): void {
-            if (props.fGetOptions === undefined || t.autocomplete === undefined) return
-            const a: TOptionLine[] = props.fGetOptions(t.autocomplete, value)
+            if (props.fGetOptions === undefined || t.autocomplete === undefined)
+                return;
+            const a: TOptionLine[] = props.fGetOptions(t.autocomplete, value);
             const amap: TOptions = new Map(options);
-            amap.set(t.autocomplete, a)
-            setOptions(amap)
+            amap.set(t.autocomplete, a);
+            setOptions(amap);
+        },
+        fReadCookie: function (t: TField, addf?: string | undefined): string | undefined {
+            return getCookie(gencookie(t, addf))
+
+        },
+        fWriteCookie: function (t: TField, val: string | undefined, addf?: string | undefined): void {
+            setCookie(gencookie(t, addf), val)
         }
     }
 
@@ -365,7 +378,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const header: ReactNode | undefined = props.header ?
         <HeaderTable {...props.header} vars={props.vars} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} setTitle={props.setTitle}></HeaderTable> :
         undefined
-    
+
     return <React.Fragment>
         {header}
         {form}

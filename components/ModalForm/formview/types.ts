@@ -38,6 +38,8 @@ export type TMultiSelect = Map<string, FieldValue[]>;
 export type SetMultiSelect = (t : TField, sel: FieldValue[]) => void
 export type fSearchOptions = (t : TField, value: string) => void
 export type TOptions = Map<string,TOptionLine[]>
+export type TReadCookie = (t: TField, addf?: string) => string|undefined
+export type TWriteCookie = (t: TField, val: string|undefined, addf?: string) => void
 
 
 export interface IFieldContext {
@@ -51,6 +53,8 @@ export interface IFieldContext {
     clickButton: TClickButton
     setMulti: SetMultiSelect
     fGetOptions: fSearchOptions
+    fReadCookie: TReadCookie,
+    fWriteCookie: TWriteCookie
 }
 
 export type ErrorMessage = {

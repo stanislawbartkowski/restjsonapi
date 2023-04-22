@@ -9,7 +9,7 @@ import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall } from './ModalFormView';
-import { FFieldElem, flattenTForm, okmoney, cardProps, setCookiesFormListDefVars, preseT, istrue, decomposeEditId } from '../ts/helper'
+import { FFieldElem, flattenTForm, okmoney, cardProps, preseT, istrue, decomposeEditId } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
 import { FAction, FIELDTYPE, FSetTitle, FieldValue, ModalFormProps, RAction, RESTMETH, RowData, TComponentProps, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
@@ -18,7 +18,7 @@ import ReadDefError from '../errors/ReadDefError';
 import StepsFormView from './StepsFormView';
 import executeAction from '../ts/executeaction'
 import { readvalsdata } from "../ts/readdefs";
-import { callJSFunction, commonVars, isBool, isNumber, isString, toS } from '../../ts/j';
+import { callJSFunction, commonVars, isBool, isString, toS } from '../../ts/j';
 import RestComponent from '../RestComponent';
 import { findErrField } from './formview/helper';
 import { ErrorMessages } from './formview/types';
@@ -76,16 +76,6 @@ type MModalFormProps = ModalFormProps & {
     vars?: TRow
     initvals?: TRow
     ignorerestapivals?: boolean
-}
-
-function isCookiesButton(b: ButtonAction): boolean {
-    return (b.cookie !== undefined && b.cookie)
-}
-
-function setVarsCookies(p: MModalFormProps, b: ButtonAction, r: TRow) {
-    if (isCookiesButton(b)) {
-        setCookiesFormListDefVars(p.listdef as string, r);
-    }
 }
 
 type PopDialogView = {
@@ -334,7 +324,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         else {
             clickButton(b, v);
         }
-        setVarsCookies(props, b, v);
     }
 
     function onButtonClicked(r: TRow): void {
@@ -476,10 +465,10 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         }
     }
 
-    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} refreshaction={refreshAction}/> : undefined
+    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} refreshaction={refreshAction} /> : undefined
 
     const modalFormView: ReactNode = formdef.status === Status.READY ?
-        ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={ivals} {...props.mhooks as ModalHooks}/> :
+        ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={ivals} {...props.mhooks as ModalHooks} /> :
             <ModalFormView
                 aRest={props.aRest as TAsyncRestCall}
                 ref={ref} err={formdef.err}
@@ -498,6 +487,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 restapiinitname={restapiname}
                 clickButton={clickButton}
                 setTitle={props.mhooks?.setTitle}
+                listdef={props.listdef}
                 {...thooks}
             />
         : undefined

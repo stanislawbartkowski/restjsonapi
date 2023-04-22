@@ -4,9 +4,9 @@ import { TRow } from './typing';
 
 //Cookies.set('name', 'value', { expires: 7, path: '' })
 
-let prefix: string|undefined = undefined
+let prefix: string | undefined = undefined
 
-const api = Cookies.withAttributes({ expires : defaults.cookieage })
+const api = Cookies.withAttributes({ expires: defaults.cookieage })
 
 export function setCookiesPrefix(pprefix: string) {
     prefix = pprefix
@@ -17,20 +17,21 @@ function cookiename(cname: string): string {
     return prefix + "-" + cname
 }
 
-export function setCookie(cname: string, value: string) {
-    api.set(cookiename(cname), value)
+export function setCookie(cname: string, value: string | undefined) {
+    if (value === undefined) api.remove(cookiename(cname))
+    else api.set(cookiename(cname), value)
 }
 
-export function getCookie(cname: string) : string | undefined {
+export function getCookie(cname: string): string | undefined {
     return api.get(cookiename(cname))
 }
 
 export function setCookieR(cname: string, r: TRow) {
-    setCookie(cname,JSON.stringify(r))
+    setCookie(cname, JSON.stringify(r))
 }
 
-export function getCookieR(cname: string) : TRow|undefined {
-    const s : string|undefined = getCookie(cname);
+export function getCookieR(cname: string): TRow | undefined {
+    const s: string | undefined = getCookie(cname);
     if (s === undefined) return undefined
     return JSON.parse(s) as TRow
 }

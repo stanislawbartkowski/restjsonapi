@@ -61,7 +61,6 @@ export type TFieldBase = {
 // ===============================
 
 export type ButtonAction = ButtonElem & TAction & {
-    cookie?: boolean
     validate?: boolean
 }
 
@@ -359,6 +358,24 @@ export type TPanel = PropSupportedType & {
     key: string
 }
 
+export type TCookieO = {
+    cookie?: true
+    addf?: string
+    default?: string
+} 
+
+export type TCookie = string | TCookieO
+
+export type TabItems = PropSupportedType & {
+    label: FormMessage
+    key: string,
+    items: TField[]
+}
+
+export type TTab = PropSupportedType & {
+    defaultActiveKey?: TCookie
+    tabs: TabItems[]
+}
 
 export type TField = PropSupportedType & TFieldBase & {
     items?: TField[]
@@ -392,6 +409,7 @@ export type TField = PropSupportedType & TFieldBase & {
     autocomplete?: string
     button?: ButtonAction
     collapse?: TPanel[]
+    tab?: TTab
 }
 
 // the whole form

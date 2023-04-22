@@ -132,7 +132,7 @@ export function isnotdefined(t: any): boolean {
     return t === undefined || t === null;
 }
 
-export function emptys(t: string|undefined): boolean {
+export function emptys(t: string | undefined): boolean {
     return isnotdefined(t) || t === ""
 }
 
@@ -191,10 +191,17 @@ export function flattenTForm(tlist: TField[]): FFieldElem[] {
             }
         }
         if (t.collapse) {
-            t.collapse.forEach( p=> {
-                const i : FFieldElem[] = flattenTForm(p.items)
+            t.collapse.forEach(p => {
+                const i: FFieldElem[] = flattenTForm(p.items)
                 res = res.concat(i)
-            })            
+            })
+            return
+        }
+        if (t.tab?.tabs) {
+            t.tab.tabs.forEach(p => {
+                const i: FFieldElem[] = flattenTForm(p.items)
+                res = res.concat(i)
+            })
             return
         }
         res.push(e)
@@ -230,18 +237,6 @@ export function visibleColumns(cols: TColumns, removeactions?: boolean): TColumn
     return cols.filter(e => includeColumn(e, removeactions))
 }
 
-
-// =======================================
-// cookies
-// =======================================
-
-export function setCookiesFormListDefVars(listdef: string, r: TRow) {
-    setCookieR(listdef + "-vars ", r)
-}
-
-export function getCookiesFormListDefVars(listdef: string): TRow | undefined {
-    return getCookieR(listdef + "-vars ")
-}
 
 // ======================
 // different prese types

@@ -23,6 +23,6 @@ export function createCollapsePanels(ir: IFieldContext, t: FField, err: ErrorMes
 
 
     return <Collapse {...t.props}>
-        { t.collapse?.map( p => producePanel(ir,p,err,r,eFactory as elemFactory))}
+        {t.collapse?.map(p => producePanel(ir, p, err, r, eFactory as elemFactory))}
     </Collapse>
 }

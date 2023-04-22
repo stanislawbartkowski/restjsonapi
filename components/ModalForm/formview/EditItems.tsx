@@ -38,6 +38,7 @@ import { createRules } from './createRules';
 import { findLabel } from '../../../ts/readresource';
 import constructButton from '../../ts/constructbutton';
 import { createCollapsePanels } from './CollapseItems';
+import { createTabsPanel } from './TabItems';
 
 const { RangePicker } = DatePicker;
 
@@ -366,6 +367,7 @@ export function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, na
     if (isEditList(t)) return produceEditTable(ir, t, err);
     if (t.button) return produceButton(ir, t, err, name)
     if (t.collapse) return createCollapsePanels(ir, t, err, eFactory as elemFactory);
+    if (t.tab) return createTabsPanel(ir, t, err, eFactory as elemFactory)
     return <React.Fragment>
         {t.divider ? makeDivider(t.divider, { r: {} }) : undefined}
         {produceFormItem(ir, t, err, name)}
