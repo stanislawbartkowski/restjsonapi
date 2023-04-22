@@ -8,6 +8,7 @@ import { Status, ColumnList, ShowDetails } from "./typing";
 import { isItemGroup, isnotdefined, istrue, preseT } from './helper'
 import { internalerrorlog } from '../../ts/l'
 import analyzeresponse from "./anayzeresponse";
+import { TabItems } from "./typing";
 
 export type ReadDefsResult = {
     status: Status
@@ -45,6 +46,14 @@ async function resolveRest(tl: TField[]): Promise<TField[]> {
             const itemlist: TField[] = await resolveRest(c.items as TField[])
             c.items = itemlist
             return c;
+        }
+        if (c.tab) {
+            const tabs: TabItems[] = await Promise.all(c.tab.tabs.map(async c => {
+                const items: TField[] = await resolveRest(c.items as TField[])
+                c.items = items
+                return c
+            }))
+            return c
         }
 
         const getLabel = (rest: TItemsRest, r: TRow) => {
