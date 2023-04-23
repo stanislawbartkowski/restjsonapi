@@ -9,5 +9,7 @@ export type PageParams = {
 
 export type TExtendable = {
   expandedRowRender: (record: TRow) => ReactNode;
-  rowExpandable?: (record: TRow) => boolean
+  rowExpandable?: (record: TRow) => boolean,
+  fixed: boolean,
+  columnWidth: number
 }

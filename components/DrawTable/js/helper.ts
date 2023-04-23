@@ -1,6 +1,6 @@
 import type { ColumnType } from "antd/lib/table";
 
-import type { ColumnList, TableHookParam, TColumn, TColumns } from "../../ts/typing";
+import type { ColumnList, TableHookParam, TColumn, TColumns, TResizeColumn } from "../../ts/typing";
 import { TRow, RowData, OneRowData } from '../../../ts/typing'
 import { callJSFunction, toS } from "../../../ts/j";
 import './styles.css'
@@ -14,12 +14,13 @@ import { constructTableFilter, FFilter } from '../../TableFilter'
 // create ProColumns from columns
 // =================================
 
+export type ColWidth = Map<string,number|string>
 
-export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRow): ColumnType<any>[] {
+export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRow, colw?: ColWidth, resizeF?: TResizeColumn ): ColumnType<any>[] {
 
   const clist: TColumns = visibleColumns(cols.columns);
 
-  return clist.map((c) => transformOneColumn(c, r, cols, vars));
+  return clist.map((c) => transformOneColumn(c, r, cols, vars, colw?.get(c.field), resizeF));
 }
 
 // =============================

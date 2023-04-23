@@ -1,24 +1,25 @@
 import React, { useState, useEffect, MutableRefObject, useRef, ReactNode } from "react";
 
+import { Resizable } from 'react-resizable';
 
 import type { ColumnType } from "antd/lib/table";
 import { Table, Drawer, Space, Divider } from "antd";
 import type { TableRowSelection } from "antd/lib/table/interface";
 
 import lstring from "../../ts/localize";
-import { ClickActionProps, emptyModalListProps, FieldValue, FSetTitle, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
+import { ClickActionProps, emptyModalListProps, FIELDTYPE, FieldValue, FSetTitle, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { TExtendable, } from "./typing";
-import { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn } from "../ts/typing";
+import { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TColumns, TResize, TResizeColumn } from "../ts/typing";
 import { Status } from "../ts/typing";
-import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow } from "./js/helper";
-import { emptys, findColDetails, makeHeader, makeHeaderString } from "../ts/helper";
+import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow, ColWidth } from "./js/helper";
+import { emptys, findColDetails, makeHeader, makeHeaderString, visibleColumns } from "../ts/helper";
 import ModalList from "../RestComponent";
 import getExtendableProps from "./Expendable";
 import HeaderTable from "../HeaderTable";
 import readlist, { DataSourceState } from '../ts/readlist'
 import ReadListError from '../errors/ReadListError'
 import SummaryTable from '../SummaryTable'
-import { isNumber, isObject } from "../../ts/j";
+import { copyMap, isBool, isNumber, isObject } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 import SearchButton, { FSetFilter, FSetSearch } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
@@ -27,7 +28,39 @@ import ButtonStack from "./ButtonStack";
 import propsPaging, { OnPageChange } from "../ts/tablepaging"
 import openNotification from "../Notification";
 import { istrue } from '../ts/helper'
+import { fieldType } from "../ts/transcol";
+import defaults from "../../ts/defaults";
+import { saveCookieValue } from "../ModalForm/formview/helper";
+import { getCookie, setCookie } from "../../ts/cookies";
 
+
+// resize
+const ResizableTitle = (props: any) => {
+    const { onResize, width, ...restProps } = props;
+
+    if (!width) {
+        return <th {...restProps} />;
+    }
+
+    return (
+        <Resizable
+            width={width}
+            height={0}
+            handle={
+                <span
+                    className="react-resizable-handle"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                    }}
+                />
+            }
+            onResize={onResize}
+            draggableOpts={{ enableUserSelectHack: false }}
+        >
+            <th {...restProps} />
+        </Resizable>
+    );
+};
 
 export type TRefreshTable = {
     searchF: TRow
@@ -55,6 +88,65 @@ const empty: IRefCall = {
     refreshsearch: -1
 }
 
+function defaultW(c: TColumn, resize?: TResize): number | string | undefined {
+    if (resize === undefined || !resize.resize) return c.width
+    if (c.width !== undefined) return c.width
+    const fieldtype: FIELDTYPE = fieldType(c)
+    var w: number = defaults.sizedefault;
+    switch (fieldtype) {
+        case FIELDTYPE.NUMBER:
+            w = resize.defaultnumber ? resize.defaultnumber : defaults.sizenumber
+            break;
+        case FIELDTYPE.MONEY:
+            w = resize.defaultmoney ? resize.defaultmoney : defaults.sizemoney
+            break;
+        case FIELDTYPE.BOOLEAN:
+            w = resize.defaultboolean ? resize.defaultboolean : defaults.sizeboolean
+            break;
+        case FIELDTYPE.DATE:
+            w = resize.defaultdate ? resize.defaultdate : defaults.sizedate
+            break;
+    }
+    return w
+}
+
+
+function isResize(p: ColumnList): boolean {
+    if (p.resize === undefined) return false;
+    return p.resize.resize
+}
+
+function cookieName(p: RestTableParam): string {
+    const n: string = (p.list as string) + "_" + (p.listdef !== undefined ? p.listdef : "list")
+    return n + "_columns_width"
+}
+
+function saveCookieColWidth(p: RestTableParam, w: ColWidth) {
+    const cookiename: string = cookieName(p)
+    const j: string = JSON.stringify(Array.from(w.entries()));
+    setCookie(cookiename, j)
+}
+
+function getCookieColWidth(p: RestTableParam): ColWidth | undefined {
+    const cookiename: string = cookieName(p)
+    const j: string | undefined = getCookie(cookiename)
+    if (j === undefined) return undefined
+    const m = new Map(JSON.parse(j));
+    return m as ColWidth
+}
+
+function createInitColsWidth(r: RestTableParam, p: ColumnList): ColWidth {
+    const clist: TColumns = visibleColumns(p.columns);
+    const m: ColWidth = new Map<string, number>()
+    const cm: ColWidth | undefined = getCookieColWidth(r)
+    clist.forEach(c => {
+        const w = cm?.get(c.field) ? cm.get(c.field) : defaultW(c, p.resize)
+        if (w !== undefined) m.set(c.field, w)
+    }
+    )
+    return m
+}
+
 
 const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle }> = (props) => {
 
@@ -64,6 +156,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     const [currentRow, setCurrentRow] = useState<TRow>();
     const [multichoice, setMultiChoice] = useState<FieldValue[]>(props.initsel as FieldValue[])
     const [page, setCurrentPage] = useState<number>(1)
+    const [colw, setColW] = useState<ColWidth>(createInitColsWidth(props, props))
 
     const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
     const [datasource, setDataSource] = useState<DataSourceState>({
@@ -75,6 +168,12 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const ref: MutableRefObject<IRefCall> = useRef<IRefCall>(empty) as MutableRefObject<IRefCall>
 
+    // resize
+    const components = isResize(props) ? {
+        header: {
+            cell: ResizableTitle,
+        },
+    } : undefined
 
     const f: FShowDetails = (entity: TRow) => {
         setCurrentRow(entity);
@@ -104,8 +203,6 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         fresult: fresult,
     }
 
-    const columns: ColumnType<any>[] = transformColumns(props, thook, props.vars);
-
     function toPars(): OneRowData {
         return { vars: props.vars, r: {}, t: datasource.res }
     }
@@ -117,7 +214,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     if (props.setTitle !== undefined) {
         const headers: string | undefined = makeHeaderString(props, lstring("empty"), toPars())
         props.setTitle(headers)
-        if (! emptys(headers)) istitle = true
+        if (!emptys(headers)) istitle = true
     }
 
     useEffect(() => {
@@ -237,6 +334,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
         return (t.choosing || props.multiselect) ? {
             rowSelection: {
+                columnWidth: defaults.checkSize,
                 type: t.choosing ? 'radio' : 'checkbox',
                 onChange: (r: React.Key[]) => {
                     // if (props.multiSelect) props.multiSelect(r)
@@ -263,6 +361,15 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const vars: TRow = { ...props.vars, ...datasource.vars }
 
+    const resizeF: TResizeColumn = (c: TColumn, newwidth: number) => {
+        const m: ColWidth = copyMap(colw)
+        m.set(c.field, newwidth)
+        setColW(m)
+        saveCookieColWidth(props, m)
+    }
+
+    const columns: ColumnType<any>[] = transformColumns(props, thook, props.vars, colw, resizeF);
+
     return (
         <React.Fragment>
             {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction}
@@ -270,6 +377,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
             {extendedSearch}
             <Table
                 {...rowSelection({ ...props })}
+                components={components}
                 title={() => title}
                 rowKey={datasource.rowkey}
                 dataSource={dsource}

@@ -20,7 +20,6 @@ function isFilterSetEmpty(p: TRow): boolean {
   return empty
 }
 
-
 const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter, searchRow: FSetSearch }> = (props) => {
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);

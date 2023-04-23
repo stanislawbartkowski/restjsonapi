@@ -192,6 +192,8 @@ export type TDivider = FormMessage & {
 // single column/field type
 // =============================  
 
+export type TResizeColumn= (c: TColumn, newwidth: number) => void
+
 export type TColumn = TFieldBase & PropSupportedType & {
     showdetails?: ShowDetails | boolean;
     ident?: string
@@ -205,6 +207,7 @@ export type TColumn = TFieldBase & PropSupportedType & {
     divider?: TDivider
     tablenodef?: boolean
     stat?: StatisticType
+    width?: string| number
 };
 
 // ===============================
@@ -217,6 +220,15 @@ export type PagingC = {
     nopaging?: boolean | number,
     pageSize?: number
 
+}
+
+export type TResize = {
+    resize: boolean
+    default?: number
+    defaultmoney?: number
+    defaultboolean?: number
+    defaultdate?: number
+    defaultnumber?: number
 }
 
 export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
@@ -234,6 +246,7 @@ export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
     filterJS?: string
     onerow?: boolean
     extendedsearch?: boolean
+    resize?: TResize
 };
 
 

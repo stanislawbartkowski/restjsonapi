@@ -1,14 +1,14 @@
 import { ColumnType } from "antd/lib/table";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useRef } from "react";
 import { Badge, Button, Divider, Dropdown, Menu, Space, Statistic, Switch, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
-import { AddStyle, ButtonAction, ClickResult, ColumnList, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TTag, TTags } from "./typing";
+import { AddStyle, ButtonAction, ClickResult, ColumnList, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue, isnotdefined } from "./helper";
-import { callJSFunction, makeMessage } from "../../ts/j";
+import { callJSFunction, isNumber, makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
@@ -263,7 +263,7 @@ function isRenderable(c: TColumn): boolean {
 // transform column
 // ====================
 
-export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnList, vars?: TRow): ColumnType<any> {
+export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnList, vars?: TRow, width?: number | string, resizeF?: TResizeColumn): ColumnType<any> {
     const mess: string = fieldTitle(c, { r: {}, vars: vars })
     const fieldtype: FIELDTYPE = fieldType(c)
     const p: ColumnType<any> = {};
@@ -289,12 +289,29 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
         ? TableFilterProps(c, mess)
         : undefined;
 
+    const handleResize = (e: any, { size }: any) => {
+        if (resizeF === undefined) return;
+        resizeF(c, size.width as number)
+    };
+
+    const widthProp = (width === undefined) ? undefined : { width: width }
+    const onHeaderProps = (resizeF !== undefined && width !== undefined && isNumber(width)) ? {
+        onHeaderCell: (column: any) => {
+            return {
+                width: width as number,
+                onResize: handleResize
+            }
+        }
+    } : undefined
+
     const e: ColumnType<any> = {
         title: <div>{mess}</div>,
         dataIndex: c.field,
         ...p,
         ...c.props,
         ...filterprops,
+        ...widthProp,
+        ...onHeaderProps
     };
     if (isRenderable(c)) {
         e.render = constructRenderCell(c, r, vars);

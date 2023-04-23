@@ -6,6 +6,7 @@ import RestTableList from '../RestTable'
 import type { TRow } from '../../ts/typing'
 import { clickAction } from "../ts/helper";
 import { commonVars } from "../../ts/j";
+import defaults from "../../ts/defaults";
 
 function getExtendableProps(cols: ColumnList, vars?: TRow): TExtendable {
 
@@ -17,7 +18,9 @@ function getExtendableProps(cols: ColumnList, vars?: TRow): TExtendable {
   }
 
   return {
+    fixed: true,
     expandedRowRender: expand,
+    columnWidth: defaults.expandSize
   }
 }
 
