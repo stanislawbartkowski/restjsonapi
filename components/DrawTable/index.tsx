@@ -4,11 +4,10 @@ import { Resizable } from 'react-resizable';
 
 import type { ColumnType } from "antd/lib/table";
 import { Table, Drawer, Space, Divider } from "antd";
-import type { TableRowSelection } from "antd/lib/table/interface";
+import type { ExpandableConfig, TableRowSelection } from "antd/lib/table/interface";
 
 import lstring from "../../ts/localize";
 import { ClickActionProps, emptyModalListProps, FIELDTYPE, FieldValue, FSetTitle, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
-import type { TExtendable, } from "./typing";
 import { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TColumns, TResize, TResizeColumn } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow, ColWidth } from "./js/helper";
@@ -19,7 +18,7 @@ import HeaderTable from "../HeaderTable";
 import readlist, { DataSourceState } from '../ts/readlist'
 import ReadListError from '../errors/ReadListError'
 import SummaryTable from '../SummaryTable'
-import { copyMap, isBool, isNumber, isObject } from "../../ts/j";
+import { copyMap, isNumber, isObject } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 import SearchButton, { FSetFilter, FSetSearch } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
@@ -30,7 +29,6 @@ import openNotification from "../Notification";
 import { istrue } from '../ts/helper'
 import { fieldType } from "../ts/transcol";
 import defaults from "../../ts/defaults";
-import { saveCookieValue } from "../ModalForm/formview/helper";
 import { getCookie, setCookie } from "../../ts/cookies";
 
 
@@ -245,7 +243,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         searchRowF({ isfilter: false, filtervalues: refreshD.searchF }, first, res)
     }
 
-    const extend: TExtendable | undefined = props.extendable
+    const extend: ExpandableConfig<TRow> | undefined = props.extendable
         ? getExtendableProps(props, props.vars)
         : undefined;
 
@@ -385,7 +383,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 loading={datasource.status === Status.PENDING}
                 columns={columns}
                 {...pagingD[0]}
-                {...extend}
+                expandable={extend}
                 rowClassName={rowClassName}
                 summary={isSummary() ? () => (<SummaryTable isextendable={props.extendable !== undefined} {...props} list={datasource.res} vars={vars} />) : undefined}
                 onRow={(r) => ({
