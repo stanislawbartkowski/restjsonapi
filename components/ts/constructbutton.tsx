@@ -61,6 +61,11 @@ export function constructButtonElem(b: ButtonAction, onclick: FClickButton, disa
         messid = 'search';
         iconid = 'searchoutlined'
         break;
+      case BUTTONACTION.SEARCHNEXT:
+        messid = 'searchnext';
+        iconid = 'forwardoutlined'
+        break;
+
     }
 
   const bname: String = messid !== "" ? lstring(messid) : getButtonName(b)

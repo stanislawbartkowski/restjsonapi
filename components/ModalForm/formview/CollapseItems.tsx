@@ -13,7 +13,7 @@ function producePanel(ir: IFieldContext, p: TPanel, err: ErrorMessages, r: TRow,
     const header: string | undefined = makeMessage(p.header, { r: r })
     const panelnode: ReactNode = produceBody(p.items, eFactory)
 
-    return <Collapse.Panel header={header} key={p.key}>{panelnode}</Collapse.Panel>
+    return <Collapse.Panel header={header} key={p.key} {...p.props}>{panelnode}</Collapse.Panel>
 
 }
 

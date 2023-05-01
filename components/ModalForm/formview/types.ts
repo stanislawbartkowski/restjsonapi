@@ -5,7 +5,7 @@ import { TRefreshTable } from "../../DrawTable"
 
 
 export type TableRefreshData = {
-    refreshno: number
+    refreshno?: number
     searchR?: TRefreshTable
 }
 

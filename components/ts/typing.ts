@@ -192,7 +192,7 @@ export type TDivider = FormMessage & {
 // single column/field type
 // =============================  
 
-export type TResizeColumn= (c: TColumn, newwidth: number) => void
+export type TResizeColumn = (c: TColumn, newwidth: number) => void
 
 export type TColumn = TFieldBase & PropSupportedType & {
     showdetails?: ShowDetails | boolean;
@@ -207,7 +207,7 @@ export type TColumn = TFieldBase & PropSupportedType & {
     divider?: TDivider
     tablenodef?: boolean
     stat?: StatisticType
-    width?: string| number
+    width?: string | number
 };
 
 // ===============================
@@ -375,7 +375,7 @@ export type TCookieO = {
     cookie?: true
     addf?: string
     default?: string
-} 
+}
 
 export type TCookie = string | TCookieO
 
@@ -497,7 +497,8 @@ export enum BUTTONACTION {
     PREV = 'PREV',
     UPLOAD = 'UPLOAD',
     OK = "OK",
-    SEARCH = "SEARCH"
+    SEARCH = "SEARCH",
+    SEARCHNEXT = "SEARCHNEXT"
 }
 
 // =================

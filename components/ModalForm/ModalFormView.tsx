@@ -144,7 +144,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
             const ntableR: TableRefresh = copyMap(tableR)
             const tableRE: TableRefreshData | undefined = ntableR.get(field)
-            const refreshno = tableRE === undefined ? 0 : tableRE.refreshno + 1
+            const refreshno = istrue(searchD?.notwaitrefresh) ? tableRE?.refreshno : tableRE === undefined || tableRE.refreshno == undefined ? 0 : tableRE.refreshno + 1
             const newTableRE: TableRefreshData = {
                 searchR: searchD,
                 refreshno: refreshno

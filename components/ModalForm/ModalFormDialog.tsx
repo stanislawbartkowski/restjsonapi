@@ -1,7 +1,7 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
 import { Card } from 'antd';
 
-import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TField, TOptionLine, TPreseEnum } from '../ts/typing'
+import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TColumn, TField, TOptionLine, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
@@ -133,8 +133,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     const setvarsaction: VAction = (vars: TRow) => {
+        const fields: TColumn[] = createF()
         if (formdef.tabledata?.fields)
-            formdef.tabledata?.fields.forEach(t => {
+            createF().forEach(t => {
                 if (t.restlist) {
                     let tData: TRefreshTable | undefined = (vars[t.field] as any) as TRefreshTable
                     let refresh: boolean = true
