@@ -1,4 +1,4 @@
-import { Route } from "react-router-dom";
+import { Route } from "react-router";
 import { getMenuElemsOnly } from "./leftmenu";
 import { getMenuElement, getDirMenuElems, getMenuDirElement } from './constructRestElement'
 

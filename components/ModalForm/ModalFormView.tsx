@@ -154,6 +154,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         },
     }));
 
+    useEffect( () => {
+        f.resetFields()
+    }, [props.listdef])
+
     useEffect(() => {
 
         let vals: TRow | undefined

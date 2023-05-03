@@ -1,13 +1,15 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 
 import { MenuElem, TComponentProps } from "./typing";
 import RestComponent from "../components/RestComponent";
 import { createRestParam, MenuDirComponent, MenuDirElemComponent } from "../components/MenuComps";
-import InLine from "./inline";
 
-const menuF: Map<String, ReactNode> = new Map<String, ReactNode>()
+export type FComponent = () => ReactNode
 
-const submenuF: Map<String, ReactNode> = new Map<String, ReactNode>()
+const menuF: Map<String, FComponent> = new Map<String, FComponent>()
+
+const submenuF: Map<String, FComponent> = new Map<String, FComponent>()
+
 
 const dirmenu: string[] = []
 
@@ -15,27 +17,29 @@ export function getDirMenuElems() {
     return dirmenu
 }
 
-export function addMenuElement(id: string, e: ReactNode) {
+export function addMenuElement(id: string, e: FComponent) {
     menuF.set(id, e)
 }
 
 
 export function addMenuRestElement(p: MenuElem) {
     const pr: TComponentProps = { ...createRestParam(p) }
-    const e: ReactNode = p.menudir ? <MenuDirComponent {...pr} ispage pathid={p.id} /> : <RestComponent {...pr} ispage />
+    // IMPORTANT: <div key> is necessary to force unmount element when Route switch occurs
+    const e: FComponent = () => p.menudir ? <MenuDirComponent {...pr} ispage pathid={p.id} /> : <div key={p.id}><RestComponent {...pr} ispage /> </div>
+
     addMenuElement(p.id, e)
     if (p.menudir) {
-        const sube: ReactNode = <MenuDirElemComponent key={p.id} {...p} />
+        const sube: FComponent = () => <MenuDirElemComponent key={p.id} {...p} />
         dirmenu.push(p.id)
         submenuF.set(p.id, sube)
     }
 }
 
 export function getMenuElement(id: string): ReactNode {
-    return menuF.get(id)
+    return (menuF.get(id) as FComponent)()
 }
 
 export function getMenuDirElement(id: string): ReactNode {
-    return submenuF.get(id)
+    return (submenuF.get(id) as FComponent)()
 }
 

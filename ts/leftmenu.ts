@@ -1,6 +1,5 @@
 import type { MenuElem, MenuLeft, TMenuNode, TSubMenu } from "./typing";
-import { addMenuRestElement, addMenuElement } from './constructRestElement'
-import { ReactNode } from "react";
+import { addMenuRestElement, addMenuElement, FComponent } from './constructRestElement'
 
 
 // --------------------
@@ -54,16 +53,16 @@ function getMenuElems(menu: TMenuNode[]): MenuElem[] {
 
 
 export function getMenuElemsOnly(): string[] {
-    const menulist : MenuElem[] = getMenuElems(leftmenu.menu)
-    return menulist.map( e => e.id).concat(addroute)
+    const menulist: MenuElem[] = getMenuElems(leftmenu.menu)
+    return menulist.map(e => e.id).concat(addroute)
 }
 
-export function addLeftMenuElem(menu: MenuElem, elem: ReactNode) {
+export function addLeftMenuElem(menu: MenuElem, elem: FComponent) {
     leftmenu.menu.push(menu)
     addMenuElement(menu.id, elem)
 }
 
-export function addRouterElem(id: string, elem: ReactNode) {
+export function addRouterElem(id: string, elem: FComponent) {
     addroute.push(id)
     addMenuElement(id, elem)
 }

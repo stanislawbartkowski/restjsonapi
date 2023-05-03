@@ -21,8 +21,6 @@ const PrintDisplay: React.FC = (props) => {
 
     const body = (p.result.text) ? <pre>{content}</pre> : <div dangerouslySetInnerHTML={{ __html: content }} />
 
-    console.log(id)
-
     const link: ReactNode | undefined = p.result.printlink ? <Button type="link" icon={full}><a href={enhanceLink(p.result.printlink)} title={name} target="_blank">{lstring("fullprint")}</a></Button> : undefined
 
     const extra = <React.Fragment> {link}  <Button type="primary" icon={back} onClick={() => history.back()} />  </React.Fragment>

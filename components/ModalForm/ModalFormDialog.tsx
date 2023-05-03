@@ -341,7 +341,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     useEffect(() => {
         if (formdef.tabledata?.autocomplete === undefined) return
         function setS(auto: TAutoCompleteMap) {
-            console.log(auto)
             setAuto(auto)
         }
         readAutocomplete(formdef.tabledata.autocomplete, setS)
@@ -376,7 +375,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                     let jsvars: TRow | undefined = undefined
                     if (tabledata.jsrestapivals) {
                         jsvars = callJSFunction(tabledata.jsrestapivals as string, { r: {}, vars: props.vars as TRow });
-                        console.log(initvals)
                     }
                     const ar: TRow = { ...d.initvar, ...jsvars }
                     _setInitValues(ar)

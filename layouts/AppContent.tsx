@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router";
 
 import { getRouterContent, getRouterContentDir } from "../../restjsonapi/ts/layoutcontent";
 import Page404 from './404'
