@@ -1,7 +1,7 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
 import { Card } from 'antd';
 
-import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TColumn, TField, TOptionLine, TPreseEnum } from '../ts/typing'
+import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FRetAction, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TColumn, TField, TOptionLine, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
@@ -41,7 +41,7 @@ export interface IIRefCall {
     // used while setting variables during execute actions
     setVals: FSetValues
     formGetVals: FGetValues
-    retAction?: (b: TAction, row: TRow) => void
+    retAction?: FRetAction
 }
 
 export interface ModalHooks {

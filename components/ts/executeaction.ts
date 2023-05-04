@@ -5,7 +5,7 @@ import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAc
 import openNotification from "../Notification";
 import { IIRefCall } from "../ModalForm/ModalFormDialog";
 import { clickAction } from "./helper";
-import type { ButtonAction, ClickAction, FieldError, TAction } from "./typing";
+import type { ButtonAction, ClickAction, FRetAction, FieldError, TAction } from "./typing";
 import { FAction, ClickActionProps } from '../../ts/typing'
 import analyzeresponse from './anayzeresponse'
 import { setPrintContent } from './helper'
@@ -20,7 +20,7 @@ export type IIButtonAction = {
     vars: TRow
 }
 
-export function createII(b: TAction, vars: TRow, selectedM?: FieldValue): IIButtonAction {
+export function createII(b: TAction, vars: TRow, selectedM?: FieldValue, retAction?: FRetAction): IIButtonAction {
     const rr: TRow = {}
     rr[defaults.multichoicevar] = selectedM
     const res: TAction = clickAction(b, { r: { ...commonVars(), ...rr }, vars: vars })
@@ -35,6 +35,9 @@ export function createII(b: TAction, vars: TRow, selectedM?: FieldValue): IIButt
         formGetVals: function (): TRow {
             return vars as TRow;
         },
+    }
+    if (retAction !== undefined) {
+        ii.retAction = retAction
     }
     return { res: res, ii: ii, rr: { ...commonVars(), ...rr }, vars: vars }
 }

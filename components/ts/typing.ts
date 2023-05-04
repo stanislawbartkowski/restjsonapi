@@ -481,6 +481,8 @@ export type FOnFieldChanged = (id: string) => void
 export type FGetValues = () => TRow
 export type FSetValues = (r: TRow) => void
 export type FGetOptions = (id: string, val: string) => TOptionLine[]
+export type FRetAction = (b: TAction, row: TRow) => void
+
 
 // ============================
 // standard buttons 

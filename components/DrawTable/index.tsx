@@ -8,7 +8,7 @@ import type { ExpandableConfig, TableRowSelection } from "antd/lib/table/interfa
 
 import lstring from "../../ts/localize";
 import { ClickActionProps, emptyModalListProps, FIELDTYPE, FieldValue, FSetTitle, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
-import { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TColumns, TResize, TResizeColumn } from "../ts/typing";
+import { ButtonAction, ClickAction, ColumnList, FActionResult, FRetAction, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TColumns, TResize, TResizeColumn } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow, ColWidth } from "./js/helper";
 import { emptys, findColDetails, makeHeader, makeHeaderString, visibleColumns } from "../ts/helper";
@@ -182,9 +182,19 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         setIsModalVisible({ visible: false });
     };
 
+    const retAction: FRetAction = (b: TAction, row: TRow) => {
+        setIsModalVisible({
+            visible: true,
+            closeAction: fmodalhook,
+            vars: row,
+            ...(b as ClickAction),
+        });
+
+    }
+
     const fresult: FActionResult = (entity: TRow, r: TAction) => {
         if (r.button) {
-            const ii: IIButtonAction = createII(r.button, entity)
+            const ii: IIButtonAction = createII(r.button, entity, undefined, retAction)
             executeB(ii, () => refreshtable())
             return
         }
