@@ -1,4 +1,4 @@
-import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType, RESTMETH, RowData } from '../../ts/typing';
+import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType, RESTMETH, RowData, TResize } from '../../ts/typing';
 
 // =========================
 // status for async reading
@@ -222,15 +222,6 @@ export type PagingC = {
 
 }
 
-export type TResize = {
-    resize: boolean
-    default?: number
-    defaultmoney?: number
-    defaultboolean?: number
-    defaultdate?: number
-    defaultnumber?: number
-}
-
 export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
     rowkey?: string;
     header?: ShowDetails;
@@ -246,6 +237,7 @@ export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
     filterJS?: string
     onerow?: boolean
     extendedsearch?: boolean
+    tablesize?: boolean
     resize?: TResize
 };
 

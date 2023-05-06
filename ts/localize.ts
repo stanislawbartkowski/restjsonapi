@@ -43,7 +43,12 @@ const embedded = {
     notfoundtitle: "Nie znaleziono",
     notfoundsearch: "Nie znaleziono takiego wiersza",
     notfoundnext: "Nie znaleziono następnego wiersza",
-    searchfiltertitle: "Szukaj danych według parametrów"
+    searchfiltertitle: "Szukaj danych według parametrów",
+    largelabel: "Duże",
+    middlelabel: "Średnie",
+    smalllabel: "Małe",
+    sizetabletitle: "Pozwala zmienić rozmiar wyświetlanej tabeli",
+    changecolumnstitle: "Zmiana układu kolumn w tabeli"
   },
   en: {
     empty: '',
@@ -84,7 +89,12 @@ const embedded = {
     notfoundtitle: "Not found",
     notfoundsearch: "Row not found",
     notfoundnext: "Next row not found",
-    searchfiltertitle: "Search or filter rows using criteria"
+    searchfiltertitle: "Search or filter rows using criteria",
+    largelabel: "Large",
+    middlelabel: "Middle",
+    smalllabel: "Small",
+    sizetabletitle: "Specifies the size of the table",
+    changecolumnstitle: "Rearrange columns in the table"
   }
 };
 

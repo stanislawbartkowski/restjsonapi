@@ -141,6 +141,11 @@ export function istrue(t: boolean | undefined): boolean {
     return t as boolean
 }
 
+export function isfalse(t: boolean | undefined): boolean {
+    if (isnotdefined(t)) return false;
+    return ! (t as boolean)
+}
+
 export function tomoney(t: string | number | undefined): undefined | string {
     if (isnotdefined(t)) return undefined
     if (isString(t)) return (+(t as string | number)).toFixed(defaults.moneydot)

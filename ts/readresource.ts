@@ -2,11 +2,11 @@ import { ReactNode } from "react";
 import { restapijs, restapiresource } from "../services/api";
 import { log } from "./l";
 import { setStrings } from "./localize";
-import type { AppDefaults, FieldDefaults, MenuLeft } from "./typing";
+import type { AppData, AppDefaults, FieldDefaults, MenuLeft } from "./typing";
 import { setLeftMenu } from './leftmenu'
 
 
-let appdefaults : AppDefaults| undefined = undefined
+let appdefaults : AppDefaults
 
 export function findLabel(label: string) : FieldDefaults | undefined {
 
@@ -25,10 +25,10 @@ export function getHeaderLine(): ReactNode | undefined {
 }
 
 
-let appdata: any | undefined = undefined
+let appdata: AppData | undefined = undefined
 
-export function getAppData(): any | undefined {
-  return appdata
+export function getAppData(): AppData  {
+  return appdata as AppData
 }
 
 let jsscript: string[] = []
@@ -51,7 +51,7 @@ async function readResource() {
 
 
   log("Resource leftmenu read");
-  appdata = await restapiresource("appdata");
+  appdata = await restapiresource("appdata") as AppData
   log("Resource appdata read");
 
   appdefaults = await restapiresource("defaults") as AppDefaults

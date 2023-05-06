@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { SizeType } from "antd/es/config-provider/SizeContext";
 
 import type { TRow } from '../../ts/typing';
 
@@ -13,3 +14,5 @@ export type TExtendable = {
   fixed: boolean,
   columnWidth: number
 }
+
+export type FSetSize = (size: SizeType) => void

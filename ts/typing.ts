@@ -94,7 +94,7 @@ export type FAction = (b?: ButtonAction, r?: TRow) => void
 export type VAction = (r: TRow) => void
 export type RAction = (r?: TAction) => void
 export type SetMAction = (sel: FieldValue[]) => void
-export type FSetTitle = (title: string|undefined) => void
+export type FSetTitle = (title: string | undefined) => void
 
 export interface ClickActionProps {
   closeAction?: FAction
@@ -184,14 +184,37 @@ export type FormMessage = JSSupportedType & {
 // defaults
 // ==========================
 
+export interface TResize {
+  resize: boolean
+  default?: number
+  defaultmoney?: number
+  defaultboolean?: number
+  defaultdate?: number
+  defaultnumber?: number
+}
+
+
 export type FieldDefaults = {
   label: string
   len?: number
   max?: number
-  width?: number|string
+  width?: number | string
 }
 
 export type AppDefaults = {
   fields: FieldDefaults[]
+}
+
+export interface AppData {
+  appname: string
+  logo: string
+  logosmall: string
+  language: string
+  title: string
+  version: string,
+  js?: string
+  extendedsearch?: boolean
+  tablesize?: boolean
+  resize?: TResize
 }
 

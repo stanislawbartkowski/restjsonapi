@@ -1,25 +1,25 @@
 import React, { useState, useEffect, MutableRefObject, useRef, ReactNode } from "react";
 
-import { Resizable } from 'react-resizable';
 
 import type { ColumnType } from "antd/lib/table";
 import { Table, Drawer, Space, Divider } from "antd";
 import type { TableRowSelection } from "antd/lib/table/interface";
+import { SizeType } from "antd/es/config-provider/SizeContext";
 
 import lstring from "../../ts/localize";
-import { ClickActionProps, emptyModalListProps, FIELDTYPE, FieldValue, FSetTitle, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
-import type { TExtendable, } from "./typing";
-import { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TColumns, TResize, TResizeColumn } from "../ts/typing";
+import { AppData, ClickActionProps, emptyModalListProps, FieldValue, FSetTitle, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
+import type { FSetSize, TExtendable, } from "./typing";
+import { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TResizeColumn } from "../ts/typing";
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow, ColWidth } from "./js/helper";
-import { emptys, findColDetails, makeHeader, makeHeaderString, visibleColumns } from "../ts/helper";
+import { emptys, findColDetails, isfalse, makeHeader, makeHeaderString } from "../ts/helper";
 import ModalList from "../RestComponent";
 import getExtendableProps from "./Expendable";
 import HeaderTable from "../HeaderTable";
 import readlist, { DataSourceState } from '../ts/readlist'
 import ReadListError from '../errors/ReadListError'
 import SummaryTable from '../SummaryTable'
-import { copyMap, isBool, isNumber, isObject } from "../../ts/j";
+import { copyMap, isNumber, isObject } from "../../ts/j";
 import OneRowTable from "../ShowDetails/OneRowTable"
 import SearchButton, { FSetFilter, FSetSearch } from "./SearchButton";
 import { ExtendedFilter, noExtendedFilter } from "./SearchButton/SearchExtended";
@@ -28,39 +28,17 @@ import ButtonStack from "./ButtonStack";
 import propsPaging, { OnPageChange } from "../ts/tablepaging"
 import openNotification from "../Notification";
 import { istrue } from '../ts/helper'
-import { fieldType } from "../ts/transcol";
 import defaults from "../../ts/defaults";
-import { saveCookieValue } from "../ModalForm/formview/helper";
-import { getCookie, setCookie } from "../../ts/cookies";
+import SizeMenu from "./SizeMenu"
+import { getAppData } from "../../ts/readresource";
+import { createInitColsWidth, isResize, saveCookieColWidth } from "./js/cookiewidth"
+import { getCookieTableSize, saveCookieTableSize } from "./js/cookietablesize"
+import ArrangColumns from './ArrangeColumns'
+import { ColumnsT, ColumnT } from "./ArrangeColumns/SortColumns";
+import { fieldTitle } from "../ts/transcol";
+import ResizableTitle from './ResizeTitle'
 
 
-// resize
-const ResizableTitle = (props: any) => {
-    const { onResize, width, ...restProps } = props;
-
-    if (!width) {
-        return <th {...restProps} />;
-    }
-
-    return (
-        <Resizable
-            width={width}
-            height={0}
-            handle={
-                <span
-                    className="react-resizable-handle"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                    }}
-                />
-            }
-            onResize={onResize}
-            draggableOpts={{ enableUserSelectHack: false }}
-        >
-            <th {...restProps} />
-        </Resizable>
-    );
-};
 
 export type TRefreshTable = {
     searchF: TRow
@@ -88,63 +66,34 @@ const empty: IRefCall = {
     refreshsearch: -1
 }
 
-function defaultW(c: TColumn, resize?: TResize): number | string | undefined {
-    if (resize === undefined || !resize.resize) return c.width
-    if (c.width !== undefined) return c.width
-    const fieldtype: FIELDTYPE = fieldType(c)
-    var w: number = defaults.sizedefault;
-    switch (fieldtype) {
-        case FIELDTYPE.NUMBER:
-            w = resize.defaultnumber ? resize.defaultnumber : defaults.sizenumber
-            break;
-        case FIELDTYPE.MONEY:
-            w = resize.defaultmoney ? resize.defaultmoney : defaults.sizemoney
-            break;
-        case FIELDTYPE.BOOLEAN:
-            w = resize.defaultboolean ? resize.defaultboolean : defaults.sizeboolean
-            break;
-        case FIELDTYPE.DATE:
-            w = resize.defaultdate ? resize.defaultdate : defaults.sizedate
-            break;
-    }
-    return w
+const isExtendedSearch = (p: ColumnList): boolean => {
+    const a: AppData | undefined = getAppData()
+    if (istrue(p.extendedsearch)) return true;
+    if (isfalse(p.extendedsearch)) return false
+    return istrue(a?.extendedsearch)
 }
 
-
-function isResize(p: ColumnList): boolean {
-    if (p.resize === undefined) return false;
-    return p.resize.resize
+const isTableSize = (p: ColumnList): boolean => {
+    const a: AppData | undefined = getAppData()
+    if (istrue(p.tablesize)) return true;
+    if (isfalse(p.tablesize)) return false;
+    return istrue(a?.tablesize)
 }
 
-function cookieName(p: RestTableParam): string {
-    const n: string = (p.list as string) + "_" + (p.listdef !== undefined ? p.listdef : "list")
-    return n + "_columns_width"
-}
+// ========== cookies for table size
 
-function saveCookieColWidth(p: RestTableParam, w: ColWidth) {
-    const cookiename: string = cookieName(p)
-    const j: string = JSON.stringify(Array.from(w.entries()));
-    setCookie(cookiename, j)
-}
-
-function getCookieColWidth(p: RestTableParam): ColWidth | undefined {
-    const cookiename: string = cookieName(p)
-    const j: string | undefined = getCookie(cookiename)
-    if (j === undefined) return undefined
-    const m = new Map(JSON.parse(j));
-    return m as ColWidth
-}
-
-function createInitColsWidth(r: RestTableParam, p: ColumnList): ColWidth {
-    const clist: TColumns = visibleColumns(p.columns);
-    const m: ColWidth = new Map<string, number>()
-    const cm: ColWidth | undefined = getCookieColWidth(r)
-    clist.forEach(c => {
-        const w = cm?.get(c.field) ? cm.get(c.field) : defaultW(c, p.resize)
-        if (w !== undefined) m.set(c.field, w)
-    }
-    )
-    return m
+function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, vars?: TRow): ColumnsT {
+    const v: Set<string> = new Set<string>(vcols.map(c => c.dataIndex as string))
+    const ta: ColumnsT = p.columns.map(c => {
+        const title: string = fieldTitle(c, { r: {}, vars: vars })
+        const cl: ColumnT = {
+            key: c.field,
+            title: title,
+            included: v.has(c.field)
+        }
+        return cl
+    })
+    return ta
 }
 
 
@@ -163,13 +112,14 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         status: Status.PENDING,
         res: [],
     });
+    const [tableSize, setTableSize] = useState<SizeType>(getCookieTableSize(props))
 
     const [refreshnumber, setRefreshNumber] = useState<number>(0);
 
     const ref: MutableRefObject<IRefCall> = useRef<IRefCall>(empty) as MutableRefObject<IRefCall>
 
     // resize
-    const components = isResize(props) ? {
+    const components = isResize(props.resize) ? {
         header: {
             cell: ResizableTitle,
         },
@@ -352,15 +302,6 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
             undefined
     }
 
-    const extendedSearch: React.ReactNode = props.extendedsearch ? <Space style={{ float: "right" }} split={<Divider type="vertical" />}>
-        <SearchButton {...props} {...extendedFilter} refreshFilter={refreshFilter} searchRow={searchRow} /></Space> :
-        undefined
-
-    const detcol: TColumn | undefined = findColDetails(props)
-    const varrestaction = detcol && detcol.showdetails && isObject(detcol.showdetails) ? { varsrestaction: (detcol.showdetails as ShowDetails).varsrestaction } : {}
-
-    const vars: TRow = { ...props.vars, ...datasource.vars }
-
     const resizeF: TResizeColumn = (c: TColumn, newwidth: number) => {
         const m: ColWidth = copyMap(colw)
         m.set(c.field, newwidth)
@@ -368,20 +309,43 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         saveCookieColWidth(props, m)
     }
 
+
     const columns: ColumnType<any>[] = transformColumns(props, thook, props.vars, colw, resizeF);
+
+    const changeMenuSize: FSetSize = (size: SizeType) => {
+        setTableSize(size)
+        saveCookieTableSize(props, size)
+    }
+    const extendedSearch: React.ReactNode = isExtendedSearch(props) ? <SearchButton {...props} {...extendedFilter} refreshFilter={refreshFilter} searchRow={searchRow} /> :
+        undefined
+    const resizeTable: ReactNode = isTableSize(props) ? <SizeMenu onSize={changeMenuSize} /> : undefined
+
+    const colo: ColumnsT = transformSortColumns(columns, props, props.vars)
+    const arrangeColumns = <ArrangColumns cols={colo} />
+
+    const extendedTools: React.ReactNode = extendedSearch === undefined && resizeTable === undefined ? undefined :
+        <Space style={{ float: "right" }} split={<Divider type="vertical" />} align="center">
+            {arrangeColumns}{resizeTable}{extendedSearch}
+        </Space>
+
+
+    const detcol: TColumn | undefined = findColDetails(props)
+    const varrestaction = detcol && detcol.showdetails && isObject(detcol.showdetails) ? { varsrestaction: (detcol.showdetails as ShowDetails).varsrestaction } : {}
+
+    const vars: TRow = { ...props.vars, ...datasource.vars }
 
     return (
         <React.Fragment>
             {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction}
                 selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }} /> : undefined}
-            {extendedSearch}
+            {extendedTools}
             <Table
                 {...rowSelection({ ...props })}
                 components={components}
                 title={() => title}
                 rowKey={datasource.rowkey}
                 dataSource={dsource}
-                size="small"
+                size={tableSize}
                 loading={datasource.status === Status.PENDING}
                 columns={columns}
                 {...pagingD[0]}

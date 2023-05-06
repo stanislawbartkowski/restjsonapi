@@ -8,6 +8,7 @@ import SearchExtended, { SearchButtonType, IIRefCall, ExtendedFilter } from './S
 import { TRow } from "../../../ts/typing";
 import { FOnValuesChanged } from "../../ts/typing";
 import DraggableModal from "../../DraggableModal"
+import getIcon from "../../../ts/icons";
 
 export type FSetFilter = (t: ExtendedFilter) => void
 export type FSetSearch = (t: ExtendedFilter, first: boolean) => void
@@ -67,8 +68,10 @@ const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter, sea
 
   const primary: BaseButtonProps = props.isfilter ? { type: "primary" } : { type: "text" }
 
+  const closeicon = getIcon('closecircleoutlined')
+
   const closeButton: React.ReactNode = !isModalVisible && props.isfilter ? <Tooltip title={lstring("removefilter")}>
-    <Button icon={<CloseCircleOutlined />} size="small" type="text" onClick={closeFilter} /> </Tooltip> :
+    <Button icon={closeicon} size="small" type="text" onClick={closeFilter} /> </Tooltip> :
     undefined
 
   const buttons: React.ReactNode[] = [
@@ -82,14 +85,16 @@ const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter, sea
     <Button key="cancel" onClick={onCancel}>{lstring("cancelaction")}</Button>,
   ]
 
-  return <React.Fragment>
-  <Tooltip title={lstring("searchextended")}><Button icon={<SearchOutlined />} size="small" {...primary} onClick={() => setIsModalVisible(true)} /> </Tooltip>
-  {closeButton}
-  <DraggableModal open={isModalVisible} onClose={onCancel} onOk={setFilter} buttons={null} title={lstring('searchfiltertitle')}>
-    <SearchExtended ref={ref} {...props} onValuesChanges={onValuesChanges} buttons={buttons} />
-  </DraggableModal>
+  const searchicon = getIcon('searchoutlined')
 
-</React.Fragment>
+  return <React.Fragment>
+    <Tooltip title={lstring("searchextended")}><Button icon={searchicon} size="small" {...primary} onClick={() => setIsModalVisible(true)} /> </Tooltip>
+    {closeButton}
+    <DraggableModal open={isModalVisible} onClose={onCancel} onOk={setFilter} buttons={null} title={lstring('searchfiltertitle')}>
+      <SearchExtended ref={ref} {...props} onValuesChanges={onValuesChanges} buttons={buttons} />
+    </DraggableModal>
+
+  </React.Fragment>
 
 
 }

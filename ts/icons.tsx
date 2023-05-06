@@ -27,7 +27,9 @@ import {
   InsertRowBelowOutlined,
   DeleteRowOutlined,
   CloseCircleOutlined,
-  SearchOutlined
+  SearchOutlined,
+  FormOutlined,
+  FontSizeOutlined,
 } from "@ant-design/icons";
 
 import { ReactNode } from "react";
@@ -60,7 +62,9 @@ const map = new Map<string, ReactNode>([
   ['insertrowbelowoutlined', <InsertRowBelowOutlined />],
   ['deleterowoutlined', <DeleteRowOutlined />],
   ['closecircleoutlined', <CloseCircleOutlined />],
-  ['searchoutlined',<SearchOutlined/>]
+  ['searchoutlined',<SearchOutlined/>],
+  ['formoutlined',<FormOutlined />],
+  ['fontsizeoutlined',<FontSizeOutlined/>]
 ]);
 
 function getIcon(id?: string, defaultid?: string): ReactNode {
