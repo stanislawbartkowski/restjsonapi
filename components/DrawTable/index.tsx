@@ -3,13 +3,14 @@ import React, { useState, useEffect, MutableRefObject, useRef, ReactNode } from 
 
 import type { ColumnType } from "antd/lib/table";
 import { Table, Drawer, Space, Divider } from "antd";
-import type { TableRowSelection } from "antd/lib/table/interface";
+import type { ExpandableConfig, TableRowSelection } from "antd/lib/table/interface";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 
 import lstring from "../../ts/localize";
 import { AppData, ClickActionProps, emptyModalListProps, FieldValue, FSetTitle, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { FSetSize, TExtendable, } from "./typing";
-import { ButtonAction, ClickAction, ColumnList, FActionResult, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TResizeColumn } from "../ts/typing";
+import { ButtonAction, ClickAction, ColumnList, FActionResult, FRetAction, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TResizeColumn } from "../ts/typing";
+
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow, ColWidth } from "./js/helper";
 import { emptys, findColDetails, isfalse, makeHeader, makeHeaderString } from "../ts/helper";
@@ -37,6 +38,7 @@ import ArrangColumns from './ArrangeColumns'
 import { ColumnsT, ColumnT } from "./ArrangeColumns/SortColumns";
 import { fieldTitle } from "../ts/transcol";
 import ResizableTitle from './ResizeTitle'
+import { getCookie, setCookie } from "../../ts/cookies";
 
 
 
@@ -134,9 +136,19 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         setIsModalVisible({ visible: false });
     };
 
+    const retAction: FRetAction = (b: TAction, row: TRow) => {
+        setIsModalVisible({
+            visible: true,
+            closeAction: fmodalhook,
+            vars: row,
+            ...(b as ClickAction),
+        });
+
+    }
+
     const fresult: FActionResult = (entity: TRow, r: TAction) => {
         if (r.button) {
-            const ii: IIButtonAction = createII(r.button, entity)
+            const ii: IIButtonAction = createII(r.button, entity, undefined, retAction)
             executeB(ii, () => refreshtable())
             return
         }
@@ -195,7 +207,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         searchRowF({ isfilter: false, filtervalues: refreshD.searchF }, first, res)
     }
 
-    const extend: TExtendable | undefined = props.extendable
+    const extend: ExpandableConfig<TRow> | undefined = props.extendable
         ? getExtendableProps(props, props.vars)
         : undefined;
 
@@ -349,7 +361,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 loading={datasource.status === Status.PENDING}
                 columns={columns}
                 {...pagingD[0]}
-                {...extend}
+                expandable={extend}
                 rowClassName={rowClassName}
                 summary={isSummary() ? () => (<SummaryTable isextendable={props.extendable !== undefined} {...props} list={datasource.res} vars={vars} />) : undefined}
                 onRow={(r) => ({

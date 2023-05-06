@@ -9,6 +9,7 @@ import { isItemGroup, isnotdefined, istrue, preseT } from './helper'
 import { internalerrorlog } from '../../ts/l'
 import analyzeresponse from "./anayzeresponse";
 import { TabItems } from "./typing";
+import { removeDuplicates } from "../DrawTable/js/helper";
 
 export type ReadDefsResult = {
     status: Status
@@ -104,15 +105,23 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: bo
         if (header) {
             ic.header = { ...header }
         }
-        if (preseT(idef) === TPreseEnum.TForm) {
-            // look for dynamic items
-            const t: TForm = idef as TForm
-            const ffields: TField[] = await resolveRest(t.fields)
+        switch (preseT(idef)) {
+            case TPreseEnum.TForm:
+                // look for dynamic items
+                const t: TForm = idef as TForm
+                const ffields: TField[] = await resolveRest(t.fields)
 
-            const initvals: TRow | undefined = (t.restapivals && !istrue(ignoreinitvals)) ? await readvalsdata(t.restapivals, { ...commonVars(), ...props.vars }) : undefined
-            f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
+                const initvals: TRow | undefined = (t.restapivals && !istrue(ignoreinitvals)) ? await readvalsdata(t.restapivals, { ...commonVars(), ...props.vars }) : undefined
+                f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
+                break;
+            case TPreseEnum.ColumnList:
+                ic.columns = removeDuplicates(ic.columns)
+                f({ status: Status.READY, js: js, res: ic });
+                break;
+            case TPreseEnum.Steps:
+                f({ status: Status.READY, js: js, res: idef });
+                break;
         }
-        else f({ status: Status.READY, js: js, res: idef });
     } catch (error) {
         console.log(error)
         internalerrorlog(`Error while reading definition ${def}`)

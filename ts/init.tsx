@@ -12,7 +12,7 @@ async function init() {
     console.log(`Server URL ${serverURL}`)
     setHost(serverURL)
     await readResource();
-    addRouterElem(defaults.displayprintrouterid,<PrintDisplay/>)
+    addRouterElem(defaults.displayprintrouterid,() => <PrintDisplay/>)
     const sec : boolean = await isSecEnabled() 
     setSec(sec)
     await initkeyclock()

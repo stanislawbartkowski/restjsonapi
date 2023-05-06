@@ -30,6 +30,7 @@ import {
   SearchOutlined,
   FormOutlined,
   FontSizeOutlined,
+  ForwardOutlined
 } from "@ant-design/icons";
 
 import { ReactNode } from "react";
@@ -64,8 +65,10 @@ const map = new Map<string, ReactNode>([
   ['closecircleoutlined', <CloseCircleOutlined />],
   ['searchoutlined',<SearchOutlined/>],
   ['formoutlined',<FormOutlined />],
-  ['fontsizeoutlined',<FontSizeOutlined/>]
-]);
+  ['fontsizeoutlined',<FontSizeOutlined/>],
+  ['searchoutlined', <SearchOutlined />],
+  ['forwardoutlined', <ForwardOutlined />]
+  ]);
 
 function getIcon(id?: string, defaultid?: string): ReactNode {
   if (id === undefined && defaultid === undefined) {

@@ -235,7 +235,7 @@ export function cardProps(p?: TCard) {
 
 function includeColumn(col: TColumn, removeactions?: boolean): boolean {
     if (removeactions && col.actions !== undefined) return false;
-    return (col.tablenodef === undefined) || !col.tablenodef
+    return !istrue(col.tablenodef)
 }
 
 export function visibleColumns(cols: TColumns, removeactions?: boolean): TColumns {
@@ -262,12 +262,6 @@ export function genColIdedit(editid: string, field: string, rowkey: number): str
 
 export function genEditClickedRowKey(editid: string): string {
     return editid + "_rowkey"
-}
-
-export function OLD_decomposeEditId(id: string): [string, string, number] | undefined {
-    const s: string[] = id.split('_')
-    if (s.length !== 3) return undefined
-    return [s[0], s[1], +s[2]]
 }
 
 export function decomposeEditId(id: string): [string, string, number] | undefined {

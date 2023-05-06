@@ -23,17 +23,6 @@ function toCardRow(e: TColumn, t: TDetailsCard, pars: OneRowData): ReactNode {
     </Row>
 }
 
-/*
-const DropMenu: React.FC = () => {
-    const menu =
-        <Menu >
-            <Menu.Item> Hello </Menu.Item>
-        </Menu>
-    return <Dropdown.Button icon={getIcon('moreoutlined')} overlay={menu} type='text'>
-    </Dropdown.Button>
-}
-*/
-
 const RecordCard: React.FC<TDetailsCard & { a?: TActions, h?: TableHookParam }> = (props) => {
 
 

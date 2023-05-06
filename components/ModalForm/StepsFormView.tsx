@@ -19,10 +19,7 @@ function constructStep(p: StepsElem, key: number, last: boolean, errorstep: bool
 
 type TData = {
   current: number,
-  //  vars?: TRow
   errorstep: number | undefined
-  // TODO: remove
-  aftermove?: boolean
   visited: Set<number>
 }
 
@@ -34,7 +31,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks & ModalHooks>((p
   const ref: MutableRefObject<IIRefCall | undefined> = useRef<IIRefCall>();
 
   function setC(current: number, vars: TRow | undefined, b: ClickResult, visited: Set<number>) {
-    setCurrent({ current: current, errorstep: b.steperror ? current : undefined, aftermove: true, visited: visited })
+    setCurrent({ current: current, errorstep: b.steperror ? current : undefined, visited: visited })
   }
 
   useImperativeHandle(iref, () => ({
@@ -43,8 +40,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks & ModalHooks>((p
     },
     getVals: () => {
       const ar: TRow | undefined = ref.current?.getVals()
-      //      return { ...c.vars, ...ar }
-      return { ...ar }
+      return ar as TRow
     },
     doAction: (b: ClickResult) => {
       let current: number = c.current

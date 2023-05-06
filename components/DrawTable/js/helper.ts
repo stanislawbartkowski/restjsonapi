@@ -14,9 +14,21 @@ import { constructTableFilter, FFilter } from '../../TableFilter'
 // create ProColumns from columns
 // =================================
 
-export type ColWidth = Map<string,number|string>
+export type ColWidth = Map<string, number | string>
 
-export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRow, colw?: ColWidth, resizeF?: TResizeColumn ): ColumnType<any>[] {
+export function removeDuplicates(cols: TColumns): TColumns {
+  const detected = new Set<string>();
+  const outcols: TColumns = []
+  cols.forEach(c => {
+    if (!detected.has(c.field)) {
+      detected.add(c.field)
+      outcols.push(c)
+    }
+  })
+  return outcols
+}
+
+export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRow, colw?: ColWidth, resizeF?: TResizeColumn): ColumnType<any>[] {
 
   const clist: TColumns = visibleColumns(cols.columns);
 
@@ -54,8 +66,8 @@ function okextendedfilter(p: ColumnList, r: TRow, valf: TRow, f: Record<string, 
 
   // 2023/04/10 - loop through f
   for (let v in f) {
-     const ff: FFilter = f[v]
-     if (!ff(valf[v] as string | number | boolean, r)) return false;    
+    const ff: FFilter = f[v]
+    if (!ff(valf[v] as string | number | boolean, r)) return false;
   }
   return true;
 }
@@ -63,7 +75,7 @@ function okextendedfilter(p: ColumnList, r: TRow, valf: TRow, f: Record<string, 
 function createFilters(p: ColumnList, pars: ExtendedFilter): Record<string, FFilter> {
   const f: Record<string, FFilter> = {}
   const v: TRow = (pars.filtervalues as TRow)
-  p.columns.filter(c => (! isnotdefined(v[c.field]))).forEach(c => f[c.field] = constructTableFilter(c))
+  p.columns.filter(c => (!isnotdefined(v[c.field]))).forEach(c => f[c.field] = constructTableFilter(c))
   return f;
 }
 

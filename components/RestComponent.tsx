@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Modal } from 'antd';
 
 import RestTable from './RestTable'
 import ModalForm from './ModalForm'
 import { getComponent } from './ts/complist';
 import { TComponentProps } from '../ts/typing';
 import { isAuthenticated } from '../ts/keyclock';
-import { erralert, log } from '../ts/l';
+import { erralert } from '../ts/l';
 import lstring from '../ts/localize';
 import DraggableModal from './DraggableModal'
 

@@ -1,6 +1,6 @@
 import { ColumnType } from "antd/lib/table";
 import React, { ReactNode, useRef } from "react";
-import { Badge, Button, Divider, Dropdown, Menu, Space, Statistic, Switch, Tag } from "antd";
+import { Badge, Button, Divider, Dropdown, Menu, MenuProps, Space, Statistic, Switch, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
@@ -12,6 +12,8 @@ import { callJSFunction, isNumber, makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
+import { ItemType } from "antd/lib/menu/hooks/useItems";
+import { EventType } from "@testing-library/react";
 
 
 // =====================
@@ -121,12 +123,10 @@ export function extractActionHook(t: TAction, r: TableHookParam, pars: OneRowDat
 }
 
 
-function constructMenuAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ReactElement {
+function constructMenuAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ItemType {
     const h: IActionHook = extractActionHook(t, r, pars)
     const ic = t.icon ? { icon: getIcon(t.icon) } : {}
-    return (
-        <Menu.Item key={key} {...ic} onClick={h.onClick}>{h.text}</Menu.Item>
-    );
+    return { key: key, label: h.text, onClick: h.onClick };
 }
 
 export function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRowData): ReactElement | undefined {
@@ -135,15 +135,13 @@ export function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRow
     if (act === undefined) return undefined
     const actions: TAction[] = act.actions as TAction[]
     if (actions.length === 0) return undefined
+
     if (act.dropdown) {
-        const menu = (
-            <Menu {...act.props}>
-                {actions.map(e => constructMenuAction(numb++, e, r, pars))}
-            </Menu>
-        );
+        const items: MenuProps['items'] = actions.map(e => constructMenuAction(numb++, e, r, pars))
         return (
-            <Dropdown.Button {...act.dprops} icon={getIcon('moreoutlined')} overlay={menu}>
-            </Dropdown.Button>
+            <Dropdown menu={{ items }}  >
+                <Button {...act.dprops} icon={getIcon('moreoutlined')}></Button>
+            </Dropdown>
         )
     }
     return (

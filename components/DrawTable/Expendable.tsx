@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 
-import type { TExtendable } from "./typing";
 import type { ColumnList, ClickResult, TAction } from "../ts/typing";
 import RestTableList from '../RestTable'
 import type { TRow } from '../../ts/typing'
 import { clickAction } from "../ts/helper";
 import { commonVars } from "../../ts/j";
 import defaults from "../../ts/defaults";
+import { ExpandableConfig } from "antd/lib/table/interface";
 
-function getExtendableProps(cols: ColumnList, vars?: TRow): TExtendable {
+function getExtendableProps(cols: ColumnList, vars?: TRow): ExpandableConfig<TRow> {
 
 
   function expand(r: TRow): ReactNode {
@@ -18,7 +18,7 @@ function getExtendableProps(cols: ColumnList, vars?: TRow): TExtendable {
   }
 
   return {
-    fixed: true,
+    //fixed: true,
     expandedRowRender: expand,
     columnWidth: defaults.expandSize
   }

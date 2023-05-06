@@ -1,7 +1,7 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
 import { Card } from 'antd';
 
-import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TField, TOptionLine, TPreseEnum } from '../ts/typing'
+import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FRetAction, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TColumn, TField, TOptionLine, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
@@ -41,7 +41,7 @@ export interface IIRefCall {
     // used while setting variables during execute actions
     setVals: FSetValues
     formGetVals: FGetValues
-    retAction?: (b: TAction, row: TRow) => void
+    retAction?: FRetAction
 }
 
 export interface ModalHooks {
@@ -133,8 +133,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     const setvarsaction: VAction = (vars: TRow) => {
+        const fields: TColumn[] = createF()
         if (formdef.tabledata?.fields)
-            formdef.tabledata?.fields.forEach(t => {
+            createF().forEach(t => {
                 if (t.restlist) {
                     let tData: TRefreshTable | undefined = (vars[t.field] as any) as TRefreshTable
                     let refresh: boolean = true
@@ -340,7 +341,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     useEffect(() => {
         if (formdef.tabledata?.autocomplete === undefined) return
         function setS(auto: TAutoCompleteMap) {
-            console.log(auto)
             setAuto(auto)
         }
         readAutocomplete(formdef.tabledata.autocomplete, setS)
@@ -375,7 +375,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                     let jsvars: TRow | undefined = undefined
                     if (tabledata.jsrestapivals) {
                         jsvars = callJSFunction(tabledata.jsrestapivals as string, { r: {}, vars: props.vars as TRow });
-                        console.log(initvals)
                     }
                     const ar: TRow = { ...d.initvar, ...jsvars }
                     _setInitValues(ar)
