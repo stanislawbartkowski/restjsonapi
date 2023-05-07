@@ -2,10 +2,10 @@ import { SizeType } from "antd/es/config-provider/SizeContext";
 
 import { RestTableParam } from "../../../ts/typing"
 import { getCookie, setCookie } from "../../../ts/cookies";
+import { cookieNameQualified } from "./helper";
 
 function cookieName(p: RestTableParam): string {
-    const n: string = (p.list as string) + "_" + (p.listdef !== undefined ? p.listdef : "table_size")
-    return n + "_table_size"
+    return cookieNameQualified(p,"table_size")
 }
 
 export function saveCookieTableSize(p: RestTableParam, s: SizeType) {

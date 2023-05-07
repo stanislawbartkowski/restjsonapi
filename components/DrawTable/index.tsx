@@ -8,11 +8,11 @@ import { SizeType } from "antd/es/config-provider/SizeContext";
 
 import lstring from "../../ts/localize";
 import { AppData, ClickActionProps, emptyModalListProps, FieldValue, FSetTitle, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
-import type { FSetSize, TExtendable, } from "./typing";
+import type { ColumnsHook, ColumnsT, ColumnT, FSetSize, TExtendable, } from "./typing";
 import { ButtonAction, ClickAction, ColumnList, FActionResult, FRetAction, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TResizeColumn } from "../ts/typing";
 
 import { Status } from "../ts/typing";
-import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow, ColWidth } from "./js/helper";
+import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow, ColWidth, visibleColumnsR } from "./js/helper";
 import { emptys, findColDetails, isfalse, makeHeader, makeHeaderString } from "../ts/helper";
 import ModalList from "../RestComponent";
 import getExtendableProps from "./Expendable";
@@ -35,10 +35,9 @@ import { getAppData } from "../../ts/readresource";
 import { createInitColsWidth, isResize, saveCookieColWidth } from "./js/cookiewidth"
 import { getCookieTableSize, saveCookieTableSize } from "./js/cookietablesize"
 import ArrangColumns from './ArrangeColumns'
-import { ColumnsT, ColumnT } from "./ArrangeColumns/SortColumns";
 import { fieldTitle } from "../ts/transcol";
 import ResizableTitle from './ResizeTitle'
-import { getCookie, setCookie } from "../../ts/cookies";
+import { getCookieTableColumns, saveCookieTableColumns } from "./js/cookietablecolumns";
 
 
 
@@ -69,22 +68,28 @@ const empty: IRefCall = {
 }
 
 const isExtendedSearch = (p: ColumnList): boolean => {
-    const a: AppData | undefined = getAppData()
+    const a: AppData = getAppData()
     if (istrue(p.extendedsearch)) return true;
     if (isfalse(p.extendedsearch)) return false
-    return istrue(a?.extendedsearch)
+    return istrue(a.extendedsearch)
 }
 
 const isTableSize = (p: ColumnList): boolean => {
-    const a: AppData | undefined = getAppData()
+    const a: AppData = getAppData()
     if (istrue(p.tablesize)) return true;
     if (isfalse(p.tablesize)) return false;
-    return istrue(a?.tablesize)
+    return istrue(a.tablesize)
 }
 
-// ========== cookies for table size
+const isRearrangeCols = (p: ColumnList): boolean => {
+    const a: AppData = getAppData()
+    if (istrue(p.arrangecol)) return true;
+    if (isfalse(p.arrangecol)) return false;
+    return istrue(a?.arrangecol)
+}
 
-function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, vars?: TRow): ColumnsT {
+function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, arrange_cols?: ColumnsT, vars?: TRow): ColumnsT {
+    if (arrange_cols !== undefined) return arrange_cols
     const v: Set<string> = new Set<string>(vcols.map(c => c.dataIndex as string))
     const ta: ColumnsT = p.columns.map(c => {
         const title: string = fieldTitle(c, { r: {}, vars: vars })
@@ -108,6 +113,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     const [multichoice, setMultiChoice] = useState<FieldValue[]>(props.initsel as FieldValue[])
     const [page, setCurrentPage] = useState<number>(1)
     const [colw, setColW] = useState<ColWidth>(createInitColsWidth(props, props))
+    const [arrange_columns, setArrangeColumns] = useState<ColumnsT | undefined>(getCookieTableColumns(props, props))
 
     const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
     const [datasource, setDataSource] = useState<DataSourceState>({
@@ -131,6 +137,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         setCurrentRow(entity);
         setShowDetail(true);
     };
+
 
     const fmodalhook = (): void => {
         setIsModalVisible({ visible: false });
@@ -322,7 +329,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     }
 
 
-    const columns: ColumnType<any>[] = transformColumns(props, thook, props.vars, colw, resizeF);
+    const columns: ColumnType<any>[] = transformColumns(props, thook, props.vars, colw, resizeF, arrange_columns);
 
     const changeMenuSize: FSetSize = (size: SizeType) => {
         setTableSize(size)
@@ -332,10 +339,16 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         undefined
     const resizeTable: ReactNode = isTableSize(props) ? <SizeMenu onSize={changeMenuSize} /> : undefined
 
-    const colo: ColumnsT = transformSortColumns(columns, props, props.vars)
-    const arrangeColumns = <ArrangColumns cols={colo} />
+    const colo: ColumnsT = transformSortColumns(columns, props, arrange_columns, props.vars)
 
-    const extendedTools: React.ReactNode = extendedSearch === undefined && resizeTable === undefined ? undefined :
+    const colsHook: ColumnsHook = (cols: ColumnsT) => {
+        setArrangeColumns(cols)
+        saveCookieTableColumns(props, cols)
+    }
+
+    const arrangeColumns: ReactNode = isRearrangeCols(props) ? <ArrangColumns cols={colo} colshook={colsHook} /> : undefined
+
+    const extendedTools: React.ReactNode = istrue(props.notools) || (extendedSearch === undefined && resizeTable === undefined && arrangeColumns === undefined) ? undefined :
         <Space style={{ float: "right" }} split={<Divider type="vertical" />} align="center">
             {arrangeColumns}{resizeTable}{extendedSearch}
         </Space>
@@ -363,7 +376,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 {...pagingD[0]}
                 expandable={extend}
                 rowClassName={rowClassName}
-                summary={isSummary() ? () => (<SummaryTable isextendable={props.extendable !== undefined} {...props} list={datasource.res} vars={vars} />) : undefined}
+                summary={isSummary() ? () => (<SummaryTable isextendable={props.extendable !== undefined} {...props} list={datasource.res} vars={vars} columns={visibleColumnsR(props, arrange_columns)} />) : undefined}
                 onRow={(r) => ({
                     onClick: () => {
                         if (props.onRowClick) props.onRowClick(r);

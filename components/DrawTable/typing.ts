@@ -16,3 +16,18 @@ export type TExtendable = {
 }
 
 export type FSetSize = (size: SizeType) => void
+
+export interface ColumnT  {
+  title: string,
+  key: string,
+  included: boolean
+}
+
+export type ColumnsT = ColumnT[]
+
+export type ColumnsHook = (cols: ColumnsT) => void
+
+export type SortProps = {
+  cols: ColumnsT
+  colshook: ColumnsHook
+}

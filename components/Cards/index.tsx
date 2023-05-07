@@ -3,10 +3,10 @@ import { Row, Col, Card } from 'antd'
 
 import { emptyModalListProps, FAction, ModalFormProps, RAction, RestTableParam, TRow } from "../../ts/typing"
 import readlist, { DataSourceState } from "../ts/readlist";
-import { BUTTONACTION, ButtonAction, ClickAction, ColumnList, Status, TableHookParam, FActionResult, TableToolBar, TAction, TActions, TColumn, TColumns } from "../ts/typing";
+import { BUTTONACTION, ButtonAction, ClickAction, ColumnList, Status, TableHookParam, FActionResult, TableToolBar, TAction, TActions, TColumn } from "../ts/typing";
 import ReadListError from "../errors/ReadListError";
 import RecordCard, { AddCard } from './RecordCard'
-import { makeHeader, visibleColumns } from "../ts/helper";
+import { makeHeader } from "../ts/helper";
 import RestComponent from "../RestComponent";
 import { log } from "../../ts/l";
 import { createII, executeB, IIButtonAction, ispopupDialog } from "../ts/executeaction";

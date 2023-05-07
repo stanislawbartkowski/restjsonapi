@@ -11,22 +11,12 @@ import { CSS } from '@dnd-kit/utilities';
 import { Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import React, { useState } from 'react';
+import { ColumnsT, ColumnT, SortProps } from '../typing';
+import { getAppData } from '../../../ts/readresource';
+import { AppData } from '../../../ts/typing';
+import { istrue } from '../../ts/helper';
 
-
-export interface ColumnT  {
-  title: string,
-  key: string,
-  included: boolean
-}
-
-export type ColumnsT = ColumnT[]
-
-export type SortProps = {
-  cols: ColumnsT
-}
-
-
-const columns: ColumnsType<ColumnT> = [
+const columnswithid: ColumnsType<ColumnT> = [
   {
     key: 'sort',
   },
@@ -39,6 +29,17 @@ const columns: ColumnsType<ColumnT> = [
     dataIndex: 'title',
   },
 ];
+
+const columns: ColumnsType<ColumnT> = [
+  {
+    key: 'sort',
+  },
+  {
+    title: 'Title',
+    dataIndex: 'title',
+  },
+];
+
 
 interface RowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   'data-row-key': string;
@@ -87,32 +88,45 @@ const Row = ({ children, ...props }: RowProps) => {
   );
 };
 
-function initKeys(cols: ColumnsT) : React.Key[] {
-  return cols.filter( c => c.included).map( c => c.key)
+function initKeys(cols: ColumnsT): React.Key[] {
+  return cols.filter(c => c.included).map(c => c.key)
 }
 
-const SortColumns: React.FC<SortProps>= (props) => {
-  const [dataSource, setDataSource] = useState(props.cols)
+function combineColsKeys(p: ColumnsT, k: React.Key[]): ColumnsT {
+  const setK: Set<React.Key> = new Set<React.Key>(k);
+  return p.map(c => {
+    return { ...c, included: setK.has(c.key) }
+  }
+  )
+}
+
+const SortColumns: React.FC<SortProps> = (props) => {
+  const [dataSource, setDataSource] = useState<ColumnsT>(props.cols)
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(initKeys(props.cols));
-  
+
   const onDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {
       setDataSource((previous) => {
         const activeIndex = previous.findIndex((i) => i.key === active.id);
         const overIndex = previous.findIndex((i) => i.key === over?.id);
-        return arrayMove(previous, activeIndex, overIndex);
+        const d: ColumnsT = arrayMove(previous, activeIndex, overIndex);
+        props.colshook(combineColsKeys(d, selectedRowKeys))
+        return d
       });
     }
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
+    props.colshook(combineColsKeys(dataSource, newSelectedRowKeys))
   };
 
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
   };
+
+  const a: AppData = getAppData()
 
   return (
     <DndContext onDragEnd={onDragEnd}>
@@ -122,15 +136,16 @@ const SortColumns: React.FC<SortProps>= (props) => {
         strategy={verticalListSortingStrategy}
       >
         <Table
-          rowSelection={rowSelection} 
+          rowSelection={rowSelection}
           components={{
             body: {
               row: Row,
             },
           }}
           rowKey="key"
-          columns={columns}
+          columns={istrue(a.showidcolums) ? columnswithid : columns}
           dataSource={dataSource}
+          pagination={false} 
         />
       </SortableContext>
     </DndContext>

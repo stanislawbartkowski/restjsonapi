@@ -7,6 +7,10 @@ export function log(s: string) {
     logG.info(s)
 }
 
+export function warn(s: string) {
+    logG.warn(s)
+}
+
 export function trace(module: string, mess: string) {
     logG.debug(`[${module}] ${mess}`);
 }

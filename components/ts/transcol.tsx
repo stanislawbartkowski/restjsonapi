@@ -8,12 +8,13 @@ import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from 
 import { AddStyle, ButtonAction, ClickResult, ColumnList, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue, isnotdefined } from "./helper";
-import { callJSFunction, isNumber, makeMessage } from "../../ts/j";
+import { callJSFunction, isNumber, isString, makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 import { EventType } from "@testing-library/react";
+import { warn } from "../../ts/l";
 
 
 // =====================
@@ -39,11 +40,20 @@ export function fieldTitle(t: TFieldBase, pars: OneRowData): string {
 // sort filter procs
 // ====================================
 
+function toS(a : string) : string {
+    if (isString(a)) return a
+    warn(`${a.toString} is not a string`);
+    return a.toString()
+}
+
 function sortinc(a: TRow, b: TRow, field: string): number {
     const fielda: string | undefined = a[field] as string | undefined;
-    if (isnotdefined(fielda)) return 1;
+    if (isnotdefined(fielda)) return 1;    
     const fieldb: string = b[field] as string;
-    return (fielda as string).localeCompare(fieldb);
+    if (isnotdefined(fieldb)) return -1;
+    const fieldas : string = toS(fielda as string)
+    const fieldbs : string = toS(fieldb as string)
+    return (fieldas as string).localeCompare(fieldbs);
 }
 
 function sortnumberinc(a: TRow, b: TRow, field: string): number {
@@ -66,6 +76,7 @@ function sortboolinc(a: TRow, b: TRow, field: string): number {
 
 function sortfilter(c: TColumn): boolean {
     if (c.fieldtype === FIELDTYPE.BOOLEAN) return false;
+    if (c.fieldtype === FIELDTYPE.HTML) return false;
     if (c.actions) return false;
     if (c.tags) return false;
     return true;

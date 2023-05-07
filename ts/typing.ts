@@ -216,5 +216,7 @@ export interface AppData {
   extendedsearch?: boolean
   tablesize?: boolean
   resize?: TResize
+  showidcolums?: boolean
+  arrangecol?: boolean
 }
 

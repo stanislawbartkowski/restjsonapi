@@ -43,8 +43,12 @@ export type AddStyle = JSSupportedType & {
 // summary feature
 // ============================
 
-export type TSummary = ColumnList | ColumnList[]
+export interface TSummaryDescr  {
+    descr: FormMessage
+    before : string[]
+}
 
+export type TSummary = ColumnList | ColumnList[]
 
 // =============================
 // common for field/column type
@@ -67,8 +71,6 @@ export type ButtonAction = ButtonElem & TAction & {
 export type TableToolBar = ButtonAction[]
 
 type HeaderTitleType = FormMessage & PropSupportedType
-
-
 
 // =======================
 // show details feature
@@ -239,6 +241,9 @@ export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
     extendedsearch?: boolean
     tablesize?: boolean
     resize?: TResize
+    arrangecol?: boolean
+    notools?: boolean
+    descr?: TSummaryDescr[]
 };
 
 

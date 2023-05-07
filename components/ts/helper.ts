@@ -143,7 +143,7 @@ export function istrue(t: boolean | undefined): boolean {
 
 export function isfalse(t: boolean | undefined): boolean {
     if (isnotdefined(t)) return false;
-    return ! (t as boolean)
+    return !(t as boolean)
 }
 
 export function tomoney(t: string | number | undefined): undefined | string {
@@ -290,3 +290,11 @@ export function findEditField(field: string, t: TField[]): TField | undefined {
     return e
 }
 
+// =============================
+// sum elements
+// =============================
+
+export function sumnumbers(t: RowData, f: string): string {
+    const s: number = t.reduce((a: number, b: TRow) => a + (b[f] ? +(b[f] as string | number) : 0), 0)
+    return tomoney(s) as string
+}

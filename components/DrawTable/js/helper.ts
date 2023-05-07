@@ -1,13 +1,14 @@
 import type { ColumnType } from "antd/lib/table";
 
 import type { ColumnList, TableHookParam, TColumn, TColumns, TResizeColumn } from "../../ts/typing";
-import { TRow, RowData, OneRowData } from '../../../ts/typing'
+import { TRow, RowData, OneRowData, RestTableParam } from '../../../ts/typing'
 import { callJSFunction, toS } from "../../../ts/j";
 import './styles.css'
 import { transformOneColumn } from "../../ts/transcol";
 import { getRowKey, isnotdefined, tomoney, visibleColumns } from "../../ts/helper";
 import { ExtendedFilter } from "../SearchButton/SearchExtended";
 import { constructTableFilter, FFilter } from '../../TableFilter'
+import { ColumnsT } from "../typing";
 
 
 // =================================
@@ -28,22 +29,23 @@ export function removeDuplicates(cols: TColumns): TColumns {
   return outcols
 }
 
-export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRow, colw?: ColWidth, resizeF?: TResizeColumn): ColumnType<any>[] {
+export function visibleColumnsR(cols: ColumnList, r_cols?: ColumnsT): TColumns {
+  if (r_cols == undefined) return visibleColumns(cols.columns);
+  const mm: TColumns = r_cols.filter(v => v.included).map(v => {
+    // filter out not checked
+    // it is assumed that all columns in r_cols exist in cols.columns
+    const col: TColumn = cols.columns.find(c => c.field === v.key) as TColumn
+    return col
+  })
+  return mm
+}
 
-  const clist: TColumns = visibleColumns(cols.columns);
+export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRow, colw?: ColWidth, resizeF?: TResizeColumn, r_cols?: ColumnsT): ColumnType<any>[] {
+
+  const clist: TColumns = visibleColumnsR(cols, r_cols);
 
   return clist.map((c) => transformOneColumn(c, r, cols, vars, colw?.get(c.field), resizeF));
 }
-
-// =============================
-// sum elements
-// =============================
-
-export function sumnumbers(t: RowData, f: string): string {
-  const s: number = t.reduce((a: number, b: TRow) => a + (b[f] ? +(b[f] as string | number) : 0), 0)
-  return tomoney(s) as string
-}
-
 
 // ===================================
 // filter datasource
@@ -153,4 +155,15 @@ export function searchDataSource(p: ColumnList, currentRow: TRow | undefined, ro
     return okextendedfilter(p, r, pars.filtervalues, f)
   }
   return findcurrentRow(currentPos, rows, pagesize, okFilter)
+}
+
+export function cookieNameQualified(p: RestTableParam, qualif: string): string {
+  const n: string = (p.list as string) + "_" + (p.listdef !== undefined ? p.listdef : "listdef")
+  return n + "_" + qualif
+}
+
+export function verifyColumns(p: ColumnList, cols: string[]) {
+  const setCols : Set<string> = new Set<string>(p.columns.map(c => c.field))
+  const colnotexist: string | undefined = cols.find(c => !setCols.has(c))
+  return colnotexist === undefined
 }

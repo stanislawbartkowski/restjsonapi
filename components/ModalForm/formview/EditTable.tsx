@@ -5,7 +5,7 @@ import React, { ReactElement, ReactNode } from 'react';
 import { ButtonElem, TRow, RowData } from '../../../ts/typing';
 import SummaryTable from '../../SummaryTable';
 import { constructButtonElem } from '../../ts/constructbutton';
-import { genColIdedit, getEditList, cardProps } from '../../ts/helper';
+import { genColIdedit, getEditList, cardProps, visibleColumns } from '../../ts/helper';
 import { addRowKey } from '../../ts/tranformlist';
 import { constructactionsCol, fieldTitle, transformOneColumn } from '../../ts/transcol';
 import { TableHookParam, TAction, TActions, TField, ButtonAction, TColumns, TClickButton, TColumn, ColumnList } from '../../ts/typing';
@@ -150,7 +150,7 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
             columns={columns}
             dataSource={values}
             onRow={(r, i) => { return { onClick: (event) => clickedRow(r) } }}
-            summary={isSummary() ? () => (<SummaryTable isextendable={false} vars={vars} columns={cols} summary={t.editlist?.summary} list={values} />) : undefined}
+            summary={isSummary() ? () => (<SummaryTable isextendable={false} vars={vars} columns={visibleColumns(cols)} summary={t.editlist?.summary} list={values} />) : undefined}
         />
     </Card>
 

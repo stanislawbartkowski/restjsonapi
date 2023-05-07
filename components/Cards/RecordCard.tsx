@@ -1,5 +1,5 @@
 import React, { CSSProperties, ReactNode } from "react";
-import { Card, Col, Dropdown, Menu, Row } from 'antd'
+import { Card, Col, Row } from 'antd'
 import { blue } from '@ant-design/colors';
 import { PlusCircleOutlined } from "@ant-design/icons";
 
@@ -9,7 +9,6 @@ import { fieldTitle, fieldType, HTMLElem, makeDivider, constructactionsCol } fro
 import { FIELDTYPE, OneRowData } from "../../ts/typing";
 import { getButtonName } from "../../ts/j";
 import lstring from "../../ts/localize";
-//import getIcon from "../../ts/icons";
 
 function toCardRow(e: TColumn, t: TDetailsCard, pars: OneRowData): ReactNode {
 

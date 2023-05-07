@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Button } from "antd";
 
 import DraggableModal from "../../DraggableModal";
-import SortColumns, { SortProps } from './SortColumns'
 import getIcon from "../../../ts/icons";
 import lstring from "../../../ts/localize";
+import { SortProps } from "../typing";
+import SortColumns from "./SortColumns";
 
 
 const SearchButton: React.FC<SortProps> = (props) => {
