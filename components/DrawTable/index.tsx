@@ -69,23 +69,23 @@ const empty: IRefCall = {
 
 const isExtendedSearch = (p: ColumnList): boolean => {
     const a: AppData = getAppData()
-    if (istrue(p.extendedsearch)) return true;
-    if (isfalse(p.extendedsearch)) return false
-    return istrue(a.extendedsearch)
+    if (istrue(p.toolbar?.extendedsearch)) return true;
+    if (isfalse(p.toolbar?.extendedsearch)) return false
+    return istrue(a.toolbar?.extendedsearch)
 }
 
 const isTableSize = (p: ColumnList): boolean => {
     const a: AppData = getAppData()
-    if (istrue(p.tablesize)) return true;
-    if (isfalse(p.tablesize)) return false;
-    return istrue(a.tablesize)
+    if (istrue(p.toolbar?.tablesize)) return true;
+    if (isfalse(p.toolbar?.tablesize)) return false;
+    return istrue(a.toolbar?.tablesize)
 }
 
 const isRearrangeCols = (p: ColumnList): boolean => {
     const a: AppData = getAppData()
-    if (istrue(p.arrangecol)) return true;
-    if (isfalse(p.arrangecol)) return false;
-    return istrue(a?.arrangecol)
+    if (istrue(p.toolbar?.arrangecol)) return true;
+    if (isfalse(p.toolbar?.arrangecol)) return false;
+    return istrue(a.toolbar?.arrangecol)
 }
 
 function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, arrange_cols?: ColumnsT, vars?: TRow): ColumnsT {
@@ -104,7 +104,7 @@ function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, arrange_c
 }
 
 
-const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle }> = (props) => {
+const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle, expanded?: boolean }> = (props) => {
 
     const [extendedFilter, setExtendedFilter] = useState<ExtendedFilter>(noExtendedFilter)
 
@@ -127,7 +127,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     const ref: MutableRefObject<IRefCall> = useRef<IRefCall>(empty) as MutableRefObject<IRefCall>
 
     // resize
-    const components = isResize(props.resize) ? {
+    const components = isResize(props.toolbar?.resize) ? {
         header: {
             cell: ResizableTitle,
         },
@@ -348,7 +348,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const arrangeColumns: ReactNode = isRearrangeCols(props) ? <ArrangColumns cols={colo} colshook={colsHook} /> : undefined
 
-    const extendedTools: React.ReactNode = istrue(props.notools) || (extendedSearch === undefined && resizeTable === undefined && arrangeColumns === undefined) ? undefined :
+    const extendedTools: React.ReactNode = istrue(props.toolbar?.notool) || istrue(props.expanded) || (extendedSearch === undefined && resizeTable === undefined && arrangeColumns === undefined) ? undefined :
         <Space style={{ float: "right" }} split={<Divider type="vertical" />} align="center">
             {arrangeColumns}{resizeTable}{extendedSearch}
         </Space>

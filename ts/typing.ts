@@ -184,6 +184,14 @@ export type FormMessage = JSSupportedType & {
 // defaults
 // ==========================
 
+export interface ListToolbar {
+  extendedsearch?: boolean
+  tablesize?: boolean
+  resize?: TResize
+  arrangecol?: boolean
+  notool?: boolean
+}
+
 export interface TResize {
   resize: boolean
   default?: number
@@ -213,10 +221,7 @@ export interface AppData {
   title: string
   version: string,
   js?: string
-  extendedsearch?: boolean
-  tablesize?: boolean
-  resize?: TResize
   showidcolums?: boolean
-  arrangecol?: boolean
+  toolbar?: ListToolbar
 }
 

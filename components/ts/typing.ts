@@ -1,4 +1,4 @@
-import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType, RESTMETH, RowData, TResize } from '../../ts/typing';
+import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType, RESTMETH, RowData, TResize, ListToolbar } from '../../ts/typing';
 
 // =========================
 // status for async reading
@@ -238,11 +238,7 @@ export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
     rowprops?: PropsType
     filterJS?: string
     onerow?: boolean
-    extendedsearch?: boolean
-    tablesize?: boolean
-    resize?: TResize
-    arrangecol?: boolean
-    notools?: boolean
+    toolbar?: ListToolbar
     descr?: TSummaryDescr[]
 };
 

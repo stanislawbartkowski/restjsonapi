@@ -13,7 +13,7 @@ type ListState = ReadDefsResult & {
     list: string;
 };
 
-const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle }> = (props) => {
+const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle, expanded?: boolean }> = (props) => {
     const [state, setState] = useState<ListState>({
         status: Status.PENDING,
         list: props.list as string,

@@ -12,13 +12,13 @@ export function isResize(resize?: TResize): boolean {
 
     if (istrue(resize?.resize)) return true
     if (isfalse(resize?.resize)) return false
-    return istrue(a.resize?.resize)
+    return istrue(a.toolbar?.resize?.resize)
 }
 
 function defaultW(c: TColumn, resize?: TResize): number | string | undefined {
     if (!isResize(resize)) return c.width
     const a: AppData | undefined = getAppData()
-    const re: TResize = { ...a.resize as TResize, ...resize as TResize }
+    const re: TResize = { ...a.toolbar?.resize as TResize, ...resize as TResize }
     if (c.width !== undefined) return c.width
     const fieldtype: FIELDTYPE = fieldType(c)
     var w: number = defaults.sizedefault;
@@ -64,7 +64,7 @@ export function createInitColsWidth(r: RestTableParam, p: ColumnList): ColWidth 
     const m: ColWidth = new Map<string, number>()
     const cm: ColWidth | undefined = getCookieColWidth(r, p)
     clist.forEach(c => {
-        const w = cm?.get(c.field) ? cm.get(c.field) : defaultW(c, p.resize)
+        const w = cm?.get(c.field) ? cm.get(c.field) : defaultW(c, p.toolbar?.resize)
         if (w !== undefined) m.set(c.field, w)
     }
     )
