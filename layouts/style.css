@@ -1,20 +1,22 @@
 /* row data */
-.ant-table-tbody > tr > td {
-    padding: 4px !important
-  }
-  
-  .ant-table-summary > tr > td {
-    padding: 4px !important
-  }
-  
-  .ant-list {
-    font-size : 13px !important;
-  }
+.ant-table-tbody>tr>td {
+  padding: 4px !important
+}
+
+.ant-table-summary>tr>td {
+  padding: 4px !important
+}
+
+
+.ant-list {
+  font-size: 13px !important;
+}
+
 
 .ant-form-item {
-    margin-bottom : 8px !important
+  margin-bottom: 8px !important
 }
 
 .listedit .ant-form-item {
-    margin-bottom : 0px !important
+  margin-bottom: 0px !important
 }

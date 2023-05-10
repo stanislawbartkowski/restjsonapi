@@ -18,7 +18,7 @@ import {
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 
-import { PropsType, FIELDTYPE, FieldValue, FieldDefaults } from '../../../ts/typing';
+import { PropsType, FIELDTYPE, FieldValue, FieldDefaults, TRow } from '../../../ts/typing';
 import { getValue, isEditList, isItemGroup } from '../../ts/helper';
 import { ButtonAction, FGetValues, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
 import { IFieldContext, FField, TFieldChange } from './types';
@@ -346,7 +346,8 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
     const requiredprops = required ? { required: true } : undefined
 
 
-    const mess: string = fieldTitle(t, { r: {} });
+    const row: TRow = ir.getValues()
+    const mess: string = fieldTitle(t, { r: row });
 
     const nameT = listfield === undefined ? { name: t.field } : { name: [listfield.name, t.field] }
 

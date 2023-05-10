@@ -5,7 +5,7 @@ import { PageHeader } from '@ant-design/pro-layout';
 import { trace } from "../ts/l";
 import constructButton from "./ts/constructbutton";
 import { emptyModalListProps, FAction, FieldValue, FSetTitle, ModalFormProps, RAction, RestTableParam, TRow, VAction } from '../ts/typing'
-import { TableToolBar, ButtonAction, ClickResult, ShowDetails, ClickAction } from "./ts/typing";
+import { TableToolBar, ButtonAction, ClickResult, ShowDetails, ClickAction, TAction, FRetAction } from "./ts/typing";
 import { istrue } from "./ts/helper";
 import OneRowTable from './ShowDetails/OneRowTable'
 import RestComponent from "./RestComponent";
@@ -40,8 +40,12 @@ const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshacti
     setIsModalVisible(emptyModalListProps);
   };
 
+  const retAction: FRetAction = (b: TAction, row: TRow) => {
+    setIsModalVisible({ vars: row, ...(b as ClickAction), visible: true, closeAction: fmodalhook })
+  }
+
   function clickButton(b: ButtonAction) {
-    const ii: IIButtonAction = createII(b, props.vars as TRow, props.selectedM)
+    const ii: IIButtonAction = createII(b, props.vars as TRow, props.selectedM, retAction)
     if (isChooseButton(ii.res, props.r)) props.fbutton(b, ii.rr)
     if (ispopupDialog(ii.res)) setIsModalVisible({ vars: { ...props.vars }, ...(ii.res as ClickAction), visible: true, closeAction: fmodalhook })
     else executeB(ii, undefined, props.setvarsaction)
@@ -50,15 +54,15 @@ const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshacti
   const title = (props.setTitle === undefined) ? headerTitle(props, props.vars) : undefined
 
   if (props.setTitle !== undefined) {
-    const title: string|undefined = props.title !== undefined ? makeMessage(props.title, { r: props.vars as TRow }) as string : undefined
+    const title: string | undefined = props.title !== undefined ? makeMessage(props.title, { r: props.vars as TRow }) as string : undefined
     props.setTitle(title)
   }
 
   const detaDescr = {
     r: props.vars as TRow,
     varsrestaction: props.varsrestaction,
-    ...props.collist  
- }
+    ...props.collist
+  }
 
   const headerprops = props.collist ? { ...props.collist.props } : undefined
 

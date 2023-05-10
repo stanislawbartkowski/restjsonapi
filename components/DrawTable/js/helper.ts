@@ -163,7 +163,11 @@ export function cookieNameQualified(p: RestTableParam, qualif: string): string {
 }
 
 export function verifyColumns(p: ColumnList, cols: string[]) {
-  const setCols : Set<string> = new Set<string>(p.columns.map(c => c.field))
+  const setCols: Set<string> = new Set<string>(p.columns.map(c => c.field))
   const colnotexist: string | undefined = cols.find(c => !setCols.has(c))
-  return colnotexist === undefined
+  if (colnotexist !== undefined) return false
+
+  const setCookiCols: Set<string> = new Set<string>(cols)
+  const colcookienotexist: TColumn | undefined = p.columns.find(c => !setCookiCols.has(c.field))
+  return colcookienotexist === undefined
 }

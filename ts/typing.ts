@@ -37,6 +37,7 @@ export enum HTTPMETHOD {
   DELETE = "DELETE",
   PUT = "PUT",
   POST = "POST",
+  JS = "JS"
 }
 
 export type OnTableRead = (r: JsonTableResult) => void

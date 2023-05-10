@@ -37,6 +37,10 @@ export function constructButtonElem(b: ButtonAction, onclick: FClickButton, disa
         messid = 'print'
         iconid = 'printoutlined'
         break
+      case BUTTONACTION.DOPRINT:
+        messid = 'doprint'
+        iconid = 'printoutlined'
+        break
       case BUTTONACTION.CHOOSE:
         messid = 'chooseaction'
         iconid = 'checkoutlined'

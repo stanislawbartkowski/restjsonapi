@@ -19,7 +19,7 @@ const embedded = {
     update: 'Zmień',
     insert: 'Wstaw',
     errorreadinglist: "Błąd podczas czytania danych z servera",
-    print: "Drukuj",
+    print: "Wykonaj",
     done: "Zrobione",
     moneypattern: "Tylko cyfry, kropka dziesiętna oraz znak na początku",
     chooseaction: "Wybierz",
@@ -48,7 +48,8 @@ const embedded = {
     middlelabel: "Średnie",
     smalllabel: "Małe",
     sizetabletitle: "Pozwala zmienić rozmiar wyświetlanej tabeli",
-    changecolumnstitle: "Zmiana układu kolumn w tabeli"
+    changecolumnstitle: "Zmiana układu kolumn w tabeli",
+    doprint: "Drukuj"
   },
   en: {
     empty: '',
@@ -94,7 +95,8 @@ const embedded = {
     middlelabel: "Middle",
     smalllabel: "Small",
     sizetabletitle: "Specifies the size of the table",
-    changecolumnstitle: "Rearrange columns in the table"
+    changecolumnstitle: "Rearrange columns in the table",
+    doprint: "Print"
   }
 };
 

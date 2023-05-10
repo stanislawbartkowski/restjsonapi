@@ -275,9 +275,9 @@ export type TCard = {
 // radio&check
 
 export type TItemsRest = RESTMETH & {
-    //    restaction: string;
     value: string
     label: FormMessage
+    onlylabel?: boolean
 }
 
 export type TRadioCheckItem = PropSupportedType & {
@@ -493,7 +493,8 @@ export enum BUTTONACTION {
     UPLOAD = 'UPLOAD',
     OK = "OK",
     SEARCH = "SEARCH",
-    SEARCHNEXT = "SEARCHNEXT"
+    SEARCHNEXT = "SEARCHNEXT",
+    DOPRINT = "DOPRINT"
 }
 
 // =================

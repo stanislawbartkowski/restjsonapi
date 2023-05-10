@@ -344,8 +344,8 @@ export function makeDivider(d: TDivider, t: OneRowData): React.ReactElement {
 
 export function HTMLElem(value: string | undefined): React.ReactElement {
 
-    const html: string = value ? value as string : ""
-    return <div dangerouslySetInnerHTML={{ __html: html }} />
+    const html: string = value ?? ""
+    return <span dangerouslySetInnerHTML={{ __html: html }} />
 }
 
 
