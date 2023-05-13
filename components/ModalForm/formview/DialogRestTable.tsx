@@ -17,7 +17,7 @@ export function produceRestTable(ir: IFieldContext, t: FField): ReactNode {
     const frest: FieldRestList = t.restlist as FieldRestList
     const pars: RestTableParam = frest.js ? callJSFunction(frest.js, { r: ir.getValues() }) as RestTableParam : t.restlist as RestTableParam
     const vars: TRow = ir.getValues()
-    const refreshR : TableRefreshData = t.tableR.get(t.field) === undefined ? { refreshno : 0} : t.tableR.get(t.field) as TableRefreshData
+    const refreshR: TableRefreshData = t.tableR.get(t.field) === undefined ? { refreshno: 0 } : t.tableR.get(t.field) as TableRefreshData
 
     //const refreshno: number = t.tableR.has(t.field) ? t.tableR.get(t.field) as number : 0
     const setMulti: SetMAction = (sel: FieldValue[]) => {
@@ -27,6 +27,6 @@ export function produceRestTable(ir: IFieldContext, t: FField): ReactNode {
     // 2023/03/38
     const multiselect: FieldValue[] = vars[t.field] as FieldValue[]
     return <Form.Item id={t.field} name={t.field} {...t.props} >
-        <RestTable {...pars} vars={vars} refreshno={refreshR.refreshno} setvarsaction={t.setvarsaction} setmulti={setMulti} initsel={multiselect} refreshD={refreshR.searchR} />
+        <RestTable {...pars} vars={vars} refreshno={refreshR.refreshno} setvarsaction={t.setvarsaction} setmulti={setMulti} initsel={multiselect} refreshD={refreshR.searchR} rereadRest={ir.rereadRest} />
     </Form.Item>
 }

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
 import { Card } from 'antd';
 
-import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FRetAction, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TColumn, TField, TOptionLine, TPreseEnum } from '../ts/typing'
+import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FRereadRest, FRetAction, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TColumn, TField, TOptionLine, TPreseEnum } from '../ts/typing'
 import type { TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
-import readdefs, { ReadDefsResult } from "../ts/readdefs";
+import readdefs, { ReadDefsResult, rereadRest } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
 import ModalFormView, { IRefCall } from './ModalFormView';
@@ -42,6 +42,7 @@ export interface IIRefCall {
     setVals: FSetValues
     formGetVals: FGetValues
     retAction?: FRetAction
+    rereadRest?: FRereadRest
 }
 
 export interface ModalHooks {
@@ -153,6 +154,16 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         if (props.setvarsaction) props.setvarsaction(vars)
     }
 
+    const rereadRestFun : FRereadRest = () => {
+        const setF = (t : TField[]) => {
+            const s :  DataFormState = {...formdef}
+            s.tabledata = {...(formdef.tabledata as TForm), fields: t }
+            psetState(s)
+        }
+        const row: TRow = constructCurVals();
+        rereadRest(props, setF, row)
+    }
+
     const iiref: IIRefCall = {
         setMode: (loading: boolean, errors: ErrorMessages) => {
             if (ftype === TPreseEnum.Steps)
@@ -180,8 +191,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         },
         retAction: (b: TAction, row: TRow) => {
             _clickButton(b as ButtonAction, row)
-        }
-
+        },
+        rereadRest: rereadRestFun
     }
 
     useImperativeHandle(iref, () => (iiref)
@@ -487,6 +498,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 clickButton={clickButton}
                 setTitle={props.mhooks?.setTitle}
                 listdef={props.listdef}
+                rereadRest={rereadRestFun}
                 {...thooks}
             />
         : undefined

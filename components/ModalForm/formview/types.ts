@@ -1,6 +1,6 @@
 import { FormListFieldData, UploadFile } from "antd"
 import { FieldValue, VAction } from "../../../ts/typing"
-import { FGetValues, TAsyncRestCall, TClickButton, TField, TOptionLine } from "../../ts/typing"
+import { FGetValues, FRereadRest, TAsyncRestCall, TClickButton, TField, TOptionLine } from "../../ts/typing"
 import { TRefreshTable } from "../../DrawTable"
 
 
@@ -54,7 +54,8 @@ export interface IFieldContext {
     setMulti: SetMultiSelect
     fGetOptions: fSearchOptions
     fReadCookie: TReadCookie,
-    fWriteCookie: TWriteCookie
+    fWriteCookie: TWriteCookie,
+    rereadRest: FRereadRest
 }
 
 export type ErrorMessage = {

@@ -3,17 +3,17 @@ import React, { useState, useEffect } from "react";
 import InLine from "../ts/inline";
 import { ClickActionProps, FSetTitle, RestTableParam } from "../ts/typing";
 import Cards from "./Cards";
-import readdefs, { ReadDefsResult } from "./ts/readdefs";
+import readdefs, { ReadDefsResult, rereadRest } from "./ts/readdefs";
 import RestTableView, { TRefreshTable } from "./DrawTable";
 import RestTableError from "./errors/ReadDefError";
 import { isCard } from "./ts/helper";
-import { ColumnList, Status } from "./ts/typing";
+import { ColumnList, FRereadRest, Status } from "./ts/typing";
 
 type ListState = ReadDefsResult & {
     list: string;
 };
 
-const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle, expanded?: boolean }> = (props) => {
+const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle, expanded?: boolean, rereadRest?: FRereadRest }> = (props) => {
     const [state, setState] = useState<ListState>({
         status: Status.PENDING,
         list: props.list as string,
@@ -65,7 +65,7 @@ const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: numb
                         <InLine js={state.js} />
                         {isCard(state.res as ColumnList) && (state.res as ColumnList).onerow === undefined ?
                             <Cards {...(state.res as ColumnList)} {...props} refreshno={props.refreshno}></Cards> :
-                            <RestTableView {...(state.res as ColumnList)} {...props} refreshno={props.refreshno} refreshD={props.refreshD} setTitle={props.setTitle}/>}
+                            <RestTableView {...(state.res as ColumnList)} {...props} refreshno={props.refreshno} refreshD={props.refreshD} setTitle={props.setTitle} rereadRest={props.rereadRest} />}
                     </React.Fragment>
                 );
             } else return null;

@@ -9,7 +9,7 @@ import { SizeType } from "antd/es/config-provider/SizeContext";
 import lstring from "../../ts/localize";
 import { AppData, ClickActionProps, emptyModalListProps, FieldValue, FSetTitle, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
 import type { ColumnsHook, ColumnsT, ColumnT, FSetSize, TExtendable, } from "./typing";
-import { ButtonAction, ClickAction, ColumnList, FActionResult, FRetAction, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TResizeColumn } from "../ts/typing";
+import { ButtonAction, ClickAction, ColumnList, FActionResult, FRereadRest, FRetAction, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TResizeColumn } from "../ts/typing";
 
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow, ColWidth, visibleColumnsR } from "./js/helper";
@@ -38,8 +38,6 @@ import ArrangColumns from './ArrangeColumns'
 import { fieldTitle } from "../ts/transcol";
 import ResizableTitle from './ResizeTitle'
 import { getCookieTableColumns, saveCookieTableColumns } from "./js/cookietablecolumns";
-
-
 
 export type TRefreshTable = {
     searchF: TRow
@@ -104,7 +102,7 @@ function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, arrange_c
 }
 
 
-const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle, expanded?: boolean }> = (props) => {
+const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle, expanded?: boolean, rereadRest?: FRereadRest }> = (props) => {
 
     const [extendedFilter, setExtendedFilter] = useState<ExtendedFilter>(noExtendedFilter)
 
@@ -155,7 +153,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const fresult: FActionResult = (entity: TRow, r: TAction) => {
         if (r.button) {
-            const ii: IIButtonAction = createII(r.button, entity, undefined, retAction)
+            const ii: IIButtonAction = createII(r.button, entity, undefined, retAction, props.rereadRest)
             executeB(ii, () => refreshtable())
             return
         }

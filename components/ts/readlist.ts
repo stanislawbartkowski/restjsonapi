@@ -28,7 +28,7 @@ function readlist(props: TReadListParam & ColumnList, f: FSetState) {
     }
 
     const initval: string | RESTMETH = isGet() ? (props.list as string) : { ...props as RESTMETH, restaction: props.restaction ? props.restaction : props.list }
-    readvals(initval, props.vars, props.params)
+    readvals(initval, {}, props.vars, props.params)
         .then((rres) => {
             let lres = rres.res
             let vars = rres.vars
@@ -58,7 +58,7 @@ async function readAutocompleteasync(autocomplete: TAutoComplete[]): Promise<TAu
                 lres = rdata.res
             }
             else {
-                const rres = await readvals(t)
+                const rres = await readvals(t, {})
                 const da = analyzeresponse(rres.data, rres.response)
                 lres = da[0].res
             }

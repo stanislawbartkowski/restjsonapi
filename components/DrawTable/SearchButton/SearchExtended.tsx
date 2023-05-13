@@ -13,7 +13,7 @@ export interface IIRefCall {
 }
 
 
-export type SearchButtonType = ColumnList & ExtendedFilter 
+export type SearchButtonType = ColumnList & ExtendedFilter
 
 type SearchDialog = SearchButtonType & {
     buttons: React.ReactNode[]
@@ -57,8 +57,10 @@ const SearchExtended = forwardRef<IIRefCall, SearchDialog>((props, iref) => {
 
     }
 
-    return <ModalFormView aRest={aRest} getValues={getValues} ref={refm} fields={fields} buttonClicked={buttonClickded} setvarsaction={(r?: TRow) => { }} clickButton={() => { }}
-        initvals={props.filtervalues} list={ffields} buttons={[]} buttonsextratop={props.buttons} err={err} onValuesChanges={onValuesChanges} onFieldChange={onFieldChange} setInitValues={() => { }} />
+    const doNothing = () => { }
+
+    return <ModalFormView aRest={aRest} getValues={getValues} ref={refm} fields={fields} buttonClicked={buttonClickded} setvarsaction={(r?: TRow) => { }} clickButton={doNothing}
+        initvals={props.filtervalues} list={ffields} buttons={[]} buttonsextratop={props.buttons} err={err} onValuesChanges={onValuesChanges} onFieldChange={onFieldChange} setInitValues={doNothing} rereadRest={doNothing} />
 
 })
 

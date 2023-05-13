@@ -2,7 +2,6 @@
 // call JS function
 // ====================
 
-import validateObject, { ObjectType } from "../components/ts/validateobject";
 import { getDevServer } from "../services/readconf";
 import defaults from "./defaults";
 import { log } from "./l";
@@ -113,7 +112,6 @@ export function makeMessage(m: FormMessage, pars: OneRowData = { r: {} }): strin
   if (m.js) {
     const res: any = callJSFunction(m.js, pars);
     // recursive !
-    validateObject(ObjectType.FORMMESSAGE, `js: ${m.js}`, res)
     return makeMessage(res as FormMessage, pars);
   }
   if (m.message) return lstring(m.message, m.params);

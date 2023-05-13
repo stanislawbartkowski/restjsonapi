@@ -4,8 +4,8 @@ import { fatalexceptionerror, log, trace } from "../../ts/l";
 import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAction } from "../../ts/typing";
 import openNotification from "../Notification";
 import { IIRefCall } from "../ModalForm/ModalFormDialog";
-import { clickAction } from "./helper";
-import type { ButtonAction, ClickAction, FRetAction, FieldError, TAction } from "./typing";
+import { clickAction, istrue } from "./helper";
+import type { ButtonAction, ClickAction, FRereadRest, FRetAction, FieldError, TAction } from "./typing";
 import { FAction, ClickActionProps } from '../../ts/typing'
 import analyzeresponse from './anayzeresponse'
 import { setPrintContent } from './helper'
@@ -20,7 +20,7 @@ export type IIButtonAction = {
     vars: TRow
 }
 
-export function createII(b: TAction, vars: TRow, selectedM?: FieldValue, retAction?: FRetAction): IIButtonAction {
+export function createII(b: TAction, vars: TRow, selectedM?: FieldValue, retAction?: FRetAction, rereadRest?: FRereadRest): IIButtonAction {
     const rr: TRow = {}
     rr[defaults.multichoicevar] = selectedM
     const res: TAction = clickAction(b, { r: { ...commonVars(), ...rr }, vars: vars })
@@ -38,6 +38,9 @@ export function createII(b: TAction, vars: TRow, selectedM?: FieldValue, retActi
     }
     if (retAction !== undefined) {
         ii.retAction = retAction
+    }
+    if (rereadRest !== undefined) {
+        ii.rereadRest = rereadRest
     }
     return { res: res, ii: ii, rr: { ...commonVars(), ...rr }, vars: vars }
 }
@@ -91,6 +94,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
         }
         if (props.i.doAction) props.i.doAction(r)
         if (r.vars) props.i.setVals(r.vars)
+        if (istrue(r.rereadrest) && props.i.rereadRest !== undefined) props.i.rereadRest()
         if (r.retprops && props.i.retAction) props.i.retAction(r.retprops, r.retprops.vars as TRow)
     }
 

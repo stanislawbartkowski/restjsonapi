@@ -14,7 +14,7 @@ import { FieldData, NamePath } from 'rc-field-form/lib/interface';
 import { FormInstance } from 'antd/es/form';
 
 
-import { ButtonAction, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChanged, FSetValues, TAsyncRestCall, TAutoCompleteMap, TClickButton, TField, TForm, TOptionLine } from '../ts/typing'
+import { ButtonAction, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChanged, FRereadRest, FSetValues, TAsyncRestCall, TAutoCompleteMap, TClickButton, TField, TForm, TOptionLine } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
@@ -51,6 +51,7 @@ type TFormView = TForm & {
     ignorerestapivals?: boolean
     clickButton: TClickButton
     listdef?: string
+    rereadRest: FRereadRest
 }
 
 
@@ -327,11 +328,14 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             setOptions(amap);
         },
         fReadCookie: function (t: TField, addf?: string | undefined): string | undefined {
-            return getCookie(gencookie(t, addf))
+            return getCookie(gencookie(t, addf));
 
         },
         fWriteCookie: function (t: TField, val: string | undefined, addf?: string | undefined): void {
-            setCookie(gencookie(t, addf), val)
+            setCookie(gencookie(t, addf), val);
+        },
+        rereadRest: function (): void {
+            props.rereadRest()
         }
     }
 

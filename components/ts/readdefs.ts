@@ -20,40 +20,42 @@ export type ReadDefsResult = {
 
 type FSetState = (res: ReadDefsResult) => void
 
-export async function readvals(initval: string | RESTMETH, vars?: TRow, params?: Record<string, FieldValue>): Promise<Record<string, any>> {
+type FReadRest = (fields: TField[]) => void
+
+export async function readvals(initval: string | RESTMETH, row: TRow, vars?: TRow, params?: Record<string, FieldValue>): Promise<Record<string, any>> {
     if (isString(initval)) return await restapilist(initval as string, params)
     const rr: RESTMETH = initval as RESTMETH
-    const r: RESTMETH = rr.jsaction ? callJSFunction(rr.jsaction, { r: {}, vars: vars }) as RESTMETH : rr
+    const r: RESTMETH = rr.jsaction ? callJSFunction(rr.jsaction, { r: row, vars: vars }) as RESTMETH : rr
     if (r.method === HTTPMETHOD.JS) {
-        const r : RowData = callJSFunction(rr.restaction as string, { r: {}, vars: vars })
+        const r: RowData = callJSFunction(rr.restaction as string, { r: row, vars: vars })
         return {
-            res : r
+            res: r
         }
     }
     return restaction(r.method === undefined ? HTTPMETHOD.GET : r.method, r.restaction as string, r.params, vars)
 }
 
 
-export async function readvalsdata(initval: string | RESTMETH, vars?: TRow, params?: Record<string, FieldValue>): Promise<Record<string, any>> {
-    const dat: any = await readvals(initval, vars, params)
+export async function readvalsdata(initval: string | RESTMETH, row: TRow, vars?: TRow, params?: Record<string, FieldValue>): Promise<Record<string, any>> {
+    const dat: any = await readvals(initval, row, vars, params)
     // dat.data === undefinded means GET method only
     if (dat.data === undefined) return Promise.resolve(dat)
     const da = analyzeresponse(dat.data, dat.response)
     return Promise.resolve(da[0])
 }
 
-async function resolveRest(tl: TField[], vars: TRow): Promise<TField[]> {
+async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[]> {
     const ffields: TField[] = await Promise.all(tl.map(async c => {
 
         const tr: TRadioCheck | undefined = c.checkbox ? c.checkbox : c.radio ? c.radio : undefined
         if (isItemGroup(c)) {
-            const itemlist: TField[] = await resolveRest(c.items as TField[], vars)
+            const itemlist: TField[] = await resolveRest(c.items as TField[], row, vars)
             c.items = itemlist
             return c;
         }
         if (c.tab) {
             const tabs: TabItems[] = await Promise.all(c.tab.tabs.map(async c => {
-                const items: TField[] = await resolveRest(c.items as TField[], vars)
+                const items: TField[] = await resolveRest(c.items as TField[], row, vars)
                 c.items = items
                 return c
             }))
@@ -75,7 +77,7 @@ async function resolveRest(tl: TField[], vars: TRow): Promise<TField[]> {
             const rest: TItemsRest | undefined = !isOArray(tr.items) ? tr.items as TItemsRest : undefined
             if (rest) {
                 //const resta: Record<string, any> = await restapilist(rest.restaction)
-                const resta: Record<string, any> = await readvalsdata(rest, vars, rest.params)
+                const resta: Record<string, any> = await readvalsdata(rest, row, vars, rest.params)
                 const rlist: RowData = resta.res
                 tr.items = rlist.map(r => {
                     return {
@@ -113,9 +115,9 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: bo
             case TPreseEnum.TForm:
                 // look for dynamic items
                 const t: TForm = idef as TForm
-                const ffields: TField[] = await resolveRest(t.fields, props.vars as TRow)
+                const ffields: TField[] = await resolveRest(t.fields, {}, props.vars as TRow)
 
-                const initvals: TRow | undefined = (t.restapivals && !istrue(ignoreinitvals)) ? await readvalsdata(t.restapivals, { ...commonVars(), ...props.vars }) : undefined
+                const initvals: TRow | undefined = (t.restapivals && !istrue(ignoreinitvals)) ? await readvalsdata(t.restapivals, {}, { ...commonVars(), ...props.vars }) : undefined
                 f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
                 break;
             case TPreseEnum.ColumnList:
@@ -132,6 +134,14 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: bo
         f({ status: Status.ERROR });
     }
 
+}
+
+export async function rereadRest(props: RestTableParam, f: FReadRest, row: TRow) {
+    const def: string = props.listdef ? props.listdef : props.list as string
+    const idef: PreseForms = await restapilistdef(def) as PreseForms
+    const t: TForm = idef as TForm
+    const ffields: TField[] = await resolveRest(t.fields, row, props.vars as TRow)
+    f(ffields)
 }
 
 export default readdefs

@@ -152,6 +152,7 @@ export type TAction = ClickAction & FormMessage & PropsType & {
     icon?: string
     retprops?: TAction
     confirm?: FormMessage | boolean
+    reread?: boolean
 }
 
 // list actions e.g. action columne
@@ -475,6 +476,7 @@ export type FGetValues = () => TRow
 export type FSetValues = (r: TRow) => void
 export type FGetOptions = (id: string, val: string) => TOptionLine[]
 export type FRetAction = (b: TAction, row: TRow) => void
+export type FRereadRest = () => void
 
 
 // ============================
