@@ -15,12 +15,14 @@ const ModalDialog: React.FC<ModalFormProps> = (props) => {
     const [modaltitle, setModalTitle] = useState<string|undefined>(undefined)
 
     const ihooks: ModalHooks = {
-
         setButtons: function (buttons: ReactNode, loading: boolean): void {
-            setState({ ...moddef, buttons: buttons })
+            setState({ ...moddef, buttons: buttons });
         },
-        setTitle: function(title: string|undefined): void {
-            setModalTitle(title)
+        setTitle: function (title: string | undefined): void {
+            setModalTitle(title);
+        },
+        rereadRest: function (): void {
+            if (props.rereadRest !== undefined) props.rereadRest()
         }
     }
 

@@ -69,7 +69,12 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks & ModalHooks>((p
     },
     formGetVals: () => {
       return ref.current?.formGetVals() as TRow
+    },
+    rereadRest: () => {
+      if (ref.current?.rereadRest !== undefined) ref.current.rereadRest()
     }
+
+
   })
   )
 

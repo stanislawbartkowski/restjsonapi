@@ -4,7 +4,6 @@ import { callJSFunction, isObject, isString, makeMessage } from "../../ts/j";
 import { FieldValue, OneRowData, PropsType, RowData, TRow } from "../../ts/typing";
 import { ActionResult, ButtonAction, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TColumns, TField, TForm, TPreseEnum } from "./typing";
 import defaults from "../../ts/defaults";
-import { setCookieR, getCookieR } from '../../ts/cookies'
 import { HTMLElem, fieldType } from "./transcol";
 
 

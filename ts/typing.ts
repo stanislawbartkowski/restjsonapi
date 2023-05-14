@@ -2,7 +2,7 @@
 // general types
 // ==========================================================
 
-import { ButtonAction, TAction } from "../components/ts/typing"
+import { ButtonAction, FRereadRest, TAction } from "../components/ts/typing"
 
 export type PropsType = Record<string, any>
 
@@ -100,6 +100,7 @@ export type FSetTitle = (title: string | undefined) => void
 export interface ClickActionProps {
   closeAction?: FAction
   refreshaction?: RAction
+  rereadRest?: FRereadRest
   setvarsaction?: VAction
   setmulti?: SetMAction
 }
@@ -111,7 +112,7 @@ export type ModalFormProps = ClickActionProps & {
   vars?: TRow
 }
 
-export const emptyModalListProps: ModalFormProps = { visible: false }
+export const emptyModalListProps: ModalFormProps = { visible: false, rereadRest: () => {} }
 
 
 // ==================================

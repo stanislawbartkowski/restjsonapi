@@ -45,8 +45,8 @@ export function createII(b: TAction, vars: TRow, selectedM?: FieldValue, retActi
     return { res: res, ii: ii, rr: { ...commonVars(), ...rr }, vars: vars }
 }
 
-export function executeB(i: IIButtonAction, refreshaction?: RAction, setvarsaction?: VAction) {
-    clickButton({ refreshaction, ...(i.res as ClickAction), i: i.ii, setvarsaction }, i.res, { ...i.rr, ...i.vars })
+export function executeB(i: IIButtonAction,  rereadRest?: FRereadRest, refreshaction?: RAction, setvarsaction?: VAction) {
+    clickButton({ refreshaction, ...(i.res as ClickAction), i: i.ii, setvarsaction, rereadRest }, i.res, { ...i.rr, ...i.vars })
 }
 
 export function ispopupDialog(res: TAction): boolean {

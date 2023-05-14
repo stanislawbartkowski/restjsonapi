@@ -379,15 +379,15 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     }
 
     const header: ReactNode | undefined = props.header ?
-        <HeaderTable {...props.header} vars={props.vars} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} setTitle={props.setTitle}></HeaderTable> :
+        <HeaderTable {...props.header} vars={props.vars} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} setTitle={props.setTitle} rereadRest={props.rereadRest}></HeaderTable> :
         undefined
 
     return <React.Fragment>
         {header}
         {form}
-        <RestComponent  {...searchD.enterbutton as object} {...searchD.addpars} visible={searchD.visible} choosing closeAction={closeF} />
+        <RestComponent  {...searchD.enterbutton as object} {...searchD.addpars} visible={searchD.visible} choosing closeAction={closeF} rereadRest={props.rereadRest} />
         <RestComponent  {...multiselectD.multichoice as object} {...multiselectD.addpars} visible={multiselectD.visible} closeAction={closeMultiD}
-            initsel={multiselect.get(multiselectD.field)} multiselect vars={initvals} />
+            initsel={multiselect.get(multiselectD.field)} multiselect vars={initvals}  rereadRest={props.rereadRest}/>
     </React.Fragment>
 })
 

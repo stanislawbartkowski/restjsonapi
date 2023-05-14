@@ -14,7 +14,7 @@ function getExtendableProps(cols: ColumnList, vars?: TRow): ExpandableConfig<TRo
   function expand(r: TRow): ReactNode {
     const rr: TRow = { ...commonVars(), ...r }
     const res: ClickResult = clickAction(cols.extendable as TAction, { r: r, vars: vars });
-    return <RestTableList  {...res} vars={rr} expanded />
+    return <RestTableList  {...res} vars={rr} expanded rereadRest={() => {}} />
   }
 
   return {

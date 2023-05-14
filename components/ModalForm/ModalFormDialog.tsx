@@ -18,7 +18,7 @@ import ReadDefError from '../errors/ReadDefError';
 import StepsFormView from './StepsFormView';
 import executeAction from '../ts/executeaction'
 import { readvalsdata } from "../ts/readdefs";
-import { callJSFunction, commonVars, isBool, isString, toS } from '../../ts/j';
+import { callJSFunction, commonVars, isBool, isOArray, isString, toS } from '../../ts/j';
 import RestComponent from '../RestComponent';
 import { findErrField } from './formview/helper';
 import { ErrorMessages } from './formview/types';
@@ -49,6 +49,7 @@ export interface ModalHooks {
 
     setButtons: (buttons: ReactNode, loading: boolean) => void
     setTitle?: FSetTitle
+    rereadRest: FRereadRest
 }
 
 
@@ -138,26 +139,28 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         if (formdef.tabledata?.fields)
             createF().forEach(t => {
                 if (t.restlist) {
-                    let tData: TRefreshTable | undefined = (vars[t.field] as any) as TRefreshTable
-                    let refresh: boolean = true
-                    if (tData !== undefined) {
-                        if (isBool(tData)) {
-                            refresh = (tData as any) as boolean
-                            tData = undefined
+                    let tData: TRefreshTable | undefined | RowData = (vars[t.field] as any) as TRefreshTable
+                    if (!isOArray(tData)) {
+                        let refresh: boolean = true
+                        if (tData !== undefined) {
+                            if (isBool(tData)) {
+                                refresh = (tData as any) as boolean
+                                tData = undefined
+                            }
+                            if (refresh)
+                                ref.current.refreshTable(t.field, tData);
+                            vars[t.field] = false;
                         }
-                        if (refresh)
-                            ref.current.refreshTable(t.field, tData);
-                        vars[t.field] = false;
                     }
                 }
             })
         if (props.setvarsaction) props.setvarsaction(vars)
     }
 
-    const rereadRestFun : FRereadRest = () => {
-        const setF = (t : TField[]) => {
-            const s :  DataFormState = {...formdef}
-            s.tabledata = {...(formdef.tabledata as TForm), fields: t }
+    const rereadRestFun: FRereadRest = () => {
+        const setF = (t: TField[]) => {
+            const s: DataFormState = { ...formdef }
+            s.tabledata = { ...(formdef.tabledata as TForm), fields: t }
             psetState(s)
         }
         const row: TRow = constructCurVals();
@@ -192,7 +195,11 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         retAction: (b: TAction, row: TRow) => {
             _clickButton(b as ButtonAction, row)
         },
-        rereadRest: rereadRestFun
+        rereadRest: () => {
+            rereadRestFun()
+            if (ftype == TPreseEnum.Steps && sref.current.rereadRest !== undefined) sref.current.rereadRest()
+            if (props.mhooks?.rereadRest) props.mhooks.rereadRest()
+        }
     }
 
     useImperativeHandle(iref, () => (iiref)
@@ -231,53 +238,63 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
     const thooks: THooks = {
         aRest: async (h: RESTMETH, r: TRow) => {
-            if (props.aRest) return props.aRest(h, r);
-            else return _aRest(h, r);
+            if (props.aRest)
+                return props.aRest(h, r);
+            else
+                return _aRest(h, r);
         },
 
         clickButton: (button?: ButtonAction, row?: TRow) => {
-            if (props.clickButton) props.clickButton(button, row);
-            else _clickButton(button, row);
+            if (props.clickButton)
+                props.clickButton(button, row);
+            else
+                _clickButton(button, row);
         },
         getValues: () => {
-            if (props.getValues) return props.getValues();
-            const r: TRow = constructCurVals()
-            return r
+            if (props.getValues)
+                return props.getValues();
+            const r: TRow = constructCurVals();
+            return r;
         },
         setInitValues: (r: TRow) => {
             _setInitValues(r);
         },
         fGetOptions: (id: string, val: string) => {
 
-            const autodef: TAutoComplete | undefined = formdef.tabledata?.autocomplete?.find(e => e.id === id)
-            if (autodef === undefined) return []
+            const autodef: TAutoComplete | undefined = formdef.tabledata?.autocomplete?.find(e => e.id === id);
+            if (autodef === undefined)
+                return [];
 
-            const colname: string = autodef.colname ? autodef.colname : "name"
+            const colname: string = autodef.colname ? autodef.colname : "name";
 
             function getN(r: TRow): string | undefined {
-                const t: FieldValue = r[colname]
-                if (t === undefined) return undefined
-                return toS(t)
+                const t: FieldValue = r[colname];
+                if (t === undefined)
+                    return undefined;
+                return toS(t);
             }
 
             function okVal(r: TRow): boolean {
-                const va: string | undefined = getN(r)
-                if (va === undefined) return false;
-                const v: string = va.toUpperCase()
-                return v.startsWith(val.toUpperCase())
+                const va: string | undefined = getN(r);
+                if (va === undefined)
+                    return false;
+                const v: string = va.toUpperCase();
+                return v.startsWith(val.toUpperCase());
             }
 
-            const minlen: number = (autodef.minlen !== undefined) ? autodef.minlen : defaults.defstartnum
-            if (val.length < minlen) return []
-            const maxdispauto: number = (autodef.maxdisp !== undefined) ? autodef.maxdisp : defaults.maxdispauto
-            const rows: RowData | undefined = auto?.get(id)
-            if (rows == undefined) return []
-            const n: RowData = rows.filter(r => okVal(r))
+            const minlen: number = (autodef.minlen !== undefined) ? autodef.minlen : defaults.defstartnum;
+            if (val.length < minlen)
+                return [];
+            const maxdispauto: number = (autodef.maxdisp !== undefined) ? autodef.maxdisp : defaults.maxdispauto;
+            const rows: RowData | undefined = auto?.get(id);
+            if (rows == undefined)
+                return [];
+            const n: RowData = rows.filter(r => okVal(r));
             const v: TOptionLine[] = n.slice(0, maxdispauto).map(r => {
-                return { value: getN(r) as string }
-            })
-            return v
-        }
+                return { value: getN(r) as string };
+            });
+            return v;
+        },
     }
 
     const clickButton: TClickButton = (button?: ButtonAction, row?: TRow) => {
@@ -475,7 +492,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         }
     }
 
-    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} refreshaction={refreshAction} /> : undefined
+    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} refreshaction={refreshAction} rereadRest={rereadRestFun}/> : undefined
 
     const modalFormView: ReactNode = formdef.status === Status.READY ?
         ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={ivals} {...props.mhooks as ModalHooks} /> :
