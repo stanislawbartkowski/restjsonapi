@@ -209,7 +209,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     const _aRest: TAsyncRestCall = async (h: RESTMETH, r: TRow) => {
 
         const data: TRow = constructCurVals(r);
-        return readvalsdata(h, data)
+        return readvalsdata(h, {}, data)
     }
 
     const closeF: FAction = () => {
