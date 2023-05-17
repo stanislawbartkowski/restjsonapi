@@ -16,7 +16,7 @@ import { FormInstance } from 'antd/es/form';
 
 import { ButtonAction, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChanged, FRereadRest, FSetValues, TAsyncRestCall, TAutoCompleteMap, TClickButton, TField, TForm, TOptionLine } from '../ts/typing'
 import { log, trace } from '../../ts/l'
-import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, RESTMETH, TRow, VAction } from '../../ts/typing'
+import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, PropsType, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import { callJSFunction, commonVars, copyMap, getSessionId, isBool, isEmpty, isString } from '../../ts/j';
 import { FFieldElem, findEditField, genEditClickedRowKey, getValue, istrue, okmoney, tomoney } from '../ts/helper';
@@ -24,7 +24,7 @@ import { transformSingleValue, transformValuesFrom, transformValuesTo } from '..
 import RestComponent from '../RestComponent';
 import defaults from '../../ts/defaults';
 import HeaderTable from '../HeaderTable'
-import { ErrorMessages, FField, FMultiAction, FSearchAction, FSetEditRow, IFieldContext, TableRefresh, TableRefreshData, TFieldChange, TMultiSelect, TOptions, UploadStore } from './formview/types';
+import { ErrorMessages, FField, FMultiAction, FSearchAction, FSetEditRow, IFieldContext, TableRefresh, TableRefreshData, TFieldChange, TFieldsProps, TMultiSelect, TOptions, UploadStore } from './formview/types';
 import { elemFactory, produceItem } from './formview/EditItems'
 import { produceBody } from './formview/FormBody';
 import { TRefreshTable } from '../DrawTable';
@@ -335,7 +335,11 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             setCookie(gencookie(t, addf), val);
         },
         rereadRest: function (): void {
-            props.rereadRest()
+            props.rereadRest();
+        },
+        fieldsprops: function (): TFieldsProps|undefined {
+            if (props.initvals === undefined || props.initvals[defaults.fieldsprops] === undefined) return undefined
+            return (props.initvals[defaults.fieldsprops] as any) as TFieldsProps
         }
     }
 
@@ -387,7 +391,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         {form}
         <RestComponent  {...searchD.enterbutton as object} {...searchD.addpars} visible={searchD.visible} choosing closeAction={closeF} rereadRest={props.rereadRest} />
         <RestComponent  {...multiselectD.multichoice as object} {...multiselectD.addpars} visible={multiselectD.visible} closeAction={closeMultiD}
-            initsel={multiselect.get(multiselectD.field)} multiselect vars={initvals}  rereadRest={props.rereadRest}/>
+            initsel={multiselect.get(multiselectD.field)} multiselect vars={initvals} rereadRest={props.rereadRest} />
     </React.Fragment>
 })
 

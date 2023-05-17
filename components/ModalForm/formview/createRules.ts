@@ -4,12 +4,13 @@ import defaults from "../../../ts/defaults"
 import { makeMessage, callJSFunction } from "../../../ts/j"
 import lstring from "../../../ts/localize"
 import { FIELDTYPE, TRow, RESTMETH, FormMessage, FieldValue, FieldDefaults } from "../../../ts/typing"
-import { decomposeEditId, genEditClickedRowKey, isnotdefined } from "../../ts/helper"
+import { decomposeEditId, genEditClickedRowKey, isnotdefined, istrue } from "../../ts/helper"
 import { fieldType } from "../../ts/transcol"
 import { transformSingleValue } from "../../ts/transformres"
-import { RestValidatorResult } from "../../ts/typing"
+import { RestValidatorResult, TField } from "../../ts/typing"
 import { IFieldContext, FField } from "./types"
 import { findLabel } from "../../../ts/readresource"
+import { getFieldProps } from "./helper"
 
 
 function updateRulesbyLabel(t: FField, rules: Rule[]) {
@@ -18,12 +19,12 @@ function updateRulesbyLabel(t: FField, rules: Rule[]) {
     if (d === undefined) return
     if (d.len !== undefined) {
         // find len
-        if (rules.find(r => (r as RuleObject).len !== undefined) === undefined) 
+        if (rules.find(r => (r as RuleObject).len !== undefined) === undefined)
             rules.push({ len: d.len })
     }
     if (d.max !== undefined) {
         // find max
-        if (rules.find(r => (r as RuleObject).max !== undefined) === undefined) 
+        if (rules.find(r => (r as RuleObject).max !== undefined) === undefined)
             rules.push({ max: d.max })
     }
 }
@@ -37,7 +38,10 @@ export function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, 
 
     if (fieldtype === FIELDTYPE.MONEY) rules.push({ pattern: new RegExp(/^[+-]?\d*\.?\d*$/), message: lstring("moneypattern") })
 
-    if (t.validate)
+    const aprops: TField | undefined = getFieldProps(ir, t)
+    const novalidate: boolean = (aprops !== undefined && istrue(aprops.novalidate))
+
+    if (!novalidate && t.validate)
         t.validate.forEach(e => {
             const message: string | undefined = e.message ? makeMessage(e.message) : undefined
             if (e.required) {

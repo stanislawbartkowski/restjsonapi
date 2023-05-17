@@ -1,5 +1,5 @@
 import { FormListFieldData, UploadFile } from "antd"
-import { FieldValue, VAction } from "../../../ts/typing"
+import { FieldValue, PropsType, VAction } from "../../../ts/typing"
 import { FGetValues, FRereadRest, TAsyncRestCall, TClickButton, TField, TOptionLine } from "../../ts/typing"
 import { TRefreshTable } from "../../DrawTable"
 
@@ -12,7 +12,7 @@ export type TableRefreshData = {
 export type FSearchAction = (s: string, t: FField) => void
 export type FMultiAction = (t: FField) => void
 export type TableRefresh = Map<string, TableRefreshData>;
-export type FSetEditRow = (s : string, rownumber: number) => void
+export type FSetEditRow = (s: string, rownumber: number) => void
 
 export type FField = TField & {
 
@@ -35,16 +35,17 @@ export type TFieldChange = {
 
 export type UploadStore = Map<string, UploadFile[]>
 export type TMultiSelect = Map<string, FieldValue[]>;
-export type SetMultiSelect = (t : TField, sel: FieldValue[]) => void
-export type fSearchOptions = (t : TField, value: string) => void
-export type TOptions = Map<string,TOptionLine[]>
-export type TReadCookie = (t: TField, addf?: string) => string|undefined
-export type TWriteCookie = (t: TField, val: string|undefined, addf?: string) => void
+export type SetMultiSelect = (t: TField, sel: FieldValue[]) => void
+export type fSearchOptions = (t: TField, value: string) => void
+export type TOptions = Map<string, TOptionLine[]>
+export type TReadCookie = (t: TField, addf?: string) => string | undefined
+export type TWriteCookie = (t: TField, val: string | undefined, addf?: string) => void
+export type TFieldsProps = Record<string, TField>
 
 
 export interface IFieldContext {
     getChanges: () => TFieldChange
-    fieldChanged: (f : FField) => void
+    fieldChanged: (f: FField) => void
     getValues: FGetValues
     aRest: TAsyncRestCall
     upGet: () => UploadStore
@@ -55,7 +56,8 @@ export interface IFieldContext {
     fGetOptions: fSearchOptions
     fReadCookie: TReadCookie,
     fWriteCookie: TWriteCookie,
-    rereadRest: FRereadRest
+    rereadRest: FRereadRest,
+    fieldsprops: () => TFieldsProps | undefined
 }
 
 export type ErrorMessage = {

@@ -43,9 +43,9 @@ export type AddStyle = JSSupportedType & {
 // summary feature
 // ============================
 
-export interface TSummaryDescr  {
+export interface TSummaryDescr {
     descr: FormMessage
-    before : string[]
+    before: string[]
 }
 
 export type TSummary = ColumnList | ColumnList[]
@@ -395,6 +395,7 @@ export type TField = PropSupportedType & TFieldBase & {
     enterbutton?: SearchChooseButton
     onchange?: ButtonAction
     validate?: ValidatorType[]
+    novalidate?: boolean,
     divider?: TDivider
     itemlist?: TListItem
     editlist?: TListItem & PagingC

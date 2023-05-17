@@ -20,7 +20,8 @@ interface Defaults {
   sizedate: number,
   sizenumber: number,
   expandSize: number,
-  checkSize: number
+  checkSize: number,
+  fieldsprops: string
 };
 
 const defaults: Defaults = {
@@ -33,7 +34,7 @@ const defaults: Defaults = {
   displayprintrouterid: "/printingdisplayer",
   cookieage: 7,
   currentfield: "currentfield",
-  verstring: "JS: wersja 1.3 (r:01) z dnia 15 maja 2023",
+  verstring: "JS: wersja 1.3 (r:02) z dnia 17 maja 2023",
   directprefix: "~",
   multichoicevar: "multichoice",
   listpos: "listpos",
@@ -45,7 +46,8 @@ const defaults: Defaults = {
   sizedate: 25,
   sizenumber: 35,
   expandSize: 6,
-  checkSize: 5
+  checkSize: 5,
+  fieldsprops: "fieldsprops"
 };
 
 export default defaults;

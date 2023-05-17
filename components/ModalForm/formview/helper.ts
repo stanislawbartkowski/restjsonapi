@@ -1,7 +1,7 @@
 import { isString } from "antd/es/button";
 import { makeMessage } from "../../../ts/j";
-import { TCookie, TCookieO, TRadioCheckItem } from "../../ts/typing";
-import { ErrorMessages, ErrorMessage, FField, IFieldContext } from "./types";
+import { TCookie, TCookieO, TField, TRadioCheckItem } from "../../ts/typing";
+import { ErrorMessages, ErrorMessage, FField, IFieldContext, TFieldsProps } from "./types";
 import { istrue } from "../../ts/helper";
 
 export function itemName(e: TRadioCheckItem): string | undefined {
@@ -27,4 +27,11 @@ export function saveCookieValue(ir: IFieldContext, t: FField, c?: TCookie, val?:
     if (!istrue(cc.cookie)) return undefined
     ir.fWriteCookie(t, val, cc.addf)
 }
+
+export function getFieldProps(ir: IFieldContext, t: TField): TField | undefined {
+    const p: TFieldsProps | undefined = ir.fieldsprops()
+    if (p === undefined) return undefined
+    return p[t.field]
+}
+
 

@@ -19,14 +19,14 @@ import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 
 import { PropsType, FIELDTYPE, FieldValue, FieldDefaults, TRow } from '../../../ts/typing';
-import { getValue, isEditList, isItemGroup } from '../../ts/helper';
+import { getValue, isEditList, isItemGroup, istrue } from '../../ts/helper';
 import { ButtonAction, FGetValues, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
-import { IFieldContext, FField, TFieldChange } from './types';
+import { IFieldContext, FField, TFieldChange, TFieldsProps } from './types';
 import { makeMessage } from '../../../ts/j';
 import { log } from '../../../ts/l';
 import { HTMLElem, fieldType, fieldTitle, makeDivider } from '../../ts/transcol';
 import { transformSingleValue } from '../../ts/transformres';
-import { findErrField, itemName } from './helper';
+import { findErrField, getFieldProps, itemName } from './helper';
 import { createItemList } from './CreateDisplayList';
 import { createList } from './DialogListItem';
 import { produceRestTable } from './DialogRestTable';
@@ -76,17 +76,21 @@ function createRadioItem(e: TRadioCheckItem, button?: boolean): ReactNode {
 
 }
 
-function createProps(t: TField) {
+function createProps(ir: IFieldContext, t: TField) {
     const props = t.iprops ? { ...t.iprops } : {}
     if (t.disabled) {
         props["disabled"] = true
     }
+    const aprops: TField | undefined = getFieldProps(ir, t)
+    if (aprops === undefined) return props
+    if (aprops.disabled === undefined) return props
+    props["disabled"] = aprops.disabled
     return props
 }
 
-function createRadioGroup(t: TField): ReactNode {
+function createRadioGroup(ir: IFieldContext, t: TField): ReactNode {
 
-    return <Radio.Group {...createProps(t)}>
+    return <Radio.Group {...createProps(ir, t)}>
         {
             (t.radio?.items as TRadioCheckItem[]).map(e => createRadioItem(e, t.radio?.button))
         }
@@ -120,12 +124,12 @@ function isNotRequired(t: TField): boolean {
     return v === undefined || v.required === undefined || !v.required
 }
 
-function createSelectGroup(t: TField, items: TRadioCheckItem[], multi: boolean): ReactNode {
+function createSelectGroup(ir: IFieldContext, t: TField, items: TRadioCheckItem[], multi: boolean): ReactNode {
 
     const clear: SelectProps = isNotRequired(t) ? { allowClear: true } : { allowClear: false }
     const p: SelectProps = multi ? { mode: "multiple" } : {}
 
-    return <Select {...p} {...clear} {...createProps(t)} {...placeHolder(t)} >
+    return <Select {...p} {...clear} {...createProps(ir, t)} {...placeHolder(t)} >
         {
             items.map(e => <Select.Option value={e.value} {...e.props}>{itemName(e)}</Select.Option>)
         }
@@ -200,7 +204,7 @@ function searchItem(ir: IFieldContext, t: FField, listfield?: FormListFieldData)
         t.searchF(value, { ...t, listfield: listfield });
     }
 
-    return <Input.Search onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...createProps(t)}  {...enterButton(t)} onSearch={onSearchButton} />
+    return <Input.Search onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...createProps(ir, t)}  {...enterButton(t)} onSearch={onSearchButton} />
 }
 
 // ===========================================
@@ -246,17 +250,17 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
     }
 
     if (t.radio) {
-        if (t.radio.select) return [createSelectGroup(t, t.radio.items as TRadioCheckItem[], false), undefined]
+        if (t.radio.select) return [createSelectGroup(ir, t, t.radio.items as TRadioCheckItem[], false), undefined]
         if (t.radio.segmented) return [createSegmented(ir, t), undefined]
-        return [createRadioGroup(t), undefined]
+        return [createRadioGroup(ir, t), undefined]
     }
 
     if (t.checkbox)
-        if (t.checkbox.select) return [createSelectGroup(t, t.checkbox.items as TRadioCheckItem[], true), undefined]
+        if (t.checkbox.select) return [createSelectGroup(ir, t, t.checkbox.items as TRadioCheckItem[], true), undefined]
         else return [createCheckBoxGroup(t), undefined]
 
     const fieldtype: FIELDTYPE = fieldType(t)
-    const iprops = createProps(t)
+    const iprops = createProps(ir, t)
 
     // except boolean/switch - change reported when blurred
     if (fieldtype !== FIELDTYPE.BOOLEAN && fieldtype !== FIELDTYPE.DATE) ir.getChanges().notescalatewhenchange.add(t.field)
