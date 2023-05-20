@@ -52,7 +52,7 @@ const defaults: Defaults = {
   checkSize: 5,
   fieldsprops: "fieldsprops",
   downloadfileaction: "downloadfile",
-  downloadfile: "download",
+  downloadfile: "Tabela",
   excelext: ".xlsx"
 };
 

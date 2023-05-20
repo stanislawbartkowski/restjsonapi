@@ -31,6 +31,10 @@ export function makeHeader(p: ColumnList, unheader: string | undefined, pars: On
     return HTMLElem(title)
 }
 
+export function removeHTMLtags(s: string) : string {
+    return s.replace(/(<([^>]+)>)/ig, '');
+}
+
 // =====================
 // misc functions
 // =====================

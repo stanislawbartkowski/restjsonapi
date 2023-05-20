@@ -8,6 +8,7 @@ import defaults from "../../../ts/defaults";
 import { ColumnList } from "../../ts/typing";
 import { ColumnsT } from "../typing";
 import { generateExcelData } from "./helper";
+import { removeHTMLtags } from "../../ts/helper";
 
 interface DownloadButtonPars {
     cols: ColumnList,
@@ -19,7 +20,9 @@ interface DownloadButtonPars {
 
 
 const genDownloadFile = (header?: string): string => {
-    return (header ?? defaults.downloadfile) + defaults.excelext
+    //const h : string|undefined = header !== undefined ? removeHTMLtags(header) : undefined
+    //return (h ?? defaults.downloadfile) + defaults.excelext
+    return defaults.downloadfile + defaults.excelext
 }
 
 const DownloadButton: React.FC<DownloadButtonPars> = (props) => {
