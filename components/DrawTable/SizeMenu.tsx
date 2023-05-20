@@ -33,7 +33,7 @@ const SizeMenu: React.FC<SizeMenuProps> = (props) => {
 
     const icon = getIcon('fontsizeoutlined')
     return <Dropdown menu={{ items }} placement="bottomRight">
-        <Tooltip title={lstring("sizetabletitle")}><Button icon={icon} size="small" type="text" ></Button></Tooltip>
+        <Tooltip placement="top" title={lstring("sizetabletitle")}><Button icon={icon} size="small" type="text" ></Button></Tooltip>
     </Dropdown>
 }
 

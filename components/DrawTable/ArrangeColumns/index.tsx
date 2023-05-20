@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "antd";
+import { Button, Tooltip } from "antd";
 
 import DraggableModal from "../../DraggableModal";
 import getIcon from "../../../ts/icons";
@@ -20,7 +20,7 @@ const SearchButton: React.FC<SortProps> = (props) => {
 
 
     return <React.Fragment>
-        <Button icon={icon} size="small" onClick={() => setIsModalVisible(true)} />
+        <Tooltip placement="bottom" title={lstring("reaarangecolumnstitle")}><Button icon={icon} size="small" onClick={() => setIsModalVisible(true)} type="text" /></Tooltip>
         <DraggableModal open={isModalVisible} onClose={onCancel} buttons={null} title={lstring('changecolumnstitle')}>
             <SortColumns {...props} />
         </DraggableModal>

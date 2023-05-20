@@ -1,10 +1,11 @@
-import request, { extend, ResponseError } from "umi-request";
+import request, { extend, RequestOptionsInit, ResponseError, ResponseType } from "umi-request";
 
 import type { FHeaderModifier, FieldValue, FUrlModifier } from "../ts/typing";
 import { log, internalerrorlog, logG } from '../ts/l'
 import { HTTPMETHOD } from "../ts/typing";
 import { getSessionId } from "../ts/j";
 import { getUserFullName, getUserName } from "../ts/keyclock";
+import { arrayBuffer } from "node:stream/consumers";
 
 
 const rrequest = request;
@@ -48,9 +49,9 @@ export function setHost(prefix: string) {
 }
 
 let urlModifier: FUrlModifier | undefined = undefined;
-let headerModifier: FHeaderModifier| undefined = undefined;
+let headerModifier: FHeaderModifier | undefined = undefined;
 
-export function setHeaderModifier(u : FHeaderModifier) {
+export function setHeaderModifier(u: FHeaderModifier) {
   headerModifier = u;
 }
 
@@ -62,16 +63,16 @@ export function getUrlModifier(): FUrlModifier | undefined {
   return urlModifier
 }
 
-function userHeader() : Record<string,string> {
-  const sessionH : Record<string,string> = {'sessionid': getSessionId()}
-  const userH : Record<string,string> = (getUserName() === undefined) ? {} : {'user' : (encodeURIComponent(getUserName() as string))}
-  const usernameH : Record<string,string> = (getUserFullName() === undefined) ? {} : {'username' : (encodeURIComponent(getUserFullName() as string))}
-  const modifH: Record<string,string> = (headerModifier === undefined) ? {} : headerModifier()
-  return  {
-      ...sessionH,
-      ...userH,
-      ...modifH,
-      ...usernameH
+function userHeader(): Record<string, string> {
+  const sessionH: Record<string, string> = { 'sessionid': getSessionId() }
+  const userH: Record<string, string> = (getUserName() === undefined) ? {} : { 'user': (encodeURIComponent(getUserName() as string)) }
+  const usernameH: Record<string, string> = (getUserFullName() === undefined) ? {} : { 'username': (encodeURIComponent(getUserFullName() as string)) }
+  const modifH: Record<string, string> = (headerModifier === undefined) ? {} : headerModifier()
+  return {
+    ...sessionH,
+    ...userH,
+    ...modifH,
+    ...usernameH
   }
 }
 
@@ -80,7 +81,7 @@ export async function restapilist(list: string, pars?: Record<string, FieldValue
   const para: any = urlModifier === undefined ? {} : urlModifier(list);
   return rrequest<Record<string, any>>(url, {
     method: "GET",
-    params: { ...para, ...pars  },
+    params: { ...para, ...pars },
     headers: userHeader()
   });
 }
@@ -93,7 +94,7 @@ export async function restapilistdef(resource: string) {
   // listdef
   return rrequest<Record<string, any>>(`${prefix}compdef`, {
     method: "GET",
-    params: { resource: resource } ,
+    params: { resource: resource },
     headers: userHeader()
   });
 }
@@ -109,20 +110,20 @@ export async function restapiresource(resource: string) {
 export async function restapijs(resource: string) {
   return rrequest<string>(`${prefix}getjs`, {
     method: "GET",
-    params: { resource: resource } ,
+    params: { resource: resource },
     headers: userHeader()
   });
 }
 
-export async function restaction(method: HTTPMETHOD, restaction: string, pars?: Record<string, FieldValue>, data?: any) {
+export async function restaction(method: HTTPMETHOD, restaction: string, pars?: Record<string, FieldValue>, data?: any, responseType?: RequestOptionsInit["responseType"]) {
   const para: any = urlModifier === undefined ? {} : urlModifier(restaction);
   return rrequest<Record<string, any>>(`${prefix}${restaction}`, {
 
     method: method,
     data: data,
-    getResponse: true, 
+    getResponse: true,
     params: { ...para, ...pars },
+    responseType: responseType,
     headers: userHeader()
   });
 }
-

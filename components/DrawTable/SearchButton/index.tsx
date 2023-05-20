@@ -88,7 +88,7 @@ const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter, sea
   const searchicon = getIcon('searchoutlined')
 
   return <React.Fragment>
-    <Tooltip title={lstring("searchextended")}><Button icon={searchicon} size="small" {...primary} onClick={() => setIsModalVisible(true)} /> </Tooltip>
+    <Tooltip placement="bottom" title={lstring("searchextended")}><Button icon={searchicon} size="small" {...primary} onClick={() => setIsModalVisible(true)} /> </Tooltip>
     {closeButton}
     <DraggableModal open={isModalVisible} onClose={onCancel} onOk={setFilter} buttons={null} title={lstring('searchfiltertitle')}>
       <SearchExtended ref={ref} {...props} onValuesChanges={onValuesChanges} buttons={buttons} />

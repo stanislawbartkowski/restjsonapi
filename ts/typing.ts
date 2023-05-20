@@ -191,6 +191,7 @@ export interface ListToolbar {
   tablesize?: boolean
   resize?: TResize
   arrangecol?: boolean
+  excelfile?: boolean
   notool?: boolean
 }
 

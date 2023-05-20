@@ -49,7 +49,11 @@ const embedded = {
     smalllabel: "Małe",
     sizetabletitle: "Pozwala zmienić rozmiar wyświetlanej tabeli",
     changecolumnstitle: "Zmiana układu kolumn w tabeli",
-    doprint: "Drukuj"
+    doprint: "Drukuj",
+    buttondownloadtitle: "Pobiera tabelkę w postaci xls",
+    reaarangecolumnstitle: "Pozwala zmienić sposób wyświetlania",
+    downloadexcelquestion: "Odczytać tabelkę w postaci pliku Excel?",
+    listasexcelfile: "Tabela jako plik Excel"
   },
   en: {
     empty: '',
@@ -96,7 +100,11 @@ const embedded = {
     smalllabel: "Small",
     sizetabletitle: "Specifies the size of the table",
     changecolumnstitle: "Rearrange columns in the table",
-    doprint: "Print"
+    doprint: "Print",
+    buttondownloadtitle: "Downlaod table as xls file",
+    reaarangecolumnstitle: "Reaarrange columns",
+    downloadexcelquestion: "Downlaod as Excel file?",
+    listasexcelfile: "Table in Excel format"
   }
 };
 

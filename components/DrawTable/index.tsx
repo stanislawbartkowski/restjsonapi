@@ -38,6 +38,7 @@ import ArrangColumns from './ArrangeColumns'
 import { fieldTitle } from "../ts/transcol";
 import ResizableTitle from './ResizeTitle'
 import { getCookieTableColumns, saveCookieTableColumns } from "./js/cookietablecolumns";
+import DownloadButton from "./DownloadButton";
 
 export type TRefreshTable = {
     searchF: TRow
@@ -84,6 +85,13 @@ const isRearrangeCols = (p: ColumnList): boolean => {
     if (istrue(p.toolbar?.arrangecol)) return true;
     if (isfalse(p.toolbar?.arrangecol)) return false;
     return istrue(a.toolbar?.arrangecol)
+}
+
+const isExcelButton = (p: ColumnList): boolean => {
+    const a: AppData = getAppData()
+    if (istrue(p.toolbar?.excelfile)) return true;
+    if (isfalse(p.toolbar?.excelfile)) return false;
+    return istrue(a.toolbar?.excelfile)
 }
 
 function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, arrange_cols?: ColumnsT, vars?: TRow): ColumnsT {
@@ -138,7 +146,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
 
     const fmodalhook = (): void => {
-        setIsModalVisible({ visible: false, rereadRest: () => {} });
+        setIsModalVisible({ visible: false, rereadRest: () => { } });
     };
 
     const retAction: FRetAction = (b: TAction, row: TRow) => {
@@ -339,6 +347,8 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         undefined
     const resizeTable: ReactNode = isTableSize(props) ? <SizeMenu onSize={changeMenuSize} /> : undefined
 
+    const downloadbutton: ReactNode = isExcelButton(props) ? <DownloadButton cols={props} r_cols={arrange_columns} rows={dsource} vars={props.vars} header={makeHeaderString(props, undefined, toPars())} /> : undefined
+
     const colo: ColumnsT = transformSortColumns(columns, props, arrange_columns, props.vars)
 
     const colsHook: ColumnsHook = (cols: ColumnsT) => {
@@ -348,9 +358,9 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const arrangeColumns: ReactNode = isRearrangeCols(props) ? <ArrangColumns cols={colo} colshook={colsHook} /> : undefined
 
-    const extendedTools: React.ReactNode = istrue(props.toolbar?.notool) || istrue(props.expanded) || (extendedSearch === undefined && resizeTable === undefined && arrangeColumns === undefined) ? undefined :
+    const extendedTools: React.ReactNode = istrue(props.toolbar?.notool) || istrue(props.expanded) || (extendedSearch === undefined && resizeTable === undefined && arrangeColumns === undefined && downloadbutton === undefined) ? undefined :
         <Space style={{ float: "right" }} split={<Divider type="vertical" />} align="center">
-            {arrangeColumns}{resizeTable}{extendedSearch}
+            {downloadbutton}{arrangeColumns}{resizeTable}{extendedSearch}
         </Space>
 
 
@@ -362,7 +372,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     return (
         <React.Fragment>
             {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction}
-                selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }}  rereadRest={props.rereadRest as FRereadRest}/> : undefined}
+                selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }} rereadRest={props.rereadRest as FRereadRest} /> : undefined}
             {extendedTools}
             <Table
                 {...rowSelection({ ...props })}

@@ -21,7 +21,10 @@ interface Defaults {
   sizenumber: number,
   expandSize: number,
   checkSize: number,
-  fieldsprops: string
+  fieldsprops: string,
+  downloadfileaction: string,
+  downloadfile: string,
+  excelext: string
 };
 
 const defaults: Defaults = {
@@ -34,7 +37,7 @@ const defaults: Defaults = {
   displayprintrouterid: "/printingdisplayer",
   cookieage: 7,
   currentfield: "currentfield",
-  verstring: "JS: wersja 1.3 (r:02) z dnia 17 maja 2023",
+  verstring: "JS: wersja 1.3 (r:03) z dnia 20 maja 2023",
   directprefix: "~",
   multichoicevar: "multichoice",
   listpos: "listpos",
@@ -47,7 +50,10 @@ const defaults: Defaults = {
   sizenumber: 35,
   expandSize: 6,
   checkSize: 5,
-  fieldsprops: "fieldsprops"
+  fieldsprops: "fieldsprops",
+  downloadfileaction: "downloadfile",
+  downloadfile: "download",
+  excelext: ".xlsx"
 };
 
 export default defaults;
