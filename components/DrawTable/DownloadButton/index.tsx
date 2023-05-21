@@ -9,6 +9,7 @@ import { ColumnList } from "../../ts/typing";
 import { ColumnsT } from "../typing";
 import { generateExcelData } from "./helper";
 import { removeHTMLtags } from "../../ts/helper";
+import { useState } from "react";
 
 interface DownloadButtonPars {
     cols: ColumnList,
@@ -27,12 +28,19 @@ const genDownloadFile = (header?: string): string => {
 
 const DownloadButton: React.FC<DownloadButtonPars> = (props) => {
 
-    const icon = getIcon('fileexceloutlined')
+    const [loading, setLoading] = useState<boolean>(false);
 
+    const icon = getIcon('fileexceloutlined')
+    
     const click = () => {
         const jsdata = generateExcelData(props.cols, props.rows, props.r_cols, props.vars)
+        setLoading(true)
         restaction(HTTPMETHOD.POST, defaults.downloadfileaction, undefined, jsdata, "arrayBuffer").then(({ data, response }) => {
             fileDownload(data as ArrayBuffer, genDownloadFile(props.header));
+            setLoading(false)
+        }
+        ).finally( () => {
+            setLoading(false)
         }
         )
     }
@@ -40,7 +48,7 @@ const DownloadButton: React.FC<DownloadButtonPars> = (props) => {
 
     return <Tooltip placement="bottom" title={lstring("buttondownloadtitle")}>
         <Popconfirm description={lstring("downloadexcelquestion")} title={lstring("listasexcelfile")} onConfirm={click}>
-            <Button icon={icon} size="small" type="text" />
+            <Button icon={icon} size="small" type="text" loading={loading}/>
         </Popconfirm>
     </Tooltip>
 }
