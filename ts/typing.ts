@@ -112,7 +112,7 @@ export type ModalFormProps = ClickActionProps & {
   vars?: TRow
 }
 
-export const emptyModalListProps: ModalFormProps = { visible: false, rereadRest: () => {} }
+export const emptyModalListProps: ModalFormProps = { visible: false, rereadRest: () => { } }
 
 
 // ==================================
@@ -186,12 +186,11 @@ export type FormMessage = JSSupportedType & {
 // defaults
 // ==========================
 
+export type ToolbarFeature = "extendedsearch" | "tablesize" | "arrangecol" | "excelfile"
+
 export interface ListToolbar {
-  extendedsearch?: boolean
-  tablesize?: boolean
   resize?: TResize
-  arrangecol?: boolean
-  excelfile?: boolean
+  features?: Record<ToolbarFeature, boolean>
   notool?: boolean
 }
 

@@ -7,7 +7,7 @@ import type { ExpandableConfig, TableRowSelection } from "antd/lib/table/interfa
 import { SizeType } from "antd/es/config-provider/SizeContext";
 
 import lstring from "../../ts/localize";
-import { AppData, ClickActionProps, emptyModalListProps, FieldValue, FSetTitle, ModalFormProps, OneRowData, RestTableParam, RowData, TRow } from "../../ts/typing";
+import { AppData, ClickActionProps, emptyModalListProps, FieldValue, FSetTitle, ListToolbar, ModalFormProps, OneRowData, RestTableParam, RowData, ToolbarFeature, TRow } from "../../ts/typing";
 import type { ColumnsHook, ColumnsT, ColumnT, FSetSize, TExtendable, } from "./typing";
 import { ButtonAction, ClickAction, ColumnList, FActionResult, FRereadRest, FRetAction, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TResizeColumn } from "../ts/typing";
 
@@ -66,32 +66,40 @@ const empty: IRefCall = {
     refreshsearch: -1
 }
 
-const isExtendedSearch = (p: ColumnList): boolean => {
+const trueFeature = (t: ListToolbar|undefined, feature: ToolbarFeature) : boolean => {
+    if (t === undefined || t.features === undefined) return false
+    return istrue(t.features[feature])
+}
+
+const falseFeature = (t: ListToolbar|undefined, feature: ToolbarFeature) : boolean => {
+    if (t === undefined || t.features === undefined) return false
+    return isfalse(t.features[feature])
+}
+
+
+const isToolBarFeature = (p: ColumnList, feature: ToolbarFeature): boolean => {
     const a: AppData = getAppData()
-    if (istrue(p.toolbar?.extendedsearch)) return true;
-    if (isfalse(p.toolbar?.extendedsearch)) return false
-    return istrue(a.toolbar?.extendedsearch)
+
+    if (trueFeature(p.toolbar,feature)) return true
+    if (falseFeature(p.toolbar,feature)) return false
+    return trueFeature(a.toolbar, feature)
+}
+
+
+const isExtendedSearch = (p: ColumnList): boolean => {
+    return isToolBarFeature(p,"extendedsearch")
 }
 
 const isTableSize = (p: ColumnList): boolean => {
-    const a: AppData = getAppData()
-    if (istrue(p.toolbar?.tablesize)) return true;
-    if (isfalse(p.toolbar?.tablesize)) return false;
-    return istrue(a.toolbar?.tablesize)
+    return isToolBarFeature(p,"tablesize")
 }
 
 const isRearrangeCols = (p: ColumnList): boolean => {
-    const a: AppData = getAppData()
-    if (istrue(p.toolbar?.arrangecol)) return true;
-    if (isfalse(p.toolbar?.arrangecol)) return false;
-    return istrue(a.toolbar?.arrangecol)
+    return isToolBarFeature(p,"arrangecol")
 }
 
 const isExcelButton = (p: ColumnList): boolean => {
-    const a: AppData = getAppData()
-    if (istrue(p.toolbar?.excelfile)) return true;
-    if (isfalse(p.toolbar?.excelfile)) return false;
-    return istrue(a.toolbar?.excelfile)
+    return isToolBarFeature(p,"excelfile")
 }
 
 function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, arrange_cols?: ColumnsT, vars?: TRow): ColumnsT {
