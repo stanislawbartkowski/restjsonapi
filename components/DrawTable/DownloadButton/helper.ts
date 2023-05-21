@@ -5,6 +5,7 @@ import { fieldType } from "../../ts/transcol"
 import { ColumnList, TColumn, TColumns } from "../../ts/typing"
 import { visibleColumnsR } from "../js/helper"
 import { ColumnsT } from "../typing"
+import { isColumnAction } from "../../ts/helper"
 
 type ExcelType = "log" | "string" | "int" | "money" | "date"
 
@@ -41,7 +42,7 @@ function toTitle(c: TColumn, vars?: TRow): string | undefined {
 
 function createSchema(cols: ColumnList, r_cols?: ColumnsT, vars?: TRow): SchemaExcel[] {
     const vcols: TColumns = visibleColumnsR(cols, r_cols)
-    return vcols.filter(c => c.actions === undefined && c.tags === undefined).map(c => {
+    return vcols.filter(c => !isColumnAction(c) && c.tags === undefined).map(c => {
         return {
             field: c.field,
             type: toType(c),

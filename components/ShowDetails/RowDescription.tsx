@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { Descriptions, DescriptionsProps } from 'antd';
 
 import { OneRowData, TRow } from '../../ts/typing';
-import { detailsTitle } from '../ts/helper';
+import { detailsTitle, isColumnAction } from '../ts/helper';
 import { TableHookParam, TColumn, TDetailsCard } from '../ts/typing';
 import { fieldTitle, renderCell } from '../ts/transcol';
 
@@ -21,8 +21,9 @@ const DescriptionsDetails: React.FC<TDetailsCard> = (props) => {
   // to remove action column
   function isAction(field: string): boolean {
     const c: TColumn | undefined = (props.columns as TColumn[]).find(e => e.field === field)
-    if (c === undefined || c.actions === undefined) return false
-    return !c.actions.showindetails
+    if (c === undefined) return false
+    //return !c.actions.showindetails
+    return isColumnAction(c)
   }
 
   const dprops: DescriptionsProps = deprops ? deprops : { column: 1, bordered: true }

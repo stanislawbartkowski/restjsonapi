@@ -65,6 +65,10 @@ export function getRowKey(c: ColumnList): string {
     return rowkey
 }
 
+export function isColumnAction(c: TColumn) : boolean {
+    if (c === undefined || c.actions === undefined) return false
+    return !c.actions.showindetails
+}
 
 
 // =================
