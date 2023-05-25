@@ -37,9 +37,7 @@ const SearchExtended = forwardRef<IIRefCall, SearchDialog>((props, iref) => {
     }
     ));
 
-    // 2023/05/21 - requires investigation
     const getValues: FGetValues = () => {
-        //return refm.current.getValues()
         return {}
     }
 

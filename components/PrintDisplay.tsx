@@ -16,14 +16,17 @@ const PrintDisplay: React.FC = (props) => {
     const id: string = getPrevious()
     const back: ReactNode = getIcon('stepbackwardoutlined')
     const full: ReactNode = getIcon('fullscreenoutlined')
+    const excel: ReactNode = getIcon('fileexceloutlined')
     const name: string = getMenuNameByLocation(id);
 
 
     const body = (p.result.text) ? <pre>{content}</pre> : <div dangerouslySetInnerHTML={{ __html: content }} />
 
     const link: ReactNode | undefined = p.result.printlink ? <Button type="link" icon={full}><a href={enhanceLink(p.result.printlink)} title={name} target="_blank">{lstring("fullprint")}</a></Button> : undefined
+    const excellink: ReactNode | undefined = p.result.excellink ? <Button type="link" icon={excel}><a href={enhanceLink(p.result.excellink)} target="_blank">{lstring("downloadexcelbutton")}</a></Button> : undefined
 
-    const extra = <React.Fragment> {link}  <Button type="primary" icon={back} onClick={() => history.back()} />  </React.Fragment>
+
+    const extra = <React.Fragment>{excellink} {link}  <Button type="primary" icon={back} onClick={() => history.back()} />  </React.Fragment>
 
     return <Card title={name} extra={extra}  >
         {body}

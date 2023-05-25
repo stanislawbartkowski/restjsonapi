@@ -1,5 +1,4 @@
 import LocalizedStrings, { LocalizedStringsMethods } from 'react-localization';
-import { takeCoverage } from 'v8';
 import { isOArray } from './j';
 
 
@@ -53,7 +52,8 @@ const embedded = {
     buttondownloadtitle: "Pobiera tabelkę w postaci xls",
     reaarangecolumnstitle: "Pozwala zmienić sposób wyświetlania",
     downloadexcelquestion: "Odczytać tabelkę w postaci pliku Excel?",
-    listasexcelfile: "Tabela jako plik Excel"
+    listasexcelfile: "Tabela jako plik Excel",
+    downloadexcelbutton: "W formacie Excel"
   },
   en: {
     empty: '',
@@ -104,7 +104,8 @@ const embedded = {
     buttondownloadtitle: "Downlaod table as xls file",
     reaarangecolumnstitle: "Reaarrange columns",
     downloadexcelquestion: "Downlaod as Excel file?",
-    listasexcelfile: "Table in Excel format"
+    listasexcelfile: "Table in Excel format",
+    downloadexcelbutton: "Excel download"
   }
 };
 

@@ -33,7 +33,7 @@ export function createList(ir: IFieldContext, t: FField, err: ErrorMessages): Re
                         </Space>
                     ))}
                     <Form.Item>
-                        <Button type="dashed" onClick={() => add()} block {...addButton.props} icon={plusicon}>
+                        <Button type="dashed" onClick={() => add({})} block {...addButton.props} icon={plusicon}>
                             {addname}
                         </Button>
                     </Form.Item>

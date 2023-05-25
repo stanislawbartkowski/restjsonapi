@@ -130,6 +130,7 @@ export type ActionResult = {
     steperror?: boolean
     refresh?: boolean
     printlink?: string
+    excellink?: string
 }
 
 
