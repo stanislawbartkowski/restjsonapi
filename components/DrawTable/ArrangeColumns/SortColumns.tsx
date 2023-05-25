@@ -74,7 +74,7 @@ const Row = ({ children, ...props }: RowProps) => {
         if ((child as React.ReactElement).key === 'sort') {
           return React.cloneElement(child as React.ReactElement, {
             children: (
-              <MenuOutlined
+              <MenuOutlined rev
                 ref={setActivatorNodeRef}
                 style={{ touchAction: 'none', cursor: 'move' }}
                 {...listeners}

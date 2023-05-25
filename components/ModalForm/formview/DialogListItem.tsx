@@ -29,7 +29,7 @@ export function createList(ir: IFieldContext, t: FField, err: ErrorMessages): Re
                     {fields.map((field: FormListFieldData, index) => (
                         <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
                             {produceFormItem(ir, t, err, field)}
-                            <MinusCircleOutlined onClick={() => remove(field.name)} />
+                            <MinusCircleOutlined rev onClick={() => remove(field.name)} />
                         </Space>
                     ))}
                     <Form.Item>

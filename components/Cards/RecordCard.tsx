@@ -58,7 +58,7 @@ export const AddCard: React.FC<ColumnList & { b: ButtonAction, cardClick: FActio
     const propsC = cardProps(props.card)
     const name: string = b.name !== undefined ? getButtonName(b) : lstring('addaction')
 
-    const iadd = <PlusCircleOutlined style={{ fontSize: '300%' }} />
+    const iadd = <PlusCircleOutlined rev style={{ fontSize: '300%' }} />
 
     return <Card onClick={() => props.cardClick({}, b)}
         title={name}

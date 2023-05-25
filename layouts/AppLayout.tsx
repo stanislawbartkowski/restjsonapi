@@ -44,6 +44,7 @@ const AppLayout: React.FC = () => {
           {React.createElement(
             collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
             {
+              rev:1,
               className: "trigger",
               onClick: () => setCollapsed(!collapsed),
             }

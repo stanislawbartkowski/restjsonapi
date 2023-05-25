@@ -283,8 +283,8 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
             if (t.range) return [<RangePicker onBlur={onBlur} {...iprops} />, undefined]
             return [<DatePicker {...placeHolder(t)} {...iprops} {...disabledp} />, { ...valuep }]
         case FIELDTYPE.BOOLEAN: return [<Switch {...iprops}
-            checkedChildren={<CheckOutlined />}
-            unCheckedChildren={<CloseOutlined />}
+            checkedChildren={<CheckOutlined rev />}
+            unCheckedChildren={<CloseOutlined rev />}
             {...disabledp}
         />, { valuePropName: "checked", ...valuep }
         ]
