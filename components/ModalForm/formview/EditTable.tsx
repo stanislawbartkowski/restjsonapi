@@ -5,14 +5,15 @@ import React, { ReactElement, ReactNode } from 'react';
 import { ButtonElem, TRow, RowData } from '../../../ts/typing';
 import SummaryTable from '../../SummaryTable';
 import { constructButtonElem } from '../../ts/constructbutton';
-import { genColIdedit, getEditList, cardProps, visibleColumns } from '../../ts/helper';
+import { genColIdedit, getEditList, cardProps, visibleColumns, istrue } from '../../ts/helper';
 import { addRowKey } from '../../ts/tranformlist';
 import { constructactionsCol, fieldTitle, transformOneColumn } from '../../ts/transcol';
 import { TableHookParam, TAction, TActions, TField, ButtonAction, TColumns, TClickButton, TColumn, ColumnList } from '../../ts/typing';
 import { produceFormItem } from './EditItems';
-import { ErrorMessages, FField, IFieldContext, ROWKEY, TOptions } from './types';
+import { ErrorMessages, FField, IFieldContext, ROWKEY, TFieldsProps, TOptions } from './types';
 import propsPaging from "../../ts/tablepaging"
 import { trace } from '../../../ts/l';
+import { getFieldProps } from './helper';
 
 function ltrace(mess: string) {
     trace('EditTable', mess)
@@ -44,20 +45,31 @@ function constructRenderAction(it: IFieldContext, c: FField, err: ErrorMessages,
     }
 }
 
+function findACol(t: TField, fieldprops: TField[]): TField | undefined {
+    if (fieldprops === undefined) return undefined
+    return fieldprops.find(tt => t.field === tt.field)
+}
 
-function constructRenderCell(it: IFieldContext, c: FField, err: ErrorMessages, editid: string, options: TOptions, vars?: TRow) {
+function constructRenderCell(it: IFieldContext, c: FField, err: ErrorMessages, editid: string, options: TOptions, vars: TRow | undefined, fieldprops: TField[]) {
+    const f: TField | undefined = findACol(c, fieldprops)
+    const disabled = f !== undefined && istrue(f.disabled) ? { disabled: true } : undefined
     return (dom: any, entity: TRow): ReactElement => {
-        return <React.Fragment><span className='listedit'>{produceFormItem(it, { ...c, coltitle: "empty", field: genColIdedit(editid, c.field, entity[ROWKEY] as number), options: options }, err, undefined)}</span></React.Fragment>
+        return <React.Fragment><span className='listedit'>{produceFormItem(it, { ...c, coltitle: "empty", ...disabled, field: genColIdedit(editid, c.field, entity[ROWKEY] as number), options: options }, err, undefined)}</span></React.Fragment>
     }
 };
 
-function constructTColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, options: TOptions, vars: TRow): ColumnType<any> {
-    const mess: string = fieldTitle(t, { r: {} });
+function createTitle(t: TField, fieldprops: TField[]): string {
+    const f: TField | undefined = findACol(t, fieldprops)
+    return f === undefined || f.coltitle === undefined ? fieldTitle(t, { r: {} }) : fieldTitle(f, { r: {} })
+}
+
+function constructTColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, options: TOptions, vars: TRow, fieldprops: TField[]): ColumnType<any> {
+    const mess: string = createTitle(t, fieldprops)
     return {
         title: <React.Fragment>{mess}</React.Fragment>,
         dataIndex: t.field,
         ...t.props,
-        render: t.actions ? constructRenderAction(it, t, err, editid) : constructRenderCell(it, t, err, editid, options)
+        render: t.actions ? constructRenderAction(it, t, err, editid) : constructRenderCell(it, t, err, editid, options, undefined, fieldprops)
     }
 }
 
@@ -75,8 +87,8 @@ function contructCColumn(it: IFieldContext, t: FField, editid: string, err: Erro
 }
 
 
-function contructColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, options: TOptions, vars: TRow): ColumnType<any> {
-    return t.col ? contructCColumn(it, t, editid, err, vars) : constructTColumn(it, t, editid, err, options, vars)
+function contructColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, options: TOptions, vars: TRow, fieldprops: TField[]): ColumnType<any> {
+    return t.col ? contructCColumn(it, t, editid, err, vars) : constructTColumn(it, t, editid, err, options, vars, fieldprops)
 }
 
 
@@ -125,7 +137,9 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
 
     const vars: TRow = ir.getValues()
 
-    const columns: ColumnType<any>[] = items.map(c => contructColumn(irC, { ...fpart, ...c }, editid, err, t.options as TOptions, vars))
+    const aprops: TField[] | undefined = getFieldProps(ir, t) as TField[]
+
+    const columns: ColumnType<any>[] = items.map(c => contructColumn(irC, { ...fpart, ...c }, editid, err, t.options as TOptions, vars, aprops))
 
     const cols: TColumns = fieldsToColumns(items)
 

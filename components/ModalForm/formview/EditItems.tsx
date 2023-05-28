@@ -33,7 +33,7 @@ import { produceRestTable } from './DialogRestTable';
 import { produceEditTable } from './EditTable';
 import { produceStatIem } from './StatItem';
 import { produceUploadItem } from './UploadItem';
-import { produceMultiChoiceButton } from './MultiChoiceButton';
+import produceMultiChoiceButton from './MultiChoiceButton';
 import { createRules } from './createRules';
 import { findLabel } from '../../../ts/readresource';
 import constructButton from '../../ts/constructbutton';
@@ -81,7 +81,7 @@ function createProps(ir: IFieldContext, t: TField) {
     if (t.disabled) {
         props["disabled"] = true
     }
-    const aprops: TField | undefined = getFieldProps(ir, t)
+    const aprops: TField | undefined = getFieldProps(ir, t) as TField
     if (aprops === undefined) return props
     if (aprops.disabled === undefined) return props
     props["disabled"] = aprops.disabled
@@ -335,6 +335,8 @@ function produceButton(ir: IFieldContext, t: FField, err: ErrorMessages, field?:
 
 export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages, listfield?: FormListFieldData): React.ReactNode {
 
+    if (t.fieldtype === FIELDTYPE.NOFIELD) return undefined
+
     const [rules, required] = createRules(ir, t)
     const props: PropsType = { ...t.props }
     if (props.rules && rules) {
@@ -363,7 +365,7 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
 
 export function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, name?: FormListFieldData, eFactory?: elemFactory): ReactNode {
 
-    if (t.multichoice) return produceMultiChoiceButton(ir, t)
+    if (t.multichoice) return produceMultiChoiceButton(ir, t, err)
     if (t.itemlist) return createItemList(ir, t, err);
     if (t.list) return createList(ir, t, err)
     if (t.stat) return produceStatIem(ir, t)
@@ -376,5 +378,6 @@ export function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, na
     return <React.Fragment>
         {t.divider ? makeDivider(t.divider, { r: {} }) : undefined}
         {produceFormItem(ir, t, err, name)}
+        {t.bottomdivider ? makeDivider(t.bottomdivider, { r: {} }) : undefined}
     </React.Fragment>
 }

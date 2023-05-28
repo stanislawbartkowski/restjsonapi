@@ -40,7 +40,7 @@ export type fSearchOptions = (t: TField, value: string) => void
 export type TOptions = Map<string, TOptionLine[]>
 export type TReadCookie = (t: TField, addf?: string) => string | undefined
 export type TWriteCookie = (t: TField, val: string | undefined, addf?: string) => void
-export type TFieldsProps = Record<string, TField>
+export type TFieldsProps = Record<string, TField | TField[]>
 
 
 export interface IFieldContext {

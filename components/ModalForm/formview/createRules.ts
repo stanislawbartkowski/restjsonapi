@@ -38,7 +38,7 @@ export function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, 
 
     if (fieldtype === FIELDTYPE.MONEY) rules.push({ pattern: new RegExp(/^[+-]?\d*\.?\d*$/), message: lstring("moneypattern") })
 
-    const aprops: TField | undefined = getFieldProps(ir, t)
+    const aprops: TField | undefined = getFieldProps(ir, t) as TField
     const novalidate: boolean = (aprops !== undefined && istrue(aprops.novalidate))
 
     if (!novalidate && t.validate)

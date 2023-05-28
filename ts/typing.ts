@@ -169,7 +169,8 @@ export enum FIELDTYPE {
   ANY = "any",
   MONEY = "money",
   TIME = "time",
-  HTML = "html"
+  HTML = "html",
+  NOFIELD = "nofield"
 }
 
 // ==============================

@@ -28,10 +28,10 @@ export function saveCookieValue(ir: IFieldContext, t: FField, c?: TCookie, val?:
     ir.fWriteCookie(t, val, cc.addf)
 }
 
-export function getFieldProps(ir: IFieldContext, t: TField): TField | undefined {
+export function getFieldProps(ir: IFieldContext, t: TField): TField | TField[] | undefined {
     const p: TFieldsProps | undefined = ir.fieldsprops()
     if (p === undefined) return undefined
-    return p[t.field]
+    return p[t.field] as TField
 }
 
 

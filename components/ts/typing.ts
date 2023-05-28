@@ -398,6 +398,7 @@ export type TField = PropSupportedType & TFieldBase & {
     validate?: ValidatorType[]
     novalidate?: boolean,
     divider?: TDivider
+    bottomdivider?: TDivider
     itemlist?: TListItem
     editlist?: TListItem & PagingC
     value?: ColumnValue
