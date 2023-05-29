@@ -19,7 +19,7 @@ import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, PropsType, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import { callJSFunction, commonVars, copyMap, getSessionId, isBool, isEmpty, isString } from '../../ts/j';
-import { FFieldElem, findEditField, genEditClickedRowKey, getValue, istrue, okmoney, tomoney } from '../ts/helper';
+import { emptys, FFieldElem, findEditField, genEditClickedRowKey, getValue, istrue, okmoney, tomoney } from '../ts/helper';
 import { transformSingleValue, transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import defaults from '../../ts/defaults';
@@ -278,9 +278,9 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         if (fieldType(t) !== FIELDTYPE.MONEY) return
         const r: TRow = f.getFieldsValue()
         const mval = r[t.field] as string
+        if (emptys(mval)) return
         if (!okmoney(mval)) return
         const m = tomoney(mval)
-        log(m as string)
         f.setFieldValue(t.field, m)
     }
 
@@ -337,7 +337,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         rereadRest: function (): void {
             props.rereadRest();
         },
-        fieldsprops: function (): TFieldsProps|undefined {
+        fieldsprops: function (): TFieldsProps | undefined {
             if (props.initvals === undefined || props.initvals[defaults.fieldsprops] === undefined) return undefined
             return (props.initvals[defaults.fieldsprops] as any) as TFieldsProps
         }
