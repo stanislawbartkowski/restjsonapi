@@ -1,11 +1,11 @@
 import { ColumnType } from "antd/lib/table";
-import React, { ReactNode, useRef } from "react";
-import { Badge, Button, Divider, Dropdown, Menu, MenuProps, Space, Statistic, Switch, Tag } from "antd";
+import React, { ReactNode } from "react";
+import { Badge, Button, Divider, Dropdown, MenuProps, Space, Statistic, Switch, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
-import { AddStyle, ButtonAction, ClickResult, ColumnList, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
+import { AddStyle, ButtonAction, ColumnList, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue, isnotdefined } from "./helper";
 import { callJSFunction, isNumber, isString, makeMessage } from "../../ts/j";
@@ -13,7 +13,6 @@ import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
-import { EventType } from "@testing-library/react";
 import { warn } from "../../ts/l";
 
 
@@ -27,7 +26,7 @@ export function fieldType(t: TFieldBase): FIELDTYPE {
 }
 
 export function fieldTitle(t: TFieldBase, pars: OneRowData): string {
-    if (t.coltitle === undefined) return lstring(t.field);
+    if (isnotdefined(t.coltitle)) return lstring(t.field);
     // 2022/06/24 -- commented out    
     //    if (isString(t.coltitle)) return lstring(t.coltitle as string)
     const m: FormMessage = t.coltitle as FormMessage
@@ -40,7 +39,7 @@ export function fieldTitle(t: TFieldBase, pars: OneRowData): string {
 // sort filter procs
 // ====================================
 
-function toS(a : string) : string {
+function toS(a: string): string {
     if (isString(a)) return a
     warn(`${a.toString} is not a string`);
     return a.toString()
@@ -48,11 +47,11 @@ function toS(a : string) : string {
 
 function sortinc(a: TRow, b: TRow, field: string): number {
     const fielda: string | undefined = a[field] as string | undefined;
-    if (isnotdefined(fielda)) return 1;    
+    if (isnotdefined(fielda)) return 1;
     const fieldb: string = b[field] as string;
     if (isnotdefined(fieldb)) return -1;
-    const fieldas : string = toS(fielda as string)
-    const fieldbs : string = toS(fieldb as string)
+    const fieldas: string = toS(fielda as string)
+    const fieldbs: string = toS(fieldb as string)
     return (fieldas as string).localeCompare(fieldbs);
 }
 

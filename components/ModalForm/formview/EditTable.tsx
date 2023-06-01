@@ -73,9 +73,11 @@ function constructTColumn(it: IFieldContext, t: FField, editid: string, err: Err
     }
 }
 
-function contructCColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, vars: TRow): ColumnType<any> {
+function contructCColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, vars: TRow, fieldprops: TField[]): ColumnType<any> {
 
-    const col: TColumn = { ...t.col as TColumn }
+    const f: TField | undefined = findACol(t, fieldprops)
+    const title = (f === undefined) ? undefined : { coltitle: { messagedirect: fieldTitle(f, { r: {} }) } }
+    const col: TColumn = { ...t.col as TColumn, ...title }
     col.field = t.field
     const h: TableHookParam = createHookParam(it);
     const colu: ColumnList = {
@@ -88,7 +90,7 @@ function contructCColumn(it: IFieldContext, t: FField, editid: string, err: Erro
 
 
 function contructColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, options: TOptions, vars: TRow, fieldprops: TField[]): ColumnType<any> {
-    return t.col ? contructCColumn(it, t, editid, err, vars) : constructTColumn(it, t, editid, err, options, vars, fieldprops)
+    return t.col ? contructCColumn(it, t, editid, err, vars, fieldprops) : constructTColumn(it, t, editid, err, options, vars, fieldprops)
 }
 
 
