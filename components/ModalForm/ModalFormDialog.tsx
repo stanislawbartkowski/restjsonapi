@@ -221,7 +221,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         setInitVals(nvars);
         const res: TComponentProps | undefined = executeAction({ ...props, i: iiref }, button, nvars);
         if (res) {
-            setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF } })
+            // 2023/06/02 -- dodane vars clause (risky)
+            setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF, vars: { ...props.vars, ...nvars } } })
         }
     }
 
@@ -492,7 +493,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         }
     }
 
-    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} refreshaction={refreshAction} rereadRest={rereadRestFun}/> : undefined
+    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} refreshaction={refreshAction} rereadRest={rereadRestFun} /> : undefined
 
     const modalFormView: ReactNode = formdef.status === Status.READY ?
         ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={ivals} {...props.mhooks as ModalHooks} /> :
