@@ -30,10 +30,10 @@ type BeforeReduced = {
 }
 
 
-function isDescr(ii: number, c: TColumn, cols: TColumns, before: BeforeReduced[] | undefined, vars?: TRow): FieldValue {
+function isDescr(ii: number, c: TColumn, cols: TColumns, before: BeforeReduced[] | undefined, isextendable: boolean, vars?: TRow): FieldValue {
 
   if (before === undefined) return undefined
-  const i: number = ii % cols.length
+  const i: number = ii % (isextendable ? cols.length + 1 : cols.length)
   if (i >= (cols.length - 1)) return undefined
   const nextC: TColumn = cols[i + 1]
   for (let descr of before) {
@@ -60,13 +60,13 @@ function reducedBefore(sumline: ColumnList, cols: TColumns): BeforeReduced[] | u
 }
 
 
-function produceCell(i: number, c: TColumn, p: TSummaryTable, sumline: ColumnList, cols: TColumns, before: BeforeReduced[] | undefined, vars?: TRow): ReactElement {
+function produceCell(i: number, c: TColumn, p: TSummaryTable, sumline: ColumnList, cols: TColumns, before: BeforeReduced[] | undefined, isextendable: boolean, vars?: TRow): ReactElement {
 
   const h: TColumn | undefined = sumline.columns?.find(e => e.field === c.field)
 
   let v: FieldValue = h ? getSummaryValue(h, p, vars) : undefined
   if (v === undefined) {
-    v = isDescr(i, c, cols, before, vars)
+    v = isDescr(i, c, cols, before, isextendable, vars)
   }
 
   const tprops: ColumnType<any> = h?.props ? h.props as ColumnType<any> : {}
@@ -87,7 +87,7 @@ const SummaryTable: React.FC<TSummaryTable> = (props) => {
     {lines.map(sumline =>
       <Table.Summary.Row {...sumline.rowprops}>
         {props.isextendable ? <Table.Summary.Cell index={i++}></Table.Summary.Cell> : undefined}
-        {props.columns?.map(e => produceCell(i++, e, props, sumline, props.columns, reducedBefore(sumline, props.columns), props.vars))}
+        {props.columns?.map(e => produceCell(i++, e, props, sumline, props.columns, reducedBefore(sumline, props.columns), props.isextendable, props.vars))}
       </Table.Summary.Row>
     )
     }
