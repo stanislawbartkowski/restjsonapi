@@ -49,20 +49,20 @@ export function saveCookieColWidth(r: RestTableParam, w: ColWidth) {
     setCookie(cookiename, j)
 }
 
-function getCookieColWidth(r: RestTableParam, p: ColumnList): ColWidth | undefined {
+function getCookieColWidth(r: RestTableParam, clist: TColumns): ColWidth | undefined {
     const cookiename: string = cookieName(r)
     const j: string | undefined = getCookie(cookiename)
     if (j === undefined) return undefined
     const m = new Map(JSON.parse(j));
     const newcols: ColWidth = m as ColWidth
-    if (!verifyColumns(p, Array.from(newcols.keys()))) return undefined
+    if (!verifyColumns(clist, Array.from(newcols.keys()),cookiename)) return undefined
     return newcols
 }
 
 export function createInitColsWidth(r: RestTableParam, p: ColumnList): ColWidth {
     const clist: TColumns = visibleColumns(p.columns);
     const m: ColWidth = new Map<string, number>()
-    const cm: ColWidth | undefined = getCookieColWidth(r, p)
+    const cm: ColWidth | undefined = getCookieColWidth(r, clist)
     clist.forEach(c => {
         const w = cm?.get(c.field) ? cm.get(c.field) : defaultW(c, p.toolbar?.resize)
         if (w !== undefined) m.set(c.field, w)

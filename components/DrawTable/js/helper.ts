@@ -9,6 +9,7 @@ import { getRowKey, isnotdefined, tomoney, visibleColumns } from "../../ts/helpe
 import { ExtendedFilter } from "../SearchButton/SearchExtended";
 import { constructTableFilter, FFilter } from '../../TableFilter'
 import { ColumnsT } from "../typing";
+import { log } from "../../../ts/l";
 
 
 // =================================
@@ -162,12 +163,19 @@ export function cookieNameQualified(p: RestTableParam, qualif: string): string {
   return n + "_" + qualif
 }
 
-export function verifyColumns(p: ColumnList, cols: string[]) {
-  const setCols: Set<string> = new Set<string>(p.columns.map(c => c.field))
+export function verifyColumns(columns: TColumns, cols: string[], cookiename: string) {
+  const setCols: Set<string> = new Set<string>(columns.map(c => c.field))
   const colnotexist: string | undefined = cols.find(c => !setCols.has(c))
-  if (colnotexist !== undefined) return false
+  if (colnotexist !== undefined) {
+    const mess = `${cookiename} - cookie column ${colnotexist} does not exist in column list`
+    log(mess);
+    return false
+  }
 
   const setCookiCols: Set<string> = new Set<string>(cols)
-  const colcookienotexist: TColumn | undefined = p.columns.find(c => !setCookiCols.has(c.field))
-  return colcookienotexist === undefined
+  const colcookienotexist: TColumn | undefined = columns.find(c => !setCookiCols.has(c.field))
+  if (colcookienotexist === undefined) return true
+  const mess: string = `${cookiename} columns ${colcookienotexist.field} not included in cookie column list` 
+  log(mess)
+  return false
 }

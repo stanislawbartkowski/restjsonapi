@@ -23,7 +23,8 @@ export function setCookie(cname: string, value: string | undefined) {
 }
 
 export function getCookie(cname: string): string | undefined {
-    return api.get(cookiename(cname))
+    const r: string|undefined = api.get(cookiename(cname))
+    return r
 }
 
 export function setCookieR(cname: string, r: TRow) {

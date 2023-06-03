@@ -19,6 +19,6 @@ export function getCookieTableColumns(r: RestTableParam, p: ColumnList): Columns
     const j: string | undefined = getCookie(cookiename)
     if (j === undefined) return undefined
     const m : ColumnsT = JSON.parse(j) as ColumnsT
-    if (!verifyColumns(p, m.map(c => c.key))) return undefined
+    if (!verifyColumns(p.columns, m.map(c => c.key),cookiename)) return undefined
     return m
 }
