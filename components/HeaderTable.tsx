@@ -18,7 +18,7 @@ function ltrace(mess: string) {
 }
 
 function isChooseButton(a: ClickResult, t: RestTableParam): boolean {
-  return ((istrue(t.choosing) || istrue(t.multiselect)) && a.list === undefined && a.listdef === undefined)
+  return ((istrue(t.choosing) || istrue(t.multiselect)) && a.list === undefined && a.listdef === undefined && a.restaction === undefined)
 }
 
 function headerTitle(p: ShowDetails, vars?: TRow) {
@@ -31,7 +31,7 @@ function headerTitle(p: ShowDetails, vars?: TRow) {
   else return { title: title }
 }
 
-const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[], setTitle?: FSetTitle, rereadRest: FRereadRest }> = (props) => {
+const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[], setTitle?: FSetTitle, rereadRest: FRereadRest, closeAction?: FAction }> = (props) => {
   const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
 
   const h: TableToolBar = props.toolbar as TableToolBar;
@@ -41,14 +41,14 @@ const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshacti
   };
 
   const retAction: FRetAction = (b: TAction, row: TRow) => {
-    setIsModalVisible({ vars: row, ...(b as ClickAction), visible: true, closeAction: fmodalhook, rereadRest:props.rereadRest })
+    setIsModalVisible({ vars: row, ...(b as ClickAction), visible: true, closeAction: fmodalhook, rereadRest: props.rereadRest })
   }
 
   function clickButton(b: ButtonAction) {
-    const ii: IIButtonAction = createII(b, props.vars as TRow, props.selectedM, retAction)
+    const ii: IIButtonAction = createII(b, props.vars as TRow, props.selectedM, retAction, undefined, props.setvarsaction)
     if (isChooseButton(ii.res, props.r)) props.fbutton(b, ii.rr)
-    if (ispopupDialog(ii.res)) setIsModalVisible({ vars: { ...props.vars }, ...(ii.res as ClickAction), visible: true, closeAction: fmodalhook, rereadRest:props.rereadRest })
-    else executeB(ii,props.rereadRest, undefined, props.setvarsaction)
+    if (ispopupDialog(ii.res)) setIsModalVisible({ vars: { ...props.vars }, ...(ii.res as ClickAction), visible: true, closeAction: fmodalhook, rereadRest: props.rereadRest })
+    else executeB(ii, props.rereadRest, undefined, props.setvarsaction, props.closeAction)
   }
 
   const title = (props.setTitle === undefined) ? headerTitle(props, props.vars) : undefined
@@ -73,7 +73,7 @@ const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshacti
         extra={h ? h.map((e: ButtonAction) => constructButton(e, clickButton)) : undefined} >
         {props.collist ? <OneRowTable {...detaDescr} /> : undefined}
       </PageHeader>
-      <RestComponent {...modalProps} refreshaction={props.refreshaction} setvarsaction={props.setvarsaction}  />
+      <RestComponent {...modalProps} refreshaction={props.refreshaction} setvarsaction={props.setvarsaction} />
     </React.Fragment>
   );
 };

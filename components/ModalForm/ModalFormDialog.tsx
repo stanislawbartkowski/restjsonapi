@@ -493,7 +493,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         }
     }
 
-    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} refreshaction={refreshAction} rereadRest={rereadRestFun} /> : undefined
+    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} refreshaction={refreshAction} rereadRest={rereadRestFun} setvarsaction={iiref.setVals} /> : undefined
 
     const modalFormView: ReactNode = formdef.status === Status.READY ?
         ftype === TPreseEnum.Steps ? <StepsFormView ref={sref} vars={props.vars} {...props} {...(formd as any as StepsForm)} {...thooks} initvals={ivals} {...props.mhooks as ModalHooks} /> :

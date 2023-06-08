@@ -5,7 +5,7 @@ import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAc
 import openNotification from "../Notification";
 import { IIRefCall } from "../ModalForm/ModalFormDialog";
 import { clickAction, istrue } from "./helper";
-import type { ButtonAction, ClickAction, FRereadRest, FRetAction, FieldError, TAction } from "./typing";
+import type { ButtonAction, ClickAction, FRereadRest, FRetAction, FSetValues, FieldError, TAction } from "./typing";
 import { FAction, ClickActionProps } from '../../ts/typing'
 import analyzeresponse from './anayzeresponse'
 import { setPrintContent } from './helper'
@@ -20,7 +20,7 @@ export type IIButtonAction = {
     vars: TRow
 }
 
-export function createII(b: TAction, vars: TRow, selectedM?: FieldValue, retAction?: FRetAction, rereadRest?: FRereadRest): IIButtonAction {
+export function createII(b: TAction, vars: TRow, selectedM?: FieldValue, retAction?: FRetAction, rereadRest?: FRereadRest, setvarsaction?: VAction): IIButtonAction {
     const rr: TRow = {}
     rr[defaults.multichoicevar] = selectedM
     const res: TAction = clickAction(b, { r: { ...commonVars(), ...rr }, vars: vars })
@@ -31,6 +31,7 @@ export function createII(b: TAction, vars: TRow, selectedM?: FieldValue, retActi
             return {};
         },
         setVals: function (r: TRow): void {
+            if (setvarsaction !== undefined) setvarsaction(r)
         },
         formGetVals: function (): TRow {
             return vars as TRow;
@@ -45,8 +46,8 @@ export function createII(b: TAction, vars: TRow, selectedM?: FieldValue, retActi
     return { res: res, ii: ii, rr: { ...commonVars(), ...rr }, vars: vars }
 }
 
-export function executeB(i: IIButtonAction,  rereadRest?: FRereadRest, refreshaction?: RAction, setvarsaction?: VAction) {
-    clickButton({ refreshaction, ...(i.res as ClickAction), i: i.ii, setvarsaction, rereadRest }, i.res, { ...i.rr, ...i.vars })
+export function executeB(i: IIButtonAction, rereadRest?: FRereadRest, refreshaction?: RAction, setvarsaction?: VAction, closeAction?: FAction) {
+    clickButton({ refreshaction, ...(i.res as ClickAction), i: i.ii, setvarsaction, rereadRest, closeAction }, i.res, { ...i.rr, ...i.vars })
 }
 
 export function ispopupDialog(res: TAction): boolean {
