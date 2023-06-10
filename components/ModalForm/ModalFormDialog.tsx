@@ -221,8 +221,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         setInitVals(nvars);
         const res: TComponentProps | undefined = executeAction({ ...props, i: iiref }, button, nvars);
         if (res) {
-            // 2023/06/02 -- dodane vars clause (risky)
-            setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF, vars: { ...props.vars, ...nvars } } })
+            // 2023/06/02 -- added vars clause (risky)
+            // 2023/06/10 -- added res.vars to clause vars
+            setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF, vars: {  ...props.vars, ...nvars, ...res.vars } } })
         }
     }
 
