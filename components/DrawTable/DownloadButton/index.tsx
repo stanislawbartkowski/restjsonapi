@@ -8,7 +8,6 @@ import defaults from "../../../ts/defaults";
 import { ColumnList } from "../../ts/typing";
 import { ColumnsT } from "../typing";
 import { generateExcelData } from "./helper";
-import { removeHTMLtags } from "../../ts/helper";
 import { useState } from "react";
 
 interface DownloadButtonPars {

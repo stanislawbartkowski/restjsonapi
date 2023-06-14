@@ -139,6 +139,7 @@ export type ClickResult = RestTableParam & ActionResult & {
     close?: boolean,
     upload?: boolean
     print?: boolean
+    download?: boolean
 }
 
 

@@ -53,7 +53,9 @@ const embedded = {
     reaarangecolumnstitle: "Pozwala zmienić sposób wyświetlania",
     downloadexcelquestion: "Odczytać tabelkę w postaci pliku Excel?",
     listasexcelfile: "Tabela jako plik Excel",
-    downloadexcelbutton: "W formacie Excel"
+    downloadexcelbutton: "W formacie Excel",
+    download: "Pobierz",
+    filedownloaded: "Plik został pobrany"
   },
   en: {
     empty: '',
@@ -105,7 +107,9 @@ const embedded = {
     reaarangecolumnstitle: "Reaarrange columns",
     downloadexcelquestion: "Downlaod as Excel file?",
     listasexcelfile: "Table in Excel format",
-    downloadexcelbutton: "Excel download"
+    downloadexcelbutton: "Excel download",
+    download: "Download",
+    filedownloaded: "File has been downloaded"
   }
 };
 

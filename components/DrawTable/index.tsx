@@ -170,7 +170,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const fresult: FActionResult = (entity: TRow, r: TAction) => {
         if (r.button) {
-            const ii: IIButtonAction = createII(r.button, entity, undefined, retAction, props.rereadRest)
+            const ii: IIButtonAction = createII(r.button, {...props.vars, ...datasource.vars, ...entity}, undefined, retAction, props.rereadRest)
             executeB(ii, undefined, () => refreshtable())
             return
         }
@@ -345,7 +345,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     }
 
 
-    const columns: ColumnType<any>[] = transformColumns(props, thook, props.vars, colw, resizeF, arrange_columns);
+    const columns: ColumnType<any>[] = transformColumns(props, thook, { ...props.vars, ...datasource.vars}, colw, resizeF, arrange_columns);
 
     const changeMenuSize: FSetSize = (size: SizeType) => {
         setTableSize(size)

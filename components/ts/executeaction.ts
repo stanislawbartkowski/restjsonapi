@@ -5,13 +5,15 @@ import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAc
 import openNotification from "../Notification";
 import { IIRefCall } from "../ModalForm/ModalFormDialog";
 import { clickAction, istrue } from "./helper";
-import type { ButtonAction, ClickAction, FRereadRest, FRetAction, FSetValues, FieldError, TAction } from "./typing";
+import { NotificationKind, type ButtonAction, type ClickAction, type FRereadRest, type FRetAction, type FSetValues, type FieldError, type TAction, type TNotification } from "./typing";
 import { FAction, ClickActionProps } from '../../ts/typing'
 import analyzeresponse from './anayzeresponse'
 import { setPrintContent } from './helper'
 import defaults from "../../ts/defaults";
 import { history } from '../../ts/CustomRouter'
 import { ErrorMessages, ErrorMessage } from "../ModalForm/formview/types";
+import fileDownload from "js-file-download";
+import { RequestOptionsInit } from "umi-request";
 
 export type IIButtonAction = {
     res: TAction
@@ -78,6 +80,17 @@ interface IClickParams extends ClickActionProps {
 
 function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponentProps | undefined {
 
+    function download(res: TAction, t: any, presult: any) {
+        const d: string | undefined = res.vars !== undefined ? res.vars[defaults.downloadname] as string : undefined
+        const downloadname: string = (d !== undefined) ? d : defaults.defaultdownloadname
+        fileDownload(t as ArrayBuffer, downloadname)
+        const noti: TNotification = {
+            kind: NotificationKind.SUCCESS,
+            title: { message: "filedownloaded" },
+            description: { messagedirect: downloadname }
+        }
+        openNotification(noti, { r: {} })
+    }
 
     function doaction(r: TAction, presult?: string) {
         if (r.error) {
@@ -100,9 +113,9 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
     }
 
 
-    async function dorestaction(res: TAction) {
+    async function dorestaction(res: TAction, responseType?: RequestOptionsInit["responseType"]) {
         props.i.setMode(true, []);
-        if (res.restaction) return restaction(res.method as HTTPMETHOD, res.restaction, res.params, t);
+        if (res.restaction) return restaction(res.method as HTTPMETHOD, res.restaction, res.params, t, responseType);
         return Promise.resolve(({ data: res, response: undefined }))
     }
 
@@ -118,12 +131,13 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
     }
     const res: TAction = clickAction(button, toPars())
     if (res.close) close()
-    dorestaction(res).then(
+    dorestaction(res, istrue(res.download) ? "arrayBuffer" : undefined).then(
         ({ data, response }) => {
             const da = analyzeresponse(data, response)
             const reobject: TAction = da[0] as TAction
             const resobject: TAction = (res.retprops) ? Object.assign(reobject, res.retprops) : reobject
-            doaction(resobject, da[1])
+            if (istrue(res.download)) download(res, resobject, da[1])
+            else doaction(resobject, da[1])
         }
     ).catch(((e) => {
         fatalexceptionerror(`Error while running ${res.restaction}`, e)

@@ -24,7 +24,9 @@ interface Defaults {
   fieldsprops: string,
   downloadfileaction: string,
   downloadfile: string,
-  excelext: string
+  excelext: string,
+  downloadname: string,
+  defaultdownloadname: string
 };
 
 const defaults: Defaults = {
@@ -37,7 +39,7 @@ const defaults: Defaults = {
   displayprintrouterid: "/printingdisplayer",
   cookieage: 7,
   currentfield: "currentfield",
-  verstring: "JS: wersja 1.3 (r:10) z dnia 10 czerwca 2023",
+  verstring: "JS: wersja 1.3 (r:11) z dnia 14 czerwca 2023",
   directprefix: "~",
   multichoicevar: "multichoice",
   listpos: "listpos",
@@ -53,7 +55,9 @@ const defaults: Defaults = {
   fieldsprops: "fieldsprops",
   downloadfileaction: "downloadfile",
   downloadfile: "Tabela",
-  excelext: ".xlsx"
+  excelext: ".xlsx",
+  downloadname: "downloadname",
+  defaultdownloadname: "downloadfile"
 };
 
 export default defaults;
