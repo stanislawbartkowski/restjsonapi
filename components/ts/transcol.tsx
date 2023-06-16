@@ -1,4 +1,5 @@
-import { ColumnType } from "antd/lib/table";
+import { ColumnType, ColumnsType } from "antd/lib/table";
+import { GetComponentProps } from 'rc-table/lib/interface'
 import React, { ReactNode } from "react";
 import { Badge, Button, Divider, Dropdown, MenuProps, Space, Statistic, Switch, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
@@ -303,14 +304,19 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
     };
 
     const widthProp = (width === undefined) ? undefined : { width: width }
-    const onHeaderProps = (resizeF !== undefined && width !== undefined && isNumber(width)) ? {
-        onHeaderCell: (column: any) => {
-            return {
-                width: width as number,
-                onResize: handleResize
-            }
+
+    const headerFunc: GetComponentProps<ColumnsType<any>[number]> = (column: any) => {
+        const p = {
+            width: width as number,
+            onResize: handleResize
         }
+        return (p as any) as React.HTMLAttributes<any>
+    }
+
+    const onHeaderProps = (resizeF !== undefined && width !== undefined && isNumber(width)) ? {
+        onHeaderCell: headerFunc
     } : undefined
+
 
     const e: ColumnType<any> = {
         title: <div>{mess}</div>,

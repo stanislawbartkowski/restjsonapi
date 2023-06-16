@@ -140,7 +140,7 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
           <Button
             type="primary"
             onClick={() => handleSearch(selectedKeys, confirm, c.field)}
-            icon={<SearchOutlined rev />}
+            icon={<SearchOutlined/>}
             size="small"
             style={{ width: 90 }}
           >
@@ -152,7 +152,7 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
         </Space>
       </div>
     ),
-    filterIcon: filtered => <SearchOutlined rev style={{ color: filtered ? '#1890ff' : undefined }} />,
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
 
     onFilter: constructTableFilter(c)
 
