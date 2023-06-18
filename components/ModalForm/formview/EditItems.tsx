@@ -49,12 +49,13 @@ export type ErrorMessage = {
 
 export type ErrorMessages = ErrorMessage[]
 
+//type OkValidated = () => void
 
-export interface IRefCall {
-    validate: () => void
-    getValues: FGetValues
-    refreshTable: (field: string) => void
-}
+//export interface IRefCall {
+//    validate: ( ok : OkValidated ) => void
+//    getValues: FGetValues
+//    refreshTable: (field: string) => void
+//}
 
 
 export function placeHolder(t: TField) {

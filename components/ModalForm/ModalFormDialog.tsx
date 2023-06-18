@@ -8,7 +8,7 @@ import { Status } from '../ts/typing'
 import readdefs, { ReadDefsResult, rereadRest } from "../ts/readdefs";
 import InLine from '../../ts/inline';
 import constructButton, { FClickButton } from '../ts/constructbutton';
-import ModalFormView, { IRefCall } from './ModalFormView';
+import ModalFormView, { FOkValidated, IRefCall } from './ModalFormView';
 import { FFieldElem, flattenTForm, okmoney, cardProps, preseT, istrue, decomposeEditId } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
 import { FAction, FIELDTYPE, FSetTitle, FieldValue, ModalFormProps, RAction, RESTMETH, RowData, TComponentProps, TRow, VAction } from '../../ts/typing'
@@ -347,13 +347,17 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     const fclick: FClickButton = (b: ButtonAction) => {
         buttonclicked.current = b
         const v: TRow = ref.current.getValues()
+        const okV : FOkValidated = () => {
+            clickButton(b,v);
+        }
         if (b.validate) {
             if (!formvalidate(v)) return;
             const iref: IRefCall = ref.current
-            iref.validate()
+            iref.validate(okV)
         }
         else {
-            clickButton(b, v);
+            //clickButton(b, v);
+            okV()
         }
     }
 

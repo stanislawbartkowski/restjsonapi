@@ -35,8 +35,11 @@ function ltrace(mess: string) {
     trace('ModalFormView', mess)
 }
 
+export type FOkValidated = () => void
+
 export interface IRefCall {
-    validate: () => void
+
+    validate: (ok : FOkValidated) => void
     getValues: FGetValues
     refreshTable: (field: string, refreshD?: TRefreshTable) => void
 }
@@ -138,8 +141,12 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         getValues: () => {
             return getVals()
         },
-        validate: () => {
-            f.submit()
+        validate: (ok : FOkValidated) => {
+            //f.submit()
+            f.validateFields().then( () => {
+                ok()
+
+            }).catch ( () => {})
         },
         refreshTable(field: string, searchD: TRefreshTable | undefined) {
 
