@@ -1,4 +1,3 @@
-import { create } from "domain"
 import { FIELDTYPE, RowData, TRow } from "../../../ts/typing"
 import { fieldTitle } from "../../ts/transcol"
 import { fieldType } from "../../ts/transcol"

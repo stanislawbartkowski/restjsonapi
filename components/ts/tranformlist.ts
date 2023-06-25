@@ -2,19 +2,22 @@
 // transform list using getvalue
 // ======================================
 
+import { dateNormalizeS, dateremoveT } from "../../ts/d"
 import { FIELDTYPE, TRow, FieldValue, OneRowData, RowData } from "../../ts/typing"
 import { getValue, tomoney } from "./helper"
 import { fieldType, getVal } from "./transcol"
 import { TColumn, ColumnValue, TColumns } from "./typing"
 
 function transformCol(e: TColumn): boolean {
-    return e.value !== undefined || fieldType(e) === FIELDTYPE.MONEY
+    return e.value !== undefined || fieldType(e) === FIELDTYPE.MONEY ||  fieldType(e) == FIELDTYPE.DATE
 }
 
 
 export function transformCell(c: TColumn, props: OneRowData): FieldValue {
     const val: FieldValue = c.value ? getValue(c.value as ColumnValue, props) : getVal(c, props)
-    return fieldType(c) === FIELDTYPE.MONEY ? tomoney(val as string | number) : val
+    if (fieldType(c) === FIELDTYPE.MONEY) return tomoney(val as string | number)
+    if (fieldType(c) == FIELDTYPE.DATE) return dateNormalizeS(val as string)
+    return val
 }
 
 

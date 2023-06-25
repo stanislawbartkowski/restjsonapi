@@ -1,3 +1,4 @@
+import { emptys } from "../components/ts/helper";
 import defaults from "./defaults";
 import dayjs from 'dayjs';
 
@@ -11,4 +12,10 @@ export function dateparseS(s: string | undefined): dayjs.Dayjs | undefined {
 
 export function dateremoveT(s: dayjs.Dayjs): string {
   return datetoS(s) as string
+}
+
+export function dateNormalizeS(s: string | undefined): string | undefined {
+  if (emptys(s)) return undefined
+  const d = dateparseS(s)
+  return d === undefined ? undefined : dateremoveT(d)
 }
