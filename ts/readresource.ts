@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
-import { restapijs, restapiresource } from "../services/api";
+import { restapijs, restapilist, restapilistdef, restapiresource } from "../services/api";
 import { log } from "./l";
 import { setStrings } from "./localize";
-import type { AppData, AppDefaults, FieldDefaults, MenuLeft } from "./typing";
+import type { AppData, AppDefaults, FieldDefaults, LeftMenuResource, MenuLeft } from "./typing";
 import { setLeftMenu } from './leftmenu'
+import { emptys } from "../components/ts/helper";
 
 
 let appdefaults : AppDefaults
@@ -46,11 +47,7 @@ async function readJS(jnames: string) {
 }
 
 async function readResource() {
-  const lm: MenuLeft = (await restapiresource("leftmenu")) as MenuLeft;
-  setLeftMenu(lm)
-
-
-  log("Resource leftmenu read");
+  
   appdata = await restapiresource("appdata") as AppData
   log("Resource appdata read");
 
@@ -73,6 +70,18 @@ async function readResource() {
   const strings: any = await restapiresource("strings");
   log("Resource strings read");
   setStrings(strings, language);
+
+  let leftmenu: string = "leftmenu"
+  if (! emptys(appdata.getleftmenu)) {
+    const geturl: string = appdata.getleftmenu as string
+    const l : LeftMenuResource = await restapilist(geturl) as LeftMenuResource
+    if (! emptys(l.leftmenu)) leftmenu = l.leftmenu
+  }
+
+  const lm: MenuLeft = (await restapiresource(leftmenu)) as MenuLeft;
+  setLeftMenu(lm)
+  log("Resource leftmenu read");
+
 }
 
 export default readResource;

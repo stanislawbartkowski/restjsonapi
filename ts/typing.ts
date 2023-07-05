@@ -216,6 +216,10 @@ export type AppDefaults = {
   fields: FieldDefaults[]
 }
 
+export interface LeftMenuResource  {
+  leftmenu: string
+}
+
 export interface AppData {
   appname: string
   logo: string
@@ -226,5 +230,6 @@ export interface AppData {
   js?: string
   showidcolums?: boolean
   toolbar?: ListToolbar
+  getleftmenu?: string
 }
 

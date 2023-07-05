@@ -11,11 +11,13 @@ async function init() {
     const serverURL: string = await getServerUrl()
     console.log(`Server URL ${serverURL}`)
     setHost(serverURL)
-    await readResource();
-    addRouterElem(defaults.displayprintrouterid,() => <PrintDisplay/>)
+    
     const sec : boolean = await isSecEnabled() 
     setSec(sec)
     await initkeyclock()
+
+    await readResource();
+    addRouterElem(defaults.displayprintrouterid,() => <PrintDisplay/>)
 }
 
 export default init
