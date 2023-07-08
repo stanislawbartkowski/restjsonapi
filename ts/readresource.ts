@@ -2,16 +2,17 @@ import { ReactNode } from "react";
 import { restapijs, restapilist, restapilistdef, restapiresource } from "../services/api";
 import { log } from "./l";
 import { setStrings } from "./localize";
-import type { AppData, AppDefaults, FieldDefaults, LeftMenuResource, MenuLeft } from "./typing";
+import type { AppAuthLabel, AppData, AppDefaults, FieldDefaults, LeftMenuResource, MenuLeft } from "./typing";
 import { setLeftMenu } from './leftmenu'
 import { emptys } from "../components/ts/helper";
+import { isSec, setAuthLabel } from "./j";
 
 
-let appdefaults : AppDefaults
+let appdefaults: AppDefaults
 
-export function findLabel(label: string) : FieldDefaults | undefined {
+export function findLabel(label: string): FieldDefaults | undefined {
 
-  return appdefaults?.fields.find( e => e.label === label)
+  return appdefaults?.fields.find(e => e.label === label)
 
 }
 
@@ -28,13 +29,13 @@ export function getHeaderLine(): ReactNode | undefined {
 
 let appdata: AppData | undefined = undefined
 
-export function getAppData(): AppData  {
+export function getAppData(): AppData {
   return appdata as AppData
 }
 
 let jsscript: string[] = []
 
-export function getAppJSS() : string[] {
+export function getAppJSS(): string[] {
   return jsscript
 }
 
@@ -47,9 +48,14 @@ async function readJS(jnames: string) {
 }
 
 async function readResource() {
-  
+
   appdata = await restapiresource("appdata") as AppData
   log("Resource appdata read");
+
+  if (isSec() && !emptys(appdata.authlabel)) {
+    const auth: AppAuthLabel = await restapilist(appdata.authlabel as string) as AppAuthLabel;
+    if (!emptys(auth.authlabel)) setAuthLabel(auth.authlabel as string);
+  }
 
   appdefaults = await restapiresource("defaults") as AppDefaults
   log("App defaults read")
@@ -72,15 +78,17 @@ async function readResource() {
   setStrings(strings, language);
 
   let leftmenu: string = "leftmenu"
-  if (! emptys(appdata.getleftmenu)) {
+  if (!emptys(appdata.getleftmenu)) {
     const geturl: string = appdata.getleftmenu as string
-    const l : LeftMenuResource = await restapilist(geturl) as LeftMenuResource
-    if (! emptys(l.leftmenu)) leftmenu = l.leftmenu
+    const l: LeftMenuResource = await restapilist(geturl) as LeftMenuResource
+    if (!emptys(l.leftmenu)) leftmenu = l.leftmenu
   }
+
 
   const lm: MenuLeft = (await restapiresource(leftmenu)) as MenuLeft;
   setLeftMenu(lm)
   log("Resource leftmenu read");
+
 
 }
 

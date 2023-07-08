@@ -61,7 +61,7 @@ function getOriginURL(): string {
   return window.location.origin;
 }
 
-function getOriginURLPath() : string {
+function getOriginURLPath(): string {
   return transformURL(getOriginURL() + window.location.pathname)
 }
 
@@ -69,7 +69,7 @@ function transformURL(url: string): string {
   return url[url.length - 1] === '/' ? url.slice(0, -1) : url
 }
 
-export async function getConfigURL() : Promise<string> {
+export async function getConfigURL(): Promise<string> {
   if (isDev()) {
     return getOriginURLPath()
   }
@@ -88,7 +88,7 @@ function isDev(): boolean {
 export async function getServerUrl(): Promise<string> {
   if (isDev()) {
     return getDevServer()
-  }  
+  }
   //return getOriginHREF()
   const u = getOriginURLPath()
   return u
@@ -177,4 +177,18 @@ export function setSec(sec: boolean) {
 
 export function isSec(): boolean {
   return issec
+}
+
+// ========================
+// authlabel
+// ========================
+
+let authlabel: string | undefined = undefined;
+
+export function setAuthLabel(auth: string) {
+  authlabel = auth;
+}
+
+export function getAuthLabel(): string | undefined {
+  return authlabel;
 }
