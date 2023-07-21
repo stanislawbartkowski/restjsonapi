@@ -39,7 +39,7 @@ export type FOkValidated = () => void
 
 export interface IRefCall {
 
-    validate: (ok : FOkValidated) => void
+    validate: (ok: FOkValidated) => void
     getValues: FGetValues
     refreshTable: (field: string, refreshD?: TRefreshTable) => void
 }
@@ -141,12 +141,12 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         getValues: () => {
             return getVals()
         },
-        validate: (ok : FOkValidated) => {
+        validate: (ok: FOkValidated) => {
             //f.submit()
-            f.validateFields().then( () => {
+            f.validateFields().then(() => {
                 ok()
 
-            }).catch ( () => {})
+            }).catch(() => { })
         },
         refreshTable(field: string, searchD: TRefreshTable | undefined) {
 
@@ -165,12 +165,17 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     useEffect(() => {
 
         let vals: TRow | undefined
+        let multiselect: TMultiSelect | undefined
         if (props.initvals) {
             vals = transformValuesTo(props.initvals, props.list);
         }
         // recalculate getVal
         const l: FFieldElem[] = props.list
         l.forEach(t => {
+            if (t.multichoice !== undefined && vals !== undefined) {
+                if (multiselect === undefined) multiselect = new Map()
+                multiselect?.set(t.field, vals[t.field] as FieldValue[])
+            }
             if (t.value) {
                 const value: FieldValue = getValue(t.value, { r: props.initvals ? props.initvals : {} });
                 const v = transformSingleValue(value, t, false);
@@ -181,6 +186,9 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
         if (vals !== undefined) {
             f.setFieldsValue(vals);
+        }
+        if (multiselect !== undefined) {
+            setMultiSelect(multiselect)
         }
 
     }, [props.initvals, refreshno])
