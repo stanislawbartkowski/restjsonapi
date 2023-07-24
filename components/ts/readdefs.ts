@@ -32,7 +32,7 @@ export async function readvals(initval: string | RESTMETH, row: TRow, vars?: TRo
             res: r
         }
     }
-    return restaction(r.method === undefined ? HTTPMETHOD.GET : r.method, r.restaction as string, r.params, vars)
+    return restaction(r.method === undefined ? HTTPMETHOD.GET : r.method, r.restaction as string, r.params, {...row, ...vars})
 }
 
 
@@ -115,9 +115,11 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: bo
             case TPreseEnum.TForm:
                 // look for dynamic items
                 const t: TForm = idef as TForm
-                const ffields: TField[] = await resolveRest(t.fields, {}, props.vars as TRow)
+                const beforevals: TRow | undefined = (t.beforedialog && !istrue(ignoreinitvals)) ? await readvalsdata(t.beforedialog, {}, { ...commonVars(), ...props.vars }) : undefined
+                const vars : TRow = {...props.vars, ...beforevals}
+                const ffields: TField[] = await resolveRest(t.fields, {}, vars)
 
-                const initvals: TRow | undefined = (t.restapivals && !istrue(ignoreinitvals)) ? await readvalsdata(t.restapivals, {}, { ...commonVars(), ...props.vars }) : undefined
+                const initvals: TRow | undefined = (t.restapivals && !istrue(ignoreinitvals)) ? await readvalsdata(t.restapivals, {}, { ...commonVars(), ...vars }) : undefined
                 f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
                 break;
             case TPreseEnum.ColumnList:
@@ -139,7 +141,10 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: bo
 export async function rereadRest(props: RestTableParam, f: FReadRest, row: TRow) {
     const def: string = props.listdef ? props.listdef : props.list as string
     const idef: PreseForms = await restapilistdef(def) as PreseForms
+    if (preseT(idef) === TPreseEnum.Steps) return
     const t: TForm = idef as TForm
+    // 2023/07/23 - can be a Step
+    //if (t.fields === undefined) return
     const ffields: TField[] = await resolveRest(t.fields, row, props.vars as TRow)
     f(ffields)
 }

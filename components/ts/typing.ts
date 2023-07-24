@@ -436,6 +436,7 @@ export type TForm = JSSupportedType & TCard & {
     fields: TField[]
     formprops?: PropsType
     buttons: ButtonAction[]
+    beforedialog?: string | RESTMETH
     restapivals?: string | RESTMETH
     jsrestapivals?: string
     header?: ShowDetails
