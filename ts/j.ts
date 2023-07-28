@@ -71,10 +71,10 @@ function transformURL(url: string): string {
 
 export async function getConfigURL(): Promise<string> {
   if (isDev()) {
-    return getOriginURLPath()
+    return getOriginURL()
   }
   //return getOriginHREF()
-  return getOriginURLPath()
+  return getOriginURL()
 }
 
 function getOriginHREF(): string {

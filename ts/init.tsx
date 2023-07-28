@@ -6,6 +6,14 @@ import { setHost } from '../services/api'
 import { isSecEnabled } from '../services/readconf'
 import { getServerUrl, setSec } from './j'
 import { initkeyclock } from './keyclock'
+import { TReadResource } from './typing'
+
+
+let customReadResource : TReadResource | undefined 
+
+export function setCustomReadResource(f : TReadResource) {
+    customReadResource = f
+}
 
 async function init() {
     const serverURL: string = await getServerUrl()
@@ -18,6 +26,8 @@ async function init() {
 
     await readResource();
     addRouterElem(defaults.displayprintrouterid,() => <PrintDisplay/>)
+
+    if (customReadResource !== undefined) await customReadResource()
 }
 
 export default init

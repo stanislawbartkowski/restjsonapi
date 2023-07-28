@@ -1,10 +1,9 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, DatePicker, Input, InputNumber, Space } from "antd";
-//import type { Moment } from 'moment'
 import dayjs from 'dayjs';
 import { FilterConfirmProps, FilterDropdownProps } from "antd/lib/table/interface";
 
-import type { TColumn } from './ts/typing'
+import type { IColumnFilter, TColumn } from './ts/typing'
 import { FIELDTYPE } from '../ts/typing'
 import lstring from '../ts/localize'
 import defaults from '../ts/defaults'
@@ -20,6 +19,7 @@ import { toS } from "../ts/j";
 // ========================
 
 export type ColumnFilterSearch = {
+  defaultFilteredValue: string[] | undefined
   filterDropdown: (props: FilterDropdownProps) => ReactNode
   filterIcon: (filtered: boolean) => ReactNode
   onFilter: (value: string | number | boolean, record: TRow) => boolean;
@@ -31,7 +31,6 @@ export type ColumnFilterSearch = {
 function eqString(row: TRow, field: string, filter: string): boolean {
   if (row === undefined || row[field] === undefined || row[field] === null) return false
   const f: string = toS(row[field])
-  //log(row[field] as string)
   return f.toString().toUpperCase().indexOf(filter.toUpperCase()) !== -1;
 }
 
@@ -70,10 +69,8 @@ export function constructTableFilter(c: TColumn): FFilter {
   }
 }
 
-//onFilter?: (value: string | number | boolean, record: RecordType) => boolean;
 
-
-function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
+function searchAttr(c: TColumn, coltitle: string, filterF?: IColumnFilter): ColumnFilterSearch {
 
   const state = {
     searchText: '',
@@ -88,11 +85,19 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
     setState({
       searchText: selectedKeys[0],
     });
+    if (selectedKeys.length == 0) handleSetFilter(undefined)
+    else handleSetFilter(selectedKeys[0])
+  }
+
+  function handleSetFilter(val: string | undefined) {
+    if (filterF === undefined) return
+    filterF.setFilter(c, val)
   }
 
   const handleReset = (clearFilters: (() => void)) => {
     clearFilters();
     setState({ searchText: '' });
+    handleSetFilter(undefined)
   };
 
 
@@ -120,6 +125,7 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
           onChange={e => setSelectedKeys(e ? [e] : [])}
           onPressEnter={() => handleSearch(selectedKeys, confirm, c.field)}
           style={{ marginBottom: 8, display: 'block', width: '90%' }}
+
         />
       default: break;
     }
@@ -132,21 +138,25 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
     />
   }
 
+  const fValue: string | undefined = filterF !== undefined ? filterF.getFilter(c) : undefined
+
+  const filterV: string[] | undefined = fValue === undefined ? undefined : [fValue]
+
   return {
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
-        <SearchInput close= {() => {} } visible prefixCls='' setSelectedKeys={setSelectedKeys} selectedKeys={selectedKeys} confirm={confirm} clearFilters={clearFilters} />
+        <SearchInput close={() => { }} visible prefixCls='' setSelectedKeys={setSelectedKeys} selectedKeys={selectedKeys} confirm={confirm} clearFilters={clearFilters} />
         <Space>
           <Button
             type="primary"
             onClick={() => handleSearch(selectedKeys, confirm, c.field)}
-            icon={<SearchOutlined/>}
+            icon={<SearchOutlined />}
             size="small"
             style={{ width: 90 }}
           >
             {lstring('filter')}
           </Button>
-          <Button onClick={() => { handleReset(clearFilters as () => {}); handleSearch(selectedKeys, confirm, c.field) }} size="small" style={{ width: 90 }}>
+          <Button onClick={() => { handleReset(clearFilters as () => {}); handleSearch([], confirm, c.field) }} size="small" style={{ width: 90 }}>
             {lstring('reset')}
           </Button>
         </Space>
@@ -154,7 +164,9 @@ function searchAttr(c: TColumn, coltitle: string): ColumnFilterSearch {
     ),
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
 
-    onFilter: constructTableFilter(c)
+    onFilter: constructTableFilter(c),
+
+    defaultFilteredValue: filterV
 
   }
 };

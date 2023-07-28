@@ -145,7 +145,7 @@ const SortColumns: React.FC<SortProps> = (props) => {
           rowKey="key"
           columns={istrue(a.showidcolums) ? columnswithid : columns}
           dataSource={dataSource}
-          pagination={false} 
+          pagination={false}
         />
       </SortableContext>
     </DndContext>

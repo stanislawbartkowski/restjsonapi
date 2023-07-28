@@ -6,7 +6,7 @@ import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
-import { AddStyle, ButtonAction, ColumnList, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
+import { AddStyle, ButtonAction, ColumnList, ColumnSortType, IColumnFilter, IColumnSort, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue, isnotdefined } from "./helper";
 import { callJSFunction, isNumber, isString, makeMessage } from "../../ts/j";
@@ -272,7 +272,7 @@ function isRenderable(c: TColumn): boolean {
 // transform column
 // ====================
 
-export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnList, vars?: TRow, width?: number | string, resizeF?: TResizeColumn): ColumnType<any> {
+export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnList, vars?: TRow, width?: number | string, resizeF?: TResizeColumn, sortColumn?: IColumnSort, filterF?: IColumnFilter): ColumnType<any> {
     const mess: string = fieldTitle(c, { r: {}, vars: vars })
     const fieldtype: FIELDTYPE = fieldType(c)
     const p: ColumnType<any> = {};
@@ -295,7 +295,7 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
     }
 
     const filterprops: ColumnFilterSearch | undefined = filter(c, cols)
-        ? TableFilterProps(c, mess)
+        ? TableFilterProps(c, mess, filterF)
         : undefined;
 
     const handleResize = (e: any, { size }: any) => {
@@ -329,6 +329,29 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
     };
     if (isRenderable(c)) {
         e.render = constructRenderCell(c, r, vars);
+    }
+
+    if (sortColumn !== undefined) {
+        const sort: ColumnSortType = sortColumn.getSort(c)
+        if (sort !== ColumnSortType.NO) {
+            e.defaultSortOrder = sort == ColumnSortType.ACC ? "ascend" : "descend"
+        }
+    }
+
+    if (sortColumn !== undefined) {
+        e.onHeaderCell = (column) => {
+            return {
+                onClick: () => {
+                    const colu = (column as any)
+                    if (colu.title.props.children.props === undefined) return
+                    const sort: string = colu.title.props.children.props.title as string
+                    const locale = colu.title.props.locale
+                    const sortType: ColumnSortType = sort === locale.triggerAsc ? ColumnSortType.ACC : sort === locale.triggerDesc ? ColumnSortType.DESC : ColumnSortType.NO
+                    sortColumn.changeSort(c, sortType)
+                }
+            }
+        }
+
     }
 
     return e;

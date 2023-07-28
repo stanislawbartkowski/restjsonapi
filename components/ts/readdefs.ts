@@ -141,10 +141,9 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: bo
 export async function rereadRest(props: RestTableParam, f: FReadRest, row: TRow) {
     const def: string = props.listdef ? props.listdef : props.list as string
     const idef: PreseForms = await restapilistdef(def) as PreseForms
+    // 2023/07/23 - can be a Step
     if (preseT(idef) === TPreseEnum.Steps) return
     const t: TForm = idef as TForm
-    // 2023/07/23 - can be a Step
-    //if (t.fields === undefined) return
     const ffields: TField[] = await resolveRest(t.fields, row, props.vars as TRow)
     f(ffields)
 }

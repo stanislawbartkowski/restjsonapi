@@ -197,7 +197,34 @@ export type TDivider = FormMessage & {
 // single column/field type
 // =============================  
 
+// ---- column sort 
+export enum ColumnSortType {
+
+    NO, ACC, DESC
+
+}
+
+export interface IColumnSort {
+    changeSort: TColumnSortChange
+    getSort: TGetColumnSort
+}
+
+type TColumnSortChange = (c: TColumn, sort: ColumnSortType) => void
+
+type TGetColumnSort = (c: TColumn) => ColumnSortType
+
+// ----- column filter
+type TColumnFilterSet = (c: TColumn, val: string|undefined) => void
+type TColumnGetFilter = (c: TColumn) => string|undefined
+
+export interface IColumnFilter {  
+    setFilter: TColumnFilterSet
+    getFilter: TColumnGetFilter
+}
+
+
 export type TResizeColumn = (c: TColumn, newwidth: number) => void
+
 
 export type TColumn = TFieldBase & PropSupportedType & {
     showdetails?: ShowDetails | boolean;

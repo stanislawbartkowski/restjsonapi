@@ -8,8 +8,8 @@ import { SizeType } from "antd/es/config-provider/SizeContext";
 
 import lstring from "../../ts/localize";
 import { AppData, ClickActionProps, emptyModalListProps, FieldValue, FSetTitle, ListToolbar, ModalFormProps, OneRowData, RestTableParam, RowData, ToolbarFeature, TRow } from "../../ts/typing";
-import type { ColumnsHook, ColumnsT, ColumnT, FSetSize, TExtendable, } from "./typing";
-import { ButtonAction, ClickAction, ColumnList, FActionResult, FRereadRest, FRetAction, FShowDetails, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TResizeColumn } from "../ts/typing";
+import type { ColumnsHook, ColumnsT, ColumnT, FSetSize, } from "./typing";
+import { ButtonAction, ClickAction, ColumnList, ColumnSortType, FActionResult, FRereadRest, FRetAction, FShowDetails, IColumnFilter, IColumnSort, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TResizeColumn } from "../ts/typing";
 
 import { Status } from "../ts/typing";
 import { transformColumns, filterDataSource, filterDataSourceButton, CurrentPos, searchDataSource, eqRow, ColWidth, visibleColumnsR } from "./js/helper";
@@ -39,6 +39,8 @@ import { fieldTitle } from "../ts/transcol";
 import ResizableTitle from './ResizeTitle'
 import { getCookieTableColumns, saveCookieTableColumns } from "./js/cookietablecolumns";
 import DownloadButton from "./DownloadButton";
+import { getCookieSortColumn, saveCookieSortColumn } from "./js/cookiesort";
+import { getCookieFielterColumn, saveCookieFilterColumn } from "./js/cookiefilter";
 
 export type TRefreshTable = {
     searchF: TRow
@@ -66,12 +68,12 @@ const empty: IRefCall = {
     refreshsearch: -1
 }
 
-const trueFeature = (t: ListToolbar|undefined, feature: ToolbarFeature) : boolean => {
+const trueFeature = (t: ListToolbar | undefined, feature: ToolbarFeature): boolean => {
     if (t === undefined || t.features === undefined) return false
     return istrue(t.features[feature])
 }
 
-const falseFeature = (t: ListToolbar|undefined, feature: ToolbarFeature) : boolean => {
+const falseFeature = (t: ListToolbar | undefined, feature: ToolbarFeature): boolean => {
     if (t === undefined || t.features === undefined) return false
     return isfalse(t.features[feature])
 }
@@ -80,26 +82,26 @@ const falseFeature = (t: ListToolbar|undefined, feature: ToolbarFeature) : boole
 const isToolBarFeature = (p: ColumnList, feature: ToolbarFeature): boolean => {
     const a: AppData = getAppData()
 
-    if (trueFeature(p.toolbar,feature)) return true
-    if (falseFeature(p.toolbar,feature)) return false
+    if (trueFeature(p.toolbar, feature)) return true
+    if (falseFeature(p.toolbar, feature)) return false
     return trueFeature(a.toolbar, feature)
 }
 
 
 const isExtendedSearch = (p: ColumnList): boolean => {
-    return isToolBarFeature(p,"extendedsearch")
+    return isToolBarFeature(p, "extendedsearch")
 }
 
 const isTableSize = (p: ColumnList): boolean => {
-    return isToolBarFeature(p,"tablesize")
+    return isToolBarFeature(p, "tablesize")
 }
 
 const isRearrangeCols = (p: ColumnList): boolean => {
-    return isToolBarFeature(p,"arrangecol")
+    return isToolBarFeature(p, "arrangecol")
 }
 
 const isExcelButton = (p: ColumnList): boolean => {
-    return isToolBarFeature(p,"excelfile")
+    return isToolBarFeature(p, "excelfile")
 }
 
 function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, arrange_cols?: ColumnsT, vars?: TRow): ColumnsT {
@@ -170,7 +172,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const fresult: FActionResult = (entity: TRow, r: TAction) => {
         if (r.button) {
-            const ii: IIButtonAction = createII(r.button, {...props.vars, ...datasource.vars, ...entity}, undefined, retAction, props.rereadRest)
+            const ii: IIButtonAction = createII(r.button, { ...props.vars, ...datasource.vars, ...entity }, undefined, retAction, props.rereadRest)
             executeB(ii, undefined, () => refreshtable())
             return
         }
@@ -344,8 +346,25 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         saveCookieColWidth(props, m)
     }
 
+    const cSort: IColumnSort = {
+        changeSort: function (c: TColumn, sort: ColumnSortType): void {
+            saveCookieSortColumn(props, c, sort)
+        },
+        getSort: function (c: TColumn): ColumnSortType {
+            return getCookieSortColumn(props, c)
+        }
+    }
 
-    const columns: ColumnType<any>[] = transformColumns(props, thook, { ...props.vars, ...datasource.vars}, colw, resizeF, arrange_columns);
+    const cFilter: IColumnFilter = {
+        setFilter: function (c: TColumn, val: string | undefined): void {
+            saveCookieFilterColumn(props, c, val)
+        },
+        getFilter: function (c: TColumn): string | undefined {
+            return getCookieFielterColumn(props, c)
+        }
+    }
+
+    const columns: ColumnType<any>[] = transformColumns(props, thook, { ...props.vars, ...datasource.vars }, colw, resizeF, arrange_columns, cSort, cFilter);
 
     const changeMenuSize: FSetSize = (size: SizeType) => {
         setTableSize(size)
@@ -380,7 +399,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     return (
         <React.Fragment>
             {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction}
-                selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }} rereadRest={props.rereadRest as FRereadRest} closeAction={props.closeAction}/> : undefined}
+                selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }} rereadRest={props.rereadRest as FRereadRest} closeAction={props.closeAction} /> : undefined}
             {extendedTools}
             <Table
                 {...rowSelection({ ...props })}

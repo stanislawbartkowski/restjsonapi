@@ -1,6 +1,6 @@
 import type { ColumnType } from "antd/lib/table";
 
-import type { ColumnList, TableHookParam, TColumn, TColumns, TResizeColumn } from "../../ts/typing";
+import type { ColumnList, IColumnFilter, IColumnSort, TableHookParam, TColumn, TColumns, TResizeColumn } from "../../ts/typing";
 import { TRow, RowData, OneRowData, RestTableParam } from '../../../ts/typing'
 import { callJSFunction, toS } from "../../../ts/j";
 import './styles.css'
@@ -41,11 +41,11 @@ export function visibleColumnsR(cols: ColumnList, r_cols?: ColumnsT): TColumns {
   return mm
 }
 
-export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRow, colw?: ColWidth, resizeF?: TResizeColumn, r_cols?: ColumnsT): ColumnType<any>[] {
+export function transformColumns(cols: ColumnList, r: TableHookParam, vars?: TRow, colw?: ColWidth, resizeF?: TResizeColumn, r_cols?: ColumnsT, changeSort?: IColumnSort, filterF?: IColumnFilter): ColumnType<any>[] {
 
   const clist: TColumns = visibleColumnsR(cols, r_cols);
 
-  return clist.map((c) => transformOneColumn(c, r, cols, vars, colw?.get(c.field), resizeF));
+  return clist.map((c) => transformOneColumn(c, r, cols, vars, colw?.get(c.field), resizeF, changeSort, filterF));
 }
 
 // ===================================
@@ -175,7 +175,7 @@ export function verifyColumns(columns: TColumns, cols: string[], cookiename: str
   const setCookiCols: Set<string> = new Set<string>(cols)
   const colcookienotexist: TColumn | undefined = columns.find(c => !setCookiCols.has(c.field))
   if (colcookienotexist === undefined) return true
-  const mess: string = `${cookiename} columns ${colcookienotexist.field} not included in cookie column list` 
+  const mess: string = `${cookiename} columns ${colcookienotexist.field} not included in cookie column list`
   log(mess)
   return false
 }

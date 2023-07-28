@@ -1,4 +1,3 @@
-import { SearchOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { Button, Divider, Tooltip } from "antd";
 import { BaseButtonProps } from "antd/lib/button/button";
 import React, { MutableRefObject, useRef, useState } from "react";

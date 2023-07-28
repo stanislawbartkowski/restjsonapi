@@ -47,6 +47,8 @@ export type JsonTableResult = {
   vars?: PropsType
 }
 
+export type TReadResource = () => Promise<void>
+
 // =====================
 // common button
 // =====================
