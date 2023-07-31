@@ -82,13 +82,6 @@ function getOriginHREF(): string {
   return transformURL(window.location.href)
 }
 
-export function setRefreshRedirect() {
-  //if (isDev()) return
-  const path = window.location.pathname
-  console.log("path=", path)
-  if (path !== "/") window.location.href = getOriginURL()
-}
-
 function isDev(): boolean {
   return process.env.NODE_ENV !== 'production'
 }
