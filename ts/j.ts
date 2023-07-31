@@ -83,8 +83,9 @@ function getOriginHREF(): string {
 }
 
 export function setRefreshRedirect() {
-  if (isDev()) return
+  //if (isDev()) return
   const path = window.location.pathname
+  console.log("path=", path)
   if (path !== "/") window.location.href = getOriginURL()
 }
 
