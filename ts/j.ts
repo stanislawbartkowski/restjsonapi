@@ -5,6 +5,7 @@
 import { getDevServer } from "../services/readconf";
 import defaults from "./defaults";
 import { log } from "./l";
+import { getMenuRoute } from "./leftmenu";
 import lstring from "./localize";
 import type { ButtonElem, FieldValue, FormMessage, OneRowData, TRow } from "./typing";
 
@@ -79,6 +80,12 @@ export async function getConfigURL(): Promise<string> {
 
 function getOriginHREF(): string {
   return transformURL(window.location.href)
+}
+
+export function setRefreshRedirect() {
+  if (isDev()) return
+  const path = window.location.pathname
+  if (path !== "/") window.location.href = getOriginURL()
 }
 
 function isDev(): boolean {

@@ -29,6 +29,7 @@ import { elemFactory, produceItem } from './formview/EditItems'
 import { produceBody } from './formview/FormBody';
 import { TRefreshTable } from '../DrawTable';
 import { getCookie, setCookie } from '../../ts/cookies';
+import getValidateMessaged from '../../ts/validatemessages'
 
 
 function ltrace(mess: string) {
@@ -379,8 +380,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         )
     }
 
+    const validateMessages = getValidateMessaged()
+      
     // must be preserve=true (default)
-    const form = <Form
+    const form = <Form validateMessages={validateMessages}
         form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges} preserve={false}
         layout="horizontal" scrollToFirstError {...props.formprops} onFieldsChange={onFieldsChanges} >
 

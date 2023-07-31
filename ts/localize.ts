@@ -1,6 +1,11 @@
 import LocalizedStrings, { LocalizedStringsMethods } from 'react-localization';
 import { isOArray } from './j';
 
+let lang: string|undefined = undefined
+
+export function getLang() : string|undefined {
+  return lang
+}
 
 const embedded = {
   pl: {
@@ -125,6 +130,7 @@ export function setStrings(s: any, l: string | undefined) {
   if (s == null) return;
   const o = { pl: { ...embedded.pl, ...s.pl }, en: { ...embedded.en, ...s.en } };
   strings.setContent(o);
+  lang = l
   if (l) strings.setLanguage(l)
 }
 
