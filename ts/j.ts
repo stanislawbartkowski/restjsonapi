@@ -91,7 +91,8 @@ export async function getServerUrl(): Promise<string> {
     return getDevServer()
   }
   //return getOriginHREF()
-  const u = getOriginURLPath()
+  //const u = getOriginURLPath()
+  const u = getOriginURL()
   return u
 }
 
