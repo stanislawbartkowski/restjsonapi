@@ -305,15 +305,29 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
 
     const widthProp = (width === undefined) ? undefined : { width: width }
 
+    const isresize : boolean = (resizeF !== undefined && width !== undefined && isNumber(width))
+    const issort : boolean = sortColumn !== undefined
+
     const headerFunc: GetComponentProps<ColumnsType<any>[number]> = (column: any) => {
-        const p = {
+        const presize = isresize ? {
             width: width as number,
             onResize: handleResize
-        }
-        return (p as any) as React.HTMLAttributes<any>
+        } : undefined
+        const sort = issort ? {
+            onClick: () => {
+                const colu = (column as any)
+                if (colu.title.props.children.props === undefined) return
+                const sort: string = colu.title.props.children.props.title as string
+                const locale = colu.title.props.locale
+                const sortType: ColumnSortType = sort === locale.triggerAsc ? ColumnSortType.ACC : sort === locale.triggerDesc ? ColumnSortType.DESC : ColumnSortType.NO
+                sortColumn?.changeSort(c, sortType)
+            }
+        } : undefined
+        return {...presize, ...sort} as React.HTMLAttributes<any>
     }
 
-    const onHeaderProps = (resizeF !== undefined && width !== undefined && isNumber(width)) ? {
+
+    const onHeaderProps = (isresize || issort) ? {
         onHeaderCell: headerFunc
     } : undefined
 
@@ -331,27 +345,11 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
         e.render = constructRenderCell(c, r, vars);
     }
 
-    if (sortColumn !== undefined) {
-        const sort: ColumnSortType = sortColumn.getSort(c)
+    if (issort) {
+        const sort: ColumnSortType = (sortColumn as IColumnSort).getSort(c)
         if (sort !== ColumnSortType.NO) {
             e.defaultSortOrder = sort == ColumnSortType.ACC ? "ascend" : "descend"
         }
-    }
-
-    if (sortColumn !== undefined) {
-        e.onHeaderCell = (column) => {
-            return {
-                onClick: () => {
-                    const colu = (column as any)
-                    if (colu.title.props.children.props === undefined) return
-                    const sort: string = colu.title.props.children.props.title as string
-                    const locale = colu.title.props.locale
-                    const sortType: ColumnSortType = sort === locale.triggerAsc ? ColumnSortType.ACC : sort === locale.triggerDesc ? ColumnSortType.DESC : ColumnSortType.NO
-                    sortColumn.changeSort(c, sortType)
-                }
-            }
-        }
-
     }
 
     return e;

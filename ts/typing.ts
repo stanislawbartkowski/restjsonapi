@@ -195,8 +195,13 @@ export type ToolbarFeature = "extendedsearch" | "tablesize" | "arrangecol" | "ex
 
 export interface ListToolbar {
   resize?: TResize
+  bordered?: TTableBordered
   features?: Record<ToolbarFeature, boolean>
   notool?: boolean
+}
+
+export interface TTableBordered {
+  bordered?: boolean
 }
 
 export interface TResize {

@@ -119,6 +119,14 @@ function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, arrange_c
     return ta
 }
 
+function isBordered(p: ColumnList): boolean {
+    const a: AppData = getAppData()
+
+    if (istrue(p.bordered)) return true
+    if (isfalse(p.bordered)) return false
+    return istrue(a.toolbar?.bordered?.bordered)
+}
+
 
 const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle, expanded?: boolean, rereadRest?: FRereadRest }> = (props) => {
 
@@ -396,6 +404,8 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const vars: TRow = { ...props.vars, ...datasource.vars }
 
+    const bordered = isBordered(props) ? { bordered: true } : undefined
+
     return (
         <React.Fragment>
             {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction}
@@ -411,6 +421,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 loading={datasource.status === Status.PENDING}
                 columns={columns}
                 {...pagingD[0]}
+                {...bordered}
                 expandable={extend}
                 rowClassName={rowClassName}
                 summary={isSummary() ? () => (<SummaryTable isextendable={props.extendable !== undefined} {...props} list={datasource.res} vars={vars} columns={visibleColumnsR(props, arrange_columns)} />) : undefined}
