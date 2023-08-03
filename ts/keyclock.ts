@@ -13,6 +13,10 @@ let isready: boolean = false
 //    clientId: "React-auth",
 //   })
 
+export function getToken(): string | undefined {
+    if (!isready) return undefined
+    return keycloak?.token
+}
 
 export async function initkeyclock() {
     if (!isSec()) return
@@ -26,8 +30,8 @@ export async function initkeyclock() {
     log("Keycloak init")
     // await necessary
     await keycloak.init({ onLoad: 'login-required', flow: 'implicit' }).then(
-    //await keycloak.init({ onLoad: 'login-required' }).then(
-    
+        //await keycloak.init({ onLoad: 'login-required' }).then(
+
         () => {
             log("Keyclock initialized and ready")
             isready = true
@@ -61,8 +65,8 @@ export function getUserName(): string | undefined {
 }
 
 export function getUserFullName(): string | undefined {
-    const firstname : string|undefined = keycloak?.profile?.firstName
-    const lastname : string|undefined = keycloak?.profile?.lastName
+    const firstname: string | undefined = keycloak?.profile?.firstName
+    const lastname: string | undefined = keycloak?.profile?.lastName
     if (firstname === undefined && lastname === undefined) return undefined
     if (firstname !== undefined && lastname !== undefined) return firstname + " " + lastname
     return (firstname !== undefined) ? firstname : lastname as string

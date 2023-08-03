@@ -26,7 +26,9 @@ interface Defaults {
   downloadfile: string,
   excelext: string,
   downloadname: string,
-  defaultdownloadname: string
+  defaultdownloadname: string,
+  headermenuaction: string,
+  headermenuresource: string
 };
 
 const defaults: Defaults = {
@@ -57,7 +59,10 @@ const defaults: Defaults = {
   downloadfile: "Tabela",
   excelext: ".xlsx",
   downloadname: "downloadname",
-  defaultdownloadname: "downloadfile"
+  defaultdownloadname: "downloadfile",
+  headermenuaction: "headermenu",
+  headermenuresource: "HEADERMENU"
+
 };
 
 export default defaults;

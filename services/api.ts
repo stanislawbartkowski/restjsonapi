@@ -1,11 +1,10 @@
-import request, { extend, RequestOptionsInit, ResponseError, ResponseType } from "umi-request";
+import request, { RequestOptionsInit, ResponseError } from "umi-request";
 
 import type { FHeaderModifier, FieldValue, FUrlModifier } from "../ts/typing";
 import { log, internalerrorlog, logG } from '../ts/l'
 import { HTTPMETHOD } from "../ts/typing";
 import { getAuthLabel, getSessionId } from "../ts/j";
-import { getUserFullName, getUserName } from "../ts/keyclock";
-import { arrayBuffer } from "node:stream/consumers";
+import { getToken, getUserFullName, getUserName } from "../ts/keyclock";
 import { emptys } from "../components/ts/helper";
 
 
@@ -69,13 +68,15 @@ function userHeader(): Record<string, string> {
   const userH: Record<string, string> = (getUserName() === undefined) ? {} : { 'user': (encodeURIComponent(getUserName() as string)) }
   const usernameH: Record<string, string> = (getUserFullName() === undefined) ? {} : { 'username': (encodeURIComponent(getUserFullName() as string)) }
   const modifH: Record<string, string> = (headerModifier === undefined) ? {} : headerModifier()
-  const authLabel: Record<string, string> = emptys(getAuthLabel()) ? {} : { 'authlabel' : getAuthLabel() as string}
+  const authLabel: Record<string, string> = emptys(getAuthLabel()) ? {} : { 'authlabel': getAuthLabel() as string }
+  const authorization: Record<string, string> = emptys(getToken()) ? {} : { 'Authorization': 'Bearer ' + getToken() }
   return {
     ...sessionH,
     ...userH,
     ...modifH,
     ...usernameH,
-    ...authLabel
+    ...authLabel,
+    ...authorization
   }
 }
 

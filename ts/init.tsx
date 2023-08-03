@@ -7,6 +7,7 @@ import { isSecEnabled } from '../services/readconf'
 import { getServerUrl, setSec } from './j'
 import { initkeyclock } from './keyclock'
 import { TReadResource } from './typing'
+import { readHeaderMenu } from './headermenu'
 
 
 let customReadResource : TReadResource | undefined 
@@ -26,6 +27,8 @@ async function init() {
 
     await readResource();
     addRouterElem(defaults.displayprintrouterid,() => <PrintDisplay/>)
+
+    await readHeaderMenu()
 
     if (customReadResource !== undefined) await customReadResource()
 }
