@@ -20,7 +20,7 @@ export async function readHeaderMenu() {
 
     const url = await readR(defaults.headermenuresource)
 
-    if (emptys(url)) Promise.resolve()
+    if (emptys(url)) return Promise.resolve()
     const js = {
         "url": url
     }
