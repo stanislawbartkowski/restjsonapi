@@ -23,6 +23,10 @@ const OneRowTable: React.FC<TDetailsCard> = (props) => {
 
     const col: ColumnList = props
 
+    const setS =  (s: DataSourceState) => { 
+        setDataSource({ ...s }) 
+    }
+
     useEffect(() => {
         if (props.varsrestaction === undefined) {
             setDataSource({ status: Status.READY, res: [], vars: props.vars })
@@ -30,7 +34,8 @@ const OneRowTable: React.FC<TDetailsCard> = (props) => {
         }
         const varsaction: TRestVars = props.varsrestaction?.js ? callJSFunction(props.varsrestaction.js, toPars()) : props.varsrestaction as TRestVars
 
-        readlist({ ...props, ...varsaction, vars: { ...props.r } }, (s: DataSourceState) => { setDataSource({ ...s }) })
+
+        readlist({ ...props, ...varsaction, vars: { ...props.r } }, setS)
     }
         , [props.varsrestaction, props.r, props.vars]);
 
