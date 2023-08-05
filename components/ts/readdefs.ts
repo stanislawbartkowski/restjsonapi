@@ -32,7 +32,13 @@ export async function readvals(initval: string | RESTMETH, row: TRow, vars?: TRo
             res: r
         }
     }
-    return restaction(r.method === undefined ? HTTPMETHOD.GET : r.method, r.restaction as string, r.params, {...row, ...vars})
+    const v = {...row, ...vars}
+    // Data: 2023/08/04 - is not working if {...row, ...vars} is used directly as function parameter
+    // It is not clear, after recompiling it also works while used as function parameter
+    // TODO: requires attention
+    return restaction(r.method === undefined ? HTTPMETHOD.GET : r.method, r.restaction as string, r.params, v)
+    //return restaction(r.method === undefined ? HTTPMETHOD.GET : r.method, r.restaction as string, r.params, vars)
+    // return restaction(r.method === undefined ? HTTPMETHOD.GET : r.method, r.restaction as string, r.params, {...row, ...vars})
 }
 
 
