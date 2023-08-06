@@ -1,4 +1,9 @@
+import { isProd } from "./readresource";
+
 const InLine = (props: any) => {
+
+  if (isProd()) return null;
+  
   const script = document.createElement('script');
 
   script.innerHTML = props.js;

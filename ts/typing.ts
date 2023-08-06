@@ -233,7 +233,6 @@ export interface AppAuthLabel {
   authlabel?: string
 }
 
-
 export interface AppData {
   appname: string
   logo: string
@@ -246,5 +245,8 @@ export interface AppData {
   toolbar?: ListToolbar
   getleftmenu?: string
   authlabel?: string
+  forcenoprod?: boolean
+  getcacheinclude: string[]
+  getcacheexclude: string[]
 }
 

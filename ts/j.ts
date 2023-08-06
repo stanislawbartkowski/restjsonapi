@@ -7,7 +7,8 @@ import defaults from "./defaults";
 import { log } from "./l";
 import { getMenuRoute } from "./leftmenu";
 import lstring from "./localize";
-import type { ButtonElem, FieldValue, FormMessage, OneRowData, TRow } from "./typing";
+import { getAppData } from "./readresource";
+import type { AppData, ButtonElem, FieldValue, FormMessage, OneRowData, TRow } from "./typing";
 
 export function callJSFunction(jsAction: string, par: OneRowData): any {
   const clickaction = new Function("p,vars,t", "return " + jsAction + "(p,vars,t)");
@@ -193,4 +194,21 @@ export function setAuthLabel(auth: string) {
 
 export function getAuthLabel(): string | undefined {
   return authlabel;
+}
+
+// ========================
+
+function isRegOnList(s: string, reglist: string[] | undefined): boolean {
+  if (reglist === undefined) return false;
+  for (let i = 0; i < reglist.length; i++) {
+    const r: string = reglist[i]
+    if (s.match(r)) return true
+  }
+  return false
+}
+
+export function isgetCached(g: string): boolean {
+  const a: AppData = getAppData()
+  if (isRegOnList(g, a.getcacheexclude)) return false
+  return isRegOnList(g, a.getcacheinclude)
 }

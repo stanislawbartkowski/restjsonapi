@@ -4,8 +4,9 @@ import { log } from "./l";
 import { setStrings } from "./localize";
 import type { AppAuthLabel, AppData, AppDefaults, FieldDefaults, LeftMenuResource, MenuLeft } from "./typing";
 import { setLeftMenu } from './leftmenu'
-import { emptys } from "../components/ts/helper";
+import { emptys, istrue } from "../components/ts/helper";
 import { isSec, setAuthLabel } from "./j";
+import { readR } from "../services/readconf";
 
 
 let appdefaults: AppDefaults
@@ -45,6 +46,18 @@ async function readJS(jnames: string) {
     return await restapijs(j)
   })
   )
+}
+
+let prod: boolean = false
+
+export function isProd() {
+  if (istrue(appdata?.forcenoprod)) return false;
+  return prod;
+}
+
+async function reeadProd() {
+   const p: string = await readR("PROD");
+   prod = (p === "1")
 }
 
 async function readResource() {
@@ -89,6 +102,7 @@ async function readResource() {
   setLeftMenu(lm)
   log("Resource leftmenu read");
 
+  await reeadProd();
 
 }
 

@@ -3,9 +3,10 @@ import request, { RequestOptionsInit, ResponseError } from "umi-request";
 import type { FHeaderModifier, FieldValue, FUrlModifier } from "../ts/typing";
 import { log, internalerrorlog, logG } from '../ts/l'
 import { HTTPMETHOD } from "../ts/typing";
-import { getAuthLabel, getSessionId } from "../ts/j";
+import { getAuthLabel, getSessionId, isgetCached } from "../ts/j";
 import { getToken, getUserFullName, getUserName } from "../ts/keyclock";
 import { emptys } from "../components/ts/helper";
+import { isProd } from "../ts/readresource";
 
 
 const rrequest = request;
@@ -80,13 +81,25 @@ function userHeader(): Record<string, string> {
   }
 }
 
+function userGetCache() {
+  const u = isProd() ? { useCache: true } : undefined
+  console.log("u=",u)
+  return u;
+}
+
+function getUserGetCache(list: string) {
+  if (!isgetCached(list)) return undefined
+  return userGetCache()
+}
+
 export async function restapilist(list: string, pars?: Record<string, FieldValue>) {
   const url: string = `${prefix}${list}`;
   const para: any = urlModifier === undefined ? {} : urlModifier(list);
   return rrequest<Record<string, any>>(url, {
     method: "GET",
     params: { ...para, ...pars },
-    headers: userHeader()
+    headers: userHeader(),
+    ...getUserGetCache(list)
   });
 }
 
@@ -99,7 +112,8 @@ export async function restapilistdef(resource: string) {
   return rrequest<Record<string, any>>(`${prefix}compdef`, {
     method: "GET",
     params: { resource: resource },
-    headers: userHeader()
+    headers: userHeader(),
+    ...userGetCache()
   });
 }
 
@@ -115,7 +129,8 @@ export async function restapijs(resource: string) {
   return rrequest<string>(`${prefix}getjs`, {
     method: "GET",
     params: { resource: resource },
-    headers: userHeader()
+    headers: userHeader(),
+    ...userGetCache()
   });
 }
 
@@ -128,6 +143,7 @@ export async function restaction(method: HTTPMETHOD, restaction: string, pars?: 
     getResponse: true,
     params: { ...para, ...pars },
     responseType: responseType,
-    headers: userHeader()
+    headers: userHeader(),
+    ...(method === HTTPMETHOD.GET ? getUserGetCache(restaction) : undefined)
   });
 }
