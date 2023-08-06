@@ -57,7 +57,8 @@ export function isProd() {
 
 async function reeadProd() {
    const p: string = await readR("PROD");
-   prod = (p === "1")
+   prod = (p.trim() === "1")
+   log(prod ? "PROD, use cache": "NO PROD, no cache")
 }
 
 async function readResource() {
