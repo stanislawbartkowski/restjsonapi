@@ -83,7 +83,6 @@ function userHeader(): Record<string, string> {
 
 function userGetCache() {
   const u = isProd() ? { useCache: true } : undefined
-  console.log("u=",u)
   return u;
 }
 
