@@ -206,7 +206,9 @@ function constructBoolean(c: TColumn, r: TRow, vars?: TRow, disabled?: boolean):
 
 export function getVal(c: TColumn, props: OneRowData): FieldValue {
     const val: FieldValue = (props.r as TRow)[c.field]
-    if (val) return val
+    // 2023/08/10 -- important, distinguish between undefined and null
+    if (val !== undefined) return val
+    // only in case of undefined use props.vars
     return (props.vars) ? props.vars[c.field] : undefined
 }
 
