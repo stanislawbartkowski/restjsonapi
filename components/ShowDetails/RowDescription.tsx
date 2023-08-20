@@ -1,16 +1,23 @@
 import React, { ReactElement } from 'react';
 import { Descriptions, DescriptionsProps } from 'antd';
 
-import { OneRowData, TRow } from '../../ts/typing';
+import { FIELDTYPE, OneRowData, TRow } from '../../ts/typing';
 import { detailsTitle, isColumnAction } from '../ts/helper';
 import { TableHookParam, TColumn, TDetailsCard } from '../ts/typing';
 import { fieldTitle, renderCell } from '../ts/transcol';
 
+function isdiv(c: TColumn) {
+  return c.fieldtype === FIELDTYPE.HTML
+}
+
 function toDescritionItem(c: TColumn, pars: OneRowData) {
   const f: TableHookParam = { fdetails: undefined, fresult: undefined }
   const elem: ReactElement = renderCell(c, <div>{pars.r[c.field]}</div>, pars.r, f, pars.vars, true)
-  return <Descriptions.Item key={c.field} label={fieldTitle(c, pars)} {...c.props}>
-    {elem}
+  const label = isdiv(c) ? elem : fieldTitle(c, pars)
+  const val = isdiv(c) ? undefined : elem
+
+  return <Descriptions.Item key={c.field} label={label} {...c.props}>
+    {val}
   </Descriptions.Item>
 
 }
