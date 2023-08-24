@@ -5,12 +5,15 @@ import { OneRowData } from "../../ts/typing"
 import { extractActionHook, getActions, IActionHook } from "../ts/transcol"
 import { TableHookParam, TAction, TActions, TColumn, TColumns } from "../ts/typing"
 import { blue, cyan, green, yellow, gold, purple } from '@ant-design/colors';
+import { emptys } from "../ts/helper"
 
 function toButton(i: number, t: TAction, r: TableHookParam, pars: OneRowData) {
 
   const h: IActionHook = extractActionHook(t, r, pars)
 
   const colors: string[] = [blue[6], cyan[6], green[6], yellow[7], gold[6], purple[5]]
+
+  if (emptys(h.text)) return undefined
 
   return <Button
     key={i}
@@ -35,6 +38,7 @@ const ButtonStack: React.FC<ButtonStackPars> = (props) => {
 
   function getListOfActions(t: TColumn): TAction[] {
     const act: TActions = getActions(t.actions as TActions, props.pars)
+
     return act === undefined ? [] : act.actions as TAction[]
   }
 
