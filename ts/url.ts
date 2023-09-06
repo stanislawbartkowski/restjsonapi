@@ -38,7 +38,7 @@ function getOrigin(): [string, string, number] {
 
   function getOriginPa() : string {
     const pa:string = getPath()
-    return getOriginURL() + pa.slice(1)
+    return getOriginURL() + pa
   }
 
   export async function getConfigURL(): Promise<string> {
