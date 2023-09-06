@@ -50,53 +50,6 @@ export function toS(f: FieldValue): string {
   return value
 }
 
-
-// ===============================
-// origin
-// ===============================
-
-function getOrigin(): [string, string, number] {
-  return [window.location.hostname, window.location.protocol, +window.location.port]
-}
-
-function getOriginURL(): string {
-  return window.location.origin;
-}
-
-function getOriginURLPath(): string {
-  return transformURL(getOriginURL() + window.location.pathname)
-}
-
-function transformURL(url: string): string {
-  return url[url.length - 1] === '/' ? url.slice(0, -1) : url
-}
-
-export async function getConfigURL(): Promise<string> {
-  if (isDev()) {
-    return getOriginURL()
-  }
-  //return getOriginHREF()
-  return getOriginURL()
-}
-
-function getOriginHREF(): string {
-  return transformURL(window.location.href)
-}
-
-function isDev(): boolean {
-  return process.env.NODE_ENV !== 'production'
-}
-
-export async function getServerUrl(): Promise<string> {
-  if (isDev()) {
-    return getDevServer()
-  }
-  //return getOriginHREF()
-  //const u = getOriginURLPath()
-  const u = getOriginURL()
-  return u
-}
-
 // ==============================
 // make message
 // ==============================

@@ -4,10 +4,11 @@ import { addRouterElem} from './leftmenu'
 import PrintDisplay from '../components/PrintDisplay'
 import { setHost } from '../services/api'
 import { isSecEnabled } from '../services/readconf'
-import { getServerUrl, setSec } from './j'
+import { setSec } from './j'
 import { initkeyclock } from './keyclock'
 import { TReadResource } from './typing'
 import { readHeaderMenu } from './headermenu'
+import { getServerUrl } from './url'
 
 
 let customReadResource : TReadResource | undefined 

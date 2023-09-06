@@ -28,8 +28,8 @@ export function enhanceLink(url: string): string {
   else return `${o}/${url}`
 }
 
-
-export function setPrefix(p: string) {
+// not used
+function setPrefix(p: string) {
   prefix = p
 }
 

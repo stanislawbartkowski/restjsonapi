@@ -1,5 +1,5 @@
-import { getConfigURL } from "../ts/j";
 import { internalerrorlog, log } from "../ts/l";
+import { getConfigURL } from "../ts/url";
 
 
 export async function readR(file : string) : Promise<string> {
