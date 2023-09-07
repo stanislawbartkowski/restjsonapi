@@ -5,10 +5,6 @@
 import { getDevServer } from "../services/readconf";
 import { getCookie, setCookie } from "./cookies";
 
-function getOrigin(): [string, string, number] {
-  return [window.location.hostname, window.location.protocol, +window.location.port]
-}
-
 function getOriginURL(): string {
   return window.location.origin;
 }
@@ -24,16 +20,19 @@ function isDev(): boolean {
 
 const CPATH: string = "lastoriginpath"
 
+let originpath: string | undefined = undefined
+
 function getPath(): string {
-  const lastpa: string | undefined = getCookie(CPATH)
-  const pa = window.location.pathname
-  if (lastpa !== undefined) {
-    const tlastpa: string[] = lastpa.split('/')
-    const tpa: string[] = pa.split('/')
-    if (tlastpa[1] === tpa[1]) return lastpa
+  if (originpath === undefined) {
+    // decide on origin path
+    const lastpa: string | undefined = getCookie(CPATH)
+    originpath = transformURL(window.location.pathname)
+    if (lastpa !== undefined) {
+      if (originpath.startsWith(lastpa)) originpath = lastpa
+    }
+    setCookie(CPATH, originpath)
   }
-  setCookie(CPATH, pa)
-  return pa.slice(0, -1)
+  return originpath
 }
 
 function getOriginPa(): string {
