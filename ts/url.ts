@@ -33,11 +33,11 @@ function getPath(): string {
     if (tlastpa[1] === tpa[1]) return lastpa
   }
   setCookie(CPATH, pa)
-  return pa
+  return pa.slice(0, -1)
 }
 
 function getOriginPa(): string {
-  const pa: string = getPath().slice(0, -1)
+  const pa: string = getPath()
 
   return getOriginURL() + pa
 }
