@@ -278,6 +278,12 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
         if (fieldtype !== FIELDTYPE.HTML) disabledp = { disabled: true }
     }
 
+    function isenabled(ipros: PropsType): boolean {
+        if (ipros === undefined) return true
+        const disabled = iprops["disabled"]
+        return !istrue(disabled)
+    }
+
     switch (fieldtype) {
         case FIELDTYPE.NUMBER: return [<InputNumber onBlur={onBlur} {...placeHolder(t)} {...iprops} {...disabledp} />, { ...valuep }]
         case FIELDTYPE.DATE:
@@ -292,12 +298,12 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
         case FIELDTYPE.HTML: return [<HTMLControl />, { ...valuep }]
     }
 
-    const fieldE: ReactNode = t.enterbutton ? searchItem(ir, t, field) :
+    const fieldE: ReactNode = t.enterbutton && isenabled(iprops) ? searchItem(ir, t, field) :
         t.istextarea ? <Input.TextArea onInput={curryOnTextAreaInput(t)} onBlur={onBlurTextArea} {...placeHolder(t)}  {...iprops} {...disabledp} />
             : <Input onInput={curryOnInput(t)} onBlur={onBlur} {...placeHolder(t)}  {...iprops} {...disabledp} />
 
 
-    if (t.autocomplete) {
+    if (t.autocomplete && isenabled(iprops)) {
 
         const aoptions: TOptionLine[] | undefined = t.autocomplete === undefined ? [] : t.options?.get(t.autocomplete)
 
