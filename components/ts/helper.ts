@@ -140,7 +140,7 @@ export function isnotdefined(t: any): boolean {
 }
 
 export function emptys(t: string | undefined): boolean {
-    return isnotdefined(t) || t === ""
+    return isnotdefined(t) || t?.trim() === ""
 }
 
 export function istrue(t: boolean | undefined): boolean {
