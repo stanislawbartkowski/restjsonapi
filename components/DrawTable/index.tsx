@@ -333,7 +333,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 type: t.choosing ? 'radio' : 'checkbox',
                 onChange: (r: React.Key[]) => {
                     setMultiChoice(r as FieldValue[])
-                    if (props.setmulti) props.setmulti(r)
+                    if (props.setmulti) props.setmulti(r as FieldValue[])
                     if (r.length > 0) {
                         const key: React.Key = r[0]
                         const ro: TRow | undefined = findRowByKey(key);

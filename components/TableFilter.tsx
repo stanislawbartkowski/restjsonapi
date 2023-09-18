@@ -13,6 +13,7 @@ import { ReactNode } from "react";
 import { internalerrorlog, log } from "../ts/l";
 import { fieldType } from "./ts/transcol";
 import { toS } from "../ts/j";
+import { valueType } from "antd/es/statistic/utils";
 
 // ========================
 // filter/search
@@ -121,7 +122,7 @@ function searchAttr(c: TColumn, coltitle: string, filterF?: IColumnFilter): Colu
       case FIELDTYPE.NUMBER:
         return <InputNumber
           placeholder={lstring('searchprompt', coltitle)}
-          value={selectedKeys[0]}
+          value={selectedKeys[0] as valueType}
           onChange={e => setSelectedKeys(e ? [e] : [])}
           onPressEnter={() => handleSearch(selectedKeys, confirm, c.field)}
           style={{ marginBottom: 8, display: 'block', width: '90%' }}
@@ -131,7 +132,7 @@ function searchAttr(c: TColumn, coltitle: string, filterF?: IColumnFilter): Colu
     }
     return <Input
       placeholder={lstring('searchprompt', coltitle)}
-      value={selectedKeys[0]}
+      value={selectedKeys[0] as valueType}
       onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
       onPressEnter={() => handleSearch(selectedKeys, confirm, c.field)}
       style={{ marginBottom: 8, display: 'block' }}
