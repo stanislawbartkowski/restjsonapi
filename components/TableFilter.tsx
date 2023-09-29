@@ -23,7 +23,7 @@ export type ColumnFilterSearch = {
   defaultFilteredValue: string[] | undefined
   filterDropdown: (props: FilterDropdownProps) => ReactNode
   filterIcon: (filtered: boolean) => ReactNode
-  onFilter: (value: string | number | boolean, record: TRow) => boolean;
+  onColumnFilter: (value: string | number | boolean, record: TRow) => boolean;
   onFilterDropdownVisibleChange?: (visible: boolean) => void
 }
 
@@ -111,7 +111,7 @@ function searchAttr(c: TColumn, coltitle: string, filterF?: IColumnFilter): Colu
           value={d}
           onChange={
             e => {
-              const s: string | undefined = datetoS(e as dayjs.Dayjs)
+              const s: string | undefined = datetoS(e as dayjs.Dayjs) 
               setSelectedKeys(e ? [s as string] : [])
             }
           }
@@ -165,7 +165,7 @@ function searchAttr(c: TColumn, coltitle: string, filterF?: IColumnFilter): Colu
     ),
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
 
-    onFilter: constructTableFilter(c),
+    onColumnFilter: constructTableFilter(c),
 
     defaultFilteredValue: filterV
 
