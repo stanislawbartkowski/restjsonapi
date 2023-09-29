@@ -3,14 +3,17 @@ import { isSec } from '../ts/j';
 import { getUserName } from '../ts/keyclock';
 import { getHeaderLine } from '../ts/readresource'
 import HeaderButtons from './HeaderButtons';
+import { Space } from 'antd';
 
 const HeaderLine: React.FC = () => {
 
+    const menu = <span style={{ float: 'right', paddingRight: "1%" }}><HeaderButtons /></span>
+
     if (isSec()) {
         const username: string | undefined = getUserName()
-        return <React.Fragment><span style={{ paddingLeft: 5 }}><b>{username}</b></span>  <span style={{ paddingLeft: 10 }}>{getHeaderLine()}  <HeaderButtons /> </span></React.Fragment>
+        return <React.Fragment><Space size="large">{username}{getHeaderLine()}</Space> {menu} </React.Fragment>
     }
-    else return <React.Fragment>{getHeaderLine()} <HeaderButtons /> </React.Fragment>
+    else return <React.Fragment><Space align='baseline' size='large' direction='horizontal'>{getHeaderLine()}</Space> {menu} </React.Fragment>
 }
 
 export default HeaderLine

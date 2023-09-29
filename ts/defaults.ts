@@ -28,7 +28,9 @@ interface Defaults {
   downloadname: string,
   defaultdownloadname: string,
   headermenuaction: string,
-  headermenuresource: string
+  headermenuresource: string,
+  isheadermenuasmenu: boolean,
+  headermenuname: string
 };
 
 const defaults: Defaults = {
@@ -41,7 +43,7 @@ const defaults: Defaults = {
   displayprintrouterid: "/printingdisplayer",
   cookieage: 7,
   currentfield: "currentfield",
-  verstring: "JS: wersja 1.3 (r:24) z dnia 17 września 2023",
+  verstring: "JS: wersja 1.3 (r:25) z dnia 30 września 2023",
   directprefix: "~",
   multichoicevar: "multichoice",
   listpos: "listpos",
@@ -61,8 +63,9 @@ const defaults: Defaults = {
   downloadname: "downloadname",
   defaultdownloadname: "downloadfile",
   headermenuaction: "headermenu",
-  headermenuresource: "HEADERMENU"
-
+  headermenuresource: "HEADERMENU",
+  isheadermenuasmenu: true,
+  headermenuname: "Admify"
 };
 
 export default defaults;

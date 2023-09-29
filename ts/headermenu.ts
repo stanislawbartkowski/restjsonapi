@@ -23,6 +23,7 @@ export async function readHeaderMenu() {
     if (emptys(url)) return Promise.resolve()
     const js = {
         "url": url
+        //"test": true
     }
     const data = await restaction(HTTPMETHOD.POST, defaults.headermenuaction, undefined, js)
     headerMenu = data.data.res

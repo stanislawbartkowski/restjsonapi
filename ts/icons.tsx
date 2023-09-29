@@ -32,7 +32,9 @@ import {
   FontSizeOutlined,
   ForwardOutlined,
   FileExcelOutlined,
-  HeartOutlined
+  HeartOutlined,
+  MenuOutlined
+
 } from "@ant-design/icons";
 
 import { ReactNode } from "react";
@@ -65,14 +67,15 @@ const map = new Map<string, ReactNode>([
   ['insertrowbelowoutlined', <InsertRowBelowOutlined />],
   ['deleterowoutlined', <DeleteRowOutlined />],
   ['closecircleoutlined', <CloseCircleOutlined />],
-  ['searchoutlined',<SearchOutlined />],
-  ['formoutlined',<FormOutlined />],
-  ['fontsizeoutlined',<FontSizeOutlined />],
+  ['searchoutlined', <SearchOutlined />],
+  ['formoutlined', <FormOutlined />],
+  ['fontsizeoutlined', <FontSizeOutlined />],
   ['searchoutlined', <SearchOutlined />],
   ['forwardoutlined', <ForwardOutlined />],
-  ['fileexceloutlined',<FileExcelOutlined />],
-  ['heartoutlined',<HeartOutlined />]
-  ]);
+  ['fileexceloutlined', <FileExcelOutlined />],
+  ['heartoutlined', <HeartOutlined />],
+  ['menuoutlined', <MenuOutlined />]
+]);
 
 function getIcon(id?: string, defaultid?: string): ReactNode {
   if (id === undefined && defaultid === undefined) {

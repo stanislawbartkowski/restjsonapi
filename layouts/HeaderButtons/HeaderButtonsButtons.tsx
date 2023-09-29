@@ -1,7 +1,7 @@
 
 import { blue, cyan, green, yellow, gold, purple } from '@ant-design/colors';
 import { Button, Divider, Space } from 'antd';
-import { HeaderMenu, getHeaderMenu } from '../ts/headermenu';
+import { HeaderMenu, getHeaderMenu } from '../../ts/headermenu';
 import { Fragment } from 'react';
 
 const colors: string[] = [blue[1], cyan[1], green[1], gold[1]]
@@ -13,9 +13,7 @@ function genButton(m: HeaderMenu, n: number) {
 
 const HeaderButtons: React.FC = () => {
 
-    const menu: HeaderMenu[] | undefined = getHeaderMenu()
-
-    if (menu === undefined) return <div></div>
+    const menu: HeaderMenu[] = getHeaderMenu() as HeaderMenu[]
 
     let n: number = 0
 
