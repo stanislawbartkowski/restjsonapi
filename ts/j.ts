@@ -2,10 +2,8 @@
 // call JS function
 // ====================
 
-import { getDevServer } from "../services/readconf";
 import defaults from "./defaults";
 import { log } from "./l";
-import { getMenuRoute } from "./leftmenu";
 import lstring from "./localize";
 import { getAppData } from "./readresource";
 import type { AppData, ButtonElem, FieldValue, FormMessage, OneRowData, TRow } from "./typing";

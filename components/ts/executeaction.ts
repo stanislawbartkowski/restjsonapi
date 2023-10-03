@@ -14,6 +14,7 @@ import { history } from '../../ts/CustomRouter'
 import { ErrorMessages, ErrorMessage } from "../ModalForm/formview/types";
 import fileDownload from "js-file-download";
 import { RequestOptionsInit } from "umi-request";
+import { getRouterRoot } from "../../ts/url";
 
 export type IIButtonAction = {
     res: TAction
@@ -103,7 +104,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
             if (button?.print) {
                 close()
                 setPrintContent({ result: r, content: (presult as string), button: (button as ButtonAction) });
-                history.push(defaults.displayprintrouterid);
+                history.push(getRouterRoot()+ defaults.displayprintrouterid);
             }
         }
         if (props.i.doAction) props.i.doAction(r)

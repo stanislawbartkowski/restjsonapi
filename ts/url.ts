@@ -4,15 +4,19 @@
 
 import { getDevServer } from "../services/readconf";
 import { getCookie, setCookie } from "./cookies";
+import { log } from "./l";
 
 function getOriginURL(): string {
   return window.location.origin;
 }
 
+function isDomain(url: string): boolean {
+  return url[url.length - 1] === '/' && url.length > 1
+}
+
 function transformURL(url: string): string {
   return url[url.length - 1] === '/' ? url.slice(0, -1) : url
 }
-
 
 function isDev(): boolean {
   return process.env.NODE_ENV !== 'production'
@@ -20,23 +24,32 @@ function isDev(): boolean {
 
 const CPATH: string = "lastoriginpath"
 
-let originpath: string | undefined = undefined
+let domain: string | undefined = undefined
 
-function getPath(): string {
-  if (originpath === undefined) {
-    // decide on origin path
-    const lastpa: string | undefined = getCookie(CPATH)
-    originpath = transformURL(window.location.pathname)
-    if (lastpa !== undefined) {
-      if (originpath.startsWith(lastpa)) originpath = lastpa
+export function setUrlDomain() {
+  // decide on origin path
+  const lastpa: string | undefined = getCookie(CPATH)
+  domain = transformURL(window.location.pathname)
+  if (lastpa !== undefined && !isDomain(window.location.pathname)) {
+    if (domain.startsWith(lastpa)) {
+      domain = lastpa
+      log("Refresh, found domain in cookie")
     }
-    setCookie(CPATH, originpath)
   }
-  return originpath
+  log("Domain: " + (domain === "" ? "(no domain)" : domain))
+  setCookie(CPATH, domain)
+}
+
+function getDomain(): string {
+  return domain as string
+}
+
+export function getRouterRoot() {
+  return getDomain() + '/'
 }
 
 function getOriginPa(): string {
-  const pa: string = getPath()
+  const pa: string = getDomain()
 
   return getOriginURL() + pa
 }

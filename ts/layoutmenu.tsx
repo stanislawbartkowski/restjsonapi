@@ -12,6 +12,7 @@ import { FormMessage, MenuElem, TMenuNode, TSubMenu } from "./typing";
 import { getButtonName, isString, makeMessage } from "./j";
 
 import { getLastMenuName } from '../components/MenuComps'
+import { getRouterRoot } from "./url";
 
 
 function icon(e: TMenuNode): React.ReactNode {
@@ -60,7 +61,7 @@ function createMenu(e: TMenuNode): ReactNode {
   </SubMenu> :
 
     <Menu.Item key={(e as MenuElem).id} icon={icon(e)}>
-      <Link to={"/" + (e as MenuElem).id}>{getButtonName(e as MenuElem)}</Link>
+      <Link to={getRouterRoot() + (e as MenuElem).id}>{getButtonName(e as MenuElem)}</Link>
     </Menu.Item>;
 }
 
