@@ -9,7 +9,7 @@ import lstring from '../ts/localize'
 import defaults from '../ts/defaults'
 import { datetoS, dateparseS } from '../ts/d'
 import type { TRow } from '../ts/typing'
-import { ReactNode } from "react";
+import { Key, ReactNode } from "react";
 import { internalerrorlog, log } from "../ts/l";
 import { fieldType } from "./ts/transcol";
 import { toS } from "../ts/j";
@@ -23,7 +23,7 @@ export type ColumnFilterSearch = {
   defaultFilteredValue: string[] | undefined
   filterDropdown: (props: FilterDropdownProps) => ReactNode
   filterIcon: (filtered: boolean) => ReactNode
-  onColumnFilter: (value: string | number | boolean, record: TRow) => boolean;
+  onFilter: (value: boolean | Key, record: TRow) => boolean;
   onFilterDropdownVisibleChange?: (visible: boolean) => void
 }
 
@@ -49,7 +49,7 @@ function eqBoolean(row: TRow, field: string, filter: boolean): boolean {
 }
 
 
-export type FFilter = (value: string | number | boolean, record: TRow) => boolean
+export type FFilter = (value: Key | boolean, record: TRow) => boolean
 
 export function constructTableFilter(c: TColumn): FFilter {
 
@@ -57,16 +57,16 @@ export function constructTableFilter(c: TColumn): FFilter {
 
   switch (t) {
     case FIELDTYPE.NUMBER:
-    case FIELDTYPE.MONEY: return (value: string | number | boolean, record: TRow) => eqNumber(record, c.field, value as string);
+    case FIELDTYPE.MONEY: return (value: Key | boolean, record: TRow) => eqNumber(record, c.field, value as string);
     case FIELDTYPE.STRING:
     case FIELDTYPE.DATE:
     case FIELDTYPE.TIME:
-      return (value: string | number | boolean, record: TRow) => eqString(record, c.field, value as string);
+      return (value: Key | boolean, record: TRow) => eqString(record, c.field, value as string);
     case FIELDTYPE.BOOLEAN:
-      return (value: string | number | boolean, record: TRow) => eqBoolean(record, c.field, value as boolean);
+      return (value: Key | boolean, record: TRow) => eqBoolean(record, c.field, value as boolean);
     default:
       internalerrorlog(`No filter function supported for this type: ${t} !`)
-      return (value: string | number | boolean, record: TRow) => true;
+      return (value: Key | boolean, record: TRow) => true;
   }
 }
 
@@ -111,7 +111,7 @@ function searchAttr(c: TColumn, coltitle: string, filterF?: IColumnFilter): Colu
           value={d}
           onChange={
             e => {
-              const s: string | undefined = datetoS(e as dayjs.Dayjs) 
+              const s: string | undefined = datetoS(e as dayjs.Dayjs)
               setSelectedKeys(e ? [s as string] : [])
             }
           }
@@ -165,7 +165,7 @@ function searchAttr(c: TColumn, coltitle: string, filterF?: IColumnFilter): Colu
     ),
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
 
-    onColumnFilter: constructTableFilter(c),
+    onFilter: constructTableFilter(c),
 
     defaultFilteredValue: filterV
 

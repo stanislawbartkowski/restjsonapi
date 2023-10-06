@@ -7,6 +7,7 @@ import { log } from "./l";
 import lstring from "./localize";
 import { getAppData } from "./readresource";
 import type { AppData, ButtonElem, FieldValue, FormMessage, OneRowData, TRow } from "./typing";
+import { getRouterRoot } from "./url";
 
 export function callJSFunction(jsAction: string, par: OneRowData): any {
   const clickaction = new Function("p,vars,t", "return " + jsAction + "(p,vars,t)");
@@ -162,4 +163,9 @@ export function isgetCached(g: string): boolean {
   const a: AppData = getAppData()
   if (isRegOnList(g, a.getcacheexclude)) return false
   return isRegOnList(g, a.getcacheinclude)
+}
+
+export function removeDomain(id: string) : string {
+  const r : string = getRouterRoot()
+  return id.substring(r.length)
 }

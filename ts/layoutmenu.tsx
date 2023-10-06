@@ -9,7 +9,7 @@ import { getLeftMenu, getMenuElemsOnly, isSubMenu } from "./leftmenu";
 import defaults from "./defaults";
 import getIcon from "./icons";
 import { FormMessage, MenuElem, TMenuNode, TSubMenu } from "./typing";
-import { getButtonName, isString, makeMessage } from "./j";
+import { getButtonName, isString, makeMessage, removeDomain } from "./j";
 
 import { getLastMenuName } from '../components/MenuComps'
 import { getRouterRoot } from "./url";
@@ -34,7 +34,7 @@ function flattenMenu(m: TMenuNode[]): MenuElem[] {
 }
 
 export function getMenuNameByLocation(id: string): string {
-  const i: string = id.substring(1); // remove leading /
+  const i: string = removeDomain(id)
   const el: MenuElem[] = flattenMenu(getLeftMenu().menu)
   let e: TMenuNode | undefined = el.find(e => (e as MenuElem).id === i)
 
