@@ -365,7 +365,6 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     const cFilter: IColumnFilter = {
         setFilter: function (c: TColumn, val: string | undefined): void {
             saveCookieFilterColumn(props, c, val)
-            refreshtable()
         },
         getFilter: function (c: TColumn): string | undefined {
             return getCookieFielterColumn(props, c)
