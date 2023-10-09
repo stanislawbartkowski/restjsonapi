@@ -1,6 +1,6 @@
 import React, { CSSProperties } from "react";
 
-import { callJSFunction, isObject, isString, makeMessage } from "../../ts/j";
+import { callJSFunction, isNumber, isNumericString, isObject, isString, makeMessage } from "../../ts/j";
 import { FieldValue, OneRowData, PropsType, RowData, TRow } from "../../ts/typing";
 import { ActionResult, ButtonAction, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TColumns, TField, TForm, TPreseEnum } from "./typing";
 import defaults from "../../ts/defaults";
@@ -278,7 +278,10 @@ export function decomposeEditId(id: string): [string, string, number] | undefine
     if (f === l) return undefined
     const ta: string = id.substring(0, f)
     const fie: string = id.substring(f + 1, l)
-    const num: number = +id.substring(l + 1)
+    const nums = id.substring(l + 1)
+    // 2023/09/09 - only if last segment is a number
+    if (! isNumericString(nums)) return undefined
+    const num: number = +nums
     return [ta, fie, num]
 }
 

@@ -104,13 +104,14 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
             if (button?.print) {
                 close()
                 setPrintContent({ result: r, content: (presult as string), button: (button as ButtonAction) });
-                history.push(getRouterRoot()+ defaults.displayprintrouterid);
+                history.push(getRouterRoot() + defaults.displayprintrouterid);
             }
         }
         if (props.i.doAction) props.i.doAction(r)
         if (r.vars) props.i.setVals(r.vars)
         if (istrue(r.rereadrest) && props.i.rereadRest !== undefined) props.i.rereadRest()
         if (r.retprops && props.i.retAction) props.i.retAction(r.retprops, r.retprops.vars as TRow)
+        if (r.reread && props.i.rereadRest) props.i.rereadRest()
     }
 
 

@@ -49,6 +49,10 @@ export function toS(f: FieldValue): string {
   return value
 }
 
+export function isNumericString(s: string) {  
+  return typeof s === 'string' && !isNaN(parseInt(s))
+}
+
 // ==============================
 // make message
 // ==============================

@@ -39,6 +39,7 @@ import { findLabel } from '../../../ts/readresource';
 import constructButton from '../../ts/constructbutton';
 import { createCollapsePanels } from './CollapseItems';
 import { createTabsPanel } from './TabItems';
+import { RadioChangeEvent } from 'antd/lib';
 
 const { RangePicker } = DatePicker;
 
@@ -89,9 +90,13 @@ function createProps(ir: IFieldContext, t: TField) {
     return props
 }
 
-function createRadioGroup(ir: IFieldContext, t: TField): ReactNode {
+function createRadioGroup(ir: IFieldContext, t: FField): ReactNode {
 
-    return <Radio.Group {...createProps(ir, t)}>
+    function onChange(e: RadioChangeEvent) {
+        ir.fieldChanged(t)
+    }
+
+    return <Radio.Group {...createProps(ir, t)} onChange={onChange}>
         {
             (t.radio?.items as TRadioCheckItem[]).map(e => createRadioItem(e, t.radio?.button))
         }
