@@ -101,7 +101,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
             if (r.close) close()
             if (r.notification) openNotification(r.notification, { vars: props.vars, r: t as TRow });
             if (r.refresh && props.refreshaction) props.refreshaction(r)
-            if (button?.print) {
+            if (button?.print || r.print) {
                 close()
                 setPrintContent({ result: r, content: (presult as string), button: (button as ButtonAction) });
                 history.push(getRouterRoot() + defaults.displayprintrouterid);
