@@ -130,12 +130,16 @@ function isNotRequired(t: TField): boolean {
     return v === undefined || v.required === undefined || !v.required
 }
 
-function createSelectGroup(ir: IFieldContext, t: TField, items: TRadioCheckItem[], multi: boolean): ReactNode {
+function createSelectGroup(ir: IFieldContext, t: FField, items: TRadioCheckItem[], multi: boolean): ReactNode {
 
     const clear: SelectProps = isNotRequired(t) ? { allowClear: true } : { allowClear: false }
     const p: SelectProps = multi ? { mode: "multiple" } : {}
 
-    return <Select {...p} {...clear} {...createProps(ir, t)} {...placeHolder(t)} >
+    function onChange(e: RadioChangeEvent) {
+        ir.fieldChanged(t)
+    }
+
+    return <Select {...p} {...clear} {...createProps(ir, t)} {...placeHolder(t)} onChange={onChange}>
         {
             items.map(e => <Select.Option value={e.value} {...e.props}>{itemName(e)}</Select.Option>)
         }
