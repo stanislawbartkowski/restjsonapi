@@ -40,7 +40,7 @@ function transformValues(row: TRow, tf: FFieldElem[], from: boolean, initvalsedi
             res[t.field] = transformSingleValue(row[t.field], t, from)
         } 
         // Added 2023/10/14 - can be set to undefined in the Form
-        if ((row[t.field] === undefined) && from && !isEditList(t)) res[t.field] = undefined
+        //if ((row[t.field] === undefined) && from && !isEditList(t)) res[t.field] = undefined
 
         if (isEditList(t) && from) {
             const ta : RowData | undefined = getEditList(t.field,initvalsedit as TRow)
