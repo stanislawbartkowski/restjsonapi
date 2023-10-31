@@ -131,7 +131,9 @@ export type MenuElem = ButtonElem & TComponentProps & {
   menudir?: boolean
 }
 
-export type TMenuNode = MenuElem | TSubMenu
+export type TMenuNode = (MenuElem | TSubMenu) & {
+  isdev?: boolean
+}
 
 export type TSubMenu = PropSupportedType & {
   icon?: string
@@ -225,7 +227,7 @@ export type AppDefaults = {
   fields: FieldDefaults[]
 }
 
-export interface LeftMenuResource  {
+export interface LeftMenuResource {
   leftmenu: string
 }
 

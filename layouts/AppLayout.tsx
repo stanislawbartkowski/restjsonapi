@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import { Layout } from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
@@ -20,11 +19,11 @@ const AppLayout: React.FC = () => {
   }, [])
 
   // define global jscript code
-  getAppJSS().forEach ( j =>{
+  getAppJSS().forEach(j => {
     const script = document.createElement('script');
     script.innerHTML = j;
     script.async = true;
-    document.body.appendChild(script);  
+    document.body.appendChild(script);
   })
 
   return (

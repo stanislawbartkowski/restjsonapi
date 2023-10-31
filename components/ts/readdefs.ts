@@ -34,7 +34,8 @@ export async function readvals(initval: string | RESTMETH, row: TRow, vars?: TRo
     }
     //const v = {...row, ...vars}
     // Data: 2023/10/09 -- swap, row content overwrites vars
-    const v = {...vars, ...row}
+    const v = {...vars, 
+        ...row}
     // Data: 2023/08/04 - is not working if {...row, ...vars} is used directly as function parameter
     // It is not clear, after recompiling it also works while used as function parameter
     // TODO: requires attention

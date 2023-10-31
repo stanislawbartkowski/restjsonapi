@@ -30,8 +30,8 @@ const Logo: React.FC<TLeftMenu> = (props) => {
 
   if (logo === undefined) return <span />
 
-  const image: ReactElement = props.collapsed ? <Image style={{ paddingLeft: '1px' }} src={logo} width="100%" height='32px' /> :
-    <Image style={{ paddingLeft: '20px' }} src={logo} width="60%" height='32px' />
+  const image: ReactElement = props.collapsed ? <Image preview={false} style={{ paddingLeft: '1px' }} src={logo} width="100%" height='32px' /> :
+    <Image preview={false} style={{ paddingLeft: '20px' }} src={logo} width="60%" height='32px' />
 
   return <Popover placement="left" title={text} content={content} trigger="click">{image} </Popover>
 

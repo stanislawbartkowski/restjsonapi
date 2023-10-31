@@ -98,13 +98,11 @@ async function readResource() {
     if (!emptys(l.leftmenu)) leftmenu = l.leftmenu
   }
 
+  await reeadProd();
 
   const lm: MenuLeft = (await restapiresource(leftmenu)) as MenuLeft;
   setLeftMenu(lm)
   log("Resource leftmenu read");
-
-  await reeadProd();
-
 }
 
 export default readResource;

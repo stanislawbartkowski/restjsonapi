@@ -1,10 +1,16 @@
 import type { MenuElem, MenuLeft, TMenuNode, TSubMenu } from "./typing";
 import { addMenuRestElement, addMenuElement, FComponent } from './constructRestElement'
+import { isProd } from "./readresource";
+import { istrue } from "../components/ts/helper";
 
 
 // --------------------
 // menu route
 // -------------------
+
+function elemInclude(t: TMenuNode): boolean {
+    return !(isProd() && istrue(t.isdev))
+}
 
 type MenuRoute = {
     rootredirect: string
@@ -47,7 +53,6 @@ function getMenuElems(menu: TMenuNode[]): MenuElem[] {
     }
 
     menu.forEach(processMenu)
-
     return res
 }
 
@@ -68,7 +73,7 @@ export function addRouterElem(id: string, elem: FComponent) {
 }
 
 export function setLeftMenu(lm: MenuLeft) {
-    lm.menu.forEach(e => leftmenu.menu.push(e))
+    lm.menu.forEach(e => {if (elemInclude(e)) leftmenu.menu.push(e)})
     getMenuElems(lm.menu).forEach(e => addMenuRestElement(e))
 }
 
