@@ -1,11 +1,13 @@
 import { getCookie, setCookie } from "../ts/cookies";
+import { useEffect, useState } from "react";
+
+import { useParams } from "react-router-dom";
+
+import { history } from "../ts/CustomRouter";
 import { internalerrorlog, log } from "../ts/l";
 import { FIsSelected, MenuElem, OnRowClick, RestTableParam, TComponentProps, TRow } from "../ts/typing";
-import { history } from "../ts/CustomRouter";
 import RestComponent from "./RestComponent";
-import { useEffect, useState } from "react";
 import readlist, { DataSourceState } from "./ts/readlist";
-import { useParams } from "react-router-dom";
 import { ColumnList, Status, TColumn } from "./ts/typing";
 import readdefs, { ReadDefsResult } from "./ts/readdefs";
 import ReadListError from "./errors/ReadListError";
@@ -53,7 +55,7 @@ export const MenuDirComponent: React.FC<TComponentProps & { pathid: string }> = 
         history.push(`${props.pathid}/${rid}`)
         //        navigate(rid)
     }
-    return <RestComponent {...props} isSelected={fIs} onRowClick={onRowC} />
+    return <RestComponent {...props} visible ispage isSelected={fIs} onRowClick={onRowC}/>
 }
 
 
@@ -110,5 +112,5 @@ export const MenuDirElemComponent: React.FC<MenuElem> = (props) => {
 
     const restpr: TComponentProps = { ...createRestParam({ ...lastmenu }) }
 
-    return <RestComponent {...restpr} ispage />
+    return <RestComponent {...restpr} ispage  />
 }

@@ -128,7 +128,9 @@ export type TComponentProps = RestTableParam & ModalFormProps
 // ========================================
 
 export type MenuElem = ButtonElem & TComponentProps & {
+  awesomefont?: string
   menudir?: boolean
+  tabs?: MenuElem[]
 }
 
 export type TMenuNode = (MenuElem | TSubMenu) & {

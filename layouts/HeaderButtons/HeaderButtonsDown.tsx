@@ -1,12 +1,10 @@
 
 import { Button, Dropdown, MenuProps } from 'antd';
-import { ReactNode } from 'react';
 import { gray } from '@ant-design/colors';
 
-
-import getIcon from '../../ts/icons';
 import { HeaderMenu, getHeaderMenu } from '../../ts/headermenu';
 import { ItemType } from 'antd/es/menu/hooks/useItems';
+import AppLauncherIcon from './AppLauncher'
 import defaults from '../../ts/defaults';
 
 function genMenuLabel(m: HeaderMenu, n: number): ItemType<any> {
@@ -24,7 +22,7 @@ const HeaderButtons: React.FC = () => {
 
   const menu: HeaderMenu[] = getHeaderMenu() as HeaderMenu[]
 
-  const iconddwn: ReactNode = getIcon('menuoutlined')
+  const icondown = <AppLauncherIcon />
   let n: number = 0
 
 
@@ -32,7 +30,7 @@ const HeaderButtons: React.FC = () => {
 
 
   return <Dropdown menu={{ items }}>
-    <Button icon={iconddwn} style={{ backgroundColor: gray[1], borderColor: gray[2], color: "white" }}>
+    <Button icon={icondown} style={{ backgroundColor: gray[1], borderColor: gray[2], color: "white" }}>
       {defaults.headermenuname}
     </Button>
   </Dropdown>

@@ -31,12 +31,17 @@ export function isSubMenu(m: TMenuNode): boolean {
     return (m as TSubMenu).menus !== undefined
 }
 
+
 const addroute: string[] = []
 
 const leftmenu: MenuLeft = { menu: [] }
 
 export function getLeftMenu(): MenuLeft {
     return leftmenu;
+}
+
+export function isTab(m: MenuElem): boolean {
+    return m.tabs !== undefined && m.tabs.length > 0
 }
 
 
@@ -49,7 +54,11 @@ function getMenuElems(menu: TMenuNode[]): MenuElem[] {
             const s: TSubMenu = e as TSubMenu
             s.menus.forEach(e => processMenu(e))
         }
-        else res.push(e as MenuElem)
+        else {
+            const ele: MenuElem = e as MenuElem
+            res.push(ele)
+            if (isTab(ele)) ele.tabs?.forEach(e => res.push(e))
+        }
     }
 
     menu.forEach(processMenu)
@@ -73,7 +82,7 @@ export function addRouterElem(id: string, elem: FComponent) {
 }
 
 export function setLeftMenu(lm: MenuLeft) {
-    lm.menu.forEach(e => {if (elemInclude(e)) leftmenu.menu.push(e)})
+    lm.menu.forEach(e => { if (elemInclude(e)) leftmenu.menu.push(e) })
     getMenuElems(lm.menu).forEach(e => addMenuRestElement(e))
 }
 

@@ -1,4 +1,4 @@
-import { Menu } from "antd";
+import { Menu, Space } from "antd";
 import React, { ReactNode } from "react";
 import SubMenu from "antd/lib/menu/SubMenu";
 
@@ -13,6 +13,7 @@ import { getButtonName, isString, makeMessage, removeDomain } from "./j";
 
 import { getLastMenuName } from '../components/MenuComps'
 import { getRouterRoot } from "./url";
+import SizeMenu from "../components/DrawTable/SizeMenu";
 
 
 function icon(e: TMenuNode): React.ReactNode {
@@ -54,14 +55,25 @@ function submenutitle(e: TSubMenu): string {
   return makeMessage(e.title as FormMessage) as string
 }
 
+function produceLink(e: MenuElem): ReactNode {
+  const link = <Link to={getRouterRoot() + (e as MenuElem).id}>{getButtonName(e as MenuElem)}</Link>
+  //if (e.awesomefont === undefined) return <React.Fragment>{link}</React.Fragment>
+  const ic = e.awesomefont === undefined ? <span>&nbsp;</span> : <i className={e.awesomefont} />
+
+  return <Space>
+    {ic}
+    {link}
+  </Space>
+}
+
 function createMenu(e: TMenuNode): ReactNode {
 
   return isSubMenu(e) ? <SubMenu key={keysub++} title={submenutitle(e as TSubMenu)} >
-    {(e as TSubMenu).menus.map(e => createMenu(e))}
+    {(e as TSubMenu).menus?.map(e => createMenu(e))}
   </SubMenu> :
 
-    <Menu.Item key={(e as MenuElem).id} icon={icon(e)}>
-      <Link to={getRouterRoot() + (e as MenuElem).id}>{getButtonName(e as MenuElem)}</Link>
+    <Menu.Item key={(e as MenuElem).id} >
+      {produceLink(e as MenuElem)}
     </Menu.Item>;
 }
 

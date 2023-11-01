@@ -1,4 +1,4 @@
-import Keycloak, { KeycloakConfig, KeycloakProfile } from 'keycloak-js'
+import Keycloak, { KeycloakConfig } from 'keycloak-js'
 import { getkeycloak } from '../services/readconf';
 import { isSec } from './j'
 import { log } from './l';

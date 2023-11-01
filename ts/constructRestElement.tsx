@@ -3,6 +3,8 @@ import { ReactNode } from "react";
 import { MenuElem, TComponentProps } from "./typing";
 import RestComponent from "../components/RestComponent";
 import { createRestParam, MenuDirComponent, MenuDirElemComponent } from "../components/MenuComps";
+import { isTab } from "./leftmenu";
+import { MenuTabComponent } from "../components/TabsMenu";
 
 export type FComponent = () => ReactNode
 
@@ -25,7 +27,9 @@ export function addMenuElement(id: string, e: FComponent) {
 export function addMenuRestElement(p: MenuElem) {
     const pr: TComponentProps = { ...createRestParam(p) }
     // IMPORTANT: <div key> is necessary to force unmount element when Route switch occurs
-    const e: FComponent = () => p.menudir ? <MenuDirComponent {...pr} ispage pathid={p.id} /> : <div key={p.id}><RestComponent {...pr} ispage /> </div>
+    const e: FComponent = () => p.menudir ? <MenuDirComponent {...pr} pathid={p.id} /> :
+        (isTab(p)) ? <MenuTabComponent {...p} /> :
+            <div key={p.id}><RestComponent {...pr} ispage /> </div>
 
     addMenuElement(p.id, e)
     if (p.menudir) {
