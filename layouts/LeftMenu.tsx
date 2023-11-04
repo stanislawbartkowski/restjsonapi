@@ -41,17 +41,15 @@ const LeftMenu: React.FC<TLeftMenu> = (props) => {
 
 
   const location = useLocation();
-  
-  return (
-    <React.Fragment>
-      <div className="logo">
-        <Logo {...props} />
-      </div>
-      <Menu theme="dark" mode="inline" defaultSelectedKeys={getDefaultMenu(location.pathname)}>
-        {provideMenu()}
-      </Menu>
-    </React.Fragment>
-  );
+
+  return <React.Fragment>
+    <div className="logo">
+      <Logo {...props} />
+    </div>
+    <Menu theme="dark" mode="inline" defaultSelectedKeys={getDefaultMenu(location.pathname)}>
+      {provideMenu()}
+    </Menu>
+  </React.Fragment>;
 };
 
 export default LeftMenu;

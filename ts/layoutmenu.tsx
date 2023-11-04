@@ -13,7 +13,6 @@ import { getButtonName, isString, makeMessage, removeDomain } from "./j";
 
 import { getLastMenuName } from '../components/MenuComps'
 import { getRouterRoot } from "./url";
-import SizeMenu from "../components/DrawTable/SizeMenu";
 
 
 function icon(e: TMenuNode): React.ReactNode {
@@ -58,7 +57,7 @@ function submenutitle(e: TSubMenu): string {
 function produceLink(e: MenuElem): ReactNode {
   const link = <Link to={getRouterRoot() + (e as MenuElem).id}>{getButtonName(e as MenuElem)}</Link>
   //if (e.awesomefont === undefined) return <React.Fragment>{link}</React.Fragment>
-  const ic = e.awesomefont === undefined ? <span>&nbsp;</span> : <i className={e.awesomefont} />
+  const ic = e.awesomefont === undefined ? <span>&nbsp;</span> : <i style={{ width: "20px", textAlign: "center" }} className={e.awesomefont} />
 
   return <Space>
     {ic}
@@ -77,7 +76,7 @@ function createMenu(e: TMenuNode): ReactNode {
     </Menu.Item>;
 }
 
-function provideMenu() {
+function provideMenu(): ReactNode {
   keysub = 0
   return getLeftMenu().menu.map((e: TMenuNode) => createMenu(e))
 }

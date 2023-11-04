@@ -271,7 +271,7 @@ export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
     toolbar?: ListToolbar
     descr?: TSummaryDescr[]
     bordered?: boolean
-    
+    sortcol?: string[]  
 };
 
 

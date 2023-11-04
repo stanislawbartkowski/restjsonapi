@@ -1,10 +1,10 @@
 import { Rule, RuleObject } from "antd/lib/form"
 
 import defaults from "../../../ts/defaults"
-import { makeMessage, callJSFunction } from "../../../ts/j"
+import { makeMessage, callJSFunction, isnotdefined } from "../../../ts/j"
 import lstring from "../../../ts/localize"
 import { FIELDTYPE, TRow, RESTMETH, FormMessage, FieldValue, FieldDefaults } from "../../../ts/typing"
-import { decomposeEditId, genEditClickedRowKey, isnotdefined, istrue } from "../../ts/helper"
+import { decomposeEditId, genEditClickedRowKey, istrue } from "../../ts/helper"
 import { fieldType } from "../../ts/transcol"
 import { transformSingleValue } from "../../ts/transformres"
 import { RestValidatorResult, TField } from "../../ts/typing"

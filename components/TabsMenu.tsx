@@ -1,4 +1,4 @@
-import { Tabs } from "antd"
+import { ConfigProvider, Tabs } from "antd"
 import { ReactNode } from "react"
 
 import { MenuElem } from "../ts/typing"
@@ -31,7 +31,15 @@ export const MenuTabComponent: React.FC<MenuElem> = (props) => {
         setCookie(cookieName(props), activekey)
     }
 
-    return <Tabs defaultActiveKey={akey} onChange={onChange} type="card">
-        {e.map(produceTabItem)}
-    </Tabs>
+    return <ConfigProvider theme={{
+        components: {
+            Tabs: {
+                horizontalMargin: "0 0 2 0"
+            }
+        }
+    }}>
+        <Tabs defaultActiveKey={akey} onChange={onChange} type="card">
+            {e.map(produceTabItem)}
+        </Tabs>
+    </ConfigProvider>
 }

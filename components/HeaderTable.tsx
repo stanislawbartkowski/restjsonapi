@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { Space } from "antd";
 import { PageHeader } from '@ant-design/pro-layout';
 
@@ -31,7 +31,7 @@ function headerTitle(p: ShowDetails, vars?: TRow) {
   else return { title: title }
 }
 
-const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[], setTitle?: FSetTitle, rereadRest: FRereadRest, closeAction?: FAction }> = (props) => {
+const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[], setTitle?: FSetTitle, rereadRest: FRereadRest, closeAction?: FAction, extendedTools?: React.ReactNode }> = (props) => {
   const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
 
   const h: TableToolBar = props.toolbar as TableToolBar;
@@ -66,11 +66,13 @@ const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshacti
 
   const headerprops = props.collist ? { ...props.collist.props } : undefined
 
+  const extra: ReactNode = <React.Fragment>{props.extendedTools} <Space style={{float :"right", paddingBottom: "8px"}}>{h ? h.map((e: ButtonAction) => constructButton(e, clickButton)) : undefined}</Space></React.Fragment>
+
   return (
     <React.Fragment>
       <PageHeader {...title}
-        {...headerprops}
-        extra={h ? h.map((e: ButtonAction) => constructButton(e, clickButton)) : undefined} >
+        {...headerprops}>
+          {extra}
         {props.collist ? <OneRowTable {...detaDescr} /> : undefined}
       </PageHeader>
       <RestComponent {...modalProps} refreshaction={props.refreshaction} setvarsaction={props.setvarsaction} />

@@ -2,10 +2,10 @@ import type { ColumnType } from "antd/lib/table";
 
 import type { ColumnList, IColumnFilter, IColumnSort, TableHookParam, TColumn, TColumns, TResizeColumn } from "../../ts/typing";
 import { TRow, RowData, OneRowData, RestTableParam } from '../../../ts/typing'
-import { callJSFunction, toS } from "../../../ts/j";
+import { callJSFunction, isnotdefined, toS } from "../../../ts/j";
 import './styles.css'
 import { transformOneColumn } from "../../ts/transcol";
-import { getRowKey, isnotdefined, tomoney, visibleColumns } from "../../ts/helper";
+import { getRowKey, visibleColumns } from "../../ts/helper";
 import { ExtendedFilter } from "../SearchButton/SearchExtended";
 import { constructTableFilter, FFilter } from '../../TableFilter'
 import { ColumnsT } from "../typing";

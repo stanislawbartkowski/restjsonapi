@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Card } from 'antd'
 
-import { emptyModalListProps, FAction, ModalFormProps, RAction, RestTableParam, TRow } from "../../ts/typing"
+import { emptyModalListProps, FAction, FIELDTYPE, ModalFormProps, RAction, RestTableParam, RowData, TRow } from "../../ts/typing"
 import readlist, { DataSourceState } from "../ts/readlist";
 import { BUTTONACTION, ButtonAction, ClickAction, ColumnList, Status, TableHookParam, FActionResult, TableToolBar, TAction, TActions, TColumn } from "../ts/typing";
 import ReadListError from "../errors/ReadListError";
@@ -10,6 +10,9 @@ import { makeHeader } from "../ts/helper";
 import RestComponent from "../RestComponent";
 import { log } from "../../ts/l";
 import { createII, executeB, IIButtonAction, ispopupDialog } from "../ts/executeaction";
+import { sortboolinc, sortinc, sortnumberinc } from "../../ts/sortproc";
+import { fieldType } from "../ts/transcol";
+import { isnotdefined } from "../../ts/j";
 
 
 const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number }> = (props) => {
@@ -68,14 +71,37 @@ const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number }> =
   const addCard = b ? <AddCard {...props as ColumnList} {...b} cardClick={bClick} b={b} /> : undefined
 
   const thook: TableHookParam = {
-    fdetails: (r : TRow) => { 
+    fdetails: (r: TRow) => {
       log("fdetails")
     },
-    fresult : bClick    
+    fresult: bClick
+  }
+
+  const elems: RowData = datasource.res
+
+
+  function compareFN(e1: TRow, e2: TRow): number {
+
+    const sorts: string[] = props.sortcol as string[]
+
+    for (var f of sorts) {
+      const c: TColumn | undefined = (props.columns as TColumn[]).find(e => e.field === f)
+      if (c === undefined) continue
+      const fieldtype: FIELDTYPE = fieldType(c)
+      if (isnotdefined(e1[f]) && isnotdefined(e2[f])) continue
+      const res: number = (fieldtype === FIELDTYPE.NUMBER) ? sortnumberinc(e1, e2, f) : (fieldtype === FIELDTYPE.BOOLEAN) ? sortboolinc(e1, e2, f) : sortinc(e1, e2, f)
+      if (res !== 0) return res
+    }
+
+    return 0
+  }
+
+  if (props.sortcol !== undefined) {
+    elems.sort(compareFN)
   }
 
   return <React.Fragment><Card title={makeHeader(props, undefined, { vars: props.vars, r: {} })}><Row gutter={[8, 8]}>
-    {datasource.res.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isSelected={props.isSelected} onRowClick={props.onRowClick} a={a} h={thook} /> </Col>)}
+    {elems.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isSelected={props.isSelected} onRowClick={props.onRowClick} a={a} h={thook} /> </Col>)}
     {addCard}
   </Row>
   </Card>

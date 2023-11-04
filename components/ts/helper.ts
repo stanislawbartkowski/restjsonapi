@@ -1,10 +1,10 @@
 import React, { CSSProperties } from "react";
 
-import { callJSFunction, isNumber, isNumericString, isObject, isString, makeMessage } from "../../ts/j";
+import { callJSFunction, isNumericString, isObject, isString, isnotdefined, makeMessage } from "../../ts/j";
 import { FieldValue, OneRowData, PropsType, RowData, TRow } from "../../ts/typing";
 import { ActionResult, ButtonAction, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TColumns, TField, TForm, TPreseEnum } from "./typing";
 import defaults from "../../ts/defaults";
-import { HTMLElem, fieldType } from "./transcol";
+import { HTMLElem } from "./transcol";
 
 
 // =================
@@ -134,10 +134,6 @@ export function getPrintContent(): PrintResult {
 
 
 // ========================
-
-export function isnotdefined(t: any): boolean {
-    return t === undefined || t === null;
-}
 
 export function emptys(t: string | undefined): boolean {
     return isnotdefined(t) || t?.trim() === ""

@@ -53,6 +53,11 @@ export function isNumericString(s: string) {
   return typeof s === 'string' && !isNaN(parseInt(s))
 }
 
+export function isnotdefined(t: any): boolean {
+  return t === undefined || t === null;
+}
+
+
 // ==============================
 // make message
 // ==============================

@@ -8,13 +8,13 @@ import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
 import { AddStyle, ButtonAction, ColumnList, ColumnSortType, IColumnFilter, IColumnSort, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
-import { clickAction, getValue, isnotdefined } from "./helper";
-import { callJSFunction, isNumber, isString, makeMessage } from "../../ts/j";
+import { clickAction, getValue, } from "./helper";
+import { callJSFunction, isNumber,isnotdefined,makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
-import { warn } from "../../ts/l";
+import { sortboolinc, sortinc, sortnumberinc } from "../../ts/sortproc";
 
 
 // =====================
@@ -40,39 +40,6 @@ export function fieldTitle(t: TFieldBase, pars: OneRowData): string {
 // sort filter procs
 // ====================================
 
-function toS(a: string): string {
-    if (isString(a)) return a
-    warn(`${a.toString} is not a string`);
-    return a.toString()
-}
-
-function sortinc(a: TRow, b: TRow, field: string): number {
-    const fielda: string | undefined = a[field] as string | undefined;
-    if (isnotdefined(fielda)) return 1;
-    const fieldb: string = b[field] as string;
-    if (isnotdefined(fieldb)) return -1;
-    const fieldas: string = toS(fielda as string)
-    const fieldbs: string = toS(fieldb as string)
-    return (fieldas as string).localeCompare(fieldbs);
-}
-
-function sortnumberinc(a: TRow, b: TRow, field: string): number {
-    const fielda: number | undefined = a[field] as number | undefined;
-    if (isnotdefined(fielda)) return 1;
-    const fieldb: number = b[field] as number;
-    if (isnotdefined(fieldb)) return -1;
-    return (fielda as number) - fieldb;
-}
-
-function sortboolinc(a: TRow, b: TRow, field: string): number {
-    const fielda: boolean | undefined = a[field] as boolean | undefined;
-    if (isnotdefined(fielda)) return 1;
-    const fieldb: boolean = b[field] as boolean;
-    if (isnotdefined(fieldb)) return -1;
-    if (fielda && fieldb) return 0;
-    if (fielda) return 1;
-    return -1;
-}
 
 function sortfilter(c: TColumn): boolean {
     if (c.fieldtype === FIELDTYPE.BOOLEAN) return false;

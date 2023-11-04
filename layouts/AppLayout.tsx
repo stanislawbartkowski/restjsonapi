@@ -32,6 +32,8 @@ const AppLayout: React.FC = () => {
         trigger={null}
         collapsible
         collapsed={collapsed}
+        collapsedWidth={"50px"}
+        width={"205px"}
         style={{
           minHeight: "100vh",
         }}
@@ -52,7 +54,7 @@ const AppLayout: React.FC = () => {
         <Content
           className="site-layout-background"
           style={{
-            margin: "24px 16px",
+            margin: "20px 10px",
             padding: 2,
           }}
         >
