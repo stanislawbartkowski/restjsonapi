@@ -7,9 +7,14 @@
   border-radius: 5px;
 }
 
-.selectedrow {
-  background-color: #3bffb01c
+.cardselectedrow {
+  background-color: #bae0ff;
 }
+
+.selectedrow {
+  background-color: #3bffb01c;
+}
+
 
 .react-resizable {
   position: relative;

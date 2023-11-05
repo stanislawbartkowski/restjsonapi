@@ -77,6 +77,7 @@ export type RESTMETH = {
 export type RestTableParam = RESTMETH & {
   list?: string;
   listdef?: string;
+  listcarddef?: string
   onRowClick?: OnRowClick;
   isSelected?: FIsSelected;
   onTableRead?: OnTableRead;

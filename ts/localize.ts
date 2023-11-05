@@ -60,7 +60,9 @@ const embedded = {
     listasexcelfile: "Tabela jako plik Excel",
     downloadexcelbutton: "W formacie Excel",
     download: "Pobierz",
-    filedownloaded: "Plik został pobrany"
+    filedownloaded: "Plik został pobrany",
+    viewlist: "Lista",
+    viewcards: "Karty"
   },
   en: {
     empty: '',
@@ -110,11 +112,13 @@ const embedded = {
     doprint: "Print",
     buttondownloadtitle: "Downlaod table as xls file",
     reaarangecolumnstitle: "Reaarrange columns",
-    downloadexcelquestion: "Downlaod as Excel file?",
+    downloadexcelquestion: "Download as Excel file?",
     listasexcelfile: "Table in Excel format",
     downloadexcelbutton: "Excel download",
     download: "Download",
-    filedownloaded: "File has been downloaded"
+    filedownloaded: "File has been downloaded",
+    viewlist: "List",
+    viewcards: "Cards"
   }
 };
 

@@ -15,7 +15,7 @@ import { fieldType } from "../ts/transcol";
 import { isnotdefined } from "../../ts/j";
 
 
-const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number }> = (props) => {
+const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number, switchDisplay?: React.ReactNode }> = (props) => {
 
   const [datasource, setDataSource] = useState<DataSourceState>({
     status: Status.PENDING,
@@ -100,10 +100,11 @@ const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number }> =
     elems.sort(compareFN)
   }
 
-  return <React.Fragment><Card title={makeHeader(props, undefined, { vars: props.vars, r: {} })}><Row gutter={[8, 8]}>
-    {elems.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isSelected={props.isSelected} onRowClick={props.onRowClick} a={a} h={thook} /> </Col>)}
-    {addCard}
-  </Row>
+  return <React.Fragment><Card title={makeHeader(props, undefined, { vars: props.vars, r: {} })} extra={props.switchDisplay}>
+    <Row gutter={[8, 8]}>
+      {elems.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isSelected={props.isSelected} onRowClick={props.onRowClick} a={a} h={thook} /> </Col>)}
+      {addCard}
+    </Row>
   </Card>
     <RestComponent {...modalProps} refreshaction={refreshAction} />
   </React.Fragment>

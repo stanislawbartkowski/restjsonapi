@@ -128,7 +128,7 @@ function isBordered(p: ColumnList): boolean {
 }
 
 
-const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle, expanded?: boolean, rereadRest?: FRereadRest }> = (props) => {
+const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle, expanded?: boolean, rereadRest?: FRereadRest, switchDisplay?: ReactNode }> = (props) => {
 
     const [extendedFilter, setExtendedFilter] = useState<ExtendedFilter>(noExtendedFilter)
 
@@ -320,6 +320,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     }
 
     const rowClassName = (record: TRow, index: number) => {
+        if (props.isSelected && props.isSelected(record)) return "cardselectedrow"
         if (currentRow === undefined) return ""
         return eqRow(props, record, currentRow) ? "selectedrow" : ""
     }
@@ -393,9 +394,12 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     const arrangeColumns: ReactNode = isRearrangeCols(props) ? <ArrangColumns cols={colo} colshook={colsHook} /> : undefined
 
     const extendedTools: React.ReactNode = istrue(props.toolbar?.notool) || istrue(props.expanded) || (extendedSearch === undefined && resizeTable === undefined && arrangeColumns === undefined && downloadbutton === undefined) ? undefined :
-        <Space style={{ float: "left" }} split={<Divider type="vertical" />}>
-            {downloadbutton}{arrangeColumns}{resizeTable}{extendedSearch}
-        </Space>
+        <React.Fragment>
+            <Space style={{ float: "left" }} split={<Divider type="vertical" />}>
+                {downloadbutton}{arrangeColumns}{resizeTable}{extendedSearch}
+            </Space>
+            <span style={{ float: "right" }}>{props.switchDisplay}</span>
+        </React.Fragment>
 
 
     const detcol: TColumn | undefined = findColDetails(props)
@@ -408,11 +412,11 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     return (
         <React.Fragment>
             {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction} extendedTools={extendedTools}
-                selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }} rereadRest={props.rereadRest as FRereadRest} closeAction={props.closeAction} /> : undefined}
+                selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }} rereadRest={props.rereadRest as FRereadRest} closeAction={props.closeAction} /> : extendedTools}
             <Table
                 {...rowSelection({ ...props })}
                 components={components}
-                title={() => title}
+                title={() => <b>{title}</b>}
                 rowKey={datasource.rowkey}
                 dataSource={dsource}
                 size={tableSize}
