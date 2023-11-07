@@ -416,7 +416,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
             <Table
                 {...rowSelection({ ...props })}
                 components={components}
-                title={() => <b>{title}</b>}
+                title={() => <span className="table-title">{title}</span>}
                 rowKey={datasource.rowkey}
                 dataSource={dsource}
                 size={tableSize}
