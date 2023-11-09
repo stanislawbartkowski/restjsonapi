@@ -9,7 +9,7 @@ import { FormMessage } from "../../ts/typing";
 
 export type FClickButton = (b: ButtonAction) => void;
 
-export function constructButtonElem(b: ButtonAction, onclick: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
+export function constructButtonElem(b: ButtonAction, fclick: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
   let messid = "";
   let iconid: string | undefined = b.icon;
 
@@ -78,7 +78,7 @@ export function constructButtonElem(b: ButtonAction, onclick: FClickButton, disa
   const disabledprop: Record<string, any> = disabled ? { disabled: true } : {}
   const onclickprops: Record<string, any> = {
     onClick: () =>
-      onclick(b)
+      fclick(b)
   }
 
 
