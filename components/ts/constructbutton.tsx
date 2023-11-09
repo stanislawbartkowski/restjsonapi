@@ -6,6 +6,7 @@ import { BUTTONACTION } from "./typing";
 import { getButtonName, isBool, makeMessage } from '../../ts/j'
 import { ButtonAction } from "./typing";
 import { FormMessage } from "../../ts/typing";
+import { log } from "../../ts/l";
 
 export type FClickButton = (b: ButtonAction) => void;
 
@@ -96,11 +97,7 @@ export function constructButtonElem(b: ButtonAction, fclick: FClickButton, disab
 
 }
 
-function constructButton(b: ButtonAction, click: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
-
-
-  if (!b.confirm) return constructButtonElem(b, click, disabled, loading);
-
+function contructConfirm(b: ButtonAction, click: FClickButton, disabled?: boolean, loading?: boolean) {
   const title: string = isBool(b.confirm) ? lstring('areyousure') : makeMessage(b.confirm as FormMessage, { r: {} }) as string
 
   function onConfirm() {
@@ -108,6 +105,13 @@ function constructButton(b: ButtonAction, click: FClickButton, disabled?: boolea
   }
 
   return <Popconfirm title={title} onConfirm={onConfirm}>  {constructButtonElem(b, () => { }, disabled, loading)} </Popconfirm>
+}
+
+function constructButton(b: ButtonAction, click: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
+
+
+  if (!b.confirm) return constructButtonElem(b, click, disabled, loading);
+  return contructConfirm(b, click, disabled, loading)
 }
 
 export default constructButton
