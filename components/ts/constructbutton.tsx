@@ -103,7 +103,11 @@ function constructButton(b: ButtonAction, click: FClickButton, disabled?: boolea
 
   const title: string = isBool(b.confirm) ? lstring('areyousure') : makeMessage(b.confirm as FormMessage, { r: {} }) as string
 
-  return <Popconfirm title={title} onConfirm={() => click(b)}  > {constructButtonElem(b, () => { }, disabled, loading)} </Popconfirm>
+  function onConfirm() {
+    click(b)
+  }
+
+  return <Popconfirm title={title} onConfirm={onConfirm}>  {constructButtonElem(b, () => { }, disabled, loading)} </Popconfirm>
 }
 
 export default constructButton
