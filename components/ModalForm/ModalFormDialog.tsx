@@ -7,11 +7,11 @@ import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
 import readdefs, { ReadDefsResult, rereadRest } from "../ts/readdefs";
 import InLine from '../../ts/inline';
-import constructButton, { FClickButton } from '../ts/constructbutton';
+import constructButton from '../ts/constructbutton';
 import ModalFormView, { FOkValidated, IRefCall } from './ModalFormView';
 import { FFieldElem, flattenTForm, okmoney, cardProps, preseT, istrue, decomposeEditId } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FAction, FIELDTYPE, FSetTitle, FieldValue, ModalFormProps, RAction, RESTMETH, RowData, TComponentProps, TRow, VAction } from '../../ts/typing'
+import { FAction, FButtonAction, FIELDTYPE, FSetTitle, FieldValue, ModalFormProps, RAction, RESTMETH, RowData, TComponentProps, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
@@ -223,7 +223,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         if (res) {
             // 2023/06/02 -- added vars clause (risky)
             // 2023/06/10 -- added res.vars to clause vars
-            setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF, vars: {  ...props.vars, ...nvars, ...res.vars } } })
+            setRestView({ visible: true, def: { ...res, visible: true, closeAction: closeF, vars: { ...props.vars, ...nvars, ...res.vars } } })
         }
     }
 
@@ -344,11 +344,11 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
 
-    const fclick: FClickButton = (b: ButtonAction) => {
+    const fclick: FButtonAction = (b: ButtonAction) => {
         buttonclicked.current = b
         const v: TRow = ref.current.getValues()
-        const okV : FOkValidated = () => {
-            clickButton(b,v);
+        const okV: FOkValidated = () => {
+            clickButton(b, v);
         }
         if (b.validate) {
             if (!formvalidate(v)) return;

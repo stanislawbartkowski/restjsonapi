@@ -5,13 +5,14 @@ import { useParams } from "react-router-dom";
 
 import { history } from "../ts/CustomRouter";
 import { internalerrorlog, log } from "../ts/l";
-import { FIsSelected, MenuElem, OnRowClick, RestTableParam, TComponentProps, TRow } from "../ts/typing";
+import { FIsSelected, FSetTitle, MenuElem, OnRowClick, RestTableParam, TComponentProps, TRow } from "../ts/typing";
 import RestComponent from "./RestComponent";
 import readlist, { DataSourceState } from "./ts/readlist";
 import { ColumnList, Status, TColumn } from "./ts/typing";
 import readdefs, { ReadDefsResult } from "./ts/readdefs";
 import ReadListError from "./errors/ReadListError";
 import { findColDetails } from "./ts/helper";
+import { registerName } from "../ts/headernotifier";
 
 let resttableProps: RestTableParam = {}
 
@@ -46,15 +47,18 @@ export const MenuDirComponent: React.FC<TComponentProps & { pathid: string }> = 
 
     const onRowC: OnRowClick = (t: TRow) => {
         const rid: string | undefined = t["id"] as string | undefined
+        const name: string | undefined = t["name"] as string
         if (rid === undefined) {
             log("Attribute id is not defined, cannot set cookies");
             return
         }
         log(rid)
         setCookie(cName(), rid)
-        history.push(`${props.pathid}/${rid}`)
-        //        navigate(rid)
+        const path: string = `${props.pathid}/${rid}`
+        registerName(path, name)
+        history.push(path)
     }
+
     return <RestComponent {...props} visible ispage isSelected={fIs} onRowClick={onRowC}/>
 }
 
@@ -112,5 +116,5 @@ export const MenuDirElemComponent: React.FC<MenuElem> = (props) => {
 
     const restpr: TComponentProps = { ...createRestParam({ ...lastmenu }) }
 
-    return <RestComponent {...restpr} ispage  />
+    return <RestComponent {...restpr} ispage />
 }

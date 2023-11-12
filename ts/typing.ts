@@ -26,6 +26,7 @@ export type OnRowClick = (r: TRow) => void
 
 export type FUrlModifier = (list: string) => undefined | Record<string, string>;
 export type FHeaderModifier = () => Record<string, string>;
+export type FHeaderNameNotifier =  (name: string | undefined) => void
 
 
 // ============================================================
@@ -95,6 +96,7 @@ export type RestTableParam = RESTMETH & {
 
 
 export type FAction = (b?: ButtonAction, r?: TRow) => void
+export type FButtonAction = (b: ButtonAction) => void
 export type VAction = (r: TRow) => void
 export type RAction = (r?: TAction) => void
 export type SetMAction = (sel: FieldValue[]) => void
@@ -112,7 +114,7 @@ export type ModalFormProps = ClickActionProps & {
   visible?: boolean
   ispage?: boolean
   modalprops?: PropsType
-  vars?: TRow
+  vars?: TRow,
 }
 
 export const emptyModalListProps: ModalFormProps = { visible: false, rereadRest: () => { } }

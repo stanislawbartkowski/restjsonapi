@@ -1,11 +1,11 @@
 import { restaction } from "../../services/api";
 import { commonVars, makeMessage } from "../../ts/j";
-import { fatalexceptionerror, log, trace } from "../../ts/l";
+import { fatalexceptionerror, trace } from "../../ts/l";
 import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAction } from "../../ts/typing";
 import openNotification from "../Notification";
 import { IIRefCall } from "../ModalForm/ModalFormDialog";
 import { clickAction, istrue } from "./helper";
-import { NotificationKind, type ButtonAction, type ClickAction, type FRereadRest, type FRetAction, type FSetValues, type FieldError, type TAction, type TNotification } from "./typing";
+import { NotificationKind, type ButtonAction, type ClickAction, type FRereadRest, type FRetAction, type FieldError, type TAction, type TNotification } from "./typing";
 import { FAction, ClickActionProps } from '../../ts/typing'
 import analyzeresponse from './anayzeresponse'
 import { setPrintContent } from './helper'

@@ -1,7 +1,9 @@
 import React from "react";
 import { Router } from "react-router";
 import { createBrowserHistory } from "history";
+
 import { log } from "./l";
+import { pathNotify } from "./headernotifier";
 
 export const history = createBrowserHistory();
 
@@ -35,6 +37,7 @@ const CustomRouter = ({ basename, children, history }) => {
     const action = history.action;
     const pathname = history.location.pathname;
     log(action + " : " + pathname);
+    pathNotify(pathname)
     if (canD(action, pathname)) setState(history);
   }
 

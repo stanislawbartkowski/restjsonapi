@@ -1,9 +1,10 @@
-import React, { ReactNode, useRef, useState } from "react";
+import React, { ReactNode, useState } from "react";
 
 import { ModalFormProps } from "../../ts/typing";
 import { ismaskClicked } from "../ts/helper";
 import ModalFormDialog, { ModalHooks } from "./ModalFormDialog";
 import DraggableModal from '../DraggableModal'
+import { log } from "../../ts/l";
 
 type ModalPropsData = {
     buttons: ReactNode
@@ -12,7 +13,7 @@ type ModalPropsData = {
 const ModalDialog: React.FC<ModalFormProps> = (props) => {
 
     const [moddef, setState] = useState<ModalPropsData>({ buttons: undefined });
-    const [modaltitle, setModalTitle] = useState<string|undefined>(undefined)
+    const [modaltitle, setModalTitle] = useState<string | undefined>(undefined)
 
     const ihooks: ModalHooks = {
         setButtons: function (buttons: ReactNode, loading: boolean): void {

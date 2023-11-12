@@ -2,6 +2,7 @@
 // call JS function
 // ====================
 
+import { BUTTONACTION } from "../components/ts/typing";
 import defaults from "./defaults";
 import { log } from "./l";
 import lstring from "./localize";
@@ -49,7 +50,7 @@ export function toS(f: FieldValue): string {
   return value
 }
 
-export function isNumericString(s: string) {  
+export function isNumericString(s: string) {
   return typeof s === 'string' && !isNaN(parseInt(s))
 }
 
@@ -87,10 +88,87 @@ export function makeMessage(m: FormMessage, pars: OneRowData = { r: {} }): strin
 // button name
 // ================================
 
-export function getButtonName(e: ButtonElem, vars?: TRow): string {
-  if (e.name === undefined) return lstring(e.id)
-  return makeMessage(e.name, { r: {}, vars: vars }) as string
+
+function standardButton(id: BUTTONACTION): [string | undefined, string | undefined] {
+  let messid: string | undefined = undefined
+  let iconid: string | undefined = undefined
+  if (id === undefined) return [undefined, undefined]
+  switch (id) {
+    case BUTTONACTION.ADD:
+      messid = "addaction";
+      iconid = "pluscircleoutlined";
+      break;
+    case BUTTONACTION.ACCEPT:
+      messid = 'acceptaction';
+      break;
+    case BUTTONACTION.CANCEL:
+      messid = 'cancelaction';
+      break;
+    case BUTTONACTION.DEL:
+      messid = 'delete';
+      iconid = 'deleteoutlined';
+      break;
+    case BUTTONACTION.UPDATE:
+      messid = 'update'
+      iconid = 'editoutlines'
+      break
+    case BUTTONACTION.PRINT:
+      messid = 'print'
+      iconid = 'printoutlined'
+      break
+    case BUTTONACTION.DOPRINT:
+      messid = 'doprint'
+      iconid = 'printoutlined'
+      break
+    case BUTTONACTION.CHOOSE:
+      messid = 'chooseaction'
+      iconid = 'checkoutlined'
+      break;
+    case BUTTONACTION.NEXT:
+      messid = 'next'
+      iconid = 'stepsforwardoutlined'
+      break;
+    case BUTTONACTION.PREV:
+      messid = 'prev'
+      iconid = 'stepsbackwardoutlined'
+      break;
+    case BUTTONACTION.UPLOAD:
+      messid = 'upload'
+      iconid = 'uploadoutlined'
+      break;
+    case BUTTONACTION.OK:
+      messid = 'ok';
+      iconid = 'checkoutlined';
+      break
+    case BUTTONACTION.SEARCH:
+      messid = 'search';
+      iconid = 'searchoutlined'
+      break;
+    case BUTTONACTION.SEARCHNEXT:
+      messid = 'searchnext';
+      iconid = 'forwardoutlined'
+      break;
+  }
+  return [messid, iconid]
+
 }
+
+export function getButtonNameIcon(e: ButtonElem, vars?: TRow): [string, string | undefined] {
+  if (e.name === undefined) {
+    const [n, i] = standardButton(e.id as BUTTONACTION)
+    if (n !== undefined) {
+      return [lstring(n), e.icon === undefined ? i : e.icon]
+    }
+    return [lstring(e.id), e.icon]
+  }
+  return [makeMessage(e.name, { r: {}, vars: vars }) as string, e.icon]
+}
+
+export function getButtonName(e: ButtonElem, vars?: TRow): string {
+  const [name, _] = getButtonNameIcon(e, vars)
+  return name
+}
+
 
 // ===============================
 // random session id
@@ -174,7 +252,7 @@ export function isgetCached(g: string): boolean {
   return isRegOnList(g, a.getcacheinclude)
 }
 
-export function removeDomain(id: string) : string {
-  const r : string = getRouterRoot()
+export function removeDomain(id: string): string {
+  const r: string = getRouterRoot()
   return id.substring(r.length)
 }

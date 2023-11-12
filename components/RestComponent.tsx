@@ -50,8 +50,8 @@ const RestComponent: React.FC<TComponentProps> = (props) => {
     const comp: React.FC<TComponentProps> = getComponent(props.component)
     return comp({ ...props })
   }
-  if (props.list) return <ModalTableList {...props} />
-  return <ModalForm {...props} />
+  if (props.list) return <ModalTableList {...props}/>
+  return <ModalForm {...props}/>
 }
 
 export default RestComponent

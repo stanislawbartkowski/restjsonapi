@@ -1,17 +1,21 @@
 import React, { ReactNode, useState } from "react";
-import { Space } from "antd";
+import { Button, Dropdown, MenuProps, Space } from "antd";
 import { PageHeader } from '@ant-design/pro-layout';
+import { ItemType } from "antd/lib/menu/hooks/useItems";
 
 import { trace } from "../ts/l";
 import constructButton from "./ts/constructbutton";
-import { emptyModalListProps, FAction, FieldValue, FSetTitle, ModalFormProps, RAction, RestTableParam, TRow, VAction } from '../ts/typing'
-import { TableToolBar, ButtonAction, ClickResult, ShowDetails, ClickAction, TAction, FRetAction, FRereadRest } from "./ts/typing";
+import { emptyModalListProps, FAction, FButtonAction, FieldValue, FSetTitle, ModalFormProps, RAction, RestTableParam, TRow, VAction } from '../ts/typing'
+import { TableToolBar, ButtonAction, ClickResult, ShowDetails, ClickAction, TAction, FRetAction, FRereadRest, MenuButtonAction } from "./ts/typing";
 import { istrue } from "./ts/helper";
 import OneRowTable from './ShowDetails/OneRowTable'
 import RestComponent from "./RestComponent";
-import { isObject, makeMessage } from "../ts/j";
+import { getButtonName, getButtonNameIcon, isObject, makeMessage } from "../ts/j";
 import { createII, executeB, IIButtonAction, ispopupDialog } from './ts/executeaction'
+import getIcon from "../ts/icons";
 
+
+type HeaderProps = ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[], setTitle?: FSetTitle, rereadRest: FRereadRest, closeAction?: FAction, extendedTools?: React.ReactNode }
 
 function ltrace(mess: string) {
   trace('HeaderTable', mess)
@@ -31,10 +35,36 @@ function headerTitle(p: ShowDetails, vars?: TRow) {
   else return { title: title }
 }
 
-const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[], setTitle?: FSetTitle, rereadRest: FRereadRest, closeAction?: FAction, extendedTools?: React.ReactNode }> = (props) => {
-  const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
+function constructMenuAction(key: number, b: ButtonAction, clickButton: FButtonAction): ItemType {
 
+  const [label, iconid] = getButtonNameIcon(b)
+  const icon = iconid !== undefined ? { "icon" : getIcon(iconid)} : {}
+  return { key: key.toString(), label: label, onClick: () => { clickButton(b) }, ...icon };
+}
+
+function createDropDown(p: MenuButtonAction, clickButton: FButtonAction): ReactNode {
+  const menulist: ButtonAction[] = p.dropdown as ButtonAction[]
+  let numb: number = 0
+  const bname: string = getButtonName(p)
+  const items: MenuProps['items'] = menulist.map((b) => constructMenuAction(numb++, b, clickButton))
+  return <Dropdown menu={{ items }}>
+    <Button {...p.props} icon={getIcon('menuoutlined')}>{bname}</Button>
+  </Dropdown>
+}
+
+function isDropDown(p: MenuButtonAction): boolean {
+  return p.dropdown !== undefined
+}
+
+function createMenu(props: HeaderProps, clickButton: FButtonAction): ReactNode {
   const h: TableToolBar = props.toolbar as TableToolBar;
+  if (h === undefined) return undefined
+  const hbuttons: MenuButtonAction[] = h
+  return hbuttons.map((e: ButtonAction) => isDropDown(e) ? createDropDown(e, clickButton) : constructButton(e, clickButton))
+}
+
+const HeaderTable: React.FC<HeaderProps> = (props) => {
+  const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
 
   const fmodalhook: FAction = () => {
     setIsModalVisible(emptyModalListProps);
@@ -66,13 +96,13 @@ const HeaderTable: React.FC<ShowDetails & { setvarsaction?: VAction, refreshacti
 
   const headerprops = props.collist ? { ...props.collist.props } : undefined
 
-  const extra: ReactNode = <React.Fragment>{props.extendedTools} <Space style={{float :"right", paddingBottom: "8px"}}>{h ? h.map((e: ButtonAction) => constructButton(e, clickButton)) : undefined}</Space></React.Fragment>
+  const extra: ReactNode = <React.Fragment>{props.extendedTools} <Space style={{ float: "right", paddingBottom: "8px" }}>{createMenu(props, clickButton)}</Space></React.Fragment>
 
   return (
     <React.Fragment>
       <PageHeader {...title}
         {...headerprops}>
-          {extra}
+        {extra}
         {props.collist ? <OneRowTable {...detaDescr} /> : undefined}
       </PageHeader>
       <RestComponent {...modalProps} refreshaction={props.refreshaction} setvarsaction={props.setvarsaction} />

@@ -46,7 +46,7 @@ export function isTab(m: MenuElem): boolean {
 
 
 function getMenuElems(menu: TMenuNode[]): MenuElem[] {
-    const res: MenuElem[] = []
+    const res: MenuElem[] = []    
 
     function processMenu(e: TMenuNode) {
 

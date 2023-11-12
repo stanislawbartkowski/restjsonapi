@@ -68,7 +68,11 @@ export type ButtonAction = ButtonElem & TAction & {
     validate?: boolean
 }
 
-export type TableToolBar = ButtonAction[]
+export type MenuButtonAction = ButtonAction & {
+    dropdown?: ButtonAction[]
+}
+
+export type TableToolBar = MenuButtonAction[]
 
 type HeaderTitleType = FormMessage & PropSupportedType
 

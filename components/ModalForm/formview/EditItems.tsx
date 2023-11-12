@@ -13,6 +13,7 @@ import {
     FormListFieldData,
     AutoComplete,
     Segmented,
+    ConfigProvider,
 } from 'antd';
 
 import type { ValidateStatus } from 'antd/lib/form/FormItem';

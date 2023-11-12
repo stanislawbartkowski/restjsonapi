@@ -3,77 +3,13 @@ import { Button, Popconfirm } from "antd";
 import getIcon from "../../ts/icons";
 import lstring from "../../ts/localize";
 import { BUTTONACTION } from "./typing";
-import { getButtonName, isBool, makeMessage } from '../../ts/j'
+import { getButtonName, getButtonNameIcon, isBool, makeMessage } from '../../ts/j'
 import { ButtonAction } from "./typing";
-import { FormMessage } from "../../ts/typing";
-import { log } from "../../ts/l";
+import { FButtonAction, FormMessage } from "../../ts/typing";
 
-export type FClickButton = (b: ButtonAction) => void;
+export function constructButtonElem(b: ButtonAction, fclick: FButtonAction, disabled?: boolean, loading?: boolean): React.ReactNode {
 
-export function constructButtonElem(b: ButtonAction, fclick: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
-  let messid = "";
-  let iconid: string | undefined = b.icon;
-
-  if (b.id !== undefined)
-    switch (b.id) {
-      case BUTTONACTION.ADD:
-        messid = "addaction";
-        iconid = "pluscircleoutlined";
-        break;
-      case BUTTONACTION.ACCEPT:
-        messid = 'acceptaction';
-        break;
-      case BUTTONACTION.CANCEL:
-        messid = 'cancelaction';
-        break;
-      case BUTTONACTION.DEL:
-        messid = 'delete';
-        iconid = 'deleteoutlined';
-        break;
-      case BUTTONACTION.UPDATE:
-        messid = 'update'
-        iconid = 'editoutlines'
-        break
-      case BUTTONACTION.PRINT:
-        messid = 'print'
-        iconid = 'printoutlined'
-        break
-      case BUTTONACTION.DOPRINT:
-        messid = 'doprint'
-        iconid = 'printoutlined'
-        break
-      case BUTTONACTION.CHOOSE:
-        messid = 'chooseaction'
-        iconid = 'checkoutlined'
-        break;
-      case BUTTONACTION.NEXT:
-        messid = 'next'
-        iconid = 'stepsforwardoutlined'
-        break;
-      case BUTTONACTION.PREV:
-        messid = 'prev'
-        iconid = 'stepsbackwardoutlined'
-        break;
-      case BUTTONACTION.UPLOAD:
-        messid = 'upload'
-        iconid = 'uploadoutlined'
-        break;
-      case BUTTONACTION.OK:
-        messid = 'ok';
-        iconid = 'checkoutlined';
-        break
-      case BUTTONACTION.SEARCH:
-        messid = 'search';
-        iconid = 'searchoutlined'
-        break;
-      case BUTTONACTION.SEARCHNEXT:
-        messid = 'searchnext';
-        iconid = 'forwardoutlined'
-        break;
-
-    }
-
-  const bname: String = messid !== "" ? lstring(messid) : getButtonName(b)
+  const [bname, iconid] = getButtonNameIcon(b)
 
   const loadingprop: Record<string, any> = loading ? { loading: true } : {}
   const disabledprop: Record<string, any> = disabled ? { disabled: true } : {}
@@ -81,7 +17,6 @@ export function constructButtonElem(b: ButtonAction, fclick: FClickButton, disab
     onClick: () =>
       fclick(b)
   }
-
 
   const icon: React.ReactNode | undefined = iconid
     ? getIcon(iconid)
@@ -97,7 +32,7 @@ export function constructButtonElem(b: ButtonAction, fclick: FClickButton, disab
 
 }
 
-function contructConfirm(b: ButtonAction, click: FClickButton, disabled?: boolean, loading?: boolean) {
+function contructConfirm(b: ButtonAction, click: FButtonAction, disabled?: boolean, loading?: boolean) {
   const title: string = isBool(b.confirm) ? lstring('areyousure') : makeMessage(b.confirm as FormMessage, { r: {} }) as string
 
   function onConfirm() {
@@ -107,7 +42,7 @@ function contructConfirm(b: ButtonAction, click: FClickButton, disabled?: boolea
   return <Popconfirm title={title} onConfirm={onConfirm}>  {constructButtonElem(b, () => { }, disabled, loading)} </Popconfirm>
 }
 
-function constructButton(b: ButtonAction, click: FClickButton, disabled?: boolean, loading?: boolean): React.ReactNode {
+function constructButton(b: ButtonAction, click: FButtonAction, disabled?: boolean, loading?: boolean): React.ReactNode {
 
 
   if (!b.confirm) return constructButtonElem(b, click, disabled, loading);

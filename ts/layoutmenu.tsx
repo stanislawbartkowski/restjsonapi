@@ -1,23 +1,16 @@
 import { Menu, Space } from "antd";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import SubMenu from "antd/lib/menu/SubMenu";
 
 import { Link } from "react-router-dom";
 
 import lstring from "./localize";
 import { getLeftMenu, getMenuElemsOnly, isSubMenu } from "./leftmenu";
-import defaults from "./defaults";
-import getIcon from "./icons";
 import { FormMessage, MenuElem, TMenuNode, TSubMenu } from "./typing";
 import { getButtonName, isString, makeMessage, removeDomain } from "./j";
 
 import { getLastMenuName } from '../components/MenuComps'
 import { getRouterRoot } from "./url";
-
-
-function icon(e: TMenuNode): React.ReactNode {
-  return getIcon(e.icon, defaults.defaultmenuicon);
-}
 
 
 function flattenMenu(m: TMenuNode[]): MenuElem[] {

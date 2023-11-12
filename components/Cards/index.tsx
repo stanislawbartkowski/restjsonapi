@@ -52,7 +52,8 @@ const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number, swi
 
     const buttons: TableToolBar | undefined = props.header?.toolbar
     if (buttons === undefined) return undefined
-    const add: ButtonAction | undefined = buttons.find(b => b.id === BUTTONACTION.ADD)
+    const buttonsb : ButtonAction[] = buttons as ButtonAction[]
+    const add: ButtonAction | undefined = buttonsb.find(b => b.id === BUTTONACTION.ADD)
     return add
   }
 
