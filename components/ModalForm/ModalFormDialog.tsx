@@ -130,7 +130,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
 
     const constructCurVals = (r?: TRow): TRow => {
-        const data: TRow = isTop ? { ...commonVars(), ...formdef.initvals, ...initvals, ...getVals(), ...r } : { ...getVals(), ...r }
+        const v : TRow = getVals()
+        const data: TRow = isTop ? { ...commonVars(), ...formdef.initvals, ...initvals, ...v, ...r } : { ...v, ...r }
         return data
     }
 

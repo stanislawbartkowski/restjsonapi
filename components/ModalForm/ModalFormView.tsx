@@ -14,12 +14,12 @@ import { FieldData, NamePath } from 'rc-field-form/lib/interface';
 import { FormInstance } from 'antd/es/form';
 
 
-import { ButtonAction, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChanged, FRereadRest, FSetValues, TAsyncRestCall, TAutoCompleteMap, TClickButton, TField, TForm, TOptionLine } from '../ts/typing'
+import { ButtonAction, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChanged, FRereadRest, FSetValues, TAsyncRestCall, TAutoCompleteMap, TClickButton, TField, TForm, TOptionLine, TRadioCheckItem } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, PropsType, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import { callJSFunction, commonVars, copyMap, getSessionId, isBool, isEmpty, isString } from '../../ts/j';
-import { emptys, FFieldElem, findEditField, genEditClickedRowKey, getValue, istrue, okmoney, tomoney } from '../ts/helper';
+import { emptys, FFieldElem, findEditField, flattenTForm, genEditClickedRowKey, getValue, istrue, okmoney, tomoney } from '../ts/helper';
 import { transformSingleValue, transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import defaults from '../../ts/defaults';
@@ -31,10 +31,6 @@ import { TRefreshTable } from '../DrawTable';
 import { getCookie, setCookie } from '../../ts/cookies';
 import getValidateMessaged from '../../ts/validatemessages'
 
-
-function ltrace(mess: string) {
-    trace('ModalFormView', mess)
-}
 
 export type FOkValidated = () => void
 
@@ -106,9 +102,10 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     const getV = (): TRow => {
         const r: TRow = f.getFieldsValue()
+        const flist : TField[] = flattenTForm(props.fields as TField[])
         // enrich wilth nulls
         for (let id of fchanges.current.nullfields) {
-            const f: FFieldElem | undefined = props.fields.find(e => e.field === id)
+            const f: FFieldElem | undefined = flist.find(e => e.field === id)
             if (f !== undefined && fieldType(f) === FIELDTYPE.STRING) r[id] = ""
         }
         return r
@@ -177,6 +174,17 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             if (t.multichoice !== undefined && vals !== undefined) {
                 if (multiselect === undefined) multiselect = new Map()
                 multiselect?.set(t.field, vals[t.field] as FieldValue[])
+            }
+            const va: FieldValue = vals === undefined ? undefined : vals[t.field]
+            if (t.radio && isString(va) && !emptys(va as string)) {
+                const i : TRadioCheckItem[] = t.radio.items as TRadioCheckItem[]
+                const iv : TRadioCheckItem | undefined = i.find( e => e.value == va as string)
+                if (iv === undefined) {
+                    log(`${va} not found in the items, empty value is assigned`)
+                    if (vals !== undefined) {
+                        vals[t.field] = ''                        
+                    }
+                }
             }
             if (t.value) {
                 const value: FieldValue = getValue(t.value, { r: props.initvals ? props.initvals : {} });
@@ -382,7 +390,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     }
 
     const validateMessages = getValidateMessaged()
-      
+
     // must be preserve=true (default)
     const form = <Form validateMessages={validateMessages}
         form={f} onFinish={onFinish} onValuesChange={props.onValuesChanges} preserve={false}
@@ -403,7 +411,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     const hvalues: TRow = {
         ...props.getValues(),
-        ...props.vars        
+        ...props.vars
     }
 
     const header: ReactNode | undefined = props.header ?
