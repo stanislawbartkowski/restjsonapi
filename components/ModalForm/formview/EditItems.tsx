@@ -1,4 +1,4 @@
-import React, { FocusEventHandler, ReactNode, useState } from 'react';
+import React, { FocusEventHandler, ReactNode } from 'react';
 
 import {
     Form,
@@ -13,18 +13,17 @@ import {
     FormListFieldData,
     AutoComplete,
     Segmented,
-    ConfigProvider,
 } from 'antd';
 
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
+import { RadioChangeEvent } from 'antd/lib';
 
 import { PropsType, FIELDTYPE, FieldValue, FieldDefaults, TRow } from '../../../ts/typing';
 import { getValue, isEditList, isItemGroup, istrue } from '../../ts/helper';
-import { ButtonAction, FGetValues, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
-import { IFieldContext, FField, TFieldChange, TFieldsProps } from './types';
+import { ButtonAction, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
+import { IFieldContext, FField, TFieldChange } from './types';
 import { makeMessage } from '../../../ts/j';
-import { log } from '../../../ts/l';
 import { HTMLElem, fieldType, fieldTitle, makeDivider } from '../../ts/transcol';
 import { transformSingleValue } from '../../ts/transformres';
 import { findErrField, getFieldProps, itemName } from './helper';
@@ -40,7 +39,7 @@ import { findLabel } from '../../../ts/readresource';
 import constructButton from '../../ts/constructbutton';
 import { createCollapsePanels } from './CollapseItems';
 import { createTabsPanel } from './TabItems';
-import { RadioChangeEvent } from 'antd/lib';
+import { SearchProps } from 'antd/es/input';
 
 const { RangePicker } = DatePicker;
 
@@ -211,7 +210,7 @@ function searchItem(ir: IFieldContext, t: FField, listfield?: FormListFieldData)
         checkchange(ir, c.target.id, t)
     }
 
-    function onSearchButton(value: string) {
+    const onSearchButton: SearchProps['onSearch'] = (value: string, event: any) => {
         t.searchF(value, { ...t, listfield: listfield });
     }
 

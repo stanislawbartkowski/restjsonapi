@@ -36,8 +36,8 @@ const OneRowTable: React.FC<TDetailsCard> = (props) => {
 
 
         readlist({ ...props, ...varsaction, vars: { ...props.r } }, setS)
-    }
-        , [props.varsrestaction, props.r, props.vars]);
+    }, [props.varsrestaction, props.vars]);
+    // Data: 2023/11/18 - removed props.r (risky, not sure)
 
     if (datasource.status === Status.ERROR) return <ReadListError />
     if (datasource.status === Status.PENDING) return <span></span>
