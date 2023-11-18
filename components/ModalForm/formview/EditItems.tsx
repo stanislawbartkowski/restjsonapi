@@ -211,6 +211,7 @@ function searchItem(ir: IFieldContext, t: FField, listfield?: FormListFieldData)
     }
 
     const onSearchButton: SearchProps['onSearch'] = (value: string, event: any) => {
+        if (event.type === "keydown") return
         t.searchF(value, { ...t, listfield: listfield });
     }
 
