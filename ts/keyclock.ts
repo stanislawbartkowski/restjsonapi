@@ -18,6 +18,12 @@ export function getToken(): string | undefined {
     return keycloak?.token
 }
 
+export async function logout() {
+    if (!isSec()) return
+    keycloak?.logout()
+}
+
+
 export async function initkeyclock() {
     if (!isSec()) return
     const params: any = await getkeycloak()

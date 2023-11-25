@@ -1,19 +1,28 @@
 import React, { useState } from 'react';
-import { Space } from 'antd';
-import { Typography } from 'antd';
+import { Button, Popconfirm, Space } from 'antd';
 
 import { isSec } from '../ts/j';
-import { getUserName } from '../ts/keyclock';
+import { getUserName, logout } from '../ts/keyclock';
 import { getHeaderLine } from '../ts/readresource'
 import HeaderButtons from './HeaderButtons';
 import { FHeaderNameNotifier } from '../ts/typing';
 import { log } from '../ts/l';
 import { registerNameNotifier } from '../ts/headernotifier';
 import InfoHeader from './InfoHeader';
+import getIcon from '../ts/icons';
+import lstring from '../ts/localize';
 
 
-const { Text } = Typography;
+const Logout: React.FC = () => {
+    if (!isSec()) return undefined
+    const icon = getIcon('logoutoutlined')
+    return <Popconfirm title={lstring('logout')} description={lstring('logoutquestion')} onConfirm={logout} >
+        <Button icon={icon}>
+            {getUserName()}
+        </Button>
+    </Popconfirm>
 
+}
 
 const HeaderLine: React.FC = () => {
 
@@ -21,8 +30,7 @@ const HeaderLine: React.FC = () => {
 
 
     const menu = <span style={{ float: 'right', paddingRight: "1%" }}><HeaderButtons /></span>
-
-    const username: string | undefined = isSec() ? getUserName() : undefined
+    const logout = <span style={{ float: 'right', paddingRight: "1%" }}><Logout /></span>
 
     const changeName: FHeaderNameNotifier = (name: string | undefined) => {
         if (name !== undefined) log(name)
@@ -32,7 +40,7 @@ const HeaderLine: React.FC = () => {
 
     // space is neceesary below
 
-    return <React.Fragment><Space size="large">&ensp;<Text italic style={{ fontSize: "large" }}>{username}</Text>{getHeaderLine()}<InfoHeader info={name} /></Space> {menu} </React.Fragment>
+    return <React.Fragment><Space size="large">&ensp;{getHeaderLine()}<InfoHeader info={name} /></Space> {menu} {logout} </React.Fragment>
 }
 
 export default HeaderLine

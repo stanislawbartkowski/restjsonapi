@@ -62,7 +62,9 @@ const embedded = {
     download: "Pobierz",
     filedownloaded: "Plik został pobrany",
     viewlist: "Lista",
-    viewcards: "Karty"
+    viewcards: "Karty",
+    logout: "Wylogowanie",
+    logoutquestion: "Na pewno chcesz się wylogować ?"
   },
   en: {
     empty: '',
@@ -118,7 +120,9 @@ const embedded = {
     download: "Download",
     filedownloaded: "File has been downloaded",
     viewlist: "List",
-    viewcards: "Cards"
+    viewcards: "Cards",
+    logout: "Logout",
+    logoutquestion: "Do you want to log out?"
   }
 };
 
