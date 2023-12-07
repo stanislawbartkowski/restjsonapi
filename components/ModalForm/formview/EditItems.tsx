@@ -79,7 +79,8 @@ function createRadioItem(e: TRadioCheckItem, button?: boolean): ReactNode {
 }
 
 function createProps(ir: IFieldContext, t: TField) {
-    const props = t.iprops ? { ...t.iprops } : {}
+    const lprops = {...prepareStyleByLabel(t)} 
+    const props = t.iprops ? { ...lprops, ...t.iprops } : lprops
     if (t.disabled) {
         props["disabled"] = true
     }
@@ -334,8 +335,8 @@ function errorMessage(t: FField, err: ErrorMessages): {} | { validateStatus: Val
     return { validateStatus: 'error', help: [e.message] }
 }
 
-function prepareStyleByLabel(t: FField) {
-    if (t.label == undefined) return undefined
+function prepareStyleByLabel(t: TField) : PropsType | undefined {
+    if (t.label == undefined) return 
     const d: FieldDefaults | undefined = findLabel(t.label)
     if (d === undefined || d.width === undefined) return undefined
     const css: React.CSSProperties = { width: d.width }
@@ -374,7 +375,7 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
 
     const nameT = listfield === undefined ? { name: t.field } : { name: [listfield.name, t.field] }
 
-    return <Form.Item {...prepareStyleByLabel(t)} {...props} {...nameT} id={t.field} key={t.field} {...requiredprops} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]} >
+    return <Form.Item {...props} {...nameT} id={t.field} key={t.field} {...requiredprops} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]} >
         {elemp[0]}
     </Form.Item>
 
