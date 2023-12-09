@@ -34,7 +34,7 @@ export async function readvals(initval: string | RESTMETH, row: TRow, vars?: TRo
     }
     //const v = {...row, ...vars}
     // Data: 2023/10/09 -- swap, row content overwrites vars
-    const v = {...vars, ...row}
+    const v = { ...vars, ...row }
     // Data: 2023/08/04 - is not working if {...row, ...vars} is used directly as function parameter
     // It is not clear, after recompiling it also works while used as function parameter
     // TODO: requires attention
@@ -124,11 +124,11 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: bo
                 // look for dynamic items
                 const t: TForm = idef as TForm
                 const beforevals: TRow | undefined = (t.beforedialog && !istrue(ignoreinitvals)) ? await readvalsdata(t.beforedialog, {}, { ...commonVars(), ...props.vars }) : undefined
-                const vars : TRow = {...props.vars, ...beforevals}
+                const vars: TRow = { ...props.vars, ...beforevals }
                 const ffields: TField[] = await resolveRest(t.fields, {}, vars)
 
                 const initvals: TRow | undefined = (t.restapivals && !istrue(ignoreinitvals)) ? await readvalsdata(t.restapivals, {}, { ...commonVars(), ...vars }) : undefined
-                f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: initvals });
+                f({ status: Status.READY, js: js, res: { ...idef, fields: ffields }, initvar: { ...initvals, ...beforevals } });
                 break;
             case TPreseEnum.ColumnList:
                 ic.columns = removeDuplicates(ic.columns)
