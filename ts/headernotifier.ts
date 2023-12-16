@@ -10,7 +10,7 @@ export function registerNameNotifier(f: FHeaderNameNotifier) {
 }
 
 export function registerName(path: string, name: string) {
-    const rname: string = isDomain() ? `/${getDomain}/${path}` : `/${path}`
+    const rname: string = isDomain() ? `${getDomain()}/${path}` : `/${path}`
     pathNames.set(rname, name)
 }
 
