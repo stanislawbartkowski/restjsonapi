@@ -1,4 +1,5 @@
 import { FHeaderNameNotifier } from "./typing";
+import { getDomain, isDomain } from "./url";
 
 let notifier: FHeaderNameNotifier | undefined = undefined
 
@@ -9,7 +10,8 @@ export function registerNameNotifier(f: FHeaderNameNotifier) {
 }
 
 export function registerName(path: string, name: string) {
-    pathNames.set("/" + path, name)
+    const rname: string = isDomain() ? `/${getDomain}/${path}` : `/${path}`
+    pathNames.set(rname, name)
 }
 
 export function pathNotify(path: string) {

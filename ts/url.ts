@@ -2,6 +2,7 @@
 // origin
 // ===============================
 
+import { emptys } from "../components/ts/helper";
 import { getDevServer } from "../services/readconf";
 import { getCookie, setCookie } from "./cookies";
 import { log } from "./l";
@@ -10,7 +11,7 @@ function getOriginURL(): string {
   return window.location.origin;
 }
 
-function isDomain(url: string): boolean {
+function isUrlDomain(url: string): boolean {
   return url[url.length - 1] === '/' && url.length > 1
 }
 
@@ -30,7 +31,7 @@ export function setUrlDomain() {
   // decide on origin path
   const lastpa: string | undefined = getCookie(CPATH)
   domain = transformURL(window.location.pathname)
-  if (lastpa !== undefined && !isDomain(window.location.pathname)) {
+  if (lastpa !== undefined && !isUrlDomain(window.location.pathname)) {
     if (domain.startsWith(lastpa)) {
       domain = lastpa
       log("Refresh, found domain in cookie")
@@ -40,7 +41,11 @@ export function setUrlDomain() {
   setCookie(CPATH, domain)
 }
 
-function getDomain(): string {
+export function isDomain() : boolean {
+  return !emptys(domain)
+}
+
+export function getDomain(): string {
   return domain as string
 }
 

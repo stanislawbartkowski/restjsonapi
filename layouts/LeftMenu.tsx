@@ -7,6 +7,7 @@ import { getAppData } from '../ts/readresource'
 import { useLocation } from 'react-router-dom'
 import lstring from "../ts/localize";
 import defaults from "../ts/defaults";
+import { getDomain, isDomain } from "../ts/url";
 
 
 type TLeftMenu = {
@@ -16,11 +17,14 @@ type TLeftMenu = {
 const Logo: React.FC<TLeftMenu> = (props) => {
 
 
+  const domainname: string | undefined = getDomain()
+  const domaininfo = isDomain() ? <div>{lstring('domaintitle')}:{domainname}</div> : undefined
   const text = <span>{lstring('version')}</span>;
   const content = (
     <div>
       {defaults.verstring}<br />
-      {getAppData().version}
+      {getAppData().version}<br />
+      {domaininfo}
     </div>
   );
 

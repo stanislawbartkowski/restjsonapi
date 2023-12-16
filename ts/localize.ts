@@ -64,7 +64,8 @@ const embedded = {
     viewlist: "Lista",
     viewcards: "Karty",
     logout: "Wylogowanie",
-    logoutquestion: "Na pewno chcesz się wylogować ?"
+    logoutquestion: "Na pewno chcesz się wylogować ?",
+    domaintitle: "Domena"
   },
   en: {
     empty: '',
@@ -122,7 +123,8 @@ const embedded = {
     viewlist: "List",
     viewcards: "Cards",
     logout: "Logout",
-    logoutquestion: "Do you want to log out?"
+    logoutquestion: "Do you want to log out?",
+    domaintitle: "Domain"
   }
 };
 
