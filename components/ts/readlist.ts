@@ -1,4 +1,4 @@
-import { JsonTableResult, RESTMETH, RowData, TRow } from "../../ts/typing"
+import { HTTPMETHOD, JsonTableResult, RESTMETH, RowData, TRow } from "../../ts/typing"
 import { ColumnList, Status, TAutoComplete, TAutoCompleteMap } from "./typing"
 import { transformList, addRowKey } from "./tranformlist"
 import { fatalexceptionerror, internalerrorlog } from '../../ts/l'
@@ -24,7 +24,7 @@ type FSetState = (s: DataSourceState) => void
 function readlist(props: TReadListParam & ColumnList, f: FSetState) {
 
     function isGet() {
-        return props.method === undefined && props.jsaction === undefined
+        return (props.method === undefined && props.jsaction === undefined)
     }
 
     const initval: string | RESTMETH = isGet() ? (props.list as string) : { ...props as RESTMETH, restaction: props.restaction ? props.restaction : props.list }
@@ -32,7 +32,7 @@ function readlist(props: TReadListParam & ColumnList, f: FSetState) {
         .then((rres) => {
             let lres = rres.res
             let vars = rres.vars
-            if (!isGet()) {
+            if (!isGet() && props.method !== HTTPMETHOD.JS) {
                 const da = analyzeresponse(rres.data, rres.response)
                 lres = da[0].res
                 vars = da[0].vars
