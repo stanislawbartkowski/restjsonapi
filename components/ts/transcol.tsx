@@ -9,8 +9,8 @@ import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
 import { AddStyle, ButtonAction, ColumnList, ColumnSortType, IColumnFilter, IColumnSort, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
-import { clickAction, getValue, } from "./helper";
-import { callJSFunction, isNumber,isnotdefined,makeMessage } from "../../ts/j";
+import { clickAction, getValue, stoint, } from "./helper";
+import { callJSFunction, isNumber, isnotdefined, makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
@@ -179,6 +179,11 @@ export function getVal(c: TColumn, props: OneRowData): FieldValue {
     return (props.vars) ? props.vars[c.field] : undefined
 }
 
+function constructInt(c: TColumn, r: TRow): ReactElement {
+    const val: FieldValue = (r as TRow)[c.field]
+    const num: number = stoint(val)
+    return <div>{num}</div>
+}
 
 export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam, vars?: TRow, disabled?: boolean): ReactElement {
     let style: CSSProperties = {};
@@ -202,10 +207,13 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
 
     if (c.ident || c.addstyle || c.badge) rendered = <span style={style}>{badgeC} {dom}</span>;
 
+    if (c.fieldtype === FIELDTYPE.INT) rendered = constructInt(c, r)
+
     if (c.showdetails && rhook.fdetails !== undefined)
         return <Button type="link" onClick={() => { if (rhook.fdetails) rhook.fdetails(r) }}>{rendered}</Button>;
     if (c.fieldtype === FIELDTYPE.BOOLEAN) return constructBoolean(c, r, vars, disabled);
     if (c.fieldtype === FIELDTYPE.HTML) return HTMLElem(getVal(c, parms) as string);
+
     return rendered;
 
 }
@@ -221,7 +229,7 @@ function constructRenderCell(c: TColumn, r: TableHookParam, vars?: TRow) {
 export function modifyColProps(c: TColumn, p: ColumnType<any>) {
     if (p.align !== undefined) return;
     const fieldtype: FIELDTYPE = fieldType(c)
-    if (fieldtype === FIELDTYPE.NUMBER || fieldtype === FIELDTYPE.MONEY) p.align = "right";
+    if (fieldtype === FIELDTYPE.NUMBER || fieldtype === FIELDTYPE.MONEY || fieldtype === FIELDTYPE.INT) p.align = "right";
 }
 
 function isRenderable(c: TColumn): boolean {
@@ -233,7 +241,8 @@ function isRenderable(c: TColumn): boolean {
         c.badge !== undefined ||
         c.stat !== undefined ||
         c.addstyle !== undefined ||
-        c.fieldtype === FIELDTYPE.BOOLEAN
+        c.fieldtype === FIELDTYPE.BOOLEAN ||
+        c.fieldtype === FIELDTYPE.INT
     );
 }
 
@@ -252,6 +261,7 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
         switch (fieldtype) {
             case FIELDTYPE.NUMBER:
             case FIELDTYPE.MONEY:
+            case FIELDTYPE.INT:
                 c.props.sorter = (a: TRow, b: TRow) => sortnumberinc(a, b, c.field);
                 break;
             case FIELDTYPE.BOOLEAN:
@@ -274,8 +284,8 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
 
     const widthProp = (width === undefined) ? undefined : { width: width }
 
-    const isresize : boolean = (resizeF !== undefined && width !== undefined && isNumber(width))
-    const issort : boolean = sortColumn !== undefined
+    const isresize: boolean = (resizeF !== undefined && width !== undefined && isNumber(width))
+    const issort: boolean = sortColumn !== undefined
 
     const headerFunc: GetComponentProps<ColumnsType<any>[number]> = (column: any) => {
         const presize = isresize ? {
@@ -292,7 +302,7 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
                 sortColumn?.changeSort(c, sortType)
             }
         } : undefined
-        return {...presize, ...sort} as React.HTMLAttributes<any>
+        return { ...presize, ...sort } as React.HTMLAttributes<any>
     }
 
 

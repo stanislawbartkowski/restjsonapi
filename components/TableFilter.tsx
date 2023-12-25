@@ -57,6 +57,7 @@ export function constructTableFilter(c: TColumn): FFilter {
 
   switch (t) {
     case FIELDTYPE.NUMBER:
+    case FIELDTYPE.INT:
     case FIELDTYPE.MONEY: return (value: Key | boolean, record: TRow) => eqNumber(record, c.field, value as string);
     case FIELDTYPE.STRING:
     case FIELDTYPE.DATE:

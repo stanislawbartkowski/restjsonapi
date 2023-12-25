@@ -161,6 +161,11 @@ export function okmoney(t: string): boolean {
     return res !== "NaN"
 }
 
+export function stoint(s: FieldValue) : number {
+    const num : number =  +(s as string)
+    return Math.round(num)
+}
+
 // =====================================
 
 // =========================
