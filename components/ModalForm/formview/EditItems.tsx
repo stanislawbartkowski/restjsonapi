@@ -117,7 +117,8 @@ function createSegmentOption(t: TRadioCheckItem) {
 function createSegmented(ir: IFieldContext, t: FField): ReactNode {
 
     function onChange(value: string | number) {
-        ir.fieldChanged(t)
+        // 2023/12/26 - nadmiarowe
+        //ir.fieldChanged(t)
     }
 
     const items: TRadioCheckItem[] = t.radio?.items as TRadioCheckItem[]
