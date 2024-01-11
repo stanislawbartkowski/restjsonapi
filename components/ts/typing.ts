@@ -534,7 +534,8 @@ export enum BUTTONACTION {
     OK = "OK",
     SEARCH = "SEARCH",
     SEARCHNEXT = "SEARCHNEXT",
-    DOPRINT = "DOPRINT"
+    DOPRINT = "DOPRINT",
+    DOWNLOAD='DOWNLOAD'
 }
 
 // =================

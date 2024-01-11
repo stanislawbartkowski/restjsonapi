@@ -148,6 +148,11 @@ function standardButton(id: BUTTONACTION): [string | undefined, string | undefin
       messid = 'searchnext';
       iconid = 'forwardoutlined'
       break;
+    case BUTTONACTION.DOWNLOAD:
+      messid = 'download';
+      iconid = 'downloadoutlined'
+      break;
+
   }
   return [messid, iconid]
 
