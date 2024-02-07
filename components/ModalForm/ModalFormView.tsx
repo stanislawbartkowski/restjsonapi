@@ -306,7 +306,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         if (emptys(mval)) return
         if (!okmoney(mval)) return
         // getafterdot
-        const moneydot: string | undefined = r[defaults.moneydotvar] as string
+        const moneydot: string | undefined = (props.initvals !== undefined) ? props.initvals[defaults.moneydotvar] as string : undefined
         const m = tomoney(mval, getafterdot(t.moneydot, moneydot))
         f.setFieldValue(t.field, m)
     }

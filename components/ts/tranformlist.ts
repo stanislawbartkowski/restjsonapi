@@ -15,9 +15,16 @@ function transformCol(e: TColumn): boolean {
 
 function moneydot(c: TColumn, props: OneRowData): number {
     const vars: TRow | undefined = props.vars
-    if (vars === undefined) return defaults.moneydot
-    const moneydot: string | undefined = vars[defaults.moneydotvar] as string
-    return getafterdot(c.moneydot, moneydot)
+    if (c.moneydot !== undefined) {
+        if (vars === undefined) return defaults.moneydot
+        const moneydot: string | undefined = vars[defaults.moneydotvar] as string
+        return getafterdot(c.moneydot, moneydot)
+    }
+    if (c.moneydotcol !== undefined) {
+        const afterdot: number | undefined = (props.r[c.moneydotcol] as number)
+        if (afterdot !== undefined) return afterdot
+    }
+    return defaults.moneydot
 }
 
 export function transformCell(c: TColumn, props: OneRowData): FieldValue {

@@ -151,6 +151,7 @@ export function isfalse(t: boolean | undefined): boolean {
 
 export function tomoney(t: string | number | undefined, moneydot: number): undefined | string {
     if (isnotdefined(t)) return undefined
+    if (moneydot < 0) moneydot = 0
     if (isString(t)) return (+(t as string | number)).toFixed(moneydot)
     return (t as number).toFixed(moneydot)
 }
