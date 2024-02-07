@@ -244,6 +244,7 @@ export type TColumn = TFieldBase & PropSupportedType & {
     tablenodef?: boolean
     stat?: StatisticType
     width?: string | number
+    moneydot?: string
 };
 
 // ===============================
@@ -454,6 +455,7 @@ export type TField = PropSupportedType & TFieldBase & {
     button?: ButtonAction
     collapse?: TPanel[]
     tab?: TTab
+    moneydot?: string
 }
 
 // the whole form
@@ -515,7 +517,6 @@ export type FSetValues = (r: TRow) => void
 export type FGetOptions = (id: string, val: string) => TOptionLine[]
 export type FRetAction = (b: TAction, row: TRow) => void
 export type FRereadRest = () => void
-
 
 // ============================
 // standard buttons 

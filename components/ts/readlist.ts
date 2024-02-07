@@ -37,7 +37,7 @@ function readlist(props: TReadListParam & ColumnList, f: FSetState) {
                 lres = da[0].res
                 vars = da[0].vars
             }
-            transformList(props.columns, { r: {}, t: lres, vars: props.vars })
+            transformList(props.columns, { r: {}, t: lres, vars: {...props.vars, ...vars} })
             //const rowkey: string = props.rowkey ? props.rowkey : defaults.rowkeyS
             const rowkey: string = getRowKey(props)
             if (props.rowkey === undefined) addRowKey(lres as RowData, defaults.rowkeyS)

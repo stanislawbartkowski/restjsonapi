@@ -19,7 +19,7 @@ import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, PropsType, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import { callJSFunction, commonVars, copyMap, getSessionId, isBool, isEmpty, isString } from '../../ts/j';
-import { emptys, FFieldElem, findEditField, flattenTForm, genEditClickedRowKey, getValue, istrue, okmoney, tomoney } from '../ts/helper';
+import { emptys, FFieldElem, findEditField, flattenTForm, genEditClickedRowKey, getafterdot, getValue, istrue, okmoney, tomoney } from '../ts/helper';
 import { transformSingleValue, transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
 import defaults from '../../ts/defaults';
@@ -102,7 +102,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
     const getV = (): TRow => {
         const r: TRow = f.getFieldsValue()
-        const flist : TField[] = flattenTForm(props.fields as TField[])
+        const flist: TField[] = flattenTForm(props.fields as TField[])
         // enrich wilth nulls
         for (let id of fchanges.current.nullfields) {
             const f: FFieldElem | undefined = flist.find(e => e.field === id)
@@ -177,12 +177,12 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             }
             const va: FieldValue = vals === undefined ? undefined : vals[t.field]
             if (t.radio && isString(va) && !emptys(va as string)) {
-                const i : TRadioCheckItem[] = t.radio.items as TRadioCheckItem[]
-                const iv : TRadioCheckItem | undefined = i.find( e => e.value == va as string)
+                const i: TRadioCheckItem[] = t.radio.items as TRadioCheckItem[]
+                const iv: TRadioCheckItem | undefined = i.find(e => e.value == va as string)
                 if (iv === undefined) {
                     log(`${va} not found in the items, empty value is assigned`)
                     if (vals !== undefined) {
-                        vals[t.field] = ''                        
+                        vals[t.field] = ''
                     }
                 }
             }
@@ -305,7 +305,9 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         const mval = r[t.field] as string
         if (emptys(mval)) return
         if (!okmoney(mval)) return
-        const m = tomoney(mval)
+        // getafterdot
+        const moneydot: string | undefined = r[defaults.moneydotvar] as string
+        const m = tomoney(mval, getafterdot(t.moneydot, moneydot))
         f.setFieldValue(t.field, m)
     }
 

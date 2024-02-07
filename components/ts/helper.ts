@@ -31,7 +31,7 @@ export function makeHeader(p: ColumnList, unheader: string | undefined, pars: On
     return HTMLElem(title)
 }
 
-export function removeHTMLtags(s: string) : string {
+export function removeHTMLtags(s: string): string {
     return s.replace(/(<([^>]+)>)/ig, '');
 }
 
@@ -65,7 +65,7 @@ export function getRowKey(c: ColumnList): string {
     return rowkey
 }
 
-export function isColumnAction(c: TColumn) : boolean {
+export function isColumnAction(c: TColumn): boolean {
     if (c === undefined || c.actions === undefined) return false
     return !c.actions.showindetails
 }
@@ -149,22 +149,32 @@ export function isfalse(t: boolean | undefined): boolean {
     return !(t as boolean)
 }
 
-export function tomoney(t: string | number | undefined): undefined | string {
+export function tomoney(t: string | number | undefined, moneydot: number): undefined | string {
     if (isnotdefined(t)) return undefined
-    if (isString(t)) return (+(t as string | number)).toFixed(defaults.moneydot)
-    return (t as number).toFixed(defaults.moneydot)
+    if (isString(t)) return (+(t as string | number)).toFixed(moneydot)
+    return (t as number).toFixed(moneydot)
 }
 
-
 export function okmoney(t: string): boolean {
-    const res = tomoney(t)
+    const res = tomoney(t, 4)
     return res !== "NaN"
 }
 
-export function stoint(s: FieldValue) : number {
-    const num : number =  +(s as string)
+export function stoint(s: FieldValue): number {
+    const num: number = +(s as string)
     return Math.round(num)
 }
+
+export function getafterdot(f?: string, moneydot?: string) {
+    if (f == undefined || moneydot === undefined) return defaults.moneydot
+    const entries: string[] = moneydot.split(",")
+    for (var e of entries) {
+        const a = e.split(':')
+        if (a.length == 2 && a[0] == f) return +a[1]
+    }
+    return defaults.moneydot
+}
+
 
 // =====================================
 
@@ -281,7 +291,7 @@ export function decomposeEditId(id: string): [string, string, number] | undefine
     const fie: string = id.substring(f + 1, l)
     const nums = id.substring(l + 1)
     // 2023/09/09 - only if last segment is a number
-    if (! isNumericString(nums)) return undefined
+    if (!isNumericString(nums)) return undefined
     const num: number = +nums
     return [ta, fie, num]
 }
@@ -307,5 +317,5 @@ export function findEditField(field: string, t: TField[]): TField | undefined {
 
 export function sumnumbers(t: RowData, f: string): string {
     const s: number = t.reduce((a: number, b: TRow) => a + (b[f] ? +(b[f] as string | number) : 0), 0)
-    return tomoney(s) as string
+    return tomoney(s, defaults.moneydot) as string
 }
