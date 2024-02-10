@@ -13,6 +13,7 @@ function transformCol(e: TColumn): boolean {
     return e.value !== undefined || fieldType(e) === FIELDTYPE.MONEY || fieldType(e) == FIELDTYPE.DATE
 }
 
+// TODO: remove
 function moneydot(c: TColumn, props: OneRowData): number {
     const vars: TRow | undefined = props.vars
     if (c.moneydot !== undefined) {
@@ -29,7 +30,7 @@ function moneydot(c: TColumn, props: OneRowData): number {
 
 export function transformCell(c: TColumn, props: OneRowData): FieldValue {
     const val: FieldValue = c.value ? getValue(c.value as ColumnValue, props) : getVal(c, props)
-    if (fieldType(c) === FIELDTYPE.MONEY) return tomoney(val as string | number, moneydot(c, props))
+    //if (fieldType(c) === FIELDTYPE.MONEY) return tomoney(val as string | number, moneydot(c, props))
     if (fieldType(c) == FIELDTYPE.DATE) return dateNormalizeS(val as string)
     return val
 }

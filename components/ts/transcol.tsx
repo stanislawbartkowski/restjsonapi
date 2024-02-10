@@ -9,7 +9,7 @@ import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
 import { AddStyle, ButtonAction, ColumnList, ColumnSortType, IColumnFilter, IColumnSort, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
-import { clickAction, getValue, stoint, } from "./helper";
+import { clickAction, getValue, getafterdot, stoint, tomoney, } from "./helper";
 import { callJSFunction, isNumber, isnotdefined, makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
@@ -185,6 +185,30 @@ function constructInt(c: TColumn, r: TRow): ReactElement {
     return <div>{num}</div>
 }
 
+function moneydot(c: TColumn, props: OneRowData): number {
+    const vars: TRow | undefined = props.vars
+    if (c.moneydot !== undefined) {
+        if (vars === undefined) return defaults.moneydot
+        const moneydot: string | undefined = vars[defaults.moneydotvar] as string
+        return getafterdot(c.moneydot, moneydot)
+    }
+    if (c.moneydotcol !== undefined) {
+        const afterdot: number | undefined = (props.r[c.moneydotcol] as number)
+        if (afterdot !== undefined) return afterdot
+    }
+    return defaults.moneydot
+}
+
+
+function constructMoney(dom: any, c: TColumn, r: TRow, vars?: TRow): ReactElement {
+    const val: number | undefined = (r as TRow)[c.field] as number
+    if (val === undefined) return dom
+
+    const num = tomoney(val, moneydot(c, { r: r, vars: vars }))
+    return <div>{num}</div>
+}
+
+
 export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam, vars?: TRow, disabled?: boolean): ReactElement {
     let style: CSSProperties = {};
     let rendered = dom;
@@ -208,6 +232,7 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
     if (c.ident || c.addstyle || c.badge) rendered = <span style={style}>{badgeC} {dom}</span>;
 
     if (c.fieldtype === FIELDTYPE.INT) rendered = constructInt(c, r)
+    if (c.fieldtype === FIELDTYPE.MONEY) rendered = constructMoney(dom, c, r, vars)
 
     if (c.showdetails && rhook.fdetails !== undefined)
         return <Button type="link" onClick={() => { if (rhook.fdetails) rhook.fdetails(r) }}>{rendered}</Button>;
@@ -242,7 +267,8 @@ function isRenderable(c: TColumn): boolean {
         c.stat !== undefined ||
         c.addstyle !== undefined ||
         c.fieldtype === FIELDTYPE.BOOLEAN ||
-        c.fieldtype === FIELDTYPE.INT
+        c.fieldtype === FIELDTYPE.INT ||
+        (c.fieldtype === FIELDTYPE.MONEY)
     );
 }
 

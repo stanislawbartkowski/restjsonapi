@@ -130,7 +130,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
 
     const constructCurVals = (r?: TRow): TRow => {
-        const v : TRow = getVals()
+        const v: TRow = getVals()
         const data: TRow = isTop ? { ...commonVars(), ...formdef.initvals, ...initvals, ...v, ...r } : { ...v, ...r }
         return data
     }
@@ -214,7 +214,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     const closeF: FAction = () => {
-        setRestView({ visible: false })
+        if (ftype !== TPreseEnum.Steps)
+            setRestView({ visible: false })
     }
 
     const _clickButton: TClickButton = (button?: TAction, row?: TRow) => {
