@@ -214,8 +214,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     const closeF: FAction = () => {
-        if (ftype !== TPreseEnum.Steps)
-            setRestView({ visible: false })
+        //        if (ftype !== TPreseEnum.Steps)
+        setRestView({ visible: false })
     }
 
     const _clickButton: TClickButton = (button?: TAction, row?: TRow) => {

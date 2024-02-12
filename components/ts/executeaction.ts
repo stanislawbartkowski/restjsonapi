@@ -133,7 +133,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
     }
     const res: TAction = clickAction(button, toPars())
     // Data: 2024/02/10
-    //if (res.close) close()
+    // if (res.close) close()
     dorestaction(res, istrue(res.download) ? "arrayBuffer" : undefined).then(
         ({ data, response }) => {
             const da = analyzeresponse(data, response)
