@@ -176,6 +176,12 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
                 multiselect?.set(t.field, vals[t.field] as FieldValue[])
             }
             const va: FieldValue = vals === undefined ? undefined : vals[t.field]
+            if (fieldType(t) === FIELDTYPE.MONEY) {
+                if (vals !== undefined) {
+                    const m = trasformMoney(t, vals)
+                    vals[t.field] = m
+                }
+            }
             if (t.radio && isString(va) && !emptys(va as string)) {
                 const i: TRadioCheckItem[] = t.radio.items as TRadioCheckItem[]
                 const iv: TRadioCheckItem | undefined = i.find(e => e.value == va as string)
@@ -299,15 +305,29 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         else fchanges.current.fieldchange.add(id)
     }
 
+    function trasformMoney(t: FFieldElem, r: TRow) {
+        const mval = r[t.field] as string
+        if (isString(mval)) {
+            if (emptys(mval)) return undefined
+            if (!okmoney(mval)) return undefined
+        }
+        // getafterdot
+        const moneydot: string | undefined = (props.initvals !== undefined) ? props.initvals[defaults.moneydotvar] as string : undefined
+        const m = tomoney(mval, getafterdot(t.moneydot, moneydot))
+        return m
+    }
+
     function modifyMoney(t: FField) {
         if (fieldType(t) !== FIELDTYPE.MONEY) return
         const r: TRow = f.getFieldsValue()
         const mval = r[t.field] as string
-        if (emptys(mval)) return
-        if (!okmoney(mval)) return
+        const m = trasformMoney(t, r)
+        if (m == undefined) return
+        //if (emptys(mval)) return
+        //if (!okmoney(mval)) return
         // getafterdot
-        const moneydot: string | undefined = (props.initvals !== undefined) ? props.initvals[defaults.moneydotvar] as string : undefined
-        const m = tomoney(mval, getafterdot(t.moneydot, moneydot))
+        //const moneydot: string | undefined = (props.initvals !== undefined) ? props.initvals[defaults.moneydotvar] as string : undefined
+        //const m = tomoney(mval, getafterdot(t.moneydot, moneydot))
         f.setFieldValue(t.field, m)
     }
 

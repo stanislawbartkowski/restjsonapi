@@ -157,7 +157,7 @@ export function tomoney(t: string | number | undefined, moneydot: number): undef
 }
 
 export function okmoney(t: string): boolean {
-    const res = tomoney(t, 4)
+    const res = tomoney(t, defaults.maxmenoeydot)
     return res !== "NaN"
 }
 
@@ -167,8 +167,8 @@ export function stoint(s: FieldValue): number {
 }
 
 export function getafterdot(f?: string, moneydot?: string) {
-    if (f == undefined || moneydot === undefined) return defaults.moneydot
-    const entries: string[] = moneydot.split(",")
+    if (f == undefined || emptys(moneydot)) return defaults.moneydot
+    const entries: string[] = (moneydot as string).split(",")
     for (var e of entries) {
         const a = e.split(':')
         if (a.length == 2 && a[0] == f) return +a[1]
