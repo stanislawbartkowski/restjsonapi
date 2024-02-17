@@ -30,7 +30,8 @@ function moneydot(c: TColumn, props: OneRowData): number {
 
 export function transformCell(c: TColumn, props: OneRowData): FieldValue {
     const val: FieldValue = c.value ? getValue(c.value as ColumnValue, props) : getVal(c, props)
-    //if (fieldType(c) === FIELDTYPE.MONEY) return tomoney(val as string | number, moneydot(c, props))
+    // musi być, potrzebne dla podsumowań
+    if (fieldType(c) === FIELDTYPE.MONEY) return tomoney(val as string | number, moneydot(c, props))
     if (fieldType(c) == FIELDTYPE.DATE) return dateNormalizeS(val as string)
     return val
 }

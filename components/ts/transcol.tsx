@@ -4,6 +4,7 @@ import React, { ReactNode } from "react";
 import { Badge, Button, Divider, Dropdown, MenuProps, Space, Statistic, Switch, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
+import { LikeOutlined } from '@ant-design/icons';
 
 import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
@@ -218,7 +219,7 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
         style = getAddStyle(c.addstyle, parms);
     }
 
-    if (c.stat) rendered = makeStatItem(c.stat, parms)
+    if (c.stat) rendered = makeStatItem(fieldType(c), c.stat, parms)
 
     if (c.tags) rendered = constructTags(c.tags, rhook, parms);
     if (c.actions && rhook.fresult) rendered = constructactionsCol(c.actions, rhook, parms);
@@ -231,8 +232,10 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
 
     if (c.ident || c.addstyle || c.badge) rendered = <span style={style}>{badgeC} {dom}</span>;
 
-    if (c.fieldtype === FIELDTYPE.INT) rendered = constructInt(c, r)
-    if (c.fieldtype === FIELDTYPE.MONEY) rendered = constructMoney(dom, c, r, vars)
+    if (c.stat === undefined) {
+        if (c.fieldtype === FIELDTYPE.INT) rendered = constructInt(c, r)
+        if (c.fieldtype === FIELDTYPE.MONEY) rendered = constructMoney(dom, c, r, vars)
+    }
 
     if (c.showdetails && rhook.fdetails !== undefined)
         return <Button type="link" onClick={() => { if (rhook.fdetails) rhook.fdetails(r) }}>{rendered}</Button>;
@@ -384,11 +387,21 @@ export function HTMLElem(value: string | undefined): React.ReactElement {
 // stat 
 // ===================
 
-export function makeStatItem(stat: StatisticType, t: OneRowData): React.ReactNode {
+function getStatVal(fieldtype: FIELDTYPE, st: StatisticType, t: OneRowData): number | string | undefined {
+    if (fieldtype !== FIELDTYPE.MONEY) return st.value as string
+    if (st.value === undefined) return undefined
+    const val = st.value as number
+    const mval = tomoney(val, defaults.moneydot)
+    return mval;
+}
+
+export function makeStatItem(fieldtype: FIELDTYPE, stat: StatisticType, t: OneRowData): React.ReactNode {
     const st: StatisticType = stat.js ? callJSFunction(stat.js as string, t) : stat
     const icon = st.icon ? { prefix: getIcon(st.icon) } : undefined
     const title: string = makeMessage(st.title, t) as string
     const valuestyle = st.valueStyle ? { valueStyle: st.valueStyle } : undefined
     const props: PropsType = { precision: defaults.moneydot, ...st.props }
-    return <Statistic title={title} {...icon} value={st.value as string | number} {...props} {...valuestyle} ></Statistic>
+
+
+    return <Statistic title={title} {...icon} value={getStatVal(fieldtype, st, t)} {...props} {...valuestyle} ></Statistic>
 }
