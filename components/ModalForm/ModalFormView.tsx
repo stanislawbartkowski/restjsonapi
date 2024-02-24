@@ -285,6 +285,11 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             if (ff.errors !== undefined && ff.errors.length > 0) return;
         }
 
+        // 2024/02/24
+        // only when single field changes
+        // multiply changes are triggered on validate
+        if (changedFields.length > 1) return
+
         const idn: NamePath = changedFields[0]["name"]
         const id: string = (isString(idn)) ? idn as string : (idn as string[])[0]
         // check if edit field

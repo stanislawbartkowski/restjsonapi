@@ -4,13 +4,12 @@ import React, { ReactNode } from "react";
 import { Badge, Button, Divider, Dropdown, MenuProps, Space, Statistic, Switch, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
-import { LikeOutlined } from '@ant-design/icons';
 
 import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
 import { AddStyle, ButtonAction, ColumnList, ColumnSortType, IColumnFilter, IColumnSort, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
-import { clickAction, getValue, getafterdot, stoint, tomoney, } from "./helper";
+import { clickAction, getValue, getafterdot, istrue, stoint, tomoney, } from "./helper";
 import { callJSFunction, isNumber, isnotdefined, makeMessage } from "../../ts/j";
 import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
@@ -45,7 +44,9 @@ export function fieldTitle(t: TFieldBase, pars: OneRowData): string {
 function sortfilter(c: TColumn): boolean {
     if (c.fieldtype === FIELDTYPE.BOOLEAN) return false;
     if (c.fieldtype === FIELDTYPE.HTML) return false;
-    if (c.actions) return false;
+    if (c.actions) {
+        return istrue(c.actions.showindetails)
+    }
     if (c.tags) return false;
     return true;
 }
