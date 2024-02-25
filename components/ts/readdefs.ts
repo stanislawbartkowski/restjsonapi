@@ -81,6 +81,18 @@ async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[
             return makeMessage(f, { r: r }) as string
         }
 
+        const getSubLabel = (rest: TItemsRest, r: TRow) => {
+            if (rest.sublabel === undefined) return undefined
+            const f: FormMessage = rest.sublabel
+            if (isString(f)) {
+                const ff: string = f as string
+                if (isnotdefined(r[ff])) return undefined
+                return r[ff]
+            }
+            return makeMessage(f, { r: r }) as string
+        }
+
+
         if (tr) {
             const rest: TItemsRest | undefined = !isOArray(tr.items) ? tr.items as TItemsRest : undefined
             if (rest) {
@@ -88,9 +100,11 @@ async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[
                 const resta: Record<string, any> = await readvalsdata(rest, row, vars, rest.params)
                 const rlist: RowData = resta.res
                 tr.items = rlist.map(r => {
+                    const subLabel = getSubLabel(rest, r)
                     return {
                         value: r[rest.value] as string,
-                        label: { messagedirect: getLabel(rest, r) } as FormMessage
+                        label: { messagedirect: getLabel(rest, r) } as FormMessage,
+                        sublabel: subLabel === undefined ? undefined : { messagedirect: subLabel } as FormMessage
                     }
                 })
                 if (c.checkbox) c.checkbox = { ...tr }

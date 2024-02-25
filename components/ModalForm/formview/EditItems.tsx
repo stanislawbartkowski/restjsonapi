@@ -79,7 +79,7 @@ function createRadioItem(e: TRadioCheckItem, button?: boolean): ReactNode {
 }
 
 function createProps(ir: IFieldContext, t: TField) {
-    const lprops = {...prepareStyleByLabel(t)} 
+    const lprops = { ...prepareStyleByLabel(t) }
     const props = t.iprops ? { ...lprops, ...t.iprops } : lprops
     if (t.disabled) {
         props["disabled"] = true
@@ -107,8 +107,11 @@ function createRadioGroup(ir: IFieldContext, t: FField): ReactNode {
 
 
 function createSegmentOption(t: TRadioCheckItem) {
+    const labstring = makeMessage(t.label)
+    const lsubstring = t.sublabel === undefined ? undefined : makeMessage(t.sublabel)
+    const label = lsubstring === undefined ? labstring : <div>{labstring}<br />{lsubstring}</div>
     return {
-        label: makeMessage(t.label),
+        label: label,
         value: t.value
     }
 
@@ -336,8 +339,8 @@ function errorMessage(t: FField, err: ErrorMessages): {} | { validateStatus: Val
     return { validateStatus: 'error', help: [e.message] }
 }
 
-function prepareStyleByLabel(t: TField) : PropsType | undefined {
-    if (t.label == undefined) return 
+function prepareStyleByLabel(t: TField): PropsType | undefined {
+    if (t.label == undefined) return
     const d: FieldDefaults | undefined = findLabel(t.label)
     if (d === undefined || d.width === undefined) return undefined
     const css: React.CSSProperties = { width: d.width }

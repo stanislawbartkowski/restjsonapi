@@ -218,10 +218,10 @@ type TColumnSortChange = (c: TColumn, sort: ColumnSortType) => void
 type TGetColumnSort = (c: TColumn) => ColumnSortType
 
 // ----- column filter
-type TColumnFilterSet = (c: TColumn, val: string|undefined) => void
-type TColumnGetFilter = (c: TColumn) => string|undefined
+type TColumnFilterSet = (c: TColumn, val: string | undefined) => void
+type TColumnGetFilter = (c: TColumn) => string | undefined
 
-export interface IColumnFilter {  
+export interface IColumnFilter {
     setFilter: TColumnFilterSet
     getFilter: TColumnGetFilter
 }
@@ -277,7 +277,7 @@ export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
     toolbar?: ListToolbar
     descr?: TSummaryDescr[]
     bordered?: boolean
-    sortcol?: string[]  
+    sortcol?: string[]
 };
 
 
@@ -315,12 +315,14 @@ export type TCard = {
 export type TItemsRest = RESTMETH & {
     value: string
     label: FormMessage
+    sublabel?: FormMessage
     onlylabel?: boolean
 }
 
 export type TRadioCheckItem = PropSupportedType & {
     value: string,
     label: FormMessage
+    sublabel?: FormMessage
 }
 
 export type TRadioCheck = PropSupportedType & JSSupportedType & {
@@ -538,7 +540,7 @@ export enum BUTTONACTION {
     SEARCH = "SEARCH",
     SEARCHNEXT = "SEARCHNEXT",
     DOPRINT = "DOPRINT",
-    DOWNLOAD='DOWNLOAD'
+    DOWNLOAD = 'DOWNLOAD'
 }
 
 // =================

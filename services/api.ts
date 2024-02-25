@@ -82,7 +82,8 @@ function userHeader(): Record<string, string> {
 }
 
 function userGetCache() {
-  const u = isProd() ? { useCache: true } : undefined
+  // cache 1 hour
+  const u = isProd() ? { useCache: true, ttl: 3600000 } : undefined
   return u;
 }
 
