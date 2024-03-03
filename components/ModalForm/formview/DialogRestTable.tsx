@@ -26,7 +26,8 @@ export function produceRestTable(ir: IFieldContext, t: FField): ReactNode {
     //const multiselect: FieldValue[] = ir.getMulti().get(t.field) as FieldValue[]
     // 2023/03/38
     const multiselect: FieldValue[] = vars[t.field] as FieldValue[]
+    const pvars = { ...vars, ...pars.vars }
     return <Form.Item id={t.field} name={t.field} {...t.props} >
-        <RestTable {...pars} vars={vars} refreshno={refreshR.refreshno} setvarsaction={t.setvarsaction} setmulti={setMulti} initsel={multiselect} refreshD={refreshR.searchR} rereadRest={ir.rereadRest} />
+        <RestTable {...pars} vars={pvars} refreshno={refreshR.refreshno} setvarsaction={t.setvarsaction} setmulti={setMulti} initsel={multiselect} refreshD={refreshR.searchR} rereadRest={ir.rereadRest} />
     </Form.Item>
 }
