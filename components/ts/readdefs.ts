@@ -1,4 +1,4 @@
-import { PreseForms, TField, TForm, TItemsRest, TPreseEnum, TRadioCheck } from "./typing";
+import { PreseForms, TField, TForm, TItemsRest, TPanel, TPreseEnum, TRadioCheck } from "./typing";
 import { log } from "../../ts/l";
 import { callJSFunction, commonVars, isOArray, isString, isnotdefined, makeMessage } from "../../ts/j";
 import type { FieldValue, FormMessage, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
@@ -67,6 +67,19 @@ async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[
                 c.items = items
                 return c
             }))
+            return c
+        }
+        // Data: 2024/03/09
+        if (c.collapse) {
+            const panels: TPanel[] = c.collapse
+            const ipanels: TPanel[] = await Promise.all(panels.map(
+                async pa => {
+                    const items: TField[] = await (resolveRest(pa.items as TField[], row, vars))
+                    pa.items = items
+                    return pa
+                }
+            ))
+            c.collapse = ipanels
             return c
         }
 
