@@ -91,6 +91,8 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
             description: { messagedirect: downloadname }
         }
         openNotification(noti, { r: {} })
+        // Data: 2023/03/10
+        props.i.setMode(false, []);
     }
 
     function doaction(r: TAction, presult?: string) {
