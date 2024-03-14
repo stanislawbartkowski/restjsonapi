@@ -12,7 +12,7 @@ type HeaderInfo = {
 
 const InfoHeader: React.FC<HeaderInfo> = (props) => {
 
-    return props.info === undefined ? undefined : <Text className="header-info" strong >{props.info}</Text>
+    return props.info === undefined ? <span/> : <Text className="header-info" strong >{props.info}</Text>
 
 };
 

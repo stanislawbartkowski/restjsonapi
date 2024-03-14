@@ -248,7 +248,7 @@ function checkchange(ir: IFieldContext, id: string, t: FField) {
 
 function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: FormListFieldData): [React.ReactNode, PropsType | undefined] {
 
-    const onBlur: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
+    const onBlur: FocusEventHandler<HTMLElement> = (c: React.FocusEvent) => {
         const id: string = c.target.id
         checkchange(ir, c.target.id, t)
     }

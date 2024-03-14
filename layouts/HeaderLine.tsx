@@ -14,7 +14,7 @@ import lstring from '../ts/localize';
 
 
 const Logout: React.FC = () => {
-    if (!isSec()) return undefined
+    if (!isSec()) return <span/>
     const icon = getIcon('logoutoutlined')
     return <Popconfirm title={lstring('logout')} description={lstring('logoutquestion')} onConfirm={logout} >
         <Button icon={icon}>
