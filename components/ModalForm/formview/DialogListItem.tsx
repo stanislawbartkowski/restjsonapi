@@ -5,9 +5,11 @@ import { MinusCircleOutlined } from '@ant-design/icons';
 import getIcon from "../../../ts/icons";
 import { getButtonName } from "../../../ts/j";
 import { ButtonElem } from "../../../ts/typing";
-import { cardProps } from "../../ts/helper";
+import { cardProps, istrue } from "../../ts/helper";
 import { IFieldContext, FField, ErrorMessages } from "./types";
 import { produceFormItem } from "./EditItems";
+import { getFieldProps } from "./helper";
+import { TField } from "../../ts/typing";
 
 // ================================
 // list item
@@ -22,6 +24,11 @@ export function createList(ir: IFieldContext, t: FField, err: ErrorMessages): Re
 
     const addname = getButtonName(addButton)
 
+    const aprops: TField | undefined = getFieldProps(ir, t) as TField
+
+    const disabled: boolean = (aprops !== undefined && istrue(aprops.disabled)) || istrue(t.disabled)
+
+
     return <Card bordered {...cardProps(t.list?.card)}>
         <Form.List name={t.field} key={t.field} {...t.list?.props} >
             {(fields, { add, remove }) => (
@@ -32,11 +39,14 @@ export function createList(ir: IFieldContext, t: FField, err: ErrorMessages): Re
                             <MinusCircleOutlined onClick={() => remove(field.name)} />
                         </Space>
                     ))}
-                    <Form.Item>
+
+                    {disabled ? undefined : <Form.Item>
                         <Button type="dashed" onClick={() => add({})} block {...addButton.props} icon={plusicon}>
                             {addname}
                         </Button>
                     </Form.Item>
+                    }
+
                 </React.Fragment>
             )}
 
