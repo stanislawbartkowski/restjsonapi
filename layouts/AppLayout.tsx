@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
-import { Layout } from "antd";
+import { Anchor, Layout } from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 
 import AppContent from "./AppContent";
@@ -38,19 +38,23 @@ const AppLayout: React.FC = () => {
           minHeight: "100vh",
         }}
       >
-        <LeftMenu collapsed={collapsed} />
+        <Anchor>
+          <LeftMenu collapsed={collapsed} />
+        </Anchor>
       </Sider>
       <Layout className="site-layout">
-        <Header className="site-layout-background" style={{ padding: 0 }}>
-          {React.createElement(
-            collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-            {
-              className: "trigger",
-              onClick: () => setCollapsed(!collapsed),
-            }
-          )}
-          <HeaderLine />
-        </Header>
+        <Anchor>
+          <Header className="site-layout-background" style={{ padding: 0 }}>
+            {React.createElement(
+              collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
+              {
+                className: "trigger",
+                onClick: () => setCollapsed(!collapsed),
+              }
+            )}
+            <HeaderLine />
+          </Header>
+        </Anchor>
         <Content
           className="site-layout-background"
           style={{
