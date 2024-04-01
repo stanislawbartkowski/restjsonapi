@@ -1,6 +1,6 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 
-import { ModalFormProps } from "../../ts/typing";
+import { ModalFormProps, PropsType } from "../../ts/typing";
 import { ismaskClicked } from "../ts/helper";
 import ModalFormDialog, { ModalHooks } from "./ModalFormDialog";
 import DraggableModal from '../DraggableModal'
@@ -14,6 +14,7 @@ const ModalDialog: React.FC<ModalFormProps> = (props) => {
 
     const [moddef, setState] = useState<ModalPropsData>({ buttons: undefined });
     const [modaltitle, setModalTitle] = useState<string | undefined>(undefined)
+    const [modalprops, setModalProps] = useState<PropsType|undefined>(undefined)
 
     const ihooks: ModalHooks = {
         setButtons: function (buttons: ReactNode, loading: boolean): void {
@@ -24,8 +25,20 @@ const ModalDialog: React.FC<ModalFormProps> = (props) => {
         },
         rereadRest: function (): void {
             if (props.rereadRest !== undefined) props.rereadRest()
+        },
+        setModalProps: function (props: PropsType): void {
+            const mprops = { ...props, ...modalprops }
+            setModalProps(mprops)
         }
+
     }
+
+    useEffect(() => {
+
+        if (props.modalprops !== undefined)
+            setModalProps(props.modalprops)
+
+    }, [props.modalprops]);
 
     function onClose(e: React.MouseEvent<HTMLElement, MouseEvent>): void {
         if (ismaskClicked(e)) return
@@ -36,7 +49,7 @@ const ModalDialog: React.FC<ModalFormProps> = (props) => {
 
     if (props.ispage) return <ModalFormDialog {...props} />
     return <DraggableModal open={props.visible as boolean} title={modaltitle}
-        onClose={onClose} modalprops={props.modalprops} buttons={moddef.buttons}
+        onClose={onClose} modalprops={modalprops} buttons={moddef.buttons}
     >
 
         <ModalFormDialog {...props} mhooks={ihooks} />

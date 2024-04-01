@@ -11,7 +11,7 @@ import constructButton from '../ts/constructbutton';
 import ModalFormView, { FOkValidated, IRefCall } from './ModalFormView';
 import { FFieldElem, flattenTForm, okmoney, cardProps, preseT, istrue, decomposeEditId } from '../ts/helper'
 import { logG, trace } from '../../ts/l'
-import { FAction, FButtonAction, FIELDTYPE, FSetTitle, FieldValue, ModalFormProps, RAction, RESTMETH, RowData, TComponentProps, TRow, VAction } from '../../ts/typing'
+import { FAction, FButtonAction, FIELDTYPE, FSetProps, FSetTitle, FieldValue, ModalFormProps, RAction, RESTMETH, RowData, TComponentProps, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
@@ -50,6 +50,7 @@ export interface ModalHooks {
     setButtons: (buttons: ReactNode, loading: boolean) => void
     setTitle?: FSetTitle
     rereadRest: FRereadRest
+    setModalProps?: FSetProps
 }
 
 
@@ -392,6 +393,10 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
             if (d.status === Status.READY) {
                 const tabledata: TForm = { ...(d.res as TForm) }
+
+                if (tabledata.modalprops !== undefined && props.mhooks?.setModalProps !== undefined)
+                    props.mhooks.setModalProps(tabledata.modalprops)
+
 
                 // 2022/08/30 (bez cookie)
                 const vars: TRow | undefined = d.initvar !== undefined ? d.initvar : props.initvals

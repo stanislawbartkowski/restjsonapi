@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import RestTable from './RestTable'
 import ModalForm from './ModalForm'
 import { getComponent } from './ts/complist';
-import { TComponentProps } from '../ts/typing';
+import { PropsType, TComponentProps } from '../ts/typing';
 import { isAuthenticated } from '../ts/keyclock';
 import { erralert } from '../ts/l';
 import lstring from '../ts/localize';
 import DraggableModal from './DraggableModal'
 
 const ModalTableList: React.FC<TComponentProps> = (props) => {
+
+  const [modalprops, setModalProps] = useState<PropsType | undefined>(undefined)
+
+  const [modaltitle, setModalTitle] = useState<string | undefined>(undefined)
 
   function onClose(): void {
     if (props.closeAction) {
@@ -18,19 +22,31 @@ const ModalTableList: React.FC<TComponentProps> = (props) => {
     }
   }
 
-  const [modaltitle, setModalTitle] = useState<string | undefined>(undefined)
-
   function setTitle(title: string | undefined): void {
     setModalTitle(title)
   }
+
+  function setModalPropsFromTable(props: PropsType): void {
+    const mprops = { ...props, ...modalprops }
+    setModalProps(mprops)
+  }
+
+
+  useEffect(() => {
+
+    if (props.modalprops !== undefined)
+      setModalProps(props.modalprops)
+
+  }, [props.modalprops]);
+
 
 
   if (props.ispage) return <RestTable {...props} />
   else
     return <DraggableModal open={props.visible as boolean} title={modaltitle}
-      onOk={onClose} onClose={onClose} buttons={null} modalprops={props.modalprops}>
+      onOk={onClose} onClose={onClose} buttons={null} modalprops={modalprops}>
 
-      <RestTable {...props} setTitle={setTitle} />
+      <RestTable {...props} setTitle={setTitle} setModalProps={setModalPropsFromTable} />
     </DraggableModal>
 }
 
@@ -50,8 +66,8 @@ const RestComponent: React.FC<TComponentProps> = (props) => {
     const comp: React.FC<TComponentProps> = getComponent(props.component)
     return comp({ ...props })
   }
-  if (props.list) return <ModalTableList {...props}/>
-  return <ModalForm {...props}/>
+  if (props.list) return <ModalTableList {...props} />
+  return <ModalForm {...props} />
 }
 
 export default RestComponent

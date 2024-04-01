@@ -101,6 +101,7 @@ export type VAction = (r: TRow) => void
 export type RAction = (r?: TAction) => void
 export type SetMAction = (sel: FieldValue[]) => void
 export type FSetTitle = (title: string | undefined) => void
+export type FSetProps = (props: PropsType) => void
 
 export interface ClickActionProps {
   closeAction?: FAction

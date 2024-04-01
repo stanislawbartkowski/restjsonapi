@@ -278,6 +278,7 @@ export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
     descr?: TSummaryDescr[]
     bordered?: boolean
     sortcol?: string[]
+    modalprops?: PropsType
 };
 
 
@@ -480,6 +481,7 @@ export type TForm = JSSupportedType & TCard & {
     jsrestapivals?: string
     header?: ShowDetails
     autocomplete?: TAutoComplete[]
+    modalprops?: PropsType
 }
 
 // --------------------------------

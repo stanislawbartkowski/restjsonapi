@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactNode } from "react";
 
 import InLine from "../../ts/inline";
-import { ClickActionProps, FSetTitle, RestTableParam } from "../../ts/typing";
+import { ClickActionProps, FSetProps, FSetTitle, RestTableParam } from "../../ts/typing";
 import Cards from "../Cards";
 import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import RestTableView, { TRefreshTable } from "../DrawTable";
@@ -14,7 +14,7 @@ type ListState = ReadDefsResult & {
     list: string;
 };
 
-const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle, expanded?: boolean, rereadRest?: FRereadRest }> = (props) => {
+const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: number, refreshD?: TRefreshTable, setTitle?: FSetTitle, expanded?: boolean, rereadRest?: FRereadRest, setModalProps?: FSetProps }> = (props) => {
     const [state, setState] = useState<ListState>({
         status: Status.PENDING,
         list: props.list as string,
@@ -52,6 +52,8 @@ const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: numb
             //                list: props.list as string,
             //            })
 
+            if (props.setModalProps !== undefined && d.res?.modalprops !== undefined)
+                props.setModalProps(d.res.modalprops)
             setState({
                 ...d,
                 list: props.list as string,
