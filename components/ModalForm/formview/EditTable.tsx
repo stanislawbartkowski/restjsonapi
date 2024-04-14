@@ -1,4 +1,4 @@
-import { Card, PaginationProps, Table } from 'antd';
+import { Card, Divider, PaginationProps, Space, Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import React, { ReactElement, ReactNode } from 'react';
 
@@ -26,7 +26,9 @@ function genAddButton(it: IFieldContext, c: FField) {
     const addButton: ButtonElem = c.editlist.addbutton
     if (addButton.icon === undefined) addButton.icon = "pluscircleoutlined"
     const b = constructButtonElem(addButton, it.clickButton)
-    return b
+    if (c.editlist.buttons === undefined) return b
+    const buttons: ReactNode[] = c.editlist.buttons.map(e => constructButtonElem(e, it.clickButton))
+    return <Space size="small">{buttons}{<Divider type="vertical" />}{b}</Space>
 }
 
 function createHookParam(it: IFieldContext): TableHookParam {
@@ -65,10 +67,12 @@ function createTitle(t: TField, fieldprops: TField[]): string {
 
 function constructTColumn(it: IFieldContext, t: FField, editid: string, err: ErrorMessages, options: TOptions, vars: TRow, fieldprops: TField[]): ColumnType<any> {
     const mess: string = createTitle(t, fieldprops)
+    const width = (t.colwidth === undefined) ? undefined : { 'width': t.colwidth }
     return {
         title: <React.Fragment>{mess}</React.Fragment>,
         dataIndex: t.field,
         ...t.props,
+        ...width,
         render: t.actions ? constructRenderAction(it, t, err, editid) : constructRenderCell(it, t, err, editid, options, undefined, fieldprops)
     }
 }

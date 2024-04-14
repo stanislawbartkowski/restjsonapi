@@ -348,6 +348,7 @@ export type TCheckBox = TRadioCheck
 
 export type TListItem = PropSupportedType & {
     addbutton: ButtonAction
+    buttons?: ButtonAction[]
     card?: TCard
     summary?: TSummary
 }
@@ -461,6 +462,7 @@ export type TField = PropSupportedType & TFieldBase & {
     collapse?: TPanel[]
     tab?: TTab
     moneydot?: string
+    colwidth?: string|number
 }
 
 // the whole form
