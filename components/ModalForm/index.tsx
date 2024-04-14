@@ -27,7 +27,9 @@ const ModalDialog: React.FC<ModalFormProps> = (props) => {
             if (props.rereadRest !== undefined) props.rereadRest()
         },
         setModalProps: function (props: PropsType): void {
-            const mprops = { ...props, ...modalprops }
+            // 2024/04/15
+            //const mprops = { ...props, ...modalprops }
+            const mprops = { ...modalprops, ...props }
             setModalProps(mprops)
         }
 
