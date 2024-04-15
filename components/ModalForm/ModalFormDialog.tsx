@@ -465,11 +465,19 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         setState({ ...formdef, err: err })
     }
 
+    function findEditTable(tableid: string, fields: FFieldElem[]) {
+        //const tf: TField | undefined = formdef.tabledata?.fields.find(e => e.field === tableid)
+        const tf: TField | undefined = fields.find(e => e.field === tableid)
+        return tf
+    }
+
     function findFField(id: string): [FFieldElem | undefined, string | undefined, number | undefined] {
         const fields: FFieldElem[] = createF();
         const edittable: [string, string, number] | undefined = decomposeEditId(id)
         if (edittable === undefined) return [fields.find(e => e.field === id), undefined, undefined]
-        const tf: TField | undefined = formdef.tabledata?.fields.find(e => e.field === edittable[0])
+        // 2024/04/14 
+        //const tf: TField | undefined = formdef.tabledata?.fields.find(e => e.field === edittable[0])
+        const tf: TField | undefined = findEditTable(edittable[0], fields)
         if (tf === undefined) return [undefined, undefined, undefined]
         return [tf.items?.find(e => e.field === edittable[1]), edittable[0], edittable[2]]
     }
