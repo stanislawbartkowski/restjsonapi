@@ -21,7 +21,7 @@ import { readvalsdata } from "../ts/readdefs";
 import { callJSFunction, commonVars, isBool, isOArray, isString, toS } from '../../ts/j';
 import RestComponent from '../RestComponent';
 import { findErrField } from './formview/helper';
-import { ErrorMessages } from './formview/types';
+import { ErrorMessages, FField } from './formview/types';
 import { readAutocomplete } from '../ts/readlist';
 import defaults from '../../ts/defaults';
 import { TRefreshTable } from '../DrawTable';
@@ -151,7 +151,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                             }
                             if (refresh)
                                 ref.current.refreshTable(t.field, tData);
-                            vars[t.field] = false;
+                            // 2024/04/21 zmiana
+                            //vars[t.field] = false;
+                            vars[t.field] = undefined;
                         }
                     }
                 }
@@ -479,7 +481,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         //const tf: TField | undefined = formdef.tabledata?.fields.find(e => e.field === edittable[0])
         const tf: TField | undefined = findEditTable(edittable[0], fields)
         if (tf === undefined) return [undefined, undefined, undefined]
-        return [tf.items?.find(e => e.field === edittable[1]), edittable[0], edittable[2]]
+        const efield: FFieldElem[] = flattenTForm(tf.items as FField[])
+        return [efield.find(e => e.field === edittable[1]), edittable[0], edittable[2]]
     }
 
     const onFieldChange: FOnFieldChanged = (id: string) => {

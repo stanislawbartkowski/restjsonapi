@@ -25,6 +25,7 @@ export type FField = TField & {
     groupT?: TField
     seteditRow: FSetEditRow
     rerenderD: () => void
+    genId?: FGenEditId
 }
 
 export type TFieldChange = {
@@ -33,6 +34,7 @@ export type TFieldChange = {
     nullfields: Set<string>;
 }
 
+export type FGenEditId = (id: string) => string
 export type UploadStore = Map<string, UploadFile[]>
 export type TMultiSelect = Map<string, FieldValue[]>;
 export type SetMultiSelect = (t: TField, sel: FieldValue[]) => void

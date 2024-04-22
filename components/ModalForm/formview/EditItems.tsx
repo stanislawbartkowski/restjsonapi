@@ -248,6 +248,8 @@ function checkchange(ir: IFieldContext, id: string, t: FField) {
 
 function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: FormListFieldData): [React.ReactNode, PropsType | undefined] {
 
+    //const fId: string = t.genId !== undefined ? t.genId(t.field) : t.field
+
     const onBlur: FocusEventHandler<HTMLElement> = (c: React.FocusEvent) => {
         const id: string = c.target.id
         checkchange(ir, c.target.id, t)
@@ -260,7 +262,7 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
 
     if (isItemGroup(t)) {
         return [<React.Fragment>
-            {(t.items as TField[]).map(e => produceItem(ir, { ...e, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR, setvarsaction: t.setvarsaction, seteditRow: t.seteditRow, rerenderD: t.rerenderD, options: t.options }, err, field))}
+            {(t.items as TField[]).map(e => produceItem(ir, { ...e, field: t.genId !== undefined ? t.genId(e.field) : e.field, genId: t.genId, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR, setvarsaction: t.setvarsaction, seteditRow: t.seteditRow, rerenderD: t.rerenderD, options: t.options }, err, field))}
         </React.Fragment>,
             undefined]
     }
@@ -377,9 +379,12 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
     const row: TRow = ir.getValues()
     const mess: string = fieldTitle(t, { r: row });
 
-    const nameT = listfield === undefined ? { name: t.field } : { name: [listfield.name, t.field] }
+    //const fId: string = t.genId !== undefined ? t.genId(t.field) : t.field
+    const fId: string = t.field
 
-    return <Form.Item {...props} {...nameT} id={t.field} key={t.field} {...requiredprops} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]} >
+    const nameT = listfield === undefined ? { name: fId } : { name: [listfield.name, fId] }
+
+    return <Form.Item {...props} {...nameT} id={fId} key={fId} {...requiredprops} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]} >
         {elemp[0]}
     </Form.Item>
 

@@ -10,7 +10,7 @@ import { addRowKey } from '../../ts/tranformlist';
 import { constructactionsCol, fieldTitle, transformOneColumn } from '../../ts/transcol';
 import { TableHookParam, TAction, TActions, TField, ButtonAction, TColumns, TClickButton, TColumn, ColumnList } from '../../ts/typing';
 import { produceFormItem } from './EditItems';
-import { ErrorMessages, FField, IFieldContext, ROWKEY, TFieldsProps, TOptions } from './types';
+import { ErrorMessages, FField, FGenEditId, IFieldContext, ROWKEY, TFieldsProps, TOptions } from './types';
 import propsPaging from "../../ts/tablepaging"
 import { trace } from '../../../ts/l';
 import { getFieldProps } from './helper';
@@ -56,7 +56,8 @@ function constructRenderCell(it: IFieldContext, c: FField, err: ErrorMessages, e
     const f: TField | undefined = findACol(c, fieldprops)
     const disabled = f !== undefined && istrue(f.disabled) ? { disabled: true } : undefined
     return (dom: any, entity: TRow): ReactElement => {
-        return <React.Fragment><span className='listedit'>{produceFormItem(it, { ...c, coltitle: "empty", ...disabled, field: genColIdedit(editid, c.field, entity[ROWKEY] as number), options: options }, err, undefined)}</span></React.Fragment>
+        const gId : FGenEditId = (id: string) => genColIdedit(editid, id, entity[ROWKEY] as number)
+        return <React.Fragment><span className='listedit'>{produceFormItem(it, { ...c, coltitle: "empty", ...disabled, field: gId(c.field), genId: gId, options: options }, err, undefined)}</span></React.Fragment>
     }
 };
 
