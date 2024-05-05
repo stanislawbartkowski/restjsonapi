@@ -361,7 +361,10 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
 
     if (t.fieldtype === FIELDTYPE.NOFIELD) return undefined
 
-    const [rules, required] = createRules(ir, t)
+    const row: TRow = ir.getValues()
+    const mess: string = fieldTitle(t, { r: row });
+
+    const [rules, required] = createRules(ir, t, mess)
     const props: PropsType = { ...t.props }
     if (props.rules && rules) {
         props.rules = rules.concat(props.rules)
@@ -374,10 +377,6 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
     const elemp = produceElem(ir, t, err, listfield)
 
     const requiredprops = required ? { required: true } : undefined
-
-
-    const row: TRow = ir.getValues()
-    const mess: string = fieldTitle(t, { r: row });
 
     //const fId: string = t.genId !== undefined ? t.genId(t.field) : t.field
     const fId: string = t.field

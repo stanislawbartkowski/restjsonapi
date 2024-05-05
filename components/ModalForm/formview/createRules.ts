@@ -13,7 +13,7 @@ import { findLabel } from "../../../ts/readresource"
 import { getFieldProps } from "./helper"
 
 
-function updateRulesbyLabel(t: FField, rules: Rule[]) {
+function updateRulesbyLabel(t: FField, rules: Rule[], coltitle: string) {
     if (t.label === undefined) return
     const d: FieldDefaults | undefined = findLabel(t.label)
     if (d === undefined) return
@@ -24,12 +24,13 @@ function updateRulesbyLabel(t: FField, rules: Rule[]) {
     }
     if (d.max !== undefined) {
         // find max
+        const errmess: string = lstring("rulesmaxmessage", coltitle, d.max)
         if (rules.find(r => (r as RuleObject).max !== undefined) === undefined)
-            rules.push({ max: d.max })
+            rules.push({ max: d.max, message: errmess })
     }
 }
 
-export function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, boolean] {
+export function createRules(ir: IFieldContext, t: FField, title: string): [Rule[] | undefined, boolean] {
 
     const fieldtype: FIELDTYPE = fieldType(t)
 
@@ -92,7 +93,7 @@ export function createRules(ir: IFieldContext, t: FField): [Rule[] | undefined, 
 
         })
 
-    updateRulesbyLabel(t, rules)
+    updateRulesbyLabel(t, rules, title)
 
     return [rules.length === 0 ? undefined : rules, required]
 

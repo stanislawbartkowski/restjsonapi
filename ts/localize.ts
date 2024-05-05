@@ -1,9 +1,9 @@
 import LocalizedStrings, { LocalizedStringsMethods } from 'react-localization';
 import { isOArray } from './j';
 
-let lang: string|undefined = undefined
+let lang: string | undefined = undefined
 
-export function getLang() : string|undefined {
+export function getLang(): string | undefined {
   return lang
 }
 
@@ -65,7 +65,8 @@ const embedded = {
     viewcards: "Karty",
     logout: "Wylogowanie",
     logoutquestion: "Na pewno chcesz się wylogować ?",
-    domaintitle: "Domena"
+    domaintitle: "Domena",
+    rulesmaxmessage: "Pole {0} nie może być dłuższe niż {1} znaków"
   },
   en: {
     empty: '',
@@ -124,7 +125,8 @@ const embedded = {
     viewcards: "Cards",
     logout: "Logout",
     logoutquestion: "Do you want to log out?",
-    domaintitle: "Domain"
+    domaintitle: "Domain",
+    rulesmaxmessage: "{0} cannot exceed {1} characters"
   }
 };
 
@@ -147,22 +149,22 @@ export function setStrings(s: any, l: string | undefined) {
 const lstring = (id: string, ...args: any): string => {
   const s = strings.getString(id)
   if (args === undefined || args.length === 0) return s;
-  if (isOArray(args[0])) {
-    const a: any[] = args[0]
+  if (isOArray(args)) {
+    const a: any[] = args;
     let ss: string = "Too many arguments"
 
     switch (a.length) {
       case 0: ss = s; break;
-      case 1: ss = strings.formatString(s, a[0]).toString(); break;
-      case 2: ss = strings.formatString(s, a[0], a[1]).toString(); break;
-      case 3: ss = strings.formatString(s, a[0], a[1], a[2]).toString(); break;
-      case 4: ss = strings.formatString(s, a[0], a[1], a[2], a[3]).toString(); break;
+      case 1: ss = strings.formatString(s, a[0]) as string; break;
+      case 2: ss = strings.formatString(s, a[0], a[1]) as string; break;
+      case 3: ss = strings.formatString(s, a[0], a[1], a[2]) as string; break;
+      case 4: ss = strings.formatString(s, a[0], a[1], a[2], a[3]) as string; break;
     }
     return ss;
 
   }
 
-  const ss = strings.formatString(s, args).toString();
+  const ss = strings.formatString(s, args) as string
   return ss;
 }
 
