@@ -47,7 +47,7 @@ export type TFieldsProps = Record<string, TField | TField[]>
 
 export interface IFieldContext {
     getChanges: () => TFieldChange
-    fieldChanged: (f: FField) => void
+    fieldChanged: (f: FField, newval?: FieldValue ) => void
     getValues: FGetValues
     aRest: TAsyncRestCall
     upGet: () => UploadStore

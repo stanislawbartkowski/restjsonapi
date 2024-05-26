@@ -485,11 +485,13 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         return [efield.find(e => e.field === edittable[1]), edittable[0], edittable[2]]
     }
 
-    const onFieldChange: FOnFieldChanged = (id: string) => {
+    const onFieldChange: FOnFieldChanged = (id: string, newval?: FieldValue) => {
         const felem = findFField(id)
         const f: FFieldElem | undefined = felem[0]
         if (f === undefined) return
-        const v: TRow = ref.current.getValues()
+        const addV: TRow = {}
+        if (newval !== undefined) addV[id] = newval
+        const v: TRow = { ...ref.current.getValues(), ...addV }
         if (f.onchange) {
             clickButton(f.onchange, v)
         }

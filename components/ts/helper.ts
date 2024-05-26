@@ -226,6 +226,7 @@ export function flattenTForm(tlist: TField[]): FFieldElem[] {
                 const i: FFieldElem[] = flattenTForm(p.items)
                 res = res.concat(i)
             })
+            res.push(t)
             return
         }
         res.push(e)

@@ -32,7 +32,8 @@ interface Defaults {
   headermenuresource: string,
   isheadermenuasmenu: boolean,
   headermenuname: string,
-  moneydotvar: string
+  moneydotvar: string,
+  settabprefix: string
 };
 
 const defaults: Defaults = {
@@ -46,7 +47,7 @@ const defaults: Defaults = {
   displayprintrouterid: "printingdisplayer",
   cookieage: 7,
   currentfield: "currentfield",
-  verstring: "JS: wersja 1.6 (r:17) z dnia 6 maja 2024",
+  verstring: "JS: wersja 1.6 (r:18) z dnia 24 maja 2024",
   directprefix: "~",
   multichoicevar: "multichoice",
   listpos: "listpos",
@@ -69,7 +70,8 @@ const defaults: Defaults = {
   headermenuresource: "HEADERMENU",
   isheadermenuasmenu: true,
   headermenuname: "Admify",
-  moneydotvar: "moneydotmap"
+  moneydotvar: "moneydotmap",
+  settabprefix: "set_"
 };
 
 export default defaults;

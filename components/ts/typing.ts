@@ -518,7 +518,7 @@ export type TAsyncRestCall = (h: RESTMETH, row: TRow) => Promise<TRow>
 
 export type FOnValuesChanged = (changedFields: Record<string, any>, _: Record<string, any>) => void
 
-export type FOnFieldChanged = (id: string) => void
+export type FOnFieldChanged = (id: string, newval?: FieldValue) => void
 
 export type FGetValues = () => TRow
 export type FSetValues = (r: TRow) => void

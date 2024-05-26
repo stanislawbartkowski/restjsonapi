@@ -345,9 +345,9 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         getChanges: function (): TFieldChange {
             return fchanges.current;
         },
-        fieldChanged: function (t: FField): void {
+        fieldChanged: function (t: FField, newval?: FieldValue): void {
             modifyMoney(t);
-            props.onFieldChange(t.field);
+            props.onFieldChange(t.field, newval);
         },
         getValues: function (): TRow {
             return props.getValues();
