@@ -104,18 +104,28 @@ const isExcelButton = (p: ColumnList): boolean => {
     return isToolBarFeature(p, "excelfile")
 }
 
-function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, arrange_cols?: ColumnsT, vars?: TRow): ColumnsT {
-    if (arrange_cols !== undefined) return arrange_cols
+function toSortCols(vcols: ColumnType<any>[], p: ColumnList): ColumnsT {
     const v: Set<string> = new Set<string>(vcols.map(c => c.dataIndex as string))
     const ta: ColumnsT = p.columns.map(c => {
-        const title: string = fieldTitle(c, { r: {}, vars: vars })
         const cl: ColumnT = {
             key: c.field,
-            title: title,
-            included: v.has(c.field)
+            included: v.has(c.field),
         }
         return cl
     })
+    return ta
+}
+
+function toColTitle(e: ColumnT, p: ColumnList, vars?: TRow): string | undefined {
+    const c: TColumn | undefined = p.columns.find(c => c.field == e.key)
+    if (c === undefined) return undefined
+    const title: string = fieldTitle(c, { r: {}, vars: vars })
+    return title
+}
+
+function transformSortColumns(vcols: ColumnType<any>[], p: ColumnList, arrange_cols?: ColumnsT, vars?: TRow): ColumnsT {
+    const ta: ColumnsT = (arrange_cols !== undefined) ? arrange_cols : toSortCols(vcols, p)
+    ta.forEach(t => { t.title = toColTitle(t, p) })
     return ta
 }
 

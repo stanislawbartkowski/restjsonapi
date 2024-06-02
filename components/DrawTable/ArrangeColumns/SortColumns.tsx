@@ -9,6 +9,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Table } from 'antd';
+
 import type { ColumnsType } from 'antd/es/table';
 import React, { useState } from 'react';
 import { ColumnsT, ColumnT, SortProps } from '../typing';

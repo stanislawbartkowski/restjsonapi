@@ -20,7 +20,7 @@ import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 import { RadioChangeEvent } from 'antd/lib';
 
 import { PropsType, FIELDTYPE, FieldValue, FieldDefaults, TRow } from '../../../ts/typing';
-import { getValue, isEditList, isItemGroup, istrue } from '../../ts/helper';
+import { emptys, getValue, isEditList, isItemGroup, istrue } from '../../ts/helper';
 import { ButtonAction, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
 import { IFieldContext, FField, TFieldChange } from './types';
 import { makeMessage } from '../../../ts/j';
@@ -40,6 +40,7 @@ import constructButton from '../../ts/constructbutton';
 import { createCollapsePanels } from './CollapseItems';
 import { createTabsPanel } from './TabItems';
 import { SearchProps } from 'antd/es/input';
+import lstring from '../../../ts/localize';
 
 const { RangePicker } = DatePicker;
 
@@ -230,8 +231,27 @@ interface HTMLProps {
     onChange?: (value: string) => void
 }
 
+const convertElem = (val: string | undefined) => {
+    if (val === undefined) return undefined
+    
+    const re = new RegExp("\\$\\([^)]+\\)", "g")
+    const ma = val.match(re)
+    if (ma === undefined) return val
+    var destv = val
+    ma?.forEach(e => {
+        var key = e.substring(2,e.length-1)
+        var label = lstring(key)
+        if (!emptys(label)) {
+            destv = destv.replace(e, label)
+        }
+    })
+
+    return destv
+
+}
+
 const HTMLControl: React.FC<HTMLProps> = (props) => {
-    return HTMLElem(props.value);
+    return HTMLElem(convertElem(props.value));
 }
 
 function checkchange(ir: IFieldContext, id: string, t: FField) {

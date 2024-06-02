@@ -1,5 +1,4 @@
 import { Button, Dropdown, MenuProps, Tooltip } from "antd"
-import { FontSizeOutlined } from "@ant-design/icons";
 
 
 import lstring from "../../ts/localize";

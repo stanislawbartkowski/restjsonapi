@@ -28,14 +28,9 @@ export function enhanceLink(url: string): string {
   else return `${o}/${url}`
 }
 
-// not used
-function setPrefix(p: string) {
-  prefix = p
-}
-
-export function getHost(): string {
-  return host;
-}
+//export function getHost(): string {
+//  return host;
+//}
 
 export function setHost(prefix: string) {
 
@@ -62,6 +57,12 @@ export function setUrlModifier(u: FUrlModifier) {
 
 export function getUrlModifier(): FUrlModifier | undefined {
   return urlModifier
+}
+
+export function toEndPoint(endpoint: string, addHost: boolean = false) {
+  const eurl: string = `${prefix}${endpoint}`;
+  const url = addHost ? `${host}${eurl}` : eurl
+  return url
 }
 
 function userHeader(): Record<string, string> {
@@ -93,7 +94,7 @@ function getUserGetCache(list: string) {
 }
 
 export async function restapilist(list: string, pars?: Record<string, FieldValue>) {
-  const url: string = `${prefix}${list}`;
+  const url: string = toEndPoint(list)
   const para: any = urlModifier === undefined ? {} : urlModifier(list);
   return rrequest<Record<string, any>>(url, {
     method: "GET",
@@ -109,7 +110,8 @@ export async function restapishowdetils(resource: string) {
 
 export async function restapilistdef(resource: string) {
   // listdef
-  return rrequest<Record<string, any>>(`${prefix}compdef`, {
+  const url: string = toEndPoint("compdef")
+  return rrequest<Record<string, any>>(url, {
     method: "GET",
     params: { resource: resource },
     headers: userHeader(),
@@ -118,7 +120,8 @@ export async function restapilistdef(resource: string) {
 }
 
 export async function restapiresource(resource: string) {
-  return rrequest<Record<string, any>>(`${prefix}resource`, {
+  const url: string = toEndPoint("resource")
+  return rrequest<Record<string, any>>(url, {
     method: "GET",
     params: { resource: resource },
     headers: userHeader()
@@ -126,7 +129,8 @@ export async function restapiresource(resource: string) {
 }
 
 export async function restapijs(resource: string) {
-  return rrequest<string>(`${prefix}getjs`, {
+  const url: string = toEndPoint("getjs")
+  return rrequest<string>(url, {
     method: "GET",
     params: { resource: resource },
     headers: userHeader(),
@@ -135,8 +139,9 @@ export async function restapijs(resource: string) {
 }
 
 export async function restaction(method: HTTPMETHOD, restaction: string, pars?: Record<string, FieldValue>, data?: any, responseType?: RequestOptionsInit["responseType"]) {
+  const url: string = toEndPoint(restaction)
   const para: any = urlModifier === undefined ? {} : urlModifier(restaction);
-  return rrequest<Record<string, any>>(`${prefix}${restaction}`, {
+  return rrequest<Record<string, any>>(url, {
 
     method: method,
     data: data,
@@ -146,4 +151,26 @@ export async function restaction(method: HTTPMETHOD, restaction: string, pars?: 
     headers: userHeader(),
     ...(method === HTTPMETHOD.GET ? getUserGetCache(restaction) : undefined)
   });
+}
+
+// ------------------
+// upload endpoint
+// ------------------
+
+export const customRequest = (options: any) => {
+  fetch(options.action, {
+    method: 'POST',
+    body: options.file,
+    headers: userHeader()
+  }
+  )
+    .then(result => {
+      console.log('Success:', result);
+      options.onSuccess()
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      options.onError()
+    });
+
 }

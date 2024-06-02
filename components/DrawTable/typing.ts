@@ -17,9 +17,9 @@ export type TExtendable = {
 
 export type FSetSize = (size: SizeType) => void
 
-export interface ColumnT  {
-  title: string,
+export interface ColumnT {
   key: string,
+  title?: string
   included: boolean
 }
 

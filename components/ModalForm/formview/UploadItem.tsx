@@ -2,7 +2,7 @@ import { RcFile } from "antd/lib/upload"
 import { ReactNode } from "react"
 import { UploadProps, UploadFile, message, Upload } from "antd"
 
-import { getHost } from "../../../services/api"
+import { customRequest, toEndPoint } from "../../../services/api"
 import { getSessionId } from "../../../ts/j"
 import lstring from "../../../ts/localize"
 import { constructButtonElem } from "../../ts/constructbutton"
@@ -16,26 +16,9 @@ import { IFieldContext, FField } from "./types"
 
 function getUpPars(file: RcFile): string {
     const fname = file.name
-    const host = getHost()
     const uuid = getSessionId()
-    return `${host}/upload?filename=${uuid}/${fname}`
-}
-
-const customRequest = (options: any) => {
-    fetch(options.action, {
-        method: 'POST',
-        body: options.file
-    }
-    )
-        .then(result => {
-            console.log('Success:', result);
-            options.onSuccess()
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            options.onError()
-        });
-
+    const endpoint: string = `upload?filename=${uuid}/${fname}`
+    return toEndPoint(endpoint, true)
 }
 
 
