@@ -232,17 +232,17 @@ interface HTMLProps {
 }
 
 const convertElem = (val: string | undefined) => {
-    if (val === undefined) return undefined
+    if (emptys(val)) return undefined
     
     const re = new RegExp("\\$\\([^)]+\\)", "g")
-    const ma = val.match(re)
+    const ma = val?.match(re)
     if (ma === undefined) return val
     var destv = val
     ma?.forEach(e => {
         var key = e.substring(2,e.length-1)
         var label = lstring(key)
         if (!emptys(label)) {
-            destv = destv.replace(e, label)
+            destv = destv?.replace(e, label)
         }
     })
 
