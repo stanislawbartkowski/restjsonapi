@@ -450,7 +450,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         {form}
         <RestComponent  {...searchD.enterbutton as object} {...searchD.addpars} visible={searchD.visible} choosing closeAction={closeF} rereadRest={props.rereadRest} />
         <RestComponent  {...multiselectD.multichoice as object} {...multiselectD.addpars} visible={multiselectD.visible} closeAction={closeMultiD}
-            initsel={multiselect.get(multiselectD.field)} multiselect vars={initvals} rereadRest={props.rereadRest} />
+            initsel={multiselect.get(multiselectD.field)} multiselect vars={{ ...initvals, ...hvalues }} rereadRest={props.rereadRest} />
     </React.Fragment>
 })
 
