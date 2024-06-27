@@ -7,6 +7,7 @@ import { getAuthLabel, getSessionId, isgetCached } from "../ts/j";
 import { getToken, getUserFullName, getUserName } from "../ts/keyclock";
 import { emptys } from "../components/ts/helper";
 import { isProd } from "../ts/readresource";
+import { getDomain } from "../ts/url";
 
 
 const rrequest = request;
@@ -72,13 +73,15 @@ function userHeader(): Record<string, string> {
   const modifH: Record<string, string> = (headerModifier === undefined) ? {} : headerModifier()
   const authLabel: Record<string, string> = emptys(getAuthLabel()) ? {} : { 'authlabel': getAuthLabel() as string }
   const authorization: Record<string, string> = emptys(getToken()) ? {} : { 'Authorization': 'Bearer ' + getToken() }
+  const domain: Record<string, string> = { 'domain': getDomain() }
   return {
     ...sessionH,
     ...userH,
     ...modifH,
     ...usernameH,
     ...authLabel,
-    ...authorization
+    ...authorization,
+    ...domain
   }
 }
 
@@ -98,6 +101,8 @@ export async function restapilist(list: string, pars?: Record<string, FieldValue
   const para: any = urlModifier === undefined ? {} : urlModifier(list);
   return rrequest<Record<string, any>>(url, {
     method: "GET",
+    // 2024/06/27 - do not send cookies
+    credentials: 'omit',
     params: { ...para, ...pars },
     headers: userHeader(),
     ...getUserGetCache(list)
