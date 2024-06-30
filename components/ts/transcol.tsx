@@ -15,7 +15,6 @@ import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
 import { sortboolinc, sortinc, sortnumberinc } from "../../ts/sortproc";
-import { ItemType } from "antd/lib/menu/interface";
 
 
 // =====================
@@ -104,7 +103,7 @@ export function extractActionHook(t: TAction, r: TableHookParam, pars: OneRowDat
 }
 
 
-function constructMenuAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData): ItemType {
+function constructMenuAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData) {
     const h: IActionHook = extractActionHook(t, r, pars)
     const ic = t.icon ? { icon: getIcon(t.icon) } : {}
     return { key: key, label: h.text, onClick: h.onClick };

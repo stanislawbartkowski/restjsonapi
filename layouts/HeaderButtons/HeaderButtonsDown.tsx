@@ -6,9 +6,9 @@ import { HeaderMenu, getHeaderMenu } from '../../ts/headermenu';
 // import { ItemType } from 'antd/es/menu/hooks/useItems';
 import AppLauncherIcon from './AppLauncher'
 import defaults from '../../ts/defaults';
-import { ItemType } from 'antd/lib/menu/interface';
+// import { ItemType } from 'antd/lib/menu/interface';
 
-function genMenuLabel(m: HeaderMenu, n: number): ItemType<any> {
+function genMenuLabel(m: HeaderMenu, n: number) : any {
   return {
     label: (
       <a href={m.url}>
