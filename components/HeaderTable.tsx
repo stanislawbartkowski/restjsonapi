@@ -13,7 +13,7 @@ import RestComponent from "./RestComponent";
 import { getButtonName, getButtonNameIcon, isObject, makeMessage } from "../ts/j";
 import { createII, executeB, IIButtonAction, ispopupDialog } from './ts/executeaction'
 import getIcon from "../ts/icons";
-import { ItemType } from "antd/es/menu/interface";
+import { ItemType } from "antd/lib/menu/interface";
 
 
 type HeaderProps = ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[], setTitle?: FSetTitle, rereadRest: FRereadRest, closeAction?: FAction, extendedTools?: React.ReactNode }
