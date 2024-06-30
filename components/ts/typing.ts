@@ -1,4 +1,5 @@
 import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType, RESTMETH, RowData, TResize, ListToolbar } from '../../ts/typing';
+import { FFieldElem } from './helper';
 
 // =========================
 // status for async reading
@@ -426,6 +427,8 @@ export type TTab = PropSupportedType & {
     tabs: TabItems[]
 }
 
+export type TToolTip = PropSupportedType & FormMessage
+
 export type TField = PropSupportedType & TFieldBase & {
     items?: TField[]
     iprops?: PropsType
@@ -462,7 +465,8 @@ export type TField = PropSupportedType & TFieldBase & {
     collapse?: TPanel[]
     tab?: TTab
     moneydot?: string
-    colwidth?: string|number
+    colwidth?: string | number
+    tooltip?: TToolTip
 }
 
 // the whole form
@@ -525,6 +529,8 @@ export type FSetValues = (r: TRow) => void
 export type FGetOptions = (id: string, val: string) => TOptionLine[]
 export type FRetAction = (b: TAction, row: TRow) => void
 export type FRereadRest = () => void
+export type FGetAutocomplete = () => TAutoCompleteMap|undefined
+export type FGetFieldsList = () => FFieldElem[]
 
 // ============================
 // standard buttons 

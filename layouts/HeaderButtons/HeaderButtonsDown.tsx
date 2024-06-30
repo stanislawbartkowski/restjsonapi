@@ -3,9 +3,10 @@ import { Button, Dropdown, MenuProps } from 'antd';
 import { gray } from '@ant-design/colors';
 
 import { HeaderMenu, getHeaderMenu } from '../../ts/headermenu';
-import { ItemType } from 'antd/es/menu/hooks/useItems';
+// import { ItemType } from 'antd/es/menu/hooks/useItems';
 import AppLauncherIcon from './AppLauncher'
 import defaults from '../../ts/defaults';
+import { ItemType } from 'antd/lib/menu/interface';
 
 function genMenuLabel(m: HeaderMenu, n: number): ItemType<any> {
   return {

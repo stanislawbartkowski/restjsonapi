@@ -13,7 +13,7 @@ import lstring from "../../ts/localize";
 function toCardRow(e: TColumn, t: TDetailsCard, pars: OneRowData): ReactNode {
 
     const ftype: FIELDTYPE = fieldType(e)
-    const content: React.ReactElement = ftype === FIELDTYPE.HTML ? HTMLElem(t.r[e.field] as string) : <span>{t.r[e.field]}</span>
+    const content: React.ReactElement = ftype === FIELDTYPE.HTML ? HTMLElem(t.r[e.field] as string) : <span>{t.r[e.field] as string}</span>
 
     return <Row key={e.field} {...t.rowprops}>
         {e.divider ? makeDivider(e.divider, { r: t.r, vars: t.vars }) : undefined}

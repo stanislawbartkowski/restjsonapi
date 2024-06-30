@@ -14,7 +14,7 @@ import { FieldData, NamePath } from 'rc-field-form/lib/interface';
 import { FormInstance } from 'antd/es/form';
 
 
-import { ButtonAction, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChanged, FRereadRest, FSetValues, TAsyncRestCall, TAutoCompleteMap, TClickButton, TField, TForm, TOptionLine, TRadioCheckItem } from '../ts/typing'
+import { ButtonAction, FGetAutocomplete, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChanged, FRereadRest, FSetValues, TAsyncRestCall, TAutoCompleteMap, TClickButton, TField, TForm, TOptionLine, TRadioCheckItem } from '../ts/typing'
 import { log, trace } from '../../ts/l'
 import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, PropsType, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
@@ -76,7 +76,7 @@ const emptySearch = { field: "", visible: false }
 // getValues: used only to get values for field list
 // setInitValues: used to pass values set during jsinitvals (JSON)
 // restapiinitname: the name is passed only to useEffect to be raised only once
-const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, setvarsaction: VAction, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues, fGetOptions?: FGetOptions, setTitle?: FSetTitle }>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, setvarsaction: VAction, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues, fGetOptions?: FGetOptions, setTitle?: FSetTitle, fGetAutomplete?: FGetAutocomplete }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const [multiselectD, setMultiSelectD] = useState<MultiSelectProps>(emptySearch);
@@ -381,7 +381,6 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         },
         fReadCookie: function (t: TField, addf?: string | undefined): string | undefined {
             return getCookie(gencookie(t, addf));
-
         },
         fWriteCookie: function (t: TField, val: string | undefined, addf?: string | undefined): void {
             setCookie(gencookie(t, addf), val);
@@ -390,8 +389,14 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             props.rereadRest();
         },
         fieldsprops: function (): TFieldsProps | undefined {
-            if (props.initvals === undefined || props.initvals[defaults.fieldsprops] === undefined) return undefined
-            return (props.initvals[defaults.fieldsprops] as any) as TFieldsProps
+            if (props.initvals === undefined || props.initvals[defaults.fieldsprops] === undefined) return undefined;
+            return (props.initvals[defaults.fieldsprops] as any) as TFieldsProps;
+        },
+        fGetAutocomplete: function (): TAutoCompleteMap | undefined {
+            return props.fGetAutomplete === undefined ? undefined : props.fGetAutomplete();
+        },
+        fgetFields: function (): FFieldElem[] {
+            return props.list
         }
     }
 

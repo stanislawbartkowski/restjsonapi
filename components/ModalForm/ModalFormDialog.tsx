@@ -2,7 +2,7 @@ import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useIm
 import { Card } from 'antd';
 
 import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FRereadRest, FRetAction, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TColumn, TField, TOptionLine, TPreseEnum } from '../ts/typing'
-import type { TForm } from '../ts/typing'
+import type { FGetAutocomplete, TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
 import readdefs, { ReadDefsResult, rereadRest } from "../ts/readdefs";
@@ -32,6 +32,7 @@ export type THooks = {
     getValues?: FGetValues
     setInitValues?: FSetValues
     fGetOptions?: FGetOptions
+    fGetAutocomplete?: FGetAutocomplete
 }
 
 export interface IIRefCall {
@@ -247,6 +248,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         aRest: async (h: RESTMETH, r: TRow) => {
             if (props.aRest)
                 return props.aRest(h, r);
+
             else
                 return _aRest(h, r);
         },
@@ -254,6 +256,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         clickButton: (button?: ButtonAction, row?: TRow) => {
             if (props.clickButton)
                 props.clickButton(button, row);
+
             else
                 _clickButton(button, row);
         },
@@ -302,6 +305,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
             });
             return v;
         },
+        fGetAutocomplete: () => {
+            return auto
+        }
     }
 
     const clickButton: TClickButton = (button?: ButtonAction, row?: TRow) => {
@@ -542,6 +548,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 setTitle={props.mhooks?.setTitle}
                 listdef={props.listdef}
                 rereadRest={rereadRestFun}
+                fGetAutomplete={thooks.fGetAutocomplete}
                 {...thooks}
             />
         : undefined

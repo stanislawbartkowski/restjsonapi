@@ -3,7 +3,7 @@ import { GetComponentProps } from 'rc-table/lib/interface'
 import React, { ReactNode } from "react";
 import { Badge, Button, Divider, Dropdown, MenuProps, Space, Statistic, Switch, Tag } from "antd";
 import { CSSProperties, ReactElement } from "react";
-import { ItemType } from "antd/lib/menu/hooks/useItems";
+//import { ItemType } from "antd/lib/menu/hooks/useItems";
 
 import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
@@ -15,6 +15,7 @@ import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
 import { sortboolinc, sortinc, sortnumberinc } from "../../ts/sortproc";
+import { ItemType } from "antd/lib/menu/interface";
 
 
 // =====================
@@ -143,7 +144,7 @@ function constructSingleTag(key: number, tag: TTag, r: TableHookParam, pars: One
 
     return <Tag key={key}
         onClick={() => { if (tag.action) clickActionHook(tag.action, r, pars) }}
-        {...p} {...tag.props} >{value}</Tag>;
+        {...p} {...tag.props} >{value as string}</Tag>;
 }
 
 

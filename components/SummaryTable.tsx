@@ -72,7 +72,7 @@ function produceCell(i: number, c: TColumn, p: TSummaryTable, sumline: ColumnLis
   const tprops: ColumnType<any> = h?.props ? h.props as ColumnType<any> : {}
   modifyColProps({ ...c, ...h }, tprops);
 
-  return <Table.Summary.Cell key={i} {...tprops} index={i}>{v}</Table.Summary.Cell>
+  return <Table.Summary.Cell key={i} {...tprops} index={i}>{v as string}</Table.Summary.Cell>
 }
 
 const SummaryTable: React.FC<TSummaryTable> = (props) => {

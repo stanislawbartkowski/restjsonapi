@@ -12,7 +12,7 @@ function isdiv(c: TColumn) {
 
 function toDescritionItem(c: TColumn, pars: OneRowData) {
   const f: TableHookParam = { fdetails: undefined, fresult: undefined }
-  const elem: ReactElement = renderCell(c, <div>{pars.r[c.field]}</div>, pars.r, f, pars.vars, true)
+  const elem: ReactElement = renderCell(c, <div>{pars.r[c.field] as string}</div>, pars.r, f, pars.vars, true)
   const label = isdiv(c) ? elem : fieldTitle(c, pars)
   const val = isdiv(c) ? undefined : elem
 

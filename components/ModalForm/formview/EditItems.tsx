@@ -13,15 +13,16 @@ import {
     FormListFieldData,
     AutoComplete,
     Segmented,
+    Tooltip,
 } from 'antd';
 
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 import { RadioChangeEvent } from 'antd/lib';
 
-import { PropsType, FIELDTYPE, FieldValue, FieldDefaults, TRow } from '../../../ts/typing';
-import { emptys, getValue, isEditList, isItemGroup, istrue } from '../../ts/helper';
-import { ButtonAction, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
+import { PropsType, FIELDTYPE, FieldValue, FieldDefaults, TRow, RowData } from '../../../ts/typing';
+import { decomposeEditId, emptys, getValue, isEditList, isItemGroup, istrue } from '../../ts/helper';
+import { ButtonAction, TAutoCompleteMap, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
 import { IFieldContext, FField, TFieldChange } from './types';
 import { makeMessage } from '../../../ts/j';
 import { HTMLElem, fieldType, fieldTitle, makeDivider } from '../../ts/transcol';
@@ -41,6 +42,7 @@ import { createCollapsePanels } from './CollapseItems';
 import { createTabsPanel } from './TabItems';
 import { SearchProps } from 'antd/es/input';
 import lstring from '../../../ts/localize';
+import defaults from '../../../ts/defaults';
 
 const { RangePicker } = DatePicker;
 
@@ -233,13 +235,13 @@ interface HTMLProps {
 
 const convertElem = (val: string | undefined) => {
     if (emptys(val)) return undefined
-    
+
     const re = new RegExp("\\$\\([^)]+\\)", "g")
     const ma = val?.match(re)
     if (ma === undefined) return val
     var destv = val
     ma?.forEach(e => {
-        var key = e.substring(2,e.length-1)
+        var key = e.substring(2, e.length - 1)
         var label = lstring(key)
         if (!emptys(label)) {
             destv = destv?.replace(e, label)
@@ -403,9 +405,40 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
 
     const nameT = listfield === undefined ? { name: fId } : { name: [listfield.name, fId] }
 
-    return <Form.Item {...props} {...nameT} id={fId} key={fId} {...requiredprops} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]} >
+    const edititem = <Form.Item {...props} {...nameT} id={fId} key={fId} {...requiredprops} label={mess} {...errorMessage(t, err)} {...addprops} {...elemp[1]} >
         {elemp[0]}
     </Form.Item>
+
+
+    let tooltiptitle: string | undefined = undefined
+    let tooltipprops: PropsType | undefined = undefined
+
+    const getEditValue = (row: TRow): FieldValue => {
+        const edittable: [string, string, number] | undefined = decomposeEditId(t.field)
+        if (edittable === undefined) return row[t.field]
+        const table: RowData = row[edittable[0]] as RowData
+        const mrow: TRow = table[edittable[2]]
+        return mrow[edittable[1]]
+    }
+
+    if (t.tooltip) {
+        const auto: TAutoCompleteMap | undefined = ir.fGetAutocomplete()
+        const vars: TRow = {}
+        tooltipprops = t.tooltip.props
+        if (auto)
+            auto.forEach((value: RowData, key: string) => {
+                const k = defaults.autocompleteprefix + key
+                vars[k] = value
+            });
+        vars[defaults.currentfield] = t.field
+        const edittable: [string, string, number] | undefined = decomposeEditId(t.field)
+        vars[defaults.currentvalue] = getEditValue(row)
+        tooltiptitle = makeMessage(t.tooltip, { r: row, vars: vars })
+    }
+
+    const formedititem = tooltiptitle ? <Tooltip {...tooltipprops} fresh destroyTooltipOnHide title={tooltiptitle}>{edititem}</Tooltip> : edititem
+
+    return formedititem
 
 }
 

@@ -157,7 +157,7 @@ export type MenuLeft = {
 // data, row, types
 // =================================
 
-export type FieldValue = string | number | boolean | undefined | string[] | FieldValue[]
+export type FieldValue = string | number | boolean | undefined | string[] | FieldValue[] | RowData
 
 export type TRow = Record<string, FieldValue>;
 

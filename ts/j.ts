@@ -76,6 +76,7 @@ export function makeMessage(m: FormMessage, pars: OneRowData = { r: {} }): strin
 
   if (m.js) {
     const res: any = callJSFunction(m.js, pars);
+    if (res === undefined) return undefined
     // recursive !
     return makeMessage(res as FormMessage, pars);
   }

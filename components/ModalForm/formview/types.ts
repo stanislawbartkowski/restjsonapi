@@ -1,6 +1,6 @@
 import { FormListFieldData, UploadFile } from "antd"
 import { FieldValue, PropsType, VAction } from "../../../ts/typing"
-import { FGetValues, FRereadRest, TAsyncRestCall, TClickButton, TField, TOptionLine } from "../../ts/typing"
+import { FGetAutocomplete, FGetFieldsList, FGetValues, FRereadRest, TAsyncRestCall, TClickButton, TField, TOptionLine } from "../../ts/typing"
 import { TRefreshTable } from "../../DrawTable"
 
 
@@ -47,7 +47,7 @@ export type TFieldsProps = Record<string, TField | TField[]>
 
 export interface IFieldContext {
     getChanges: () => TFieldChange
-    fieldChanged: (f: FField, newval?: FieldValue ) => void
+    fieldChanged: (f: FField, newval?: FieldValue) => void
     getValues: FGetValues
     aRest: TAsyncRestCall
     upGet: () => UploadStore
@@ -60,6 +60,8 @@ export interface IFieldContext {
     fWriteCookie: TWriteCookie,
     rereadRest: FRereadRest,
     fieldsprops: () => TFieldsProps | undefined
+    fGetAutocomplete: FGetAutocomplete
+    fgetFields: FGetFieldsList
 }
 
 export type ErrorMessage = {

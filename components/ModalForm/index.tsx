@@ -4,7 +4,6 @@ import { ModalFormProps, PropsType } from "../../ts/typing";
 import { ismaskClicked } from "../ts/helper";
 import ModalFormDialog, { ModalHooks } from "./ModalFormDialog";
 import DraggableModal from '../DraggableModal'
-import { log } from "../../ts/l";
 
 type ModalPropsData = {
     buttons: ReactNode
