@@ -276,12 +276,22 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 return [];
 
             const colname: string = autodef.colname ? autodef.colname : "name";
+            const labelname: string | undefined = autodef.labelname
 
-            function getN(r: TRow): string | undefined {
+            function getV(r: TRow, colname: string): string | undefined {
                 const t: FieldValue = r[colname];
                 if (t === undefined)
                     return undefined;
                 return toS(t);
+            }
+
+
+            function getN(r: TRow): string | undefined {
+                return getV(r, colname)
+            }
+
+            function getL(r: TRow): string | undefined {
+                return labelname !== undefined ? getV(r, labelname) : undefined
             }
 
             function okVal(r: TRow): boolean {
@@ -301,7 +311,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 return [];
             const n: RowData = rows.filter(r => okVal(r));
             const v: TOptionLine[] = n.slice(0, maxdispauto).map(r => {
-                return { value: getN(r) as string };
+                const value: string = getN(r) as string
+                const label: string | undefined = getL(r)
+                return label !== undefined ? { value: value, label: <span><strong>{value}</strong>  <i>{label}</i></span> } : { value: value };
             });
             return v;
         },

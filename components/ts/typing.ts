@@ -476,6 +476,7 @@ export type TAutoComplete = RestTableParam & JSSupportedType & {
     maxdisp?: number
     id: string
     colname?: string
+    labelname?: string
 }
 
 export type TForm = JSSupportedType & TCard & {
@@ -559,6 +560,7 @@ export enum BUTTONACTION {
 
 export type TOptionLine = {
     value: string
+    label?: string | JSX.Element
 }
 
 export type TAutoCompleteMap = Map<string, RowData>

@@ -346,8 +346,13 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
 
         const aoptions: TOptionLine[] | undefined = t.autocomplete === undefined ? [] : t.options?.get(t.autocomplete)
 
+        const onSelect = (value: string) => {
+            console.log('onSelect', value);
+          };
+
         return [<AutoComplete
             options={aoptions}
+            onSelect = {onSelect}
             onSearch={(value: string) => ir.fGetOptions(t, value)}
         >
             {fieldE}
