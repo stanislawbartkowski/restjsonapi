@@ -422,6 +422,8 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
         const edittable: [string, string, number] | undefined = decomposeEditId(t.field)
         if (edittable === undefined) return row[t.field]
         const table: RowData = row[edittable[0]] as RowData
+        // 2024/07/06 - can be complex id and no table related
+        if (table === undefined) return row[t.field]
         const mrow: TRow = table[edittable[2]]
         return mrow[edittable[1]]
     }
@@ -436,7 +438,7 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
                 vars[k] = value
             });
         vars[defaults.currentfield] = t.field
-        const edittable: [string, string, number] | undefined = decomposeEditId(t.field)
+        //const edittable: [string, string, number] | undefined = decomposeEditId(t.field)
         vars[defaults.currentvalue] = getEditValue(row)
         tooltiptitle = makeMessage(t.tooltip, { r: row, vars: vars })
     }
