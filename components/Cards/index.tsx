@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Card } from 'antd'
 
-import { emptyModalListProps, FAction, FIELDTYPE, ModalFormProps, RAction, RestTableParam, RowData, TRow } from "../../ts/typing"
+import { emptyModalListProps, FAction, FIELDTYPE, FIsSelected, ModalFormProps, OnRowClick, RAction, RestTableParam, RowData, TRow } from "../../ts/typing"
 import readlist, { DataSourceState } from "../ts/readlist";
 import { BUTTONACTION, ButtonAction, ClickAction, ColumnList, Status, TableHookParam, FActionResult, TableToolBar, TAction, TActions, TColumn } from "../ts/typing";
 import ReadListError from "../errors/ReadListError";
@@ -13,6 +13,7 @@ import { createII, executeB, IIButtonAction, ispopupDialog } from "../ts/execute
 import { sortboolinc, sortinc, sortnumberinc } from "../../ts/sortproc";
 import { fieldType } from "../ts/transcol";
 import { isnotdefined } from "../../ts/j";
+import { globalClick, globalSelected } from "../../ts/globalclick";
 
 
 const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number, switchDisplay?: React.ReactNode }> = (props) => {
@@ -23,6 +24,7 @@ const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number, swi
   });
 
   const [refreshnumber, setRefreshNumber] = useState<number>(0);
+  const [refreshselected, setRefreshSelected] = useState<number>(0);
 
   const [modalProps, setIsModalVisible] = useState<ModalFormProps>(emptyModalListProps);
 
@@ -52,7 +54,7 @@ const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number, swi
 
     const buttons: TableToolBar | undefined = props.header?.toolbar
     if (buttons === undefined) return undefined
-    const buttonsb : ButtonAction[] = buttons as ButtonAction[]
+    const buttonsb: ButtonAction[] = buttons as ButtonAction[]
     const add: ButtonAction | undefined = buttonsb.find(b => b.id === BUTTONACTION.ADD)
     return add
   }
@@ -101,9 +103,27 @@ const CardList: React.FC<RestTableParam & ColumnList & { refreshno?: number, swi
     elems.sort(compareFN)
   }
 
+  const onclick: OnRowClick = (r: TRow) => {
+    if (props.globalrowclick) {
+      globalClick(r)
+      setRefreshSelected(refreshselected + 1)
+    }
+    if (props.onRowClick) props.onRowClick(r)
+  }
+
+  const isselected: FIsSelected = (r: TRow) => {
+    if (props.isSelected) return props.isSelected(r)
+    if (props.globalrowclick) return globalSelected(r)
+    return false
+  }
+
+
   return <React.Fragment><Card title={makeHeader(props, undefined, { vars: props.vars, r: {} })} extra={props.switchDisplay}>
     <Row gutter={[8, 8]}>
-      {elems.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props} isSelected={props.isSelected} onRowClick={props.onRowClick} a={a} h={thook} /> </Col>)}
+      {elems.map(r => <Col {...getkey(r)}><RecordCard r={r} {...props}
+        isSelected={isselected}
+        onRowClick={onclick}
+        a={a} h={thook} /> </Col>)}
       {addCard}
     </Row>
   </Card>

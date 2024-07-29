@@ -2,6 +2,7 @@
 // general types
 // ==========================================================
 
+import { ReactNode } from "react"
 import { ButtonAction, FRereadRest, TAction } from "../components/ts/typing"
 
 export type PropsType = Record<string, any>
@@ -26,7 +27,7 @@ export type OnRowClick = (r: TRow) => void
 
 export type FUrlModifier = (list: string) => undefined | Record<string, string>;
 export type FHeaderModifier = () => Record<string, string>;
-export type FHeaderNameNotifier =  (name: string | undefined) => void
+export type FHeaderNameNotifier = (name: string | undefined) => void
 
 
 // ============================================================
@@ -79,6 +80,7 @@ export type RestTableParam = RESTMETH & {
   list?: string;
   listdef?: string;
   listcarddef?: string
+  listgroupdef?: string
   onRowClick?: OnRowClick;
   isSelected?: FIsSelected;
   onTableRead?: OnTableRead;
@@ -88,6 +90,7 @@ export type RestTableParam = RESTMETH & {
   choosing?: boolean
   initsel?: FieldValue[]
   multiselect?: boolean
+  globalrowclick?: boolean
 };
 
 // ==============================
@@ -116,6 +119,7 @@ export type ModalFormProps = ClickActionProps & {
   ispage?: boolean
   modalprops?: PropsType
   vars?: TRow,
+  switchDisplay?: ReactNode
 }
 
 export const emptyModalListProps: ModalFormProps = { visible: false, rereadRest: () => { } }
@@ -257,5 +261,6 @@ export interface AppData {
   forcenoprod?: boolean
   getcacheinclude: string[]
   getcacheexclude: string[]
+  welcome?: RestTableParam
 }
 

@@ -561,6 +561,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 listdef={props.listdef}
                 rereadRest={rereadRestFun}
                 fGetAutomplete={thooks.fGetAutocomplete}
+                switchDisplay={props.switchDisplay}
                 {...thooks}
             />
         : undefined

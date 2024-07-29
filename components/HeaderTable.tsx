@@ -13,10 +13,8 @@ import RestComponent from "./RestComponent";
 import { getButtonName, getButtonNameIcon, isObject, makeMessage } from "../ts/j";
 import { createII, executeB, IIButtonAction, ispopupDialog } from './ts/executeaction'
 import getIcon from "../ts/icons";
-// import { ItemType } from "antd/lib/menu/interface";
 
-
-type HeaderProps = ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[], setTitle?: FSetTitle, rereadRest: FRereadRest, closeAction?: FAction, extendedTools?: React.ReactNode }
+type HeaderProps = ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, vars?: TRow, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[], setTitle?: FSetTitle, rereadRest: FRereadRest, closeAction?: FAction, extendedTools?: React.ReactNode, switchDisplay?: ReactNode }
 
 function ltrace(mess: string) {
   trace('HeaderTable', mess)
@@ -39,7 +37,7 @@ function headerTitle(p: ShowDetails, vars?: TRow) {
 function constructMenuAction(key: number, b: ButtonAction, clickButton: FButtonAction) {
 
   const [label, iconid] = getButtonNameIcon(b)
-  const icon = iconid !== undefined ? { "icon" : getIcon(iconid)} : {}
+  const icon = iconid !== undefined ? { "icon": getIcon(iconid) } : {}
   return { key: key.toString(), label: label, onClick: () => { clickButton(b) }, ...icon };
 }
 
@@ -97,11 +95,12 @@ const HeaderTable: React.FC<HeaderProps> = (props) => {
 
   const headerprops = props.collist ? { ...props.collist.props } : undefined
 
-  const extra: ReactNode = <React.Fragment>{props.extendedTools} <Space style={{ float: "right", paddingBottom: "8px" }}>{createMenu(props, clickButton)}</Space></React.Fragment>
+  const extra: ReactNode = <React.Fragment>{props.extendedTools} <Space style={{ float: "right", paddingBottom: "8px" }}>{createMenu(props, clickButton)} </Space></React.Fragment>
 
   return (
     <React.Fragment>
-      <PageHeader {...title}
+      <PageHeader {...title} 
+        extra={props.switchDisplay}
         {...headerprops}>
         {extra}
         {props.collist ? <OneRowTable {...detaDescr} /> : undefined}

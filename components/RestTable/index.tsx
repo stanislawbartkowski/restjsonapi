@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactNode } from "react";
 
 import InLine from "../../ts/inline";
-import { ClickActionProps, FSetProps, FSetTitle, RestTableParam } from "../../ts/typing";
+import { ClickActionProps, FSetProps, FSetTitle, ModalFormProps, RestTableParam } from "../../ts/typing";
 import Cards from "../Cards";
 import readdefs, { ReadDefsResult } from "../ts/readdefs";
 import RestTableView, { TRefreshTable } from "../DrawTable";
@@ -9,6 +9,7 @@ import RestTableError from "../errors/ReadDefError";
 import { isCard } from "../ts/helper";
 import { ColumnList, FRereadRest, Status } from "../ts/typing";
 import { VIEW, changeViewF, getViewCookie, produceChangeDisplay, saveViewCookie } from "./helper";
+import ModalDialog from "../ModalForm";
 
 type ListState = ReadDefsResult & {
     list: string;
@@ -25,32 +26,15 @@ const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: numb
         list: props.listcarddef as string,
     });
 
+
     const [currentview, setCurrentView] = useState<VIEW>(getViewCookie(props, props.listcarddef !== undefined ? VIEW.CARD : VIEW.LIST))
 
-    // 2023/11/05 - removed, what it is about?
-    //    if (state.status === Status.READY && state.list !== props.list) {
-    //        setState({
-    //            status: Status.PENDING,
-    //            list: props.list as string,
-    //        });
-    //        return null;
-    //    }
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
 
         function setS(d: ReadDefsResult) {
 
-            // 2023/11/05 - removed, what it is about?
-            //            if (d.status === Status.READY)
-            //                setState({
-            //                    ...d,
-            //                    list: props.list as string,
-            //                })
-            //            else setState({
-            //                ...d,
-            //                list: props.list as string,
-            //            })
 
             if (props.setModalProps !== undefined && d.res?.modalprops !== undefined)
                 props.setModalProps(d.res.modalprops)
@@ -99,7 +83,7 @@ const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: numb
         saveViewCookie(props, view)
     }
 
-    const switchView: ReactNode | undefined = props.listcarddef === undefined ? undefined : produceChangeDisplay(onChangeView, currentview)
+    const switchView: ReactNode | undefined = props.listcarddef === undefined ? undefined : produceChangeDisplay(onChangeView, currentview, props.listgroupdef !== undefined)
 
     switch (calcStatus()) {
         case Status.PENDING: {
@@ -112,7 +96,15 @@ const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: numb
 
         default:
             if (state.status === Status.READY) {
-                const currentprops = currentview === VIEW.LIST ? { ...props } : { ...props, listdef: props.listcarddef }
+                const currentprops = currentview === VIEW.LIST ? { ...props } : { ...props, listdef: currentview === VIEW.CARD ? props.listcarddef : props.listgroupdef }
+                if (currentview === VIEW.GROUP) {
+                    return (
+                        <React.Fragment>
+                            <InLine js={state.js} />
+                            <ModalDialog {...currentprops} {...(state.res as ModalFormProps)} switchDisplay={switchView} ispage />
+                        </React.Fragment>
+                    )
+                }
                 const currentstate: ListState = currentview === VIEW.LIST ? state : statecard
                 return (
                     <React.Fragment>

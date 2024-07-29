@@ -6,6 +6,7 @@ import { FieldValue, RestTableParam, SetMAction, TRow } from "../../../ts/typing
 import RestTable from "../../RestTable"
 import { FieldRestList } from "../../ts/typing"
 import { IFieldContext, FField, TableRefreshData } from "./types"
+import defaults from "../../../ts/defaults"
 
 // ===========================
 // RestTable as a field
@@ -27,6 +28,7 @@ export function produceRestTable(ir: IFieldContext, t: FField): ReactNode {
     // 2023/03/38
     const multiselect: FieldValue[] = vars[t.field] as FieldValue[]
     const pvars = { ...vars, ...pars.vars }
+    pvars[defaults.currentfield] = t.field
     return <Form.Item id={t.field} name={t.field} {...t.props} >
         <RestTable {...pars} vars={pvars} refreshno={refreshR.refreshno} setvarsaction={t.setvarsaction} setmulti={setMulti} initsel={multiselect} refreshD={refreshR.searchR} rereadRest={ir.rereadRest} />
     </Form.Item>

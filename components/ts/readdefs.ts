@@ -1,4 +1,4 @@
-import { PreseForms, TField, TForm, TItemsRest, TPanel, TPreseEnum, TRadioCheck } from "./typing";
+import { PreseForms, TField, TForm, TItemsRest, TPanel, TPanelHeader, TPreseEnum, TRadioCheck } from "./typing";
 import { log } from "../../ts/l";
 import { callJSFunction, commonVars, isOArray, isString, isnotdefined, makeMessage } from "../../ts/j";
 import type { FieldValue, FormMessage, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
@@ -56,6 +56,26 @@ async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[
     const ffields: TField[] = await Promise.all(tl.map(async c => {
 
         const tr: TRadioCheck | undefined = c.checkbox ? c.checkbox : c.radio ? c.radio : undefined
+        if (c.dynamiccollapse) {
+            const data = await readvalsdata(c.dynamiccollapse, {})
+            const headers: TPanelHeader[] = data.res
+            c.collapse = headers.map(h => {
+                const he: TPanelHeader = { ...h }
+                h.key = c.field + "_" + h.key
+                const items: TField[] = (c.dynamiccollapse?.items as TField[]).map(i => {
+                    const item: TField = { ...i }
+                    // changet the item id
+                    item.field = h.key + "_" + i.field
+                    return item
+                })
+                const pa: TPanel = {
+                    ...he,
+                    items: items
+                }
+                return pa
+            }
+            )
+        }
         if (isItemGroup(c)) {
             const itemlist: TField[] = await resolveRest(c.items as TField[], row, vars)
             c.items = itemlist
@@ -144,7 +164,8 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: bo
             if (header?.def) header = await restapishowdetils(header?.def) as ShowDetails
         }
         if (header) {
-            ic.header = { ...header }
+            ic.header = { ...ic.header, ...header }
+            ic.header.def = undefined
         }
         switch (preseT(idef)) {
             case TPreseEnum.TForm:

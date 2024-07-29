@@ -76,7 +76,7 @@ const emptySearch = { field: "", visible: false }
 // getValues: used only to get values for field list
 // setInitValues: used to pass values set during jsinitvals (JSON)
 // restapiinitname: the name is passed only to useEffect to be raised only once
-const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, setvarsaction: VAction, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues, fGetOptions?: FGetOptions, setTitle?: FSetTitle, fGetAutomplete?: FGetAutocomplete }>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, setvarsaction: VAction, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues, fGetOptions?: FGetOptions, setTitle?: FSetTitle, fGetAutomplete?: FGetAutocomplete, switchDisplay?: ReactNode }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const [multiselectD, setMultiSelectD] = useState<MultiSelectProps>(emptySearch);
@@ -193,7 +193,9 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
                 }
             }
             if (t.value) {
-                const value: FieldValue = getValue(t.value, { r: props.initvals ? props.initvals : {} });
+                const vars: TRow = {}
+                vars[defaults.currentfield] = t.field
+                const value: FieldValue = getValue(t.value, { r: props.initvals ? props.initvals : {}, vars: vars });
                 const v = transformSingleValue(value, t, false);
                 if (vals === undefined) vals = {}
                 vals[t.field] = v
@@ -447,7 +449,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     }
 
     const header: ReactNode | undefined = props.header ?
-        <HeaderTable {...props.header} vars={hvalues} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} setTitle={props.setTitle} rereadRest={props.rereadRest} closeAction={closeF}></HeaderTable> :
+        <HeaderTable {...props.header} vars={hvalues} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} setTitle={props.setTitle} rereadRest={props.rereadRest} closeAction={closeF} switchDisplay={props.switchDisplay}></HeaderTable> :
         undefined
 
     return <React.Fragment>

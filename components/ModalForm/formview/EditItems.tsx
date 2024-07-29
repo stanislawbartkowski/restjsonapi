@@ -311,7 +311,9 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
 
     // set value here only for boolean
     if (t.value) {
-        const value: FieldValue = getValue(t.value, { r: ir.getValues() });
+        const vars: TRow = {}
+        vars[defaults.currentfield] = t.field
+        const value: FieldValue = getValue(t.value, { r: ir.getValues(), vars: vars });
         const v = transformSingleValue(value, t, false);
         valuep = fieldtype === FIELDTYPE.BOOLEAN ? (v as boolean) ? { initialValue: "checked" } : {} : {}
         if (fieldtype !== FIELDTYPE.HTML) disabledp = { disabled: true }
@@ -348,11 +350,11 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
 
         const onSelect = (value: string) => {
             console.log('onSelect', value);
-          };
+        };
 
         return [<AutoComplete
             options={aoptions}
-            onSelect = {onSelect}
+            onSelect={onSelect}
             onSearch={(value: string) => ir.fGetOptions(t, value)}
         >
             {fieldE}
@@ -389,7 +391,7 @@ export function produceFormItem(ir: IFieldContext, t: FField, err: ErrorMessages
     if (t.fieldtype === FIELDTYPE.NOFIELD) return undefined
 
     const row: TRow = ir.getValues()
-    const mess: string = fieldTitle(t, { r: row });
+    const mess: string = fieldTitle(t, { r: row, vars: { field: t.field } });
 
     const [rules, required] = createRules(ir, t, mess)
     const props: PropsType = { ...t.props }

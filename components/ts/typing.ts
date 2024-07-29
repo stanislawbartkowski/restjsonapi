@@ -402,10 +402,19 @@ export type FieldRestList = JSSupportedType & RestTableParam
 export type TGridRow = PropSupportedType
 export type TGridCol = PropSupportedType
 
-export type TPanel = PropSupportedType & {
+
+export type TPanelHeader = {
     header: FormMessage
-    items: TField[]
     key: string
+}
+
+export type TPanel = PropSupportedType & TPanelHeader & {
+    items: TField[]
+}
+
+
+export type TDynamicPanel = RESTMETH & {
+    items: TField[]
 }
 
 export type TCookieO = {
@@ -463,6 +472,7 @@ export type TField = PropSupportedType & TFieldBase & {
     autocomplete?: string
     button?: ButtonAction
     collapse?: TPanel[]
+    dynamiccollapse?: TDynamicPanel
     tab?: TTab
     moneydot?: string
     colwidth?: string | number
@@ -530,7 +540,7 @@ export type FSetValues = (r: TRow) => void
 export type FGetOptions = (id: string, val: string) => TOptionLine[]
 export type FRetAction = (b: TAction, row: TRow) => void
 export type FRereadRest = () => void
-export type FGetAutocomplete = () => TAutoCompleteMap|undefined
+export type FGetAutocomplete = () => TAutoCompleteMap | undefined
 export type FGetFieldsList = () => FFieldElem[]
 
 // ============================

@@ -7,7 +7,7 @@ import type { ExpandableConfig, TableRowSelection } from "antd/lib/table/interfa
 import { SizeType } from "antd/es/config-provider/SizeContext";
 
 import lstring from "../../ts/localize";
-import { AppData, ClickActionProps, emptyModalListProps, FieldValue, FSetTitle, ListToolbar, ModalFormProps, OneRowData, RestTableParam, RowData, ToolbarFeature, TRow } from "../../ts/typing";
+import { AppData, ClickActionProps, emptyModalListProps, FieldValue, FSetTitle, ListToolbar, ModalFormProps, OneRowData, OnRowClick, RestTableParam, RowData, ToolbarFeature, TRow } from "../../ts/typing";
 import type { ColumnsHook, ColumnsT, ColumnT, FSetSize, } from "./typing";
 import { ButtonAction, ClickAction, ColumnList, ColumnSortType, FActionResult, FRereadRest, FRetAction, FShowDetails, IColumnFilter, IColumnSort, NotificationKind, ShowDetails, TableHookParam, TAction, TColumn, TResizeColumn } from "../ts/typing";
 
@@ -41,6 +41,7 @@ import { getCookieTableColumns, saveCookieTableColumns } from "./js/cookietablec
 import DownloadButton from "./DownloadButton";
 import { getCookieSortColumn, saveCookieSortColumn } from "./js/cookiesort";
 import { getCookieFielterColumn, saveCookieFilterColumn } from "./js/cookiefilter";
+import { log } from "../../ts/l";
 
 export type TRefreshTable = {
     searchF: TRow
@@ -419,6 +420,10 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const bordered = isBordered(props) ? { bordered: true } : undefined
 
+    const globalclick : OnRowClick = (r: TRow) => {        
+        log("I was clicked");
+    }
+
     return (
         <React.Fragment>
             {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction} extendedTools={extendedTools}
@@ -439,6 +444,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 summary={isSummary() ? () => (<SummaryTable isextendable={props.extendable !== undefined} {...props} list={datasource.res} vars={vars} columns={visibleColumnsR(props, arrange_columns)} />) : undefined}
                 onRow={(r) => ({
                     onClick: () => {
+                        if (istrue(props.globalrowclick)) globalclick(r)
                         if (props.onRowClick) props.onRowClick(r);
                     },
                 })}

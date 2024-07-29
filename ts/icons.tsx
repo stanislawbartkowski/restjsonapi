@@ -36,7 +36,8 @@ import {
   MenuOutlined,
   AppstoreOutlined,
   LogoutOutlined,
-  DownloadOutlined
+  DownloadOutlined,
+  MenuFoldOutlined
 
 } from "@ant-design/icons";
 
@@ -80,6 +81,7 @@ const map = new Map<string, ReactNode>([
   ['menuoutlined', <MenuOutlined />],
   ['appstoreoutlined', <AppstoreOutlined />],
   ['logoutoutlined', <LogoutOutlined />],
+  ['menufoldoutlined',<MenuFoldOutlined />],
   ['downloadoutlined', <DownloadOutlined />]
 ]);
 

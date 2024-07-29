@@ -10,7 +10,8 @@ import { getCookie, setCookie } from "../../ts/cookies";
 
 export enum VIEW {
     LIST,
-    CARD
+    CARD,
+    GROUP
 }
 
 export type changeViewF = (toview: VIEW) => void
@@ -25,9 +26,12 @@ function produceButtonIcon(tip: string, iconid: string, onClick: changeViewF, vi
 
 
 
-export function produceChangeDisplay(onClick: changeViewF, currentView: VIEW): ReactNode {
+export function produceChangeDisplay(onClick: changeViewF, currentView: VIEW, addnext: boolean): ReactNode {
+
+    const nextV = addnext ? produceButtonIcon("viewgroups", "menufoldoutlined", onClick, VIEW.GROUP, currentView) : undefined
 
     return <Space>
+        {nextV}
         {produceButtonIcon("viewcards", "appstoreoutlined", onClick, VIEW.CARD, currentView)}
         {produceButtonIcon("viewlist", "tableoutlined", onClick, VIEW.LIST, currentView)}
     </Space>
@@ -46,5 +50,7 @@ export function saveViewCookie(p: RestTableParam, view: VIEW) {
 export function getViewCookie(p: RestTableParam, defa: VIEW): VIEW {
     const v: string | undefined = getCookie(cookieName(p))
     if (v === undefined) return defa
-    return VIEW[v as keyof typeof VIEW]
+    const view: VIEW = VIEW[v as keyof typeof VIEW]
+    if (view === VIEW.GROUP && p.listgroupdef === undefined) return VIEW.CARD
+    return view
 }
