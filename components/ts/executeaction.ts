@@ -1,5 +1,5 @@
 import { restaction } from "../../services/api";
-import { commonVars, makeMessage } from "../../ts/j";
+import { callJSFunction, commonVars, makeMessage } from "../../ts/j";
 import { fatalexceptionerror, trace } from "../../ts/l";
 import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAction } from "../../ts/typing";
 import openNotification from "../Notification";
@@ -117,9 +117,16 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
     }
 
 
-    async function dorestaction(res: TAction, responseType?: RequestOptionsInit["responseType"]) {
+    async function dorestaction(res: TAction, responseType: RequestOptionsInit["responseType"], pars: OneRowData) {
         props.i.setMode(true, []);
-        if (res.restaction) return restaction(res.method as HTTPMETHOD, res.restaction, res.params, t, responseType);
+        if (res.restaction) {
+            const method: HTTPMETHOD = res.method as HTTPMETHOD
+            if (method == HTTPMETHOD.JS) {
+                const result = callJSFunction(res.restaction as string, pars)
+                return Promise.resolve(({ data: result, response: undefined }))
+            }
+            return restaction(res.method as HTTPMETHOD, res.restaction, res.params, t, responseType);
+        }
         return Promise.resolve(({ data: res, response: undefined }))
     }
 
@@ -136,7 +143,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
     const res: TAction = clickAction(button, toPars())
     // Data: 2024/02/10
     // if (res.close) close()
-    dorestaction(res, istrue(res.download) ? "arrayBuffer" : undefined).then(
+    dorestaction(res, istrue(res.download) ? "arrayBuffer" : undefined, toPars()).then(
         ({ data, response }) => {
             const da = analyzeresponse(data, response)
             const reobject: TAction = da[0] as TAction
