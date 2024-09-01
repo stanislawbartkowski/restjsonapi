@@ -76,7 +76,7 @@ const emptySearch = { field: "", visible: false }
 // getValues: used only to get values for field list
 // setInitValues: used to pass values set during jsinitvals (JSON)
 // restapiinitname: the name is passed only to useEffect to be raised only once
-const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, setvarsaction: VAction, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues, fGetOptions?: FGetOptions, setTitle?: FSetTitle, fGetAutomplete?: FGetAutocomplete, switchDisplay?: ReactNode }>((props, ref) => {
+const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: string, setinitvarsaction: VAction, setvarsaction: VAction, err: ErrorMessages, onValuesChanges: FOnValuesChanged, onFieldChange: FOnFieldChanged, aRest: TAsyncRestCall, getValues: FGetValues, setInitValues: FSetValues, fGetOptions?: FGetOptions, setTitle?: FSetTitle, fGetAutomplete?: FGetAutocomplete, switchDisplay?: ReactNode }>((props, ref) => {
 
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const [multiselectD, setMultiSelectD] = useState<MultiSelectProps>(emptySearch);
@@ -416,7 +416,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         //const aoptions: TOptionLine[] | undefined = f.autocomplete === undefined ? [] : options.get(f.autocomplete)
         return produceItem(
             fieldContext,
-            { ...f, searchF: searchF, multiF: multiF, tableR: tableR, setvarsaction: props.setvarsaction, seteditRow: setEditRow, rerenderD: renderD, options: options },
+            { ...f, searchF: searchF, multiF: multiF, tableR: tableR, setinitvarsaction: props.setinitvarsaction, setvarsaction: props.setvarsaction, seteditRow: setEditRow, rerenderD: renderD, options: options },
             props.err,
             undefined,
             eFactory

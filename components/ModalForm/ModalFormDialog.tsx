@@ -137,6 +137,15 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         return data
     }
 
+    const setinitvarsaction: VAction = (vars: TRow) => {
+        // TODO: remove
+        //setvarsaction(vars)
+        //setInitVals(vars)
+        const nvars: TRow = constructCurVals(vars)
+        _setInitValues(nvars)
+        //psetInitVals(nvars)
+    }
+
     const setvarsaction: VAction = (vars: TRow) => {
         const fields: TColumn[] = createF()
         if (formdef.tabledata?.fields)
@@ -548,6 +557,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 buttonsextrabottom={props.ispage ? createB(formdef.tabledata, formdef.loading) : undefined}
                 onValuesChanges={onValuesChange}
                 setvarsaction={setvarsaction}
+                setinitvarsaction={setinitvarsaction}
                 initvals={ivals}
                 onFieldChange={onFieldChange}
                 list={createF()}

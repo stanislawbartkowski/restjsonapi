@@ -101,7 +101,7 @@ const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: numb
                     return (
                         <React.Fragment>
                             <InLine js={state.js} />
-                            <ModalDialog {...currentprops} {...(state.res as ModalFormProps)} switchDisplay={switchView} ispage />
+                            <ModalDialog setvarsaction={props.setvarsaction} {...currentprops} {...(state.res as ModalFormProps)} switchDisplay={switchView} ispage />
                         </React.Fragment>
                     )
                 }

@@ -21,6 +21,7 @@ export type FField = TField & {
     multiF: FMultiAction
     tableR: TableRefresh
     setvarsaction: VAction
+    setinitvarsaction: VAction
     listfield?: FormListFieldData
     groupT?: TField
     seteditRow: FSetEditRow

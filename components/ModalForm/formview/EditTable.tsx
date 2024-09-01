@@ -56,7 +56,7 @@ function constructRenderCell(it: IFieldContext, c: FField, err: ErrorMessages, e
     const f: TField | undefined = findACol(c, fieldprops)
     const disabled = f !== undefined && istrue(f.disabled) ? { disabled: true } : undefined
     return (dom: any, entity: TRow): ReactElement => {
-        const gId : FGenEditId = (id: string) => genColIdedit(editid, id, entity[ROWKEY] as number)
+        const gId: FGenEditId = (id: string) => genColIdedit(editid, id, entity[ROWKEY] as number)
         return <React.Fragment><span className='listedit'>{produceFormItem(it, { ...c, coltitle: "empty", ...disabled, field: gId(c.field), genId: gId, options: options }, err, undefined)}</span></React.Fragment>
     }
 };
@@ -136,6 +136,7 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
         multiF: t.multiF,
         tableR: t.tableR,
         setvarsaction: t.setvarsaction,
+        setinitvarsaction: t.setinitvarsaction,
         listfield: t.listfield,
         groupT: t.groupT,
         seteditRow: t.seteditRow,
@@ -171,7 +172,7 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
             columns={columns}
             dataSource={values}
             onRow={(r, i) => { return { onClick: (event) => clickedRow(r) } }}
-            summary={isSummary() ? () => (<SummaryTable isextendable={false} vars={vars} columns={visibleColumns(cols)} summary={t.editlist?.summary} list={values} />) : undefined}
+        //summary={isSummary() ? () => (<SummaryTable isextendable={false} vars={vars} columns={visibleColumns(cols)} summary={t.editlist?.summary} list={values} />) : undefined}
         />
     </Card>
 

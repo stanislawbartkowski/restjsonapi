@@ -284,7 +284,9 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
 
     if (isItemGroup(t)) {
         return [<React.Fragment>
-            {(t.items as TField[]).map(e => produceItem(ir, { ...e, field: t.genId !== undefined ? t.genId(e.field) : e.field, genId: t.genId, searchF: t.searchF, groupT: t, multiF: t.multiF, tableR: t.tableR, setvarsaction: t.setvarsaction, seteditRow: t.seteditRow, rerenderD: t.rerenderD, options: t.options }, err, field))}
+            {(t.items as TField[]).map(e => produceItem(ir, { ...e, field: t.genId !== undefined ? t.genId(e.field) : e.field, genId: t.genId, searchF: t.searchF, groupT: t, multiF: t.multiF, 
+                tableR: t.tableR, setinitvarsaction: t.setinitvarsaction, setvarsaction: t.setvarsaction, seteditRow: t.seteditRow,
+                rerenderD: t.rerenderD, options: t.options }, err, field))}
         </React.Fragment>,
             undefined]
     }

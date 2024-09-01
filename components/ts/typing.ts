@@ -160,6 +160,7 @@ export type TAction = ClickAction & FormMessage & PropsType & {
     retprops?: TAction
     confirm?: FormMessage | boolean
     reread?: boolean
+    upvars?: TRow
 }
 
 // list actions e.g. action columne
@@ -235,6 +236,7 @@ export type TColumn = TFieldBase & PropSupportedType & {
     showdetails?: ShowDetails | boolean;
     ident?: string
     value?: ColumnValue
+    dvalue?: ColumnValue
     tags?: TTags
     actions?: TActions
     nofilter?: boolean

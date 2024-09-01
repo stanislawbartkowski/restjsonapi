@@ -258,6 +258,10 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     function refreshtable(r?: TAction) {
         setRefreshNumber(refreshnumber + 1)
         const vars: TRow | undefined = r?.vars
+        const upvars: TRow | undefined = r?.upvars
+        if (props.setinitvarsaction !== undefined && upvars !== undefined) {
+            props.setinitvarsaction({ ...upvars })
+        }
         if (vars !== undefined && vars.searchF !== undefined) {
             const refreshD: TRefreshTable = (vars.searchF as any) as TRefreshTable
             ref.current.searchF = refreshD
@@ -420,7 +424,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const bordered = isBordered(props) ? { bordered: true } : undefined
 
-    const globalclick : OnRowClick = (r: TRow) => {        
+    const globalclick: OnRowClick = (r: TRow) => {
         log("I was clicked");
     }
 

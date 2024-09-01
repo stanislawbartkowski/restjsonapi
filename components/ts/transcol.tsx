@@ -7,7 +7,7 @@ import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
-import { AddStyle, ButtonAction, ColumnList, ColumnSortType, IColumnFilter, IColumnSort, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
+import { AddStyle, ButtonAction, ColumnList, ColumnSortType, ColumnValue, IColumnFilter, IColumnSort, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue, getafterdot, istrue, stoint, tomoney, } from "./helper";
 import { callJSFunction, isNumber, isnotdefined, makeMessage } from "../../ts/j";
@@ -181,10 +181,16 @@ export function getVal(c: TColumn, props: OneRowData): FieldValue {
     return (props.vars) ? props.vars[c.field] : undefined
 }
 
-function constructInt(c: TColumn, r: TRow): ReactElement {
-    const val: FieldValue = (r as TRow)[c.field]
+function renderInt(val: FieldValue): ReactElement {
     const num: number = stoint(val)
     return <div>{num}</div>
+}
+
+function constructInt(c: TColumn, r: TRow): ReactElement {
+    const val: FieldValue = (r as TRow)[c.field]
+    //const num: number = stoint(val)
+    //return <div>{num}</div>
+    return renderInt(val)
 }
 
 function moneydot(c: TColumn, props: OneRowData): number {
@@ -201,15 +207,30 @@ function moneydot(c: TColumn, props: OneRowData): number {
     return defaults.moneydot
 }
 
-
-function constructMoney(dom: any, c: TColumn, r: TRow, vars?: TRow): ReactElement {
-    const val: number | undefined = (r as TRow)[c.field] as number
-    if (val === undefined) return dom
-
-    const num = tomoney(val, moneydot(c, { r: r, vars: vars }))
+function renderMoney(val: string | number, c: TColumn, props: OneRowData) {
+    const num = tomoney(val, moneydot(c, props))
     return <div>{num}</div>
 }
 
+
+function constructMoney(dom: any, c: TColumn, props: OneRowData): ReactElement {
+    const val: number | undefined = (props.r as TRow)[c.field] as number
+    if (val === undefined) return dom
+    return renderMoney(val, c, props)
+    //    const num = tomoney(val, moneydot(c, { r: r, vars: vars }))
+    //    return <div>{num}</div>
+}
+
+
+function constructDValue(dom: any, c: TColumn, props: OneRowData): ReactElement {
+
+    const val: FieldValue = getValue(c.dvalue as ColumnValue, props)
+    if (val === undefined) return dom
+    if (c.fieldtype === FIELDTYPE.INT) return renderInt(val)
+    if (c.fieldtype === FIELDTYPE.MONEY) return renderMoney(val as number, c, props)
+    return <div>{val as string}</div>
+
+}
 
 export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam, vars?: TRow, disabled?: boolean): ReactElement {
     let style: CSSProperties = {};
@@ -223,6 +244,7 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
     if (c.stat) rendered = makeStatItem(fieldType(c), c.stat, parms)
 
     if (c.tags) rendered = constructTags(c.tags, rhook, parms);
+    if (c.dvalue) rendered = constructDValue(dom, c, parms);
     if (c.actions && rhook.fresult) rendered = constructactionsCol(c.actions, rhook, parms);
     if (c.ident) {
         const ident: number = callJSFunction(c.ident, parms) * defaults.identmul;
@@ -233,9 +255,9 @@ export function renderCell(c: TColumn, dom: any, r: TRow, rhook: TableHookParam,
 
     if (c.ident || c.addstyle || c.badge) rendered = <span style={style}>{badgeC} {dom}</span>;
 
-    if (c.stat === undefined) {
+    if (c.stat === undefined && c.dvalue === undefined) {
         if (c.fieldtype === FIELDTYPE.INT) rendered = constructInt(c, r)
-        if (c.fieldtype === FIELDTYPE.MONEY) rendered = constructMoney(dom, c, r, vars)
+        if (c.fieldtype === FIELDTYPE.MONEY) rendered = constructMoney(dom, c, parms)
     }
 
     if (c.showdetails && rhook.fdetails !== undefined)
@@ -269,6 +291,7 @@ function isRenderable(c: TColumn): boolean {
         c.actions !== undefined ||
         c.badge !== undefined ||
         c.stat !== undefined ||
+        c.dvalue !== undefined ||
         c.addstyle !== undefined ||
         c.fieldtype === FIELDTYPE.BOOLEAN ||
         c.fieldtype === FIELDTYPE.INT ||

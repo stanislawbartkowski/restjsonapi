@@ -111,6 +111,7 @@ export interface ClickActionProps {
   refreshaction?: RAction
   rereadRest?: FRereadRest
   setvarsaction?: VAction
+  setinitvarsaction?: VAction
   setmulti?: SetMAction
 }
 

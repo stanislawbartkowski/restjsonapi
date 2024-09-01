@@ -30,6 +30,6 @@ export function produceRestTable(ir: IFieldContext, t: FField): ReactNode {
     const pvars = { ...vars, ...pars.vars }
     pvars[defaults.currentfield] = t.field
     return <Form.Item id={t.field} name={t.field} {...t.props} >
-        <RestTable {...pars} vars={pvars} refreshno={refreshR.refreshno} setvarsaction={t.setvarsaction} setmulti={setMulti} initsel={multiselect} refreshD={refreshR.searchR} rereadRest={ir.rereadRest} />
+        <RestTable {...pars} vars={pvars} refreshno={refreshR.refreshno} setinitvarsaction={t.setinitvarsaction} setvarsaction={t.setvarsaction} setmulti={setMulti} initsel={multiselect} refreshD={refreshR.searchR} rereadRest={ir.rereadRest} />
     </Form.Item>
 }
