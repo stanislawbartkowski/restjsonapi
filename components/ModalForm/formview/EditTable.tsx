@@ -172,7 +172,7 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
             columns={columns}
             dataSource={values}
             onRow={(r, i) => { return { onClick: (event) => clickedRow(r) } }}
-        //summary={isSummary() ? () => (<SummaryTable isextendable={false} vars={vars} columns={visibleColumns(cols)} summary={t.editlist?.summary} list={values} />) : undefined}
+        summary={isSummary() ? () => (<SummaryTable isextendable={false} vars={vars} columns={visibleColumns(cols)} summary={t.editlist?.summary} list={values} />) : undefined}
         />
     </Card>
 
