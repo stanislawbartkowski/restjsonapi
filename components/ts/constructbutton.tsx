@@ -1,10 +1,9 @@
 import { Button, Popconfirm } from "antd";
-import { Space, Typography } from 'antd';
+import { Typography } from 'antd';
 
 import getIcon from "../../ts/icons";
 import lstring from "../../ts/localize";
-import { BUTTONACTION } from "./typing";
-import { getButtonName, getButtonNameIcon, isBool, makeMessage } from '../../ts/j'
+import { getButtonNameIcon, isBool, makeMessage } from '../../ts/j'
 import { ButtonAction } from "./typing";
 import { FButtonAction, FormMessage } from "../../ts/typing";
 import { istrue } from "./helper";

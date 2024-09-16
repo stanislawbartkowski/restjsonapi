@@ -4,7 +4,7 @@
 
 import { emptys } from "../components/ts/helper";
 import { getDevServer } from "../services/readconf";
-import { getCookie, setCookie } from "./cookies";
+import { getCookieNQ, setCookieNQ } from "./cookies";
 import { log } from "./l";
 
 function getOriginURL(): string {
@@ -29,7 +29,7 @@ let domain: string | undefined = undefined
 
 export function setUrlDomain() {
   // decide on origin path
-  const lastpa: string | undefined = getCookie(CPATH)
+  const lastpa: string | undefined = getCookieNQ(CPATH)
   domain = transformURL(window.location.pathname)
   if (lastpa !== undefined && !isUrlDomain(window.location.pathname)) {
     if (domain.startsWith(lastpa)) {
@@ -38,7 +38,7 @@ export function setUrlDomain() {
     }
   }
   log("Domain: " + (domain === "" ? "(no domain)" : domain))
-  setCookie(CPATH, domain)
+  setCookieNQ(CPATH, domain)
 }
 
 export function isDomain() : boolean {

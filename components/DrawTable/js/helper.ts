@@ -159,8 +159,8 @@ export function searchDataSource(p: ColumnList, currentRow: TRow | undefined, ro
 }
 
 export function cookieNameQualified(p: RestTableParam, qualif: string): string {
-  const n: string = (p.list as string) + "_" + (p.listdef !== undefined ? p.listdef : "listdef")
-  return n + "_" + qualif
+  const n: string = (p.list as string) + "-" + (p.listdef !== undefined ? p.listdef : "listdef")
+  return n + "-" + qualif
 }
 
 export function verifyColumns(columns: TColumns, cols: string[], cookiename: string) {

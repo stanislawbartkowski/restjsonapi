@@ -339,8 +339,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     }
 
     function gencookie(t: TField, addf?: string | undefined): string {
-        const f: string = (props.listdef as string) + "_" + t.field
-        return (addf === undefined) ? f : f + "_" + addf
+        const f: string = (props.listdef as string) + "-" + t.field
+        return (addf === undefined) ? f : f + "-" + addf
     }
 
     const fieldContext: IFieldContext = {

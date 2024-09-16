@@ -4,7 +4,7 @@ import { TColumn } from "../../ts/typing";
 import { cookieNameQualified } from "./helper";
 
 function cookieName(p: RestTableParam, c: TColumn): string {
-    return cookieNameQualified(p, c.field + " filter_columns")
+    return cookieNameQualified(p, c.field + "-filter_columns")
 }
 
 export function saveCookieFilterColumn(p: RestTableParam, c: TColumn, val: string | undefined) {

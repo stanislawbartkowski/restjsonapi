@@ -17,7 +17,7 @@ function produceTabItem(m: MenuElem): ReactNode {
 }
 
 function cookieName(p: MenuElem): string {
-    return `tabmenu- ${p.id}`
+    return `tabmenu-${p.id}`
 }
 
 export const MenuTabComponent: React.FC<MenuElem> = (props) => {
