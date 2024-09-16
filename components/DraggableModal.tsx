@@ -5,7 +5,6 @@ import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import { PropsType } from "../ts/typing";
 import { emptys } from "./ts/helper";
 import { HTMLElem } from "./ts/transcol";
-import getIcon from "../ts/icons";
 
 type DraggablePros = {
     title?: string
