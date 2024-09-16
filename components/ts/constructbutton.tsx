@@ -1,4 +1,5 @@
 import { Button, Popconfirm } from "antd";
+import { Space, Typography } from 'antd';
 
 import getIcon from "../../ts/icons";
 import lstring from "../../ts/localize";
@@ -6,6 +7,7 @@ import { BUTTONACTION } from "./typing";
 import { getButtonName, getButtonNameIcon, isBool, makeMessage } from '../../ts/j'
 import { ButtonAction } from "./typing";
 import { FButtonAction, FormMessage } from "../../ts/typing";
+import { istrue } from "./helper";
 
 export function constructButtonElem(b: ButtonAction, fclick: FButtonAction, disabled?: boolean, loading?: boolean): React.ReactNode {
 
@@ -21,6 +23,11 @@ export function constructButtonElem(b: ButtonAction, fclick: FButtonAction, disa
   const icon: React.ReactNode | undefined = iconid
     ? getIcon(iconid)
     : undefined;
+
+  if (istrue(b.noaction)) {
+    const text = makeMessage(b)
+    return <Typography.Text {...b.props}>{text}</Typography.Text>
+  }
 
   const bu =
     <Button key={b.id} icon={icon} {...b.props} {...loadingprop} {...disabledprop} {...onclickprops}>

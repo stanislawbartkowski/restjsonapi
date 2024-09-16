@@ -161,6 +161,7 @@ export type TAction = ClickAction & FormMessage & PropsType & {
     confirm?: FormMessage | boolean
     reread?: boolean
     upvars?: TRow
+    noaction?: boolean
 }
 
 // list actions e.g. action columne
