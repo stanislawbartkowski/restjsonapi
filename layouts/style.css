@@ -28,3 +28,10 @@
   padding: 4px 15px;
   border-radius: 10px;
 }
+
+
+.ant-modal-close {
+  width: 22px !important;
+  border-radius: 5px !important
+
+}

@@ -5,6 +5,7 @@ import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import { PropsType } from "../ts/typing";
 import { emptys } from "./ts/helper";
 import { HTMLElem } from "./ts/transcol";
+import getIcon from "../ts/icons";
 
 type DraggablePros = {
     title?: string
@@ -69,8 +70,7 @@ const ModalDialog: React.FC<DraggablePros> = (props) => {
     </div>
 
 
-
-    return <Modal destroyOnClose open={props.open} title={title}
+    return <Modal destroyOnClose open={props.open} title={title} 
         onCancel={props.onClose} {...props.modalprops} footer={props.buttons}
         onOk={(e) => {if (props.onOk) props.onOk(e) }}
         modalRender={(modal) => (
