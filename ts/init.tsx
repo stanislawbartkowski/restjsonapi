@@ -18,7 +18,6 @@ export function setCustomReadResource(f: TReadResource) {
 }
 
 async function init() {
-    setUrlDomain()
     const serverURL: string = await getServerUrl()
     console.log(`Server URL ${serverURL}`)
     setHost(serverURL)
