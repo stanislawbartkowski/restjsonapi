@@ -4,7 +4,7 @@
 
 import { emptys } from "../components/ts/helper";
 import { getDevServer } from "../services/readconf";
-import { getCookieNQ, setCookieNQ } from "./cookies";
+import { getCookieND, setCookieND } from "./cookies";
 import { log } from "./l";
 
 function getOriginURL(): string {
@@ -15,8 +15,10 @@ function isUrlDomain(url: string): boolean {
   return url[url.length - 1] === '/' && url.length > 1
 }
 
-function transformURL(url: string): string {
-  return url[url.length - 1] === '/' ? url.slice(0, -1) : url
+function getDomainFromURL(): string {
+  const path = window.location.pathname
+  const p = path.split("/")
+  return p.length > 1 && p[1] !== "" ? "/" + p[1] : ""
 }
 
 function isDev(): boolean {
@@ -29,19 +31,19 @@ let domain: string | undefined = undefined
 
 export function setUrlDomain() {
   // decide on origin path
-  const lastpa: string | undefined = getCookieNQ(CPATH)
-  domain = transformURL(window.location.pathname)
+  const lastpa: string | undefined = getCookieND(CPATH)
+  domain = getDomainFromURL()
   if (lastpa !== undefined && !isUrlDomain(window.location.pathname)) {
-    if (domain.startsWith(lastpa)) {
+    if (window.location.pathname.startsWith(lastpa)) {
       domain = lastpa
       log("Refresh, found domain in cookie")
     }
   }
   log("Domain: " + (domain === "" ? "(no domain)" : domain))
-  setCookieNQ(CPATH, domain)
+  setCookieND(CPATH, domain)
 }
 
-export function isDomain() : boolean {
+export function isDomain(): boolean {
   return !emptys(domain)
 }
 

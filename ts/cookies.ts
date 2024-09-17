@@ -27,40 +27,48 @@ export function combineCookieName(q1: string | undefined, q2: string | undefined
     return q1s === "" ? q2s === "" ? "" : q2s : q1s + "-" + q2s
 }
 
-function cookiename(cname: string, notqualifiy: boolean): string {
+function cookiename(cname: string, notqualifiy: boolean, nodomain: boolean): string {
     const pnam = prefix !== undefined ? prefix : ""
-    const dnam = isDomain() ? combineCookieName(getDomain(), pnam) : pnam
+    const dnam = isDomain() && !nodomain ? combineCookieName(pnam, getDomain()) : pnam
     const qnam = (qualifiers === undefined || notqualifiy) ? dnam : combineCookieName(dnam, qualifiers)
 
     return combineCookieName(qnam, cname)
 }
 
-function setcookie(cname: string, value: string | undefined, notqualifiy: boolean) {
-    if (value === undefined) api.remove(cookiename(cname, notqualifiy))
-    else api.set(cookiename(cname, notqualifiy), value)
+function setcookie(cname: string, value: string | undefined, notqualifiy: boolean, nodomain: boolean) {
+    if (value === undefined) api.remove(cookiename(cname, notqualifiy, nodomain))
+    else api.set(cookiename(cname, notqualifiy, nodomain), value)
 }
 
 
-function getcookie(cname: string, notqualifiy: boolean): string | undefined {
-    const r: string | undefined = api.get(cookiename(cname, notqualifiy))
+function getcookie(cname: string, notqualifiy: boolean, nodomain: boolean): string | undefined {
+    const r: string | undefined = api.get(cookiename(cname, notqualifiy, nodomain))
     return r
 }
 
 
 export function getCookie(cname: string): string | undefined {
-    return getcookie(cname, false)
+    return getcookie(cname, false, false)
 }
 
 export function setCookie(cname: string, value: string | undefined) {
-    setcookie(cname, value, false)
+    setcookie(cname, value, false, false)
 }
 
 export function getCookieNQ(cname: string): string | undefined {
-    return getcookie(cname, true)
+    return getcookie(cname, true, false)
 }
 
 export function setCookieNQ(cname: string, value: string | undefined) {
-    setcookie(cname, value, true)
+    setcookie(cname, value, true, false)
+}
+
+export function getCookieND(cname: string): string | undefined {
+    return getcookie(cname, true, true)
+}
+
+export function setCookieND(cname: string, value: string | undefined) {
+    setcookie(cname, value, true, true)
 }
 
 
