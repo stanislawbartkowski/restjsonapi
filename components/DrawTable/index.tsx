@@ -454,7 +454,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 })}
                 {...props.props}
             />
-            <ModalList {...modalProps} refreshaction={refreshtable} />
+            <ModalList  {...modalProps} refreshaction={refreshtable} />
             <Drawer
                 width={600}
                 open={showDetail}
