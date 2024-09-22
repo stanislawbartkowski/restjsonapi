@@ -55,11 +55,17 @@ const AppBreadCrumb: React.FC = (props) => {
             return
         }
         const bl: ElemB[] = bitemlist.map(e => Object.assign({}, e))
-        if (what === BreadCrumbAction.PUSH) {
-            bl.push({ title: path as string })
-        }
-        else {
-            if (bl.length > 1) bl.pop()
+        switch (what) {
+            case BreadCrumbAction.PUSH:
+                bl.push({ title: path as string })
+                break;
+            case BreadCrumbAction.POP:
+                bl.pop()
+                break;
+            case BreadCrumbAction.REPLACE:
+                bl.pop()
+                bl.push({ title: path as string })
+                break;
         }
         setBList(bl)
     }

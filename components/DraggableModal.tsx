@@ -79,14 +79,16 @@ const ModalDialog: React.FC<DraggablePros> = (props) => {
 
 
     useEffect(() => {
-        if (props.open && !ref.current.send && !emptys(props.title)) {
-            BNotify(BreadCrumbAction.PUSH, props.title)
+        log(`open=${props.open} send=${ref.current.send} title=${props.title}`)
+        if (props.open && !emptys(props.title)) {
+            BNotify(ref.current.send ? BreadCrumbAction.REPLACE : BreadCrumbAction.PUSH, props.title)
             ref.current.send = true;
         }
         if (!props.open) breadPop()
     }, [props.open, props.title]);
 
     const breadPop = () => {
+        log(`POP open=${props.open} send=${ref.current.send} title=${props.title}`)
         if (ref.current.send) {
             BNotify(BreadCrumbAction.POP);
             ref.current.send = false
@@ -100,7 +102,7 @@ const ModalDialog: React.FC<DraggablePros> = (props) => {
 
     return <Modal destroyOnClose open={props.open} title={title} maskClosable={false}
         onCancel={(e) => { log("CANCEL"); cbreadPop(e); props.onClose(e) }} {...props.modalprops} footer={props.buttons}
-        onOk={(e) => {log("CANCEL"); cbreadPop(e); if (props.onOk) props.onOk(e) }}
+        onOk={(e) => { log("CANCEL"); cbreadPop(e); if (props.onOk) props.onOk(e) }}
         modalRender={(modal) => (
             <Draggable
                 disabled={disabled}

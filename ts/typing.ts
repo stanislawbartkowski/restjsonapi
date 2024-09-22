@@ -34,6 +34,7 @@ export enum BreadCrumbAction {
   RESET = 1,
   PUSH = 2,
   POP = 3,
+  REPLACE = 4
 }
 
 export type FBreadCrumbNotifier = (what: BreadCrumbAction, title?: string) => void

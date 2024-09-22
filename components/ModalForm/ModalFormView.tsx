@@ -233,7 +233,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     }
 
     function destroyM() {
-        const pmultiD = { ...multiselectD, visible: false }
+        const pmultiD = { ...multiselectD, visible: false, title: "" }
         setMultiSelectD(pmultiD)
     }
 
@@ -258,7 +258,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
 
     function destroyF() {
-        const searchF = { ...searchD, visible: false }
+        const searchF = { ...searchD, visible: false, title: "" }
         setSearchT(searchF)
     }
 
