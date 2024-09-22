@@ -17,7 +17,7 @@ const ModalTableList: React.FC<TComponentProps> = (props) => {
 
   function onClose(): void {
     if (props.closeAction) {
-      setModalTitle(undefined)
+      setModalTitle("")
       props.closeAction()
     }
   }

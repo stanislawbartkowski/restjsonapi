@@ -2,6 +2,7 @@ import type { MenuElem, MenuLeft, TMenuNode, TSubMenu } from "./typing";
 import { addMenuRestElement, addMenuElement, FComponent } from './constructRestElement'
 import { isProd } from "./readresource";
 import { istrue } from "../components/ts/helper";
+import { registerPElem } from "./headernotifier";
 
 
 // --------------------
@@ -46,7 +47,7 @@ export function isTab(m: MenuElem): boolean {
 
 
 function getMenuElems(menu: TMenuNode[]): MenuElem[] {
-    const res: MenuElem[] = []    
+    const res: MenuElem[] = []
 
     function processMenu(e: TMenuNode) {
 
@@ -57,7 +58,12 @@ function getMenuElems(menu: TMenuNode[]): MenuElem[] {
         else {
             const ele: MenuElem = e as MenuElem
             res.push(ele)
-            if (isTab(ele)) ele.tabs?.forEach(e => res.push(e))
+            registerPElem(ele.id, ele)
+            if (isTab(ele)) ele.tabs?.forEach(e => {
+                registerPElem(e.id, ele)
+                res.push(e)
+            }
+            )
         }
     }
 
