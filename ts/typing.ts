@@ -30,6 +30,15 @@ export type FHeaderModifier = () => Record<string, string>;
 export type FHeaderNameNotifier = (name: string | undefined) => void
 
 
+export enum BreadCrumbAction {
+  RESET = 1,
+  PUSH = 2,
+  POP = 3,
+}
+
+export type FBreadCrumbNotifier = (what: BreadCrumbAction, title?: string) => void
+
+
 // ============================================================
 //  REST/API call
 // ==========================================================
@@ -138,6 +147,7 @@ export type TComponentProps = RestTableParam & ModalFormProps
 
 export type MenuElem = ButtonElem & TComponentProps & {
   awesomefont?: string
+  breadfont?: string
   menudir?: boolean
   tabs?: MenuElem[]
 }
@@ -263,5 +273,6 @@ export interface AppData {
   getcacheinclude: string[]
   getcacheexclude: string[]
   welcome?: RestTableParam
+  notbreadcrumb?: boolean
 }
 

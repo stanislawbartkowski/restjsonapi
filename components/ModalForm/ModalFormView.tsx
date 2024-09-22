@@ -232,32 +232,47 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         setMultiSelectD({ ...t, addpars: transform(t), visible: true })
     }
 
+    function destroyM() {
+        const pmultiD = { ...multiselectD, visible: false }
+        setMultiSelectD(pmultiD)
+    }
+
     function setMulti(f: string, sel: FieldValue[]) {
         const s = new Map(multiselect)
         s.set(f, sel);
         setMultiSelect(s);
         props.onFieldChange(multiselectD.field)
-        setMultiSelectD(emptySearch)
+        //setMultiSelectD(emptySearch)
+        destroyM()
     }
 
     const closeMultiD: FAction = (b?: ButtonElem, r?: TRow) => {
         if (b?.choosefield === undefined) {
-            setMultiSelectD(emptySearch)
+            //setMultiSelectD(emptySearch)
+            destroyM()
             return;
         }
         const sel: FieldValue[] = (r as TRow)[defaults.multichoicevar] as FieldValue[]
         setMulti(multiselectD.field, sel)
     }
 
+
+    function destroyF() {
+        const searchF = { ...searchD, visible: false }
+        setSearchT(searchF)
+    }
+
     const closeF: FAction = (b?: ButtonElem, r?: TRow) => {
         if (b?.choosefield === undefined) {
-            setSearchT(emptySearch)
+            //setSearchT(emptySearch)
+            destroyF()
             return;
 
         }
         const val: FieldValue = (r as TRow)[b?.choosefield]
         if (val === undefined) return;
-        setSearchT(emptySearch)
+        //setSearchT(emptySearch)
+        destroyF()
         log(`${val} selected`)
         const x: TRow = getV()
         if (searchD.listfield === undefined) x[searchD.field] = val

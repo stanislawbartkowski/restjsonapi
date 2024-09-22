@@ -7,6 +7,7 @@ import AppContent from "./AppContent";
 import LeftMenu from "./LeftMenu";
 import HeaderLine from './HeaderLine'
 import { getAppData, getAppJSS } from "../ts/readresource";
+import AppBreadCrumb from "./AppBreadCrumb";
 
 const { Header, Sider, Content } = Layout;
 
@@ -54,6 +55,7 @@ const AppLayout: React.FC = () => {
             )}
             <HeaderLine />
           </Header>
+          <AppBreadCrumb />
         </Anchor>
         <Content
           className="site-layout-background"

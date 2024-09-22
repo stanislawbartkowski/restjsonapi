@@ -5,6 +5,7 @@ import { createBrowserHistory } from "history";
 import { log } from "./l";
 import { pathNotify } from "./headernotifier";
 
+
 export const history = createBrowserHistory();
 
 let previous = "";
