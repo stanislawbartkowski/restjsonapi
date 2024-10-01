@@ -45,7 +45,7 @@ const AppLayout: React.FC = () => {
       </Sider>
       <Layout className="site-layout">
         <Anchor>
-          <Header className="site-layout-background" style={{ padding: 0 }}>
+          <Header className="site-layout-background" style={{ padding: 0, height:95 }}>
             {React.createElement(
               collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
               {
@@ -54,8 +54,8 @@ const AppLayout: React.FC = () => {
               }
             )}
             <HeaderLine />
+            <AppBreadCrumb />
           </Header>
-          <AppBreadCrumb />
         </Anchor>
         <Content
           className="site-layout-background"
