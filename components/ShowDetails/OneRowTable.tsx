@@ -9,27 +9,32 @@ import readlist, { DataSourceState } from '../ts/readlist';
 import ReadListError from '../errors/ReadListError';
 import { callJSFunction } from '../../ts/j';
 
+type DataSourceStateOne = DataSourceState & {
+    r: TRow
+}
+
 const OneRowTable: React.FC<TDetailsCard> = (props) => {
 
-    const [datasource, setDataSource] = useState<DataSourceState>({
+    const [datasource, setDataSource] = useState<DataSourceStateOne>({
         status: Status.PENDING,
         res: [],
-        vars: props.vars
+        vars: props.vars,
+        r: props.r
     });
 
     function toPars(): OneRowData {
-        return { vars: datasource.vars, r: props.r }
+        return { vars: datasource.vars, r: datasource.r }
     }
 
     const col: ColumnList = props
 
-    const setS =  (s: DataSourceState) => { 
-        setDataSource({ ...s }) 
+    const setS = (s: DataSourceState) => {
+        setDataSource({ ...s, r: { ...datasource.r, ...s.vars } })
     }
 
     useEffect(() => {
         if (props.varsrestaction === undefined) {
-            setDataSource({ status: Status.READY, res: [], vars: props.vars })
+            setDataSource({ status: Status.READY, res: [], vars: props.vars, r: props.r })
             return
         }
         const varsaction: TRestVars = props.varsrestaction?.js ? callJSFunction(props.varsrestaction.js, toPars()) : props.varsrestaction as TRestVars

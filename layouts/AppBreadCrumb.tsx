@@ -76,7 +76,7 @@ const AppBreadCrumb: React.FC = (props) => {
 
     registerNameBNotifier(changeName)
 
-    return <Breadcrumb
+    return <Breadcrumb className='breadcrumb'
         items={items}
     />
 

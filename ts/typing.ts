@@ -56,7 +56,7 @@ export type OnTableRead = (r: JsonTableResult) => void
 
 export type JsonTableResult = {
   res: RowData;
-  vars?: PropsType
+  vars?: TRow
 }
 
 export type TReadResource = () => Promise<void>
