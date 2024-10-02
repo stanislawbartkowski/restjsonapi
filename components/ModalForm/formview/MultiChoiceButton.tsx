@@ -28,7 +28,7 @@ const FMultiChoiceButton: React.FC<IMultiChoiceButton> = ({ ir, t, err }) => {
     const r: ErrorMessage | undefined = findErrField(t.field, err)
     const errMess = (r === undefined) ? undefined : r.message
     const bu = constructButtonElem(mu, (b: ButtonAction) => t.multiF(t))
-    const multiChoice = (no === 0) ? bu : <Badge count={no}>
+    const multiChoice = (no === 0) ? bu : <Badge count={no} overflowCount={99999}>
         {bu}
     </Badge>
     if (errMess === undefined) return <React.Fragment>{multiChoice}</React.Fragment>
