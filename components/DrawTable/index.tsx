@@ -453,6 +453,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                     },
                 })}
                 {...props.props}
+                scroll={{ x: "max-content" }} 
             />
             <ModalList  {...modalProps} refreshaction={refreshtable} />
             <Drawer
