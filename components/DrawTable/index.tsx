@@ -328,7 +328,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         props.closeAction(b, { ...currentRow, ...r });
     }
 
-    function findRowByKey(key: React.Key): TRow | undefined {
+    function findRowByKey(key: FieldValue): TRow | undefined {
         const k = datasource.rowkey
         if (k === undefined) return undefined
         return datasource.res.find(r => r[k] === key)
@@ -340,6 +340,18 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         return eqRow(props, record, currentRow) ? "selectedrow" : ""
     }
 
+    function selectRow(selected: RowData) {
+        if (datasource.res.length == 0) return
+        const k = datasource.rowkey as string
+        const r: FieldValue[] = selected.map(r => r[k])
+        setMultiChoice(r)
+        if (props.setmulti) props.setmulti(r)
+        if (r.length > 0) {
+            const key: FieldValue = r[0]
+            const ro: TRow | undefined = findRowByKey(key);
+            if (ro) setCurrentRow(ro)
+        }
+    }
 
     function rowSelection(t: RestTableParam): { rowSelection: TableRowSelection<TRow> } | undefined {
 
@@ -347,17 +359,24 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
             rowSelection: {
                 columnWidth: defaults.checkSize,
                 type: t.choosing ? 'radio' : 'checkbox',
-                onChange: (r: React.Key[]) => {
-                    setMultiChoice(r as FieldValue[])
-                    if (props.setmulti) props.setmulti(r as FieldValue[])
-                    if (r.length > 0) {
-                        const key: React.Key = r[0]
-                        const ro: TRow | undefined = findRowByKey(key);
-                        if (ro) setCurrentRow(ro)
-                    }
+                //onChange: (r: React.Key[]) => {
+                //    setMultiChoice(r as FieldValue[])
+                //    if (props.setmulti) props.setmulti(r as FieldValue[])
+                //    if (r.length > 0) {
+                //        const key: React.Key = r[0]
+                //        const ro: TRow | undefined = findRowByKey(key);
+                //        if (ro) setCurrentRow(ro)
+                //    }
+                //},
+                onSelect: (record, selected, selectedRows, nativeEvent) => {
+                    selectRow(selectedRows)
                 },
-                selectedRowKeys: tranformtoSel(multichoice)
-            }
+                selectedRowKeys: tranformtoSel(multichoice),
+                onSelectAll: (selected, selectedRows, changeRows) => {
+                    selectRow(selected ? genDSource(datasource.res) : [])
+                }
+            },
+
         } :
             undefined
     }
@@ -453,7 +472,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                     },
                 })}
                 {...props.props}
-                scroll={{ x: "max-content" }} 
+                scroll={{ x: "max-content" }}
             />
             <ModalList  {...modalProps} refreshaction={refreshtable} />
             <Drawer
