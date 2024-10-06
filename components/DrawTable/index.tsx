@@ -2,8 +2,8 @@ import React, { useState, useEffect, MutableRefObject, useRef, ReactNode } from 
 
 
 import type { ColumnType } from "antd/lib/table";
-import { Table, Drawer, Space, Divider } from "antd";
-import type { ExpandableConfig, TableRowSelection } from "antd/lib/table/interface";
+import { Table, Drawer, Space, Divider, TablePaginationConfig } from "antd";
+import type { ExpandableConfig, FilterValue, SorterResult, TableCurrentDataSource, TableRowSelection } from "antd/lib/table/interface";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 
 import lstring from "../../ts/localize";
@@ -60,13 +60,15 @@ interface IRefCall {
     search: ExtendedFilter | undefined
     searchF: TRefreshTable | undefined
     refreshsearch: number
+    afterChange: RowData | undefined
 }
 
 const empty: IRefCall = {
     pageSize: undefined,
     search: undefined,
     searchF: undefined,
-    refreshsearch: -1
+    refreshsearch: -1,
+    afterChange: undefined
 }
 
 const trueFeature = (t: ListToolbar | undefined, feature: ToolbarFeature): boolean => {
@@ -373,7 +375,9 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 },
                 selectedRowKeys: tranformtoSel(multichoice),
                 onSelectAll: (selected, selectedRows, changeRows) => {
-                    selectRow(selected ? genDSource(datasource.res) : [])
+                    selectRow(selected ?
+                        ref.current.afterChange !== undefined ? ref.current.afterChange : genDSource(datasource.res) :
+                        [])
                 }
             },
 
@@ -447,11 +451,16 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         log("I was clicked");
     }
 
+    const onTableChange = (pagination: TablePaginationConfig, filters: Record<string, FilterValue | null>, sorter: SorterResult<TRow> | SorterResult<TRow>[], extra: TableCurrentDataSource<TRow>) => {
+        ref.current.afterChange = extra.currentDataSource
+    }
+
     return (
         <React.Fragment>
             {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction} extendedTools={extendedTools}
                 selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }} rereadRest={props.rereadRest as FRereadRest} closeAction={props.closeAction} /> : extendedTools}
             <Table
+                onChange={onTableChange}
                 {...rowSelection({ ...props })}
                 components={components}
                 title={() => <span className="table-title">{title}</span>}
