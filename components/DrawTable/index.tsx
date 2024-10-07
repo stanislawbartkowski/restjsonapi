@@ -60,7 +60,7 @@ interface IRefCall {
     search: ExtendedFilter | undefined
     searchF: TRefreshTable | undefined
     refreshsearch: number
-    afterChange: RowData | undefined
+    keysChange: FieldValue[] | undefined
 }
 
 const empty: IRefCall = {
@@ -68,7 +68,7 @@ const empty: IRefCall = {
     search: undefined,
     searchF: undefined,
     refreshsearch: -1,
-    afterChange: undefined
+    keysChange: undefined
 }
 
 const trueFeature = (t: ListToolbar | undefined, feature: ToolbarFeature): boolean => {
@@ -227,6 +227,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     useEffect(() => {
         readlist(props, (s: DataSourceState) => {
+            ref.current.keysChange = undefined
             setDataSource({ ...s });
             if ((refreshnumber === ref.current.refreshsearch) && ref.current.searchF !== undefined) {
                 searchF(ref.current.searchF, genDSource(s.res))
@@ -342,11 +343,21 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         return eqRow(props, record, currentRow) ? "selectedrow" : ""
     }
 
-    function selectRow(selected: RowData) {
-        if (datasource.res.length == 0) return
-        if (selected === undefined) return
+    function retrieveKeys(selected: RowData | undefined) {
+        if (datasource.res.length == 0) return undefined
+        if (selected === undefined) return undefined
         const k = datasource.rowkey as string
         const r: FieldValue[] = selected.map(r => r[k])
+        return r
+    }
+
+    function selectRow(selected: RowData | undefined, k?: FieldValue[] | undefined) {
+        //if (datasource.res.length == 0) return
+        //if (selected === undefined) return
+        //const k = datasource.rowkey as string
+        //const r: FieldValue[] = selected.map(r => r[k])
+        const r: FieldValue[] | undefined = k === undefined ? retrieveKeys(selected) : k
+        if (r === undefined) return
         setMultiChoice(r)
         if (props.setmulti) props.setmulti(r)
         if (r.length > 0) {
@@ -376,9 +387,10 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                 },
                 selectedRowKeys: tranformtoSel(multichoice),
                 onSelectAll: (selected, selectedRows, changeRows) => {
-                    selectRow(selected ?
-                        ref.current.afterChange !== undefined ? ref.current.afterChange : genDSource(datasource.res) :
-                        [])
+                    if (selected) {
+                        if (ref.current.keysChange !== undefined) selectRow(undefined, ref.current.keysChange)
+                        else selectRow(genDSource(datasource.res))
+                    } else selectRow([])
                 }
             },
 
@@ -453,7 +465,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     }
 
     const onTableChange = (pagination: TablePaginationConfig, filters: Record<string, FilterValue | null>, sorter: SorterResult<TRow> | SorterResult<TRow>[], extra: TableCurrentDataSource<TRow>) => {
-        ref.current.afterChange = extra.currentDataSource
+        ref.current.keysChange = retrieveKeys(extra.currentDataSource)
     }
 
     return (
