@@ -344,6 +344,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     function selectRow(selected: RowData) {
         if (datasource.res.length == 0) return
+        if (selected === undefined) return
         const k = datasource.rowkey as string
         const r: FieldValue[] = selected.map(r => r[k])
         setMultiChoice(r)
