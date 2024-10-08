@@ -311,17 +311,18 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
     modifyColProps(c, p);
     if (sort(c, cols)) {
         if (c.props === undefined) c.props = {};
+        const sortfield: string = c.coltosort === undefined ? c.field : c.coltosort
         switch (fieldtype) {
             case FIELDTYPE.NUMBER:
             case FIELDTYPE.MONEY:
             case FIELDTYPE.INT:
-                c.props.sorter = (a: TRow, b: TRow) => sortnumberinc(a, b, c.field);
+                c.props.sorter = (a: TRow, b: TRow) => sortnumberinc(a, b, sortfield);
                 break;
             case FIELDTYPE.BOOLEAN:
-                c.props.sorter = (a: TRow, b: TRow) => sortboolinc(a, b, c.field);
+                c.props.sorter = (a: TRow, b: TRow) => sortboolinc(a, b, sortfield);
                 break;
             default:
-                c.props.sorter = (a: TRow, b: TRow) => sortinc(a, b, c.field);
+                c.props.sorter = (a: TRow, b: TRow) => sortinc(a, b, sortfield);
                 break;
         }
     }

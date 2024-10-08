@@ -249,7 +249,8 @@ export type TColumn = TFieldBase & PropSupportedType & {
     stat?: StatisticType
     width?: string | number
     moneydot?: string
-    moneydotcol?: string
+    moneydotcol?: string,
+    coltosort?: string
 };
 
 // ===============================
