@@ -55,16 +55,18 @@ export function constructTableFilter(c: TColumn): FFilter {
 
   const t: FIELDTYPE = fieldType(c);
 
+  const filtercol: string = c.coltosort === undefined ? c.field : c.coltosort
+
   switch (t) {
     case FIELDTYPE.NUMBER:
     case FIELDTYPE.INT:
-    case FIELDTYPE.MONEY: return (value: Key | boolean, record: TRow) => eqNumber(record, c.field, value as string);
+    case FIELDTYPE.MONEY: return (value: Key | boolean, record: TRow) => eqNumber(record, filtercol, value as string);
     case FIELDTYPE.STRING:
     case FIELDTYPE.DATE:
     case FIELDTYPE.TIME:
-      return (value: Key | boolean, record: TRow) => eqString(record, c.field, value as string);
+      return (value: Key | boolean, record: TRow) => eqString(record, filtercol, value as string);
     case FIELDTYPE.BOOLEAN:
-      return (value: Key | boolean, record: TRow) => eqBoolean(record, c.field, value as boolean);
+      return (value: Key | boolean, record: TRow) => eqBoolean(record, filtercol, value as boolean);
     default:
       internalerrorlog(`No filter function supported for this type: ${t} !`)
       return (value: Key | boolean, record: TRow) => true;
