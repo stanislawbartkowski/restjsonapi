@@ -5,7 +5,7 @@ const NoFoundPage: React.FC = () => (
   <Result
     status="404"
     title="404"
-    subTitle="Sorry, the page you visited does not exist."
+    subTitle="Niestety, taka strona nie istnieje."
   />
 );
 

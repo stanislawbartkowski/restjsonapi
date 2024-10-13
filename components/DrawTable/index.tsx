@@ -390,7 +390,10 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
                     if (selected) {
                         if (ref.current.keysChange !== undefined) selectRow(undefined, ref.current.keysChange)
                         else selectRow(genDSource(datasource.res))
-                    } else selectRow([])
+                    } else {
+                        selectRow([])
+                        //ref.current.keysChange = undefined
+                    }
                 }
             },
 
