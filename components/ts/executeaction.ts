@@ -125,7 +125,8 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
                 const result = callJSFunction(res.restaction as string, pars)
                 return Promise.resolve(({ data: result, response: undefined }))
             }
-            return restaction(res.method as HTTPMETHOD, res.restaction, res.params, t, responseType);
+            // 2024/10/26 -- add res.vars 
+            return restaction(res.method as HTTPMETHOD, res.restaction, res.params, { ...t, ...res.vars }, responseType);
         }
         return Promise.resolve(({ data: res, response: undefined }))
     }

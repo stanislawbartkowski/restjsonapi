@@ -58,7 +58,7 @@ export function createRules(ir: IFieldContext, t: FField, title: string): [Rule[
                         async validator(f: any, value) {
                             if (isnotdefined(value) && !istrue(e.alsoempty)) return Promise.resolve();
                             if ((fieldtype === FIELDTYPE.STRING) && value === "") return Promise.resolve();
-                            const data: TRow = {}
+                            const data: TRow = { ...e.vars }
                             const v: FieldValue = transformSingleValue(value, t, true)
                             data[t.field] = v
                             data[defaults.currentfield] = v

@@ -387,7 +387,8 @@ export type ValidatorType = JSSupportedType & {
     pattern?: string
     message?: FormMessage
     restaction?: RESTMETH
-    alsoempty?: boolean
+    alsoempty?: boolean,
+    vars?: TRow
 }
 
 export type StatisticType = PropSupportedType & JSSupportedType & {
