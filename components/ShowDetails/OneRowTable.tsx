@@ -41,8 +41,9 @@ const OneRowTable: React.FC<TDetailsCard> = (props) => {
 
 
         readlist({ ...props, ...varsaction, vars: { ...props.r } }, setS)
-    }, [props.varsrestaction, props.vars]);
+    }, [props.varsrestaction, props.vars, props.r]);
     // Data: 2023/11/18 - removed props.r (risky, not sure)
+    // Data: 2024/10/28 = restored, does not show properly
 
     if (datasource.status === Status.ERROR) return <ReadListError />
     if (datasource.status === Status.PENDING) return <span></span>
