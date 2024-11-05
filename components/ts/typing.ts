@@ -1,4 +1,8 @@
-import type { PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType, FormMessage, PropSupportedType, RESTMETH, RowData, TResize, ListToolbar } from '../../ts/typing';
+import type {
+    PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType,
+    FormMessage, PropSupportedType, RESTMETH, RowData, ListToolbar,
+    TComponentProps
+} from '../../ts/typing';
 import { FFieldElem } from './helper';
 
 // =========================
@@ -276,6 +280,7 @@ export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
     nofilter?: boolean
     nosort?: boolean
     card?: TCard
+    cardtab?: TCardTab
     rowprops?: PropsType
     filterJS?: string
     onerow?: boolean
@@ -299,6 +304,17 @@ export type TDetailsCard = ColumnList & OneRowData & {
     isSelected?: FIsSelected
     onRowClick?: OnRowClick
     varsrestaction?: TRestVars
+}
+
+export type TabCardItem = TComponentProps & {
+    label: FormMessage,
+    key: string,
+    ismain?: boolean
+}
+
+export type TCardTab = PropSupportedType & {
+    defaultActiveKey?: TCookie
+    tabs: TabCardItem[]
 }
 
 // =========================
