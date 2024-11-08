@@ -1,4 +1,4 @@
-import request, { RequestOptionsInit, ResponseError } from "umi-request";
+import request, { extend, RequestOptionsInit, ResponseError } from "umi-request";
 
 import type { FHeaderModifier, FieldValue, FUrlModifier } from "../ts/typing";
 import { log, internalerrorlog, logG } from '../ts/l'
@@ -10,13 +10,20 @@ import { isProd } from "../ts/readresource";
 import { getDomain } from "../ts/url";
 
 
-const rrequest = request;
+//const rrequest = request;
 //const rrequest = extend({
 //  headers: {
 //    'sessionid': getSessionId(),
 //  }
 //}
 //)
+const rrequest = extend({
+  headers: {
+    'Accept': 'application/json,text/plain'
+  }
+}
+)
+
 let prefix: string = "/"
 
 let host: string = ""
