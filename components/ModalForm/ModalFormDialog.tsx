@@ -173,7 +173,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
     const rereadRestFun: FRereadRest = () => {
         const setF = (t: TField[]) => {
-            const s: DataFormState = { ...formdef }
+            const s: DataFormState = { ...formdef, loading: false }
             s.tabledata = { ...(formdef.tabledata as TForm), fields: t }
             psetState(s)
         }
@@ -545,8 +545,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         }
     }
 
-// 2024/09/22
-//    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} refreshaction={refreshAction} rereadRest={rereadRestFun} setvarsaction={iiref.setVals} /> : undefined
+    // 2024/09/22
+    //    const popDialog: React.ReactNode = restview.visible ? <RestComponent {...restview.def} refreshaction={refreshAction} rereadRest={rereadRestFun} setvarsaction={iiref.setVals} /> : undefined
     const popDialog: React.ReactNode = <RestComponent {...restview.def} refreshaction={refreshAction} rereadRest={rereadRestFun} setvarsaction={iiref.setVals} />
 
     const modalFormView: ReactNode = formdef.status === Status.READY ?
