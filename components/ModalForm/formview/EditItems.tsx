@@ -14,6 +14,7 @@ import {
     AutoComplete,
     Segmented,
     Tooltip,
+    Flex,
 } from 'antd';
 
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
@@ -74,9 +75,12 @@ export type elemFactory = (t: TField, e: elemFactory) => ReactNode
 
 // -------- radio
 
-function createRadioItem(e: TRadioCheckItem, button?: boolean): ReactNode {
+function createRadioItem(e: TRadioCheckItem, button?: boolean, props?: PropsType): ReactNode {
 
-    if (button) return <Radio.Button value={e.value} {...e.props}>{itemName(e)}</Radio.Button>
+    if (button) {
+        const p: PropsType = { ...props, ...e.props }
+        return <Radio.Button value={e.value}  {...p}> {itemName(e)} </Radio.Button >
+    }
     return <Radio value={e.value} {...e.props}>{itemName(e)}</Radio>
 
 }
@@ -102,7 +106,7 @@ function createRadioGroup(ir: IFieldContext, t: FField): ReactNode {
 
     return <Radio.Group {...createProps(ir, t)} onChange={onChange}>
         {
-            (t.radio?.items as TRadioCheckItem[]).map(e => createRadioItem(e, t.radio?.button))
+            (t.radio?.items as TRadioCheckItem[]).map(e => createRadioItem(e, t.radio?.button, t.radio?.props))
         }
 
     </Radio.Group>
@@ -129,7 +133,7 @@ function createSegmented(ir: IFieldContext, t: FField): ReactNode {
 
     const items: TRadioCheckItem[] = t.radio?.items as TRadioCheckItem[]
     const options = items.map(e => createSegmentOption(e))
-    return <Segmented {...t.props} options={options} onChange={onChange}></Segmented>
+    return <Flex gap="small" align="flex-start" vertical> <Segmented {...t.props} options={options} onChange={onChange}></Segmented> </Flex>
 }
 
 function isNotRequired(t: TField): boolean {
@@ -284,9 +288,11 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
 
     if (isItemGroup(t)) {
         return [<React.Fragment>
-            {(t.items as TField[]).map(e => produceItem(ir, { ...e, field: t.genId !== undefined ? t.genId(e.field) : e.field, genId: t.genId, searchF: t.searchF, groupT: t, multiF: t.multiF, 
+            {(t.items as TField[]).map(e => produceItem(ir, {
+                ...e, field: t.genId !== undefined ? t.genId(e.field) : e.field, genId: t.genId, searchF: t.searchF, groupT: t, multiF: t.multiF,
                 tableR: t.tableR, setinitvarsaction: t.setinitvarsaction, setvarsaction: t.setvarsaction, seteditRow: t.seteditRow,
-                rerenderD: t.rerenderD, options: t.options }, err, field))}
+                rerenderD: t.rerenderD, options: t.options
+            }, err, field))}
         </React.Fragment>,
             undefined]
     }
