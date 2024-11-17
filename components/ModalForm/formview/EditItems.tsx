@@ -75,10 +75,21 @@ export type elemFactory = (t: TField, e: elemFactory) => ReactNode
 
 // -------- radio
 
+function combineProps(p1?: PropsType, p2?: PropsType): PropsType {
+    if (p1 === undefined) return { ...p2 }
+    if (p2 === undefined) return { ...p1 }
+    const style = {
+        ...p1.style,
+        ...p2.style
+    }
+    return { ...p1, ...p2, style: style }
+}
+
 function createRadioItem(e: TRadioCheckItem, button?: boolean, props?: PropsType): ReactNode {
 
     if (button) {
-        const p: PropsType = { ...props, ...e.props }
+        //        const p: PropsType = { ...props, ...e.props }
+        const p: PropsType = combineProps(props, e.props)
         return <Radio.Button value={e.value}  {...p}> {itemName(e)} </Radio.Button >
     }
     return <Radio value={e.value} {...e.props}>{itemName(e)}</Radio>
@@ -87,7 +98,8 @@ function createRadioItem(e: TRadioCheckItem, button?: boolean, props?: PropsType
 
 function createProps(ir: IFieldContext, t: TField) {
     const lprops = { ...prepareStyleByLabel(t) }
-    const props = t.iprops ? { ...lprops, ...t.iprops } : lprops
+    //    const props = t.iprops ? { ...lprops, ...t.iprops } : lprops
+    const props = combineProps(lprops, t.iprops)
     if (t.disabled) {
         props["disabled"] = true
     }

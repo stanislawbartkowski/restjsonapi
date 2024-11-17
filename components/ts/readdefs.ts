@@ -1,7 +1,7 @@
 import { PreseForms, TField, TForm, TItemsRest, TPanel, TPanelHeader, TPreseEnum, TRadioCheck } from "./typing";
 import { log } from "../../ts/l";
 import { callJSFunction, commonVars, isOArray, isString, isnotdefined, makeMessage } from "../../ts/j";
-import type { FieldValue, FormMessage, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
+import type { FieldValue, FormMessage, PropsType, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
 import { HTTPMETHOD } from "../../ts/typing";
 import { restapilistdef, restapijs, restapishowdetils, restapilist, restaction } from "../../services/api";
 import { Status, ColumnList, ShowDetails } from "./typing";
@@ -137,7 +137,8 @@ async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[
                     return {
                         value: r[rest.value] as string,
                         label: { messagedirect: getLabel(rest, r) } as FormMessage,
-                        sublabel: subLabel === undefined ? undefined : { messagedirect: subLabel } as FormMessage
+                        sublabel: subLabel === undefined ? undefined : { messagedirect: subLabel } as FormMessage,
+                        props: {...r.props as PropsType}
                     }
                 })
                 if (c.checkbox) c.checkbox = { ...tr }
