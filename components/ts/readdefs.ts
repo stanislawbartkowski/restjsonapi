@@ -151,7 +151,7 @@ async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[
 
 }
 
-async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: boolean) {
+async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: boolean, initvars?: TRow) {
 
     const def: string = props.listdef ? props.listdef : props.list as string
 
@@ -173,7 +173,7 @@ async function readdefs(props: RestTableParam, f: FSetState, ignoreinitvals?: bo
                 // look for dynamic items
                 const t: TForm = idef as TForm
                 const beforevals: TRow | undefined = (t.beforedialog && !istrue(ignoreinitvals)) ? await readvalsdata(t.beforedialog, {}, { ...commonVars(), ...props.vars }) : undefined
-                const vars: TRow = { ...props.vars, ...beforevals }
+                const vars: TRow = { ...initvars, ...props.vars, ...beforevals }
                 const ffields: TField[] = await resolveRest(t.fields, {}, vars)
 
                 const initvals: TRow | undefined = (t.restapivals && !istrue(ignoreinitvals)) ? await readvalsdata(t.restapivals, {}, { ...commonVars(), ...vars }) : undefined

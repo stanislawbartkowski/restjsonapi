@@ -457,7 +457,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
         }
 
-        readdefs(props, setS, props.ignorerestapivals)
+        readdefs(props, setS, props.ignorerestapivals, props.initvals)
 
     }, [props.listdef]);
 
