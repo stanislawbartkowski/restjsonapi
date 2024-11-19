@@ -138,14 +138,14 @@ function createSegmentOption(t: TRadioCheckItem) {
 
 function createSegmented(ir: IFieldContext, t: FField): ReactNode {
 
-    function onChange(value: string | number) {
+    //function onChange(value: string | number) {
         // 2023/12/26 - nadmiarowe
         //ir.fieldChanged(t)
-    }
+    //}
 
     const items: TRadioCheckItem[] = t.radio?.items as TRadioCheckItem[]
     const options = items.map(e => createSegmentOption(e))
-    return <Flex gap="small" align="flex-start" vertical> <Segmented {...t.props} options={options} onChange={onChange}></Segmented> </Flex>
+    return <Segmented {...t.props} options={options}></Segmented>
 }
 
 function isNotRequired(t: TField): boolean {
