@@ -24,7 +24,7 @@ export function transformSingleValue(v: any, t: FFieldElem, from: boolean) {
     if (tt !== FIELDTYPE.DATE) return v;
     if (v === undefined) return undefined
     if (t.range) {
-        return v == undefined ? undefined : [datetransform(v[0], from), datetransform(v[1], from)]
+        return v === undefined ? undefined : [datetransform(v[0], from), datetransform(v[1], from)]
     }
     return datetransform(v, from)
 }

@@ -105,7 +105,6 @@ export function extractActionHook(t: TAction, r: TableHookParam, pars: OneRowDat
 
 function constructMenuAction(key: number, t: TAction, r: TableHookParam, pars: OneRowData) {
     const h: IActionHook = extractActionHook(t, r, pars)
-    const ic = t.icon ? { icon: getIcon(t.icon) } : {}
     return { key: key, label: h.text, onClick: h.onClick };
 }
 
@@ -381,7 +380,7 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
     if (issort) {
         const sort: ColumnSortType = (sortColumn as IColumnSort).getSort(c)
         if (sort !== ColumnSortType.NO) {
-            e.defaultSortOrder = sort == ColumnSortType.ACC ? "ascend" : "descend"
+            e.defaultSortOrder = sort === ColumnSortType.ACC ? "ascend" : "descend"
         }
     }
 

@@ -1,9 +1,7 @@
 import React, { ReactNode, useState } from "react";
 import { Button, Dropdown, MenuProps, Space } from "antd";
 import { PageHeader } from '@ant-design/pro-layout';
-//import { ItemType } from "antd/lib/menu/hooks/useItems";
 
-import { trace } from "../ts/l";
 import constructButton from "./ts/constructbutton";
 import { emptyModalListProps, FAction, FButtonAction, FieldValue, FSetTitle, ModalFormProps, OneRowData, RAction, RestTableParam, TRow, VAction } from '../ts/typing'
 import { TableToolBar, ButtonAction, ClickResult, ShowDetails, ClickAction, TAction, FRetAction, FRereadRest, MenuButtonAction } from "./ts/typing";
@@ -16,9 +14,6 @@ import getIcon from "../ts/icons";
 
 type HeaderProps = ShowDetails & { setvarsaction?: VAction, refreshaction: RAction, pars: OneRowData, r: RestTableParam, fbutton: FAction, selectedM: FieldValue[], setTitle?: FSetTitle, rereadRest: FRereadRest, closeAction?: FAction, extendedTools?: React.ReactNode, switchDisplay?: ReactNode }
 
-function ltrace(mess: string) {
-  trace('HeaderTable', mess)
-}
 
 function isChooseButton(a: ClickResult, t: RestTableParam): boolean {
   return ((istrue(t.choosing) || istrue(t.multiselect)) && a.list === undefined && a.listdef === undefined && a.restaction === undefined)

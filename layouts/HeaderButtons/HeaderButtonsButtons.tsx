@@ -1,5 +1,5 @@
 
-import { blue, cyan, green, yellow, gold, purple } from '@ant-design/colors';
+import { blue, cyan, green, gold } from '@ant-design/colors';
 import { Button, Divider, Space } from 'antd';
 import { HeaderMenu, getHeaderMenu } from '../../ts/headermenu';
 import { Fragment } from 'react';

@@ -6,7 +6,7 @@ import React from "react"
 import { Badge, theme } from "antd"
 import { ReactNode } from "react"
 
-import { FieldValue, OneRowData } from "../../../ts/typing"
+import { FieldValue } from "../../../ts/typing"
 import { constructButtonElem } from "../../ts/constructbutton"
 import { ButtonAction, MultiChoiceButton } from "../../ts/typing"
 import { IFieldContext, FField, TMultiSelect, ErrorMessages, ErrorMessage } from "./types"

@@ -1,5 +1,4 @@
 import { PreseForms, TField, TForm, TItemsRest, TPanel, TPanelHeader, TPreseEnum, TRadioCheck } from "./typing";
-import { log } from "../../ts/l";
 import { callJSFunction, commonVars, isOArray, isString, isnotdefined, makeMessage } from "../../ts/j";
 import type { FieldValue, FormMessage, PropsType, RESTMETH, RestTableParam, RowData, TRow } from "../../ts/typing";
 import { HTTPMETHOD } from "../../ts/typing";
@@ -82,6 +81,7 @@ async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[
             return c;
         }
         if (c.tab) {
+            // lint is complaining but it must be executed
             const tabs: TabItems[] = await Promise.all(c.tab.tabs.map(async c => {
                 const items: TField[] = await resolveRest(c.items as TField[], row, vars)
                 c.items = items

@@ -229,7 +229,6 @@ function curryOnTextAreaInput(t: TField) {
 function searchItem(ir: IFieldContext, t: FField, listfield?: FormListFieldData): React.ReactNode {
 
     const onBlur: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
-        const id: string = c.target.id
         checkchange(ir, c.target.id, t)
     }
 
@@ -288,12 +287,10 @@ function produceElem(ir: IFieldContext, t: FField, err: ErrorMessages, field?: F
     //const fId: string = t.genId !== undefined ? t.genId(t.field) : t.field
 
     const onBlur: FocusEventHandler<HTMLElement> = (c: React.FocusEvent) => {
-        const id: string = c.target.id
         checkchange(ir, c.target.id, t)
     }
 
     const onBlurTextArea: FocusEventHandler<HTMLTextAreaElement> = (c: React.FocusEvent) => {
-        const id: string = c.target.id
         checkchange(ir, c.target.id, t)
     }
 
@@ -390,7 +387,7 @@ function errorMessage(t: FField, err: ErrorMessages): {} | { validateStatus: Val
 }
 
 function prepareStyleByLabel(t: TField): PropsType | undefined {
-    if (t.label == undefined) return
+    if (t.label === undefined) return
     const d: FieldDefaults | undefined = findLabel(t.label)
     if (d === undefined || d.width === undefined) return undefined
     const css: React.CSSProperties = { width: d.width }

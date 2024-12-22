@@ -3,7 +3,7 @@ import { Collapse } from "antd";
 
 import { isString, makeMessage } from "../../../ts/j";
 import { TRow } from "../../../ts/typing";
-import { TCookie, TPanel } from "../../ts/typing";
+import { TPanel } from "../../ts/typing";
 import { ErrorMessages, FField, IFieldContext } from "./types";
 import { produceBody } from './FormBody';
 import { elemFactory } from "./EditItems";

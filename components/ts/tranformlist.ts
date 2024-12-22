@@ -2,7 +2,7 @@
 // transform list using getvalue
 // ======================================
 
-import { dateNormalizeS, dateremoveT } from "../../ts/d"
+import { dateNormalizeS } from "../../ts/d"
 import defaults from "../../ts/defaults"
 import { FIELDTYPE, TRow, FieldValue, OneRowData, RowData } from "../../ts/typing"
 import { getValue, getafterdot, tomoney } from "./helper"
@@ -10,7 +10,7 @@ import { fieldType, getVal } from "./transcol"
 import { TColumn, ColumnValue, TColumns } from "./typing"
 
 function transformCol(e: TColumn): boolean {
-    return e.value !== undefined || fieldType(e) === FIELDTYPE.MONEY || fieldType(e) == FIELDTYPE.DATE
+    return e.value !== undefined || fieldType(e) === FIELDTYPE.MONEY || fieldType(e) === FIELDTYPE.DATE
 }
 
 // TODO: remove
@@ -32,7 +32,7 @@ export function transformCell(c: TColumn, props: OneRowData): FieldValue {
     const val: FieldValue = c.value ? getValue(c.value as ColumnValue, props) : getVal(c, props)
     // musi być, potrzebne dla podsumowań
     if (fieldType(c) === FIELDTYPE.MONEY) return tomoney(val as string | number, moneydot(c, props))
-    if (fieldType(c) == FIELDTYPE.DATE) return dateNormalizeS(val as string)
+    if (fieldType(c) === FIELDTYPE.DATE) return dateNormalizeS(val as string)
     return val
 }
 

@@ -15,10 +15,10 @@ import { FormInstance } from 'antd/es/form';
 
 
 import { ButtonAction, FGetAutocomplete, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChanged, FRereadRest, FSetValues, TAsyncRestCall, TAutoCompleteMap, TClickButton, TField, TForm, TOptionLine, TRadioCheckItem } from '../ts/typing'
-import { log, trace } from '../../ts/l'
-import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, OneRowData, PropsType, RESTMETH, TRow, VAction } from '../../ts/typing'
+import { log } from '../../ts/l'
+import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, OneRowData, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
-import { callJSFunction, commonVars, copyMap, getSessionId, isBool, isEmpty, isString } from '../../ts/j';
+import { callJSFunction, commonVars, copyMap, getSessionId, isEmpty, isString } from '../../ts/j';
 import { emptys, FFieldElem, findEditField, flattenTForm, genEditClickedRowKey, getafterdot, getValue, istrue, okmoney, tomoney } from '../ts/helper';
 import { transformSingleValue, transformValuesFrom, transformValuesTo } from '../ts/transformres';
 import RestComponent from '../RestComponent';
@@ -81,7 +81,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     const [searchD, setSearchT] = useState<SearchDialogProps>(emptySearch);
     const [multiselectD, setMultiSelectD] = useState<MultiSelectProps>(emptySearch);
     const [fileupload, setFileUpload] = useState<UploadStore>(new Map())
-    const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>(), nullfields: new Set<string> });
+    const fchanges = useRef<TFieldChange>({ fieldchange: new Set<string>(), notescalatewhenchange: new Set<string>(), nullfields: new Set<string>() });
     const flastRowkey = useRef<TableEditClick>(new Map());
     const [multiselect, setMultiSelect] = useState<TMultiSelect>(new Map())
     const [tableR, setTableRefresh] = useState<TableRefresh>(new Map())
@@ -151,7 +151,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             const ntableR: TableRefresh = copyMap(tableR)
             const tableRE: TableRefreshData | undefined = ntableR.get(field)
             // 2023/11/08 start with refreshno=1 (not 0)
-            const refreshno = istrue(searchD?.notwaitrefresh) ? tableRE?.refreshno : tableRE === undefined || tableRE.refreshno == undefined ? 1 : tableRE.refreshno + 1
+            const refreshno = istrue(searchD?.notwaitrefresh) ? tableRE?.refreshno : tableRE === undefined || tableRE.refreshno === undefined ? 1 : tableRE.refreshno + 1
             const newTableRE: TableRefreshData = {
                 searchR: searchD,
                 refreshno: refreshno
@@ -184,7 +184,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             }
             if (t.radio && isString(va) && !emptys(va as string)) {
                 const i: TRadioCheckItem[] = t.radio.items as TRadioCheckItem[]
-                const iv: TRadioCheckItem | undefined = i.find(e => e.value == va as string)
+                const iv: TRadioCheckItem | undefined = i.find(e => e.value === va as string)
                 if (iv === undefined) {
                     log(`${va} not found in the items, empty value is assigned`)
                     if (vals !== undefined) {
@@ -342,9 +342,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     function modifyMoney(t: FField) {
         if (fieldType(t) !== FIELDTYPE.MONEY) return
         const r: TRow = f.getFieldsValue()
-        const mval = r[t.field] as string
         const m = trasformMoney(t, r)
-        if (m == undefined) return
+        if (m === undefined) return
         //if (emptys(mval)) return
         //if (!okmoney(mval)) return
         // getafterdot

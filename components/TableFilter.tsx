@@ -10,7 +10,7 @@ import defaults from '../ts/defaults'
 import { datetoS, dateparseS } from '../ts/d'
 import type { TRow } from '../ts/typing'
 import { Key, ReactNode } from "react";
-import { internalerrorlog, log } from "../ts/l";
+import { internalerrorlog } from "../ts/l";
 import { fieldType } from "./ts/transcol";
 import { toS } from "../ts/j";
 import { valueType } from "antd/es/statistic/utils";
@@ -89,7 +89,7 @@ function searchAttr(c: TColumn, coltitle: string, filterF?: IColumnFilter): Colu
     setState({
       searchText: selectedKeys[0],
     });
-    if (selectedKeys.length == 0) handleSetFilter(undefined)
+    if (selectedKeys.length === 0) handleSetFilter(undefined)
     else handleSetFilter(selectedKeys[0])
   }
 

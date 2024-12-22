@@ -1,7 +1,6 @@
 import { PaginationProps } from "antd";
 import defaults from "../../ts/defaults";
 import { isNumber } from "../../ts/j";
-import { PropsType } from "../../ts/typing";
 import { PagingC } from "./typing";
 
 type TablePagination = {

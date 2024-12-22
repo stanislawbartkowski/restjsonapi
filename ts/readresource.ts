@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { restapijs, restapilist, restapilistdef, restapiresource } from "../services/api";
+import { restapijs, restapilist, restapiresource } from "../services/api";
 import { log } from "./l";
 import { setStrings } from "./localize";
 import type { AppAuthLabel, AppData, AppDefaults, FieldDefaults, LeftMenuResource, MenuLeft } from "./typing";

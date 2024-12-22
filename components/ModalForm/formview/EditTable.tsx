@@ -10,7 +10,7 @@ import { addRowKey } from '../../ts/tranformlist';
 import { constructactionsCol, fieldTitle, transformOneColumn } from '../../ts/transcol';
 import { TableHookParam, TAction, TActions, TField, ButtonAction, TColumns, TClickButton, TColumn, ColumnList } from '../../ts/typing';
 import { produceFormItem } from './EditItems';
-import { ErrorMessages, FField, FGenEditId, IFieldContext, ROWKEY, TFieldsProps, TOptions } from './types';
+import { ErrorMessages, FField, FGenEditId, IFieldContext, ROWKEY, TOptions } from './types';
 import propsPaging from "../../ts/tablepaging"
 import { trace } from '../../../ts/l';
 import { getFieldProps, getPars } from './helper';

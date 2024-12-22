@@ -120,7 +120,7 @@ function toSortCols(vcols: ColumnType<any>[], p: ColumnList): ColumnsT {
 }
 
 function toColTitle(e: ColumnT, p: ColumnList, vars?: TRow): string | undefined {
-    const c: TColumn | undefined = p.columns.find(c => c.field == e.key)
+    const c: TColumn | undefined = p.columns.find(c => c.field === e.key)
     if (c === undefined) return undefined
     const title: string = fieldTitle(c, { r: {}, vars: vars })
     return title
@@ -344,7 +344,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     }
 
     function retrieveKeys(selected: RowData | undefined) {
-        if (datasource.res.length == 0) return undefined
+        if (datasource.res.length === 0) return undefined
         if (selected === undefined) return undefined
         const k = datasource.rowkey as string
         const r: FieldValue[] = selected.map(r => r[k])

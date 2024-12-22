@@ -33,5 +33,5 @@ export function getCookieSortColumn(r: RestTableParam, c: TColumn): ColumnSortTy
     const j: string | undefined = getCookie(cookiename)
     if (j === undefined) return ColumnSortType.NO
     const m: CookieSort = JSON.parse(j) as CookieSort
-    return m.field == c.field ? m.sort : ColumnSortType.NO
+    return m.field === c.field ? m.sort : ColumnSortType.NO
 }

@@ -31,7 +31,7 @@ export function removeDuplicates(cols: TColumns): TColumns {
 }
 
 export function visibleColumnsR(cols: ColumnList, r_cols?: ColumnsT): TColumns {
-  if (r_cols == undefined) return visibleColumns(cols.columns);
+  if (r_cols === undefined) return visibleColumns(cols.columns);
   const mm: TColumns = r_cols.filter(v => v.included).map(v => {
     // filter out not checked
     // it is assumed that all columns in r_cols exist in cols.columns
@@ -141,7 +141,7 @@ export function eqRow(p: ColumnList, r1: TRow, r2: TRow): boolean {
 }
 
 export function searchDataSource(p: ColumnList, currentRow: TRow | undefined, rows: RowData, pars: ExtendedFilter, pagesize: number | undefined): CurrentPos | undefined {
-  if (rows.length == 0) return undefined
+  if (rows.length === 0) return undefined
   let currentPos: CurrentPos | undefined = initPos
   if (currentRow !== undefined) {
     currentPos = findcurrentRow(currentPos, rows, pagesize, (r: TRow) => eqRow(p, r, currentRow))

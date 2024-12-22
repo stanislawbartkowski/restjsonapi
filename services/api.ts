@@ -1,4 +1,4 @@
-import request, { extend, RequestOptionsInit, ResponseError } from "umi-request";
+import { extend, RequestOptionsInit, ResponseError } from "umi-request";
 
 import type { FHeaderModifier, FieldValue, FUrlModifier } from "../ts/typing";
 import { log, internalerrorlog, logG } from '../ts/l'

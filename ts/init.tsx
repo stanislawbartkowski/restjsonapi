@@ -8,7 +8,7 @@ import { setSec } from './j'
 import { initkeyclock } from './keyclock'
 import { TReadResource } from './typing'
 import { readHeaderMenu } from './headermenu'
-import { getRouterRoot, getServerUrl, setUrlDomain } from './url'
+import { getRouterRoot, getServerUrl } from './url'
 
 
 let customReadResource: TReadResource | undefined
