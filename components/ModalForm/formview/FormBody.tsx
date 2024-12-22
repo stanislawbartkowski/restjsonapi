@@ -1,16 +1,21 @@
 import React, { ReactNode } from "react";
-import { Row } from "antd";
+import { Col, Row } from "antd";
 
 import { TField, TGridRow } from "../../ts/typing";
 import { elemFactory } from "./EditItems";
-import { PropsType } from "../../../ts/typing";
+import { OneRowData, PropsType } from "../../../ts/typing";
 import { isFieldTrue } from "../../ts/helper";
 import { IFieldContext } from "./types";
+import { getPars } from "./helper";
 
 
 function produceCol(ir: IFieldContext, f: TField, eFactory: elemFactory): ReactNode {
-    const par = { r: ir.getValues() }
-    return isFieldTrue(f.hidden, par)
+    const pars: OneRowData = getPars(ir)
+    if (isFieldTrue(f.hidden, pars)) return undefined
+    const props = f.gridcol ? f.gridcol.props : undefined
+    return <Col {...props}>
+        {eFactory(f, eFactory)}
+    </Col>
 }
 
 function getRowProps(fbeg: number, fbegrow: number, fend: number, fields: TField[]): PropsType | undefined {
