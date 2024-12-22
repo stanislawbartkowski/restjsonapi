@@ -1,19 +1,19 @@
 import React, { ReactNode } from "react";
-import { Col, Row } from "antd";
+import { Row } from "antd";
 
 import { TField, TGridRow } from "../../ts/typing";
 import { elemFactory } from "./EditItems";
 import { PropsType } from "../../../ts/typing";
+import { isFieldTrue } from "../../ts/helper";
+import { IFieldContext } from "./types";
 
 
-function produceCol(f: TField, eFactory: elemFactory): ReactNode {
-    const props = f.gridcol ? f.gridcol.props : undefined
-    return <Col {...props}>  
-        {eFactory(f, eFactory)}
-    </Col>
+function produceCol(ir: IFieldContext, f: TField, eFactory: elemFactory): ReactNode {
+    const par = { r: ir.getValues() }
+    return isFieldTrue(f.hidden, par)
 }
 
-function getRowProps(fbeg: number, fbegrow: number, fend: number, fields: TField[]) : PropsType | undefined {
+function getRowProps(fbeg: number, fbegrow: number, fend: number, fields: TField[]): PropsType | undefined {
     if (fbegrow >= fend) return undefined
     const f: TField = fields[fbegrow]
     const rowprops: TGridRow = f.gridrow as TGridRow
@@ -21,26 +21,17 @@ function getRowProps(fbeg: number, fbegrow: number, fend: number, fields: TField
     return props
 }
 
-function produceRow(fbeg: number, fbegrow: number, fend: number, fields: TField[], eFactory: elemFactory): ReactNode {
-    //const f: TField = fields[fbeg]
-    //const rowprops: TGridRow = f.gridrow as TGridRow
-    //const props: PropsType = rowprops.props ? rowprops.props : { gutter: [64, 64] }
+function produceRow(ir: IFieldContext, fbeg: number, fbegrow: number, fend: number, fields: TField[], eFactory: elemFactory): ReactNode {
     const props: PropsType | undefined = getRowProps(fbeg, fbegrow, fend, fields)
 
     return <React.Fragment>
         {fields.slice(fbeg, fbegrow).map(e => eFactory(e, eFactory))}
         <Row {...props} >
-            {fields.slice(fbegrow, fend).map(e => produceCol(e, eFactory))}
+            {fields.slice(fbegrow, fend).map(e => produceCol(ir, e, eFactory))}
         </Row>
     </React.Fragment>
 }
 
-function findFirstRow(fields: TField[]): number {
-    for (let num = 0; num < fields.length; num++) {
-        if (fields[num].gridrow) return num;
-    }
-    return fields.length;
-}
 
 function createRowsSlices(fields: TField[]): [number, number, number][] {
     let num: number = 0;
@@ -58,10 +49,10 @@ function createRowsSlices(fields: TField[]): [number, number, number][] {
     return slices
 }
 
-export function produceBody(fields: TField[], eFactory: elemFactory): ReactNode {
+export function produceBody(ir: IFieldContext, fields: TField[], eFactory: elemFactory): ReactNode {
     //#const num: number = findFirstRow(fields);
     const rows: [number, number, number][] = createRowsSlices(fields)
     return <React.Fragment>
-        {rows.map(e => produceRow(e[0], e[1], e[2], fields, eFactory))}
+        {rows.map(e => produceRow(ir, e[0], e[1], e[2], fields, eFactory))}
     </React.Fragment>
 }

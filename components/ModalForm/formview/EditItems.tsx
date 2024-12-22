@@ -14,21 +14,20 @@ import {
     AutoComplete,
     Segmented,
     Tooltip,
-    Flex,
 } from 'antd';
 
 import type { ValidateStatus } from 'antd/lib/form/FormItem';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 import { RadioChangeEvent } from 'antd/lib';
 
-import { PropsType, FIELDTYPE, FieldValue, FieldDefaults, TRow, RowData } from '../../../ts/typing';
+import { PropsType, FIELDTYPE, FieldValue, FieldDefaults, TRow, RowData, OneRowData } from '../../../ts/typing';
 import { decomposeEditId, emptys, getValue, isEditList, isItemGroup, istrue } from '../../ts/helper';
 import { ButtonAction, TAutoCompleteMap, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
 import { IFieldContext, FField, TFieldChange } from './types';
 import { makeMessage } from '../../../ts/j';
 import { HTMLElem, fieldType, fieldTitle, makeDivider } from '../../ts/transcol';
 import { transformSingleValue } from '../../ts/transformres';
-import { findErrField, getFieldProps, itemName } from './helper';
+import { findErrField, getFieldProps, getPars, itemName } from './helper';
 import { createItemList } from './CreateDisplayList';
 import { createList } from './DialogListItem';
 import { produceRestTable } from './DialogRestTable';
@@ -139,8 +138,8 @@ function createSegmentOption(t: TRadioCheckItem) {
 function createSegmented(ir: IFieldContext, t: FField): ReactNode {
 
     //function onChange(value: string | number) {
-        // 2023/12/26 - nadmiarowe
-        //ir.fieldChanged(t)
+    // 2023/12/26 - nadmiarowe
+    //ir.fieldChanged(t)
     //}
 
     const items: TRadioCheckItem[] = t.radio?.items as TRadioCheckItem[]
@@ -402,7 +401,9 @@ function prepareStyleByLabel(t: TField): PropsType | undefined {
 
 function produceButton(ir: IFieldContext, t: FField, err: ErrorMessages, field?: FormListFieldData): React.ReactNode {
 
-    return constructButton(t.button as ButtonAction, ir.clickButton)
+    const pars: OneRowData = getPars(ir)
+
+    return constructButton(t.button as ButtonAction, ir.clickButton, pars)
 
 }
 

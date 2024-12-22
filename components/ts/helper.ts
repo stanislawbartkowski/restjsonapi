@@ -1,7 +1,7 @@
 import React, { CSSProperties } from "react";
 
 import { callJSFunction, isNumericString, isObject, isString, isnotdefined, makeMessage } from "../../ts/j";
-import { FieldValue, OneRowData, PropsType, RowData, TRow } from "../../ts/typing";
+import { FieldValue, OneRowData, PropsType, RowData, TBooleanField, TRow } from "../../ts/typing";
 import { ActionResult, ButtonAction, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TColumns, TField, TForm, TPreseEnum } from "./typing";
 import defaults from "../../ts/defaults";
 import { HTMLElem } from "./transcol";
@@ -20,6 +20,14 @@ export function makeHeaderString(p: ColumnList, unheader: string | undefined, pa
     if (title === undefined) return undefined
 
     return title
+}
+
+export function isFieldTrue(bvalue: TBooleanField | undefined, par: OneRowData) {
+    let hidden: boolean | undefined = bvalue
+    if (bvalue?.js !== undefined) {
+        hidden = callJSFunction(bvalue.js, par)
+    }
+    return istrue(hidden)
 }
 
 export function makeHeader(p: ColumnList, unheader: string | undefined, pars: OneRowData): React.ReactNode | undefined {

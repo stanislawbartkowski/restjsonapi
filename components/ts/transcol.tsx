@@ -80,7 +80,7 @@ function constructAction(key: number, t: TAction, r: TableHookParam, pars: OneRo
 
     const b: ButtonAction = t.button ? t.button as ButtonAction : genButtonFromAction(t, key)
 
-    return constructButton(b, () => clickActionHook(t, r, pars));
+    return constructButton(b, () => clickActionHook(t, r, pars), pars);
 }
 
 export interface IActionHook {

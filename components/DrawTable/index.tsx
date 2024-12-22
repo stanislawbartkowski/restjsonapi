@@ -473,7 +473,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     return (
         <React.Fragment>
-            {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction} extendedTools={extendedTools}
+            {props.header ? <HeaderTable {...props.header} pars={toPars()} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction} extendedTools={extendedTools}
                 selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }} rereadRest={props.rereadRest as FRereadRest} closeAction={props.closeAction} /> : extendedTools}
             <Table
                 onChange={onTableChange}

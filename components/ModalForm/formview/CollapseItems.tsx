@@ -22,7 +22,7 @@ function getActiveKeys(ir: IFieldContext, t: FField): string[] {
 function producePanel(ir: IFieldContext, p: TPanel, err: ErrorMessages, r: TRow, eFactory: elemFactory): React.ReactNode {
 
     const header: string | undefined = makeMessage(p.header, { r: r })
-    const panelnode: ReactNode = produceBody(p.items, eFactory)
+    const panelnode: ReactNode = produceBody(ir, p.items, eFactory)
 
     return <Collapse.Panel header={header} key={p.key} {...p.props}>{panelnode}</Collapse.Panel>
 

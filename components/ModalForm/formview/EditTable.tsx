@@ -2,7 +2,7 @@ import { Card, Divider, PaginationProps, Space, Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import React, { ReactElement, ReactNode } from 'react';
 
-import { ButtonElem, TRow, RowData } from '../../../ts/typing';
+import { ButtonElem, TRow, RowData, OneRowData } from '../../../ts/typing';
 import SummaryTable from '../../SummaryTable';
 import { constructButtonElem } from '../../ts/constructbutton';
 import { genColIdedit, getEditList, cardProps, visibleColumns, istrue } from '../../ts/helper';
@@ -13,7 +13,7 @@ import { produceFormItem } from './EditItems';
 import { ErrorMessages, FField, FGenEditId, IFieldContext, ROWKEY, TFieldsProps, TOptions } from './types';
 import propsPaging from "../../ts/tablepaging"
 import { trace } from '../../../ts/l';
-import { getFieldProps } from './helper';
+import { getFieldProps, getPars } from './helper';
 
 function ltrace(mess: string) {
     trace('EditTable', mess)
@@ -25,9 +25,10 @@ function genAddButton(it: IFieldContext, c: FField) {
     if (c.editlist?.addbutton === undefined) return undefined
     const addButton: ButtonElem = c.editlist.addbutton
     if (addButton.icon === undefined) addButton.icon = "pluscircleoutlined"
-    const b = constructButtonElem(addButton, it.clickButton)
+    const pars: OneRowData = getPars(it)
+    const b = constructButtonElem(addButton, it.clickButton, pars)
     if (c.editlist.buttons === undefined) return b
-    const buttons: ReactNode[] = c.editlist.buttons.map(e => constructButtonElem(e, it.clickButton))
+    const buttons: ReactNode[] = c.editlist.buttons.map(e => constructButtonElem(e, it.clickButton, pars))
     return <Space size="small">{buttons}{<Divider type="vertical" />}{b}</Space>
 }
 
@@ -172,7 +173,7 @@ export function produceEditTable(ir: IFieldContext, t: FField, err: ErrorMessage
             columns={columns}
             dataSource={values}
             onRow={(r, i) => { return { onClick: (event) => clickedRow(r) } }}
-        summary={isSummary() ? () => (<SummaryTable isextendable={false} vars={vars} columns={visibleColumns(cols)} summary={t.editlist?.summary} list={values} />) : undefined}
+            summary={isSummary() ? () => (<SummaryTable isextendable={false} vars={vars} columns={visibleColumns(cols)} summary={t.editlist?.summary} list={values} />) : undefined}
         />
     </Card>
 

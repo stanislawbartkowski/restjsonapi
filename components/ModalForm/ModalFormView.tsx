@@ -16,7 +16,7 @@ import { FormInstance } from 'antd/es/form';
 
 import { ButtonAction, FGetAutocomplete, FGetOptions, FGetValues, FOnFieldChanged, FOnValuesChanged, FRereadRest, FSetValues, TAsyncRestCall, TAutoCompleteMap, TClickButton, TField, TForm, TOptionLine, TRadioCheckItem } from '../ts/typing'
 import { log, trace } from '../../ts/l'
-import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, PropsType, RESTMETH, TRow, VAction } from '../../ts/typing'
+import { ButtonElem, FAction, FIELDTYPE, FieldValue, FSetTitle, OneRowData, PropsType, RESTMETH, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import { callJSFunction, commonVars, copyMap, getSessionId, isBool, isEmpty, isString } from '../../ts/j';
 import { emptys, FFieldElem, findEditField, flattenTForm, genEditClickedRowKey, getafterdot, getValue, istrue, okmoney, tomoney } from '../ts/helper';
@@ -447,7 +447,7 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
 
         {buttonstop}
 
-        {produceBody(props.fields, produceFormItem)}
+        {produceBody(fieldContext, props.fields, produceFormItem)}
 
 
         {buttonsbottom}
@@ -463,8 +463,12 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         ...props.vars
     }
 
+    const pars: OneRowData = {
+        r: hvalues
+    }
+
     const header: ReactNode | undefined = props.header ?
-        <HeaderTable {...props.header} vars={hvalues} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} setTitle={props.setTitle} rereadRest={props.rereadRest} closeAction={closeF} switchDisplay={props.switchDisplay}></HeaderTable> :
+        <HeaderTable {...props.header} pars={pars} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} setTitle={props.setTitle} rereadRest={props.rereadRest} closeAction={closeF} switchDisplay={props.switchDisplay}></HeaderTable> :
         undefined
 
     return <React.Fragment>

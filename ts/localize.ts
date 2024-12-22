@@ -152,7 +152,7 @@ const lstring = (id: string, ...args: any): string => {
   const s = strings.getString(id)
   if (args === undefined || args.length === 0) return s;
   if (isOArray(args)) {
-    const a: any[] = args;
+    const a: any[] = (args.length === 1 && isOArray(args[0])) ? args[0] : args;
     let ss: string = "Too many arguments"
 
     switch (a.length) {
