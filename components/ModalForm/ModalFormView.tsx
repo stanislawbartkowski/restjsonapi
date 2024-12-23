@@ -463,7 +463,8 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
     }
 
     const pars: OneRowData = {
-        r: hvalues
+        r: {},
+        vars: hvalues
     }
 
     const header: ReactNode | undefined = props.header ?

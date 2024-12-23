@@ -38,8 +38,6 @@ const OneRowTable: React.FC<TDetailsCard> = (props) => {
             return
         }
         const varsaction: TRestVars = props.varsrestaction?.js ? callJSFunction(props.varsrestaction.js, toPars()) : props.varsrestaction as TRestVars
-
-
         readlist({ ...props, ...varsaction, vars: { ...props.r } }, setS)
     }, [props.varsrestaction, props.vars, props.r]);
     // Data: 2023/11/18 - removed props.r (risky, not sure)
