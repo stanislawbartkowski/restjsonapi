@@ -35,7 +35,7 @@ interface Defaults {
   moneydotvar: string,
   settabprefix: string,
   autocompleteprefix: string,
-  currentvalue: string
+  currentvalue: string,
 };
 
 const defaults: Defaults = {
@@ -75,8 +75,7 @@ const defaults: Defaults = {
   moneydotvar: "moneydotmap",
   settabprefix: "set_",
   autocompleteprefix: "autocomplete_",
-  currentvalue: "currentvalue"
-
+  currentvalue: "currentvalue",
 };
 
 export default defaults;

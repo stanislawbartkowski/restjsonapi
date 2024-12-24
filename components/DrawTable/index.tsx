@@ -212,7 +212,8 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     }
 
     function toPars(): OneRowData {
-        return { vars: props.vars, r: {}, t: datasource.res }
+        const multis = props.multiselect ? { multiselecttable : multichoice } : {}
+        return { vars: { ...props.vars, ...multis }, r: {}, t: datasource.res }
     }
 
     const title: ReactNode | undefined = (props.setTitle !== undefined) ? undefined : makeHeader(props, lstring("empty"), toPars())
