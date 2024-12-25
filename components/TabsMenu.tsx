@@ -22,7 +22,6 @@ function cookieName(p: MenuElem): string {
 
 export const MenuTabComponent: React.FC<MenuElem> = (props) => {
 
-    const path: string = props.id
     const e: MenuElem[] = props.tabs as MenuElem[]
 
     const akey: string | undefined = getCookie(cookieName(props))

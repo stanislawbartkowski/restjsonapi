@@ -10,7 +10,7 @@ import { FieldValue } from "../../../ts/typing"
 import { constructButtonElem } from "../../ts/constructbutton"
 import { ButtonAction, MultiChoiceButton } from "../../ts/typing"
 import { IFieldContext, FField, TMultiSelect, ErrorMessages, ErrorMessage } from "./types"
-import { findErrField } from "./helper"
+import { findErrField, getPars } from "./helper"
 
 interface IMultiChoiceButton {
     ir: IFieldContext
@@ -27,7 +27,8 @@ const FMultiChoiceButton: React.FC<IMultiChoiceButton> = ({ ir, t, err }) => {
     const mu: MultiChoiceButton = t.multichoice as MultiChoiceButton
     const r: ErrorMessage | undefined = findErrField(t.field, err)
     const errMess = (r === undefined) ? undefined : r.message
-    const bu = constructButtonElem(mu, (b: ButtonAction) => t.multiF(t))
+    const pars = getPars(ir);
+    const bu = constructButtonElem(mu, (b: ButtonAction) => t.multiF(t), pars)
     const multiChoice = (no === 0) ? bu : <Badge count={no} overflowCount={99999}>
         {bu}
     </Badge>

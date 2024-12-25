@@ -8,6 +8,8 @@ import lstring from "../../../ts/localize"
 import { constructButtonElem } from "../../ts/constructbutton"
 import { ButtonAction, UploadType } from "../../ts/typing"
 import { IFieldContext, FField } from "./types"
+import { OneRowData } from "../../../ts/typing"
+import { getPars } from "./helper"
 
 // ================
 // upload button
@@ -52,7 +54,9 @@ export function produceUploadItem(ir: IFieldContext, t: FField): ReactNode {
         ...upload.uploadprops
     };
 
-    const bu = constructButtonElem(upload, (b: ButtonAction) => { })
+    const pars: OneRowData = getPars(ir)
+
+    const bu = constructButtonElem(upload, (b: ButtonAction) => { }, pars)
 
     return <Upload {...props}>
         {bu}

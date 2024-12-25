@@ -15,6 +15,8 @@ export type PropSupportedType = {
   props?: PropsType
 }
 
+export type TBooleanField = boolean & JSSupportedType
+
 // =============================================================
 // some customizable functions
 // ==============================================================
@@ -71,6 +73,7 @@ export type ButtonElem = PropSupportedType & {
   name?: FormMessage
   choosefield?: string
   trigger?: boolean
+  hidden?: TBooleanField
 };
 
 

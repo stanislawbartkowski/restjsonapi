@@ -23,22 +23,6 @@ function toCardRow(e: TColumn, t: TDetailsCard, pars: OneRowData): ReactNode {
     </Row>
 }
 
-const tabList = [
-    {
-        key: 'tab1',
-        tab: 'tab1',
-    },
-    {
-        key: 'tab2',
-        tab: 'tab2',
-    },
-];
-
-const contentList: Record<string, React.ReactNode> = {
-    tab1: <p>content1</p>,
-    tab2: <p>content2</p>,
-};
-
 function createTabList(cardtab: TCardTab) {
     return cardtab.tabs.map(t => {
         const label = makeMessage(t.label)

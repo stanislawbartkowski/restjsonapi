@@ -34,7 +34,7 @@ const ButtonStack: React.FC<ButtonStackPars> = (props) => {
 
   const acols: TColumn[] = props.cols.filter(e => e.actions)
 
-  if (acols.length == 0) return <React.Fragment></React.Fragment>
+  if (acols.length === 0) return <React.Fragment></React.Fragment>
 
   function getListOfActions(t: TColumn): TAction[] {
     const act: TActions = getActions(t.actions as TActions, props.pars)

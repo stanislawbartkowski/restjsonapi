@@ -1,5 +1,5 @@
 import { FormListFieldData, UploadFile } from "antd"
-import { FieldValue, PropsType, VAction } from "../../../ts/typing"
+import { FieldValue, VAction } from "../../../ts/typing"
 import { FGetAutocomplete, FGetFieldsList, FGetValues, FRereadRest, TAsyncRestCall, TClickButton, TField, TOptionLine } from "../../ts/typing"
 import { TRefreshTable } from "../../DrawTable"
 

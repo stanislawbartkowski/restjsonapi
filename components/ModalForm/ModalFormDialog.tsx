@@ -1,7 +1,7 @@
 import React, { useState, useEffect, MutableRefObject, useRef, forwardRef, useImperativeHandle, ReactNode } from 'react';
 import { Card } from 'antd';
 
-import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FRereadRest, FRetAction, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TColumn, TField, TOptionLine, TPreseEnum } from '../ts/typing'
+import { ClickResult, FGetOptions, FGetValues, FOnFieldChanged, FRereadRest, FRetAction, FSetValues, PreseForms, StepsForm, TAction, TAsyncRestCall, TAutoComplete, TAutoCompleteMap, TClickButton, TField, TOptionLine, TPreseEnum } from '../ts/typing'
 import type { FGetAutocomplete, TForm } from '../ts/typing'
 import type { ButtonAction } from '../ts/typing'
 import { Status } from '../ts/typing'
@@ -10,8 +10,8 @@ import InLine from '../../ts/inline';
 import constructButton from '../ts/constructbutton';
 import ModalFormView, { FOkValidated, IRefCall } from './ModalFormView';
 import { FFieldElem, flattenTForm, okmoney, cardProps, preseT, istrue, decomposeEditId } from '../ts/helper'
-import { logG, trace } from '../../ts/l'
-import { FAction, FButtonAction, FIELDTYPE, FSetProps, FSetTitle, FieldValue, ModalFormProps, RAction, RESTMETH, RowData, TComponentProps, TRow, VAction } from '../../ts/typing'
+import { logG } from '../../ts/l'
+import { FAction, FButtonAction, FIELDTYPE, FSetProps, FSetTitle, FieldValue, ModalFormProps, OneRowData, RAction, RESTMETH, RowData, TComponentProps, TRow, VAction } from '../../ts/typing'
 import { fieldType } from '../ts/transcol';
 import lstring from '../../ts/localize';
 import ReadDefError from '../errors/ReadDefError';
@@ -68,10 +68,6 @@ type DataFormState = {
 const emptyTForm: TForm = {
     fields: [],
     buttons: []
-}
-
-function ltrace(mess: string) {
-    trace('ModalForm', mess)
 }
 
 type MModalFormProps = ModalFormProps & {
@@ -134,6 +130,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     const constructCurVals = (r?: TRow): TRow => {
         const v: TRow = getVals()
         const data: TRow = isTop ? { ...commonVars(), ...formdef.initvals, ...initvals, ...v, ...r } : { ...v, ...r }
+
         return data
     }
 
@@ -147,7 +144,6 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     const setvarsaction: VAction = (vars: TRow) => {
-        const fields: TColumn[] = createF()
         if (formdef.tabledata?.fields)
             createF().forEach(t => {
                 if (t.restlist) {
@@ -211,7 +207,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         },
         rereadRest: () => {
             rereadRestFun()
-            if (ftype == TPreseEnum.Steps && sref.current.rereadRest !== undefined) sref.current.rereadRest()
+            if (ftype === TPreseEnum.Steps && sref.current.rereadRest !== undefined) sref.current.rereadRest()
             if (props.mhooks?.rereadRest) props.mhooks.rereadRest()
         }
     }
@@ -316,7 +312,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 return [];
             const maxdispauto: number = (autodef.maxdisp !== undefined) ? autodef.maxdisp : defaults.maxdispauto;
             const rows: RowData | undefined = auto?.get(id);
-            if (rows == undefined)
+            if (rows === undefined)
                 return [];
             const n: RowData = rows.filter(r => okVal(r));
             const v: TOptionLine[] = n.slice(0, maxdispauto).map(r => {
@@ -351,8 +347,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
     const createB = (tabledata: TForm | undefined, loading: boolean | undefined) => {
         const load: boolean = createL(loading);
+        const pars: OneRowData = { r: {}, vars: constructCurVals() }
         return tabledata?.buttons ?
-            tabledata.buttons.map(e => constructButton(e, fclick, load, load && e.id === buttonclicked.current?.id)) :
+            tabledata.buttons.map(e => constructButton(e, fclick, pars, load, load && e.id === buttonclicked.current?.id)) :
             undefined
     }
 

@@ -3,6 +3,7 @@ import { makeMessage } from "../../../ts/j";
 import { TCookie, TCookieO, TField, TRadioCheckItem } from "../../ts/typing";
 import { ErrorMessages, ErrorMessage, FField, IFieldContext, TFieldsProps } from "./types";
 import { istrue } from "../../ts/helper";
+import { OneRowData } from "../../../ts/typing";
 
 export function itemName(e: TRadioCheckItem): string | undefined {
     return makeMessage(e.label, { r: {} })
@@ -34,4 +35,10 @@ export function getFieldProps(ir: IFieldContext, t: TField): TField | TField[] |
     return p[t.field] as TField
 }
 
+export function getPars(ir: IFieldContext): OneRowData {
+    return {
+        r: {},
+        vars: ir.getValues()
+    }
+}
 

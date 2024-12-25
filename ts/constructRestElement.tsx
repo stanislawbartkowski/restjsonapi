@@ -1,11 +1,10 @@
 import { ReactNode } from "react";
 
-import { MenuElem, MenuLeft, TComponentProps } from "./typing";
+import { MenuElem, TComponentProps } from "./typing";
 import RestComponent from "../components/RestComponent";
 import { createRestParam, MenuDirComponent, MenuDirElemComponent } from "../components/MenuComps";
 import { isTab } from "./leftmenu";
 import { MenuTabComponent } from "../components/TabsMenu";
-import { registerPElem } from "./headernotifier";
 
 export type FComponent = () => ReactNode
 

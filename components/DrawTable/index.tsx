@@ -120,7 +120,7 @@ function toSortCols(vcols: ColumnType<any>[], p: ColumnList): ColumnsT {
 }
 
 function toColTitle(e: ColumnT, p: ColumnList, vars?: TRow): string | undefined {
-    const c: TColumn | undefined = p.columns.find(c => c.field == e.key)
+    const c: TColumn | undefined = p.columns.find(c => c.field === e.key)
     if (c === undefined) return undefined
     const title: string = fieldTitle(c, { r: {}, vars: vars })
     return title
@@ -212,7 +212,8 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     }
 
     function toPars(): OneRowData {
-        return { vars: props.vars, r: {}, t: datasource.res }
+        const multis = props.multiselect ? { multiselecttable : multichoice } : {}
+        return { vars: { ...props.vars, ...multis }, r: {}, t: datasource.res }
     }
 
     const title: ReactNode | undefined = (props.setTitle !== undefined) ? undefined : makeHeader(props, lstring("empty"), toPars())
@@ -344,7 +345,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     }
 
     function retrieveKeys(selected: RowData | undefined) {
-        if (datasource.res.length == 0) return undefined
+        if (datasource.res.length === 0) return undefined
         if (selected === undefined) return undefined
         const k = datasource.rowkey as string
         const r: FieldValue[] = selected.map(r => r[k])
@@ -473,7 +474,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     return (
         <React.Fragment>
-            {props.header ? <HeaderTable {...props.header} vars={props.vars} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction} extendedTools={extendedTools}
+            {props.header ? <HeaderTable {...props.header} pars={toPars()} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction} extendedTools={extendedTools}
                 selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }} rereadRest={props.rereadRest as FRereadRest} closeAction={props.closeAction} /> : extendedTools}
             <Table
                 onChange={onTableChange}

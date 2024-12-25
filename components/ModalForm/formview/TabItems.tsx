@@ -13,7 +13,7 @@ import defaults from "../../../ts/defaults";
 function produceTabItem(ir: IFieldContext, p: TabItems, err: ErrorMessages, r: TRow, eFactory: elemFactory): ReactNode {
 
     const label: string = makeMessage(p.label, { r: r }) as string
-    const panelnode: ReactNode = produceBody(p.items, eFactory) as ReactNode
+    const panelnode: ReactNode = produceBody(ir, p.items, eFactory) as ReactNode
 
     return <Tabs.TabPane tab={label} key={p.key}>
         {panelnode}

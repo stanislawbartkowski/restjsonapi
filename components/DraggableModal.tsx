@@ -6,7 +6,6 @@ import { BreadCrumbAction, PropsType } from "../ts/typing";
 import { emptys } from "./ts/helper";
 import { HTMLElem } from "./ts/transcol";
 import { BNotify } from "../ts/headernotifier";
-import { log } from "../ts/l";
 
 type DraggablePros = {
     title?: string

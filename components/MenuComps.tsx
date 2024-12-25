@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 
 import { history } from "../ts/CustomRouter";
 import { internalerrorlog, log } from "../ts/l";
-import { FIsSelected, FSetTitle, MenuElem, OnRowClick, RestTableParam, TComponentProps, TRow } from "../ts/typing";
+import { FIsSelected, MenuElem, OnRowClick, RestTableParam, TComponentProps, TRow } from "../ts/typing";
 import RestComponent from "./RestComponent";
 import readlist, { DataSourceState } from "./ts/readlist";
 import { ColumnList, Status, TColumn } from "./ts/typing";

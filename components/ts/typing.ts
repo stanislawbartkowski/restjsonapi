@@ -1,7 +1,8 @@
 import type {
     PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType,
     FormMessage, PropSupportedType, RESTMETH, RowData, ListToolbar,
-    TComponentProps
+    TComponentProps,
+    TBooleanField
 } from '../../ts/typing';
 import { FFieldElem } from './helper';
 
@@ -497,7 +498,8 @@ export type TField = PropSupportedType & TFieldBase & {
     tab?: TTab
     moneydot?: string
     colwidth?: string | number
-    tooltip?: TToolTip
+    tooltip?: TToolTip,
+    hidden?: TBooleanField
 }
 
 // the whole form

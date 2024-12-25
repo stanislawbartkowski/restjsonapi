@@ -1,5 +1,5 @@
 import defaults from "../../ts/defaults"
-import { HeaderMenu, getHeaderMenu } from "../../ts/headermenu"
+import { getHeaderMenu } from "../../ts/headermenu"
 import HeaderButtonsButtons from "./HeaderButtonsButtons"
 import HeaderButtonsDown from "./HeaderButtonsDown"
 

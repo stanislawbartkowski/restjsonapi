@@ -72,8 +72,8 @@ const RestTable: React.FC<RestTableParam & ClickActionProps & { refreshno?: numb
     }, [props.listcarddef]);
 
     function calcStatus(): Status {
-        if (state.status == Status.ERROR || statecard.status == Status.ERROR) return Status.ERROR
-        if (state.status == Status.PENDING || statecard.status == Status.PENDING) return Status.PENDING
+        if (state.status === Status.ERROR || statecard.status === Status.ERROR) return Status.ERROR
+        if (state.status === Status.PENDING || statecard.status === Status.PENDING) return Status.PENDING
         return Status.READY
     }
 

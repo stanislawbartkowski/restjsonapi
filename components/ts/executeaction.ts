@@ -1,6 +1,6 @@
 import { restaction } from "../../services/api";
 import { callJSFunction, commonVars, makeMessage } from "../../ts/j";
-import { fatalexceptionerror, trace } from "../../ts/l";
+import { fatalexceptionerror } from "../../ts/l";
 import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAction } from "../../ts/typing";
 import openNotification from "../Notification";
 import { IIRefCall } from "../ModalForm/ModalFormDialog";
@@ -57,9 +57,6 @@ export function ispopupDialog(res: TAction): boolean {
     return res.list !== undefined || res.listdef !== undefined
 }
 
-function ltrace(mess: string) {
-    trace('ClickButton', mess)
-}
 
 function transformError(e: FieldError, pars: OneRowData): ErrorMessage {
     const mess: string = makeMessage(e.err, pars) as string
@@ -121,7 +118,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
         props.i.setMode(true, []);
         if (res.restaction) {
             const method: HTTPMETHOD = res.method as HTTPMETHOD
-            if (method == HTTPMETHOD.JS) {
+            if (method === HTTPMETHOD.JS) {
                 const result = callJSFunction(res.restaction as string, pars)
                 return Promise.resolve(({ data: result, response: undefined }))
             }

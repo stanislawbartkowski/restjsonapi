@@ -3,7 +3,7 @@ import { Collapse } from "antd";
 
 import { isString, makeMessage } from "../../../ts/j";
 import { TRow } from "../../../ts/typing";
-import { TCookie, TPanel } from "../../ts/typing";
+import { TPanel } from "../../ts/typing";
 import { ErrorMessages, FField, IFieldContext } from "./types";
 import { produceBody } from './FormBody';
 import { elemFactory } from "./EditItems";
@@ -22,7 +22,7 @@ function getActiveKeys(ir: IFieldContext, t: FField): string[] {
 function producePanel(ir: IFieldContext, p: TPanel, err: ErrorMessages, r: TRow, eFactory: elemFactory): React.ReactNode {
 
     const header: string | undefined = makeMessage(p.header, { r: r })
-    const panelnode: ReactNode = produceBody(p.items, eFactory)
+    const panelnode: ReactNode = produceBody(ir, p.items, eFactory)
 
     return <Collapse.Panel header={header} key={p.key} {...p.props}>{panelnode}</Collapse.Panel>
 
