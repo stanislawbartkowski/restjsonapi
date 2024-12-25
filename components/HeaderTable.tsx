@@ -78,7 +78,12 @@ const HeaderTable: React.FC<HeaderProps> = (props) => {
   const title = (props.setTitle === undefined) ? headerTitle(props, props.pars) : undefined
 
   if (props.setTitle !== undefined) {
-    const title: string | undefined = props.title !== undefined ? makeMessage(props.title, props.pars) as string : undefined
+    const pars : OneRowData = {
+      // 2024/12/25 -- ugly, but necessary for backward compatibility
+      r: {...props.pars.r, ...props.pars.vars},
+      vars: props.pars.vars
+    }
+    const title: string | undefined = props.title !== undefined ? makeMessage(props.title, pars) as string : undefined
     props.setTitle(title)
   }
 
