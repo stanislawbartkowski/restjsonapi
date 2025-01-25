@@ -329,3 +329,17 @@ export function sumnumbers(t: RowData, f: string): string {
     const s: number = t.reduce((a: number, b: TRow) => a + (b[f] ? +(b[f] as string | number) : 0), 0)
     return tomoney(s, defaults.moneydot) as string
 }
+
+// ==========================
+// combine props and styles
+// ==========================
+
+export function combineProps(p1?: PropsType, p2?: PropsType): PropsType {
+    if (p1 === undefined) return { ...p2 }
+    if (p2 === undefined) return { ...p1 }
+    const style = {
+        ...p1.style,
+        ...p2.style
+    }
+    return { ...p1, ...p2, style: style }
+}
