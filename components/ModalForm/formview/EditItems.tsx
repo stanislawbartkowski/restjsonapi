@@ -21,7 +21,7 @@ import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 import { RadioChangeEvent } from 'antd/lib';
 
 import { PropsType, FIELDTYPE, FieldValue, FieldDefaults, TRow, RowData, OneRowData } from '../../../ts/typing';
-import { decomposeEditId, emptys, getValue, isEditList, isItemGroup, istrue } from '../../ts/helper';
+import { combineProps, decomposeEditId, emptys, getValue, isEditList, isItemGroup, istrue } from '../../ts/helper';
 import { ButtonAction, TAutoCompleteMap, TField, TOptionLine, TRadioCheckItem, ValidatorType } from '../../ts/typing';
 import { IFieldContext, FField, TFieldChange } from './types';
 import { makeMessage } from '../../../ts/j';
@@ -74,15 +74,6 @@ export type elemFactory = (t: TField, e: elemFactory) => ReactNode
 
 // -------- radio
 
-function combineProps(p1?: PropsType, p2?: PropsType): PropsType {
-    if (p1 === undefined) return { ...p2 }
-    if (p2 === undefined) return { ...p1 }
-    const style = {
-        ...p1.style,
-        ...p2.style
-    }
-    return { ...p1, ...p2, style: style }
-}
 
 function createRadioItem(e: TRadioCheckItem, button?: boolean, props?: PropsType): ReactNode {
 

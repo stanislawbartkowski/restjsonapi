@@ -129,6 +129,13 @@ export type FieldError = {
     err: FormMessage
 }
 
+type IFrameProp = boolean | PropsType & {
+    width?: number,
+    height?: number,
+
+}
+
+
 // action result including error to display or notification
 export type ActionResult = {
     error?: FieldError[]
@@ -141,6 +148,7 @@ export type ActionResult = {
     refresh?: boolean
     printlink?: string
     excellink?: string
+    iframe?: IFrameProp
 }
 
 
@@ -186,7 +194,6 @@ export type TTag = PropSupportedType & {
     value: ColumnValue;
     action?: TAction
 }
-
 export type TTags = JSSupportedType & TTag[]
 
 // =============================
