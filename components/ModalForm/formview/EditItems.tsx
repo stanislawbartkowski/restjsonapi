@@ -43,6 +43,7 @@ import { createTabsPanel } from './TabItems';
 import { SearchProps } from 'antd/es/input';
 import lstring from '../../../ts/localize';
 import defaults from '../../../ts/defaults';
+import { produceRestDialog } from './DialogRestDialog';
 
 const { RangePicker } = DatePicker;
 
@@ -53,13 +54,6 @@ export type ErrorMessage = {
 
 export type ErrorMessages = ErrorMessage[]
 
-//type OkValidated = () => void
-
-//export interface IRefCall {
-//    validate: ( ok : OkValidated ) => void
-//    getValues: FGetValues
-//    refreshTable: (field: string) => void
-//}
 
 
 export function placeHolder(t: TField) {
@@ -469,6 +463,7 @@ export function produceItem(ir: IFieldContext, t: FField, err: ErrorMessages, na
     if (t.upload) return produceUploadItem(ir, t)
     if (t.restlist) return produceRestTable(ir, t);
     if (isEditList(t)) return produceEditTable(ir, t, err);
+    if (t.restdialog) return produceRestDialog(ir, t);
     if (t.button) return produceButton(ir, t, err, name)
     if (t.collapse) return createCollapsePanels(ir, t, err, eFactory as elemFactory);
     if (t.tab) return createTabsPanel(ir, t, err, eFactory as elemFactory)
