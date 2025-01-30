@@ -19,7 +19,7 @@ import { getDomain } from "../ts/url";
 //)
 const rrequest = extend({
   headers: {
-    'Accept': 'application/json,text/plain,text/html'
+    'Accept': 'application/json,text/plain,text/html,multipart/mixed'
   }
 }
 )
