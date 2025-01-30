@@ -17,12 +17,14 @@ function analyzeresponse(data: any, response: Response | undefined): [Record<str
 
     // if not multipart - data is JSON object
     if (boundary === undefined || boundary === "") return [data, undefined]
+    const boundarysep = '--' + boundary;
+    const boundaryclosing = boundarysep + "--"
     let start: boolean = true
     const result: string[] = []
     let current: number = -1
     const lines = (data as string).split('\n');
     for (let l of lines) {
-        if (l.trim() === boundary) {
+        if (l.trim() === boundarysep) {
             start = false
             current++;
             result.push("")
@@ -30,6 +32,7 @@ function analyzeresponse(data: any, response: Response | undefined): [Record<str
         }
         if (start) continue
         if (l.trim().startsWith("Content-Type")) continue
+        if (l.trim() == boundaryclosing) continue
         result[current] = result[current] + l + "\n"
     }
     if (result.length !== 2) {
