@@ -86,6 +86,7 @@ export type RESTMETH = {
   restaction?: string
   method?: HTTPMETHOD;
   upload?: boolean;
+  addvars?: TRow,
   params?: Record<string, FieldValue>;
 }
 

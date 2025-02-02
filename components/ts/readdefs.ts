@@ -33,7 +33,7 @@ export async function readvals(initval: string | RESTMETH, row: TRow, vars?: TRo
     }
     //const v = {...row, ...vars}
     // Data: 2023/10/09 -- swap, row content overwrites vars
-    const v = { ...vars, ...row }
+    const v = { ...r.addvars, ...vars, ...row }
     // Data: 2023/08/04 - is not working if {...row, ...vars} is used directly as function parameter
     // It is not clear, after recompiling it also works while used as function parameter
     // TODO: requires attention
@@ -138,7 +138,7 @@ async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[
                         value: r[rest.value] as string,
                         label: { messagedirect: getLabel(rest, r) } as FormMessage,
                         sublabel: subLabel === undefined ? undefined : { messagedirect: subLabel } as FormMessage,
-                        props: {...r.props as PropsType}
+                        props: { ...r.props as PropsType }
                     }
                 })
                 if (c.checkbox) c.checkbox = { ...tr }
