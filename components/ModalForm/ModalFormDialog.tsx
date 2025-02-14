@@ -515,6 +515,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         if (f === undefined) return
         const addV: TRow = {}
         if (newval !== undefined) addV[id] = newval
+        addV[defaults.currentfield] = id
         const v: TRow = { ...ref.current.getValues(), ...addV }
         if (f.onchange) {
             clickButton(f.onchange, v)
