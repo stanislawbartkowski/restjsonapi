@@ -1,7 +1,7 @@
 import { restaction } from "../../services/api";
 import { callJSFunction, commonVars, makeMessage } from "../../ts/j";
 import { fatalexceptionerror } from "../../ts/l";
-import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAction } from "../../ts/typing";
+import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAction, RowData } from "../../ts/typing";
 import openNotification from "../Notification";
 import { IIRefCall } from "../ModalForm/ModalFormDialog";
 import { clickAction, istrue } from "./helper";
@@ -76,7 +76,7 @@ interface IClickParams extends ClickActionProps {
 
 
 
-function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponentProps | undefined {
+function clickButton(props: IClickParams, button?: TAction, t?: TRow, tt?: RowData): TComponentProps | undefined {
 
     function download(res: TAction, t: any, presult: any) {
         const d: string | undefined = res.vars !== undefined ? res.vars[defaults.downloadname] as string : undefined
@@ -136,7 +136,7 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow): TComponen
         return;
     }
     function toPars(): OneRowData {
-        return { vars: props.vars, r: t as TRow }
+        return { vars: props.vars, r: t as TRow, t: tt }
     }
     const res: TAction = clickAction(button, toPars())
     // Data: 2024/02/10

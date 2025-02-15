@@ -114,6 +114,17 @@ async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[
             return makeMessage(f, { r: r }) as string
         }
 
+        const getOLabel = (rest: TItemsRest, r: TRow) => {
+            const f: FormMessage = rest.label
+            if (f === undefined) return ""
+            if (isString(f)) {
+                const ff: string = f as string
+                if (isnotdefined(r[ff])) return r[rest.value]
+                return r[ff]
+            }
+            return makeMessage(f, { r: r }) as string
+        }
+
         const getSubLabel = (rest: TItemsRest, r: TRow) => {
             if (rest.sublabel === undefined) return undefined
             const f: FormMessage = rest.sublabel
@@ -137,6 +148,7 @@ async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[
                     return {
                         value: r[rest.value] as string,
                         label: { messagedirect: getLabel(rest, r) } as FormMessage,
+                        olabel: getOLabel(rest, r),
                         sublabel: subLabel === undefined ? undefined : { messagedirect: subLabel } as FormMessage,
                         props: { ...r.props as PropsType }
                     }

@@ -345,6 +345,7 @@ export type TCard = {
 export type TItemsRest = RESTMETH & {
     value: string
     label: FormMessage
+    olabel: string
     sublabel?: FormMessage
     onlylabel?: boolean
 }
@@ -558,7 +559,7 @@ export enum TPreseEnum {
 
 // ===== buttons 
 
-export type TClickButton = (clickbutton?: ButtonAction, row?: TRow) => void
+export type TClickButton = (clickbutton?: ButtonAction, row?: TRow, t?: RowData) => void
 
 export type TAsyncRestCall = (h: RESTMETH, row: TRow) => Promise<TRow>
 

@@ -227,10 +227,10 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         setRestView({ visible: false })
     }
 
-    const _clickButton: TClickButton = (button?: TAction, row?: TRow) => {
+    const _clickButton: TClickButton = (button?: TAction, row?: TRow, t?: RowData) => {
         const nvars: TRow = constructCurVals(row)
         setInitVals(nvars);
-        const res: TComponentProps | undefined = executeAction({ ...props, i: iiref }, button, nvars);
+        const res: TComponentProps | undefined = executeAction({ ...props, i: iiref }, button, nvars, t);
         if (res) {
             // 2023/06/02 -- added vars clause (risky)
             // 2023/06/10 -- added res.vars to clause vars
@@ -258,12 +258,12 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
                 return _aRest(h, r);
         },
 
-        clickButton: (button?: ButtonAction, row?: TRow) => {
+        clickButton: (button?: ButtonAction, row?: TRow, t?: RowData) => {
             if (props.clickButton)
-                props.clickButton(button, row);
+                props.clickButton(button, row, t);
 
             else
-                _clickButton(button, row);
+                _clickButton(button, row, t);
         },
         getValues: () => {
             if (props.getValues)
@@ -327,8 +327,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         }
     }
 
-    const clickButton: TClickButton = (button?: ButtonAction, row?: TRow) => {
-        if (thooks.clickButton) thooks.clickButton(button, row);
+    const clickButton: TClickButton = (button?: ButtonAction, row?: TRow, t?: RowData) => {
+        if (thooks.clickButton) thooks.clickButton(button, row, t);
     }
 
 
@@ -517,8 +517,9 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
         if (newval !== undefined) addV[id] = newval
         addV[defaults.currentfield] = id
         const v: TRow = { ...ref.current.getValues(), ...addV }
+        const t: RowData | undefined = (f.radio !== undefined) ? (f.radio.items as any) as RowData : undefined
         if (f.onchange) {
-            clickButton(f.onchange, v)
+            clickButton(f.onchange, v, t)
         }
     }
 
