@@ -57,6 +57,7 @@ const embedded = {
     buttondownloadtitle: "Pobiera tabelkę w postaci xls",
     reaarangecolumnstitle: "Pozwala zmienić sposób wyświetlania",
     downloadexcelquestion: "Odczytać tabelkę w postaci pliku Excel?",
+    refreshtablequestion: "Odczytać ponownie tabelę ?",
     listasexcelfile: "Tabela jako plik Excel",
     downloadexcelbutton: "W formacie Excel",
     download: "Pobierz",
@@ -67,7 +68,8 @@ const embedded = {
     logout: "Wylogowanie",
     logoutquestion: "Na pewno chcesz się wylogować ?",
     domaintitle: "Domena",
-    rulesmaxmessage: "Pole {0} nie może być dłuższe niż {1} znaków"
+    rulesmaxmessage: "Pole {0} nie może być dłuższe niż {1} znaków",
+    refreshbuttontitle: "Odczytaj ponownie tabelę"
   },
   en: {
     empty: '',
@@ -118,6 +120,7 @@ const embedded = {
     buttondownloadtitle: "Downlaod table as xls file",
     reaarangecolumnstitle: "Reaarrange columns",
     downloadexcelquestion: "Download as Excel file?",
+    refreshtablequestion: "Reload table ?",
     listasexcelfile: "Table in Excel format",
     downloadexcelbutton: "Excel download",
     download: "Download",
@@ -128,7 +131,8 @@ const embedded = {
     logout: "Logout",
     logoutquestion: "Do you want to log out?",
     domaintitle: "Domain",
-    rulesmaxmessage: "{0} cannot exceed {1} characters"
+    rulesmaxmessage: "{0} cannot exceed {1} characters",
+    refreshbuttontitle: "Refresh table"
   }
 };
 

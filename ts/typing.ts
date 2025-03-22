@@ -220,7 +220,7 @@ export type FormMessage = JSSupportedType & {
 // defaults
 // ==========================
 
-export type ToolbarFeature = "extendedsearch" | "tablesize" | "arrangecol" | "excelfile"
+export type ToolbarFeature = "extendedsearch" | "tablesize" | "arrangecol" | "excelfile" | "refresh";
 
 export interface ListToolbar {
   resize?: TResize

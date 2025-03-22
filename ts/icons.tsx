@@ -37,7 +37,8 @@ import {
   AppstoreOutlined,
   LogoutOutlined,
   DownloadOutlined,
-  MenuFoldOutlined
+  MenuFoldOutlined,
+  ReloadOutlined
 
 } from "@ant-design/icons";
 
@@ -82,7 +83,8 @@ const map = new Map<string, ReactNode>([
   ['appstoreoutlined', <AppstoreOutlined />],
   ['logoutoutlined', <LogoutOutlined />],
   ['menufoldoutlined',<MenuFoldOutlined />],
-  ['downloadoutlined', <DownloadOutlined />]
+  ['downloadoutlined', <DownloadOutlined />],
+  ['reloadoutlined', <ReloadOutlined />]
 ]);
 
 function getIcon(id?: string, defaultid?: string): ReactNode {

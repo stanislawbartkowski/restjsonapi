@@ -42,6 +42,7 @@ import DownloadButton from "./DownloadButton";
 import { getCookieSortColumn, saveCookieSortColumn } from "./js/cookiesort";
 import { getCookieFielterColumn, saveCookieFilterColumn } from "./js/cookiefilter";
 import { log } from "../../ts/l";
+import RefreshButton from "./RefreshButton";
 
 export type TRefreshTable = {
     searchF: TRow
@@ -106,6 +107,11 @@ const isRearrangeCols = (p: ColumnList): boolean => {
 const isExcelButton = (p: ColumnList): boolean => {
     return isToolBarFeature(p, "excelfile")
 }
+
+const isRefreshButton = (p: ColumnList): boolean => {
+    return isToolBarFeature(p, "refresh")
+}
+
 
 function toSortCols(vcols: ColumnType<any>[], p: ColumnList): ColumnsT {
     const v: Set<string> = new Set<string>(vcols.map(c => c.dataIndex as string))
@@ -212,7 +218,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     }
 
     function toPars(): OneRowData {
-        const multis = props.multiselect ? { multiselecttable : multichoice } : {}
+        const multis = props.multiselect ? { multiselecttable: multichoice } : {}
         return { vars: { ...props.vars, ...multis }, r: {}, t: datasource.res }
     }
 
@@ -439,6 +445,13 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     const downloadbutton: ReactNode = isExcelButton(props) ? <DownloadButton cols={props} r_cols={arrange_columns} rows={dsource} vars={props.vars} header={makeHeaderString(props, undefined, toPars())} /> : undefined
 
+    function buttonrefreshtable() {
+        setRefreshNumber(refreshnumber + 1)
+    }
+
+
+    const refreshbutton: ReactNode = isRefreshButton(props) ? <RefreshButton refresh={buttonrefreshtable} /> : undefined
+
     const colo: ColumnsT = transformSortColumns(columns, props, arrange_columns, props.vars)
 
     const colsHook: ColumnsHook = (cols: ColumnsT) => {
@@ -451,7 +464,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
     const extendedTools: React.ReactNode = istrue(props.toolbar?.notool) || istrue(props.expanded) || (extendedSearch === undefined && resizeTable === undefined && arrangeColumns === undefined && downloadbutton === undefined) ? undefined :
         <React.Fragment>
             <Space style={{ float: "left" }} split={<Divider type="vertical" />}>
-                {downloadbutton}{arrangeColumns}{resizeTable}{extendedSearch}
+                {downloadbutton}{arrangeColumns}{refreshbutton}{resizeTable}{extendedSearch}
             </Space>
             <span style={{ float: "right" }}>{props.switchDisplay}</span>
         </React.Fragment>
