@@ -144,6 +144,10 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
     }
 
     const setvarsaction: VAction = (vars: TRow) => {
+        // Data: 2025/04/01 - aby zadziało {lista: true} w Steps
+        if (sref !== undefined && sref.current !== undefined) {
+            sref.current.setVals(vars)
+        }
         if (formdef.tabledata?.fields)
             createF().forEach(t => {
                 if (t.restlist) {
