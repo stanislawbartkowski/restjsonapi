@@ -1,4 +1,5 @@
 import { dateremoveT, dateparseS } from "../../ts/d";
+import { isnotdefined } from "../../ts/j";
 import { FIELDTYPE, TRow, RowData, FieldValue } from "../../ts/typing";
 import { FFieldElem, flattenTForm, genColIdedit, genEditClickedRowKey, getEditList, isEditList } from "./helper";
 import { fieldType } from "./transcol";
@@ -24,7 +25,7 @@ export function transformSingleValue(v: any, t: FFieldElem, from: boolean) {
     if (tt !== FIELDTYPE.DATE) return v;
     if (v === undefined) return undefined
     if (t.range) {
-        return v === undefined ? undefined : [datetransform(v[0], from), datetransform(v[1], from)]
+        return isnotdefined(v) ? undefined : [datetransform(v[0], from), datetransform(v[1], from)]
     }
     return datetransform(v, from)
 }
