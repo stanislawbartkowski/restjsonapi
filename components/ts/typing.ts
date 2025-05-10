@@ -296,7 +296,8 @@ export type ColumnList = JSSupportedType & PropSupportedType & PagingC & {
     descr?: TSummaryDescr[]
     bordered?: boolean
     sortcol?: string[]
-    modalprops?: PropsType
+    modalprops?: PropsType,
+    noheader?: boolean
 };
 
 

@@ -294,7 +294,8 @@ function isRenderable(c: TColumn): boolean {
         c.addstyle !== undefined ||
         c.fieldtype === FIELDTYPE.BOOLEAN ||
         c.fieldtype === FIELDTYPE.INT ||
-        (c.fieldtype === FIELDTYPE.MONEY)
+        c.fieldtype === FIELDTYPE.MONEY ||
+        c.fieldtype === FIELDTYPE.HTML
     );
 }
 

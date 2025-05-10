@@ -481,6 +481,9 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
         log("I was clicked");
     }
 
+    const showheader = istrue(props.noheader) ? { showHeader: false } : undefined
+
+
     const onTableChange = (pagination: TablePaginationConfig, filters: Record<string, FilterValue | null>, sorter: SorterResult<TRow> | SorterResult<TRow>[], extra: TableCurrentDataSource<TRow>) => {
         ref.current.keysChange = retrieveKeys(extra.currentDataSource)
     }
@@ -490,6 +493,7 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
             {props.header ? <HeaderTable {...props.header} pars={toPars()} setvarsaction={props.setvarsaction} refreshaction={refreshtable} r={props} fbutton={buttonAction} extendedTools={extendedTools}
                 selectedM={multichoice} setTitle={(title) => { if (!istitle && props.setTitle !== undefined) props.setTitle(title) }} rereadRest={props.rereadRest as FRereadRest} closeAction={props.closeAction} /> : extendedTools}
             <Table
+                {...showheader}
                 onChange={onTableChange}
                 {...rowSelection({ ...props })}
                 components={components}
