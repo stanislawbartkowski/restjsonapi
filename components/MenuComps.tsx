@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { useParams } from "react-router-dom";
 
-import { history } from "../ts/CustomRouter";
+import { pushBrowserPath } from "../ts/CustomRouter";
 import { internalerrorlog, log } from "../ts/l";
 import { FIsSelected, MenuElem, OnRowClick, RestTableParam, TComponentProps, TRow } from "../ts/typing";
 import RestComponent from "./RestComponent";
@@ -56,7 +56,8 @@ export const MenuDirComponent: React.FC<TComponentProps & { pathid: string }> = 
         setCookie(cName(), rid)
         const path: string = `${props.pathid}/${rid}`
         registerName(path, name)
-        history.push(path)
+        pushBrowserPath(path)
+        //history.push(path)
     }
 
     return <RestComponent {...props} visible ispage isSelected={fIs} onRowClick={onRowC}/>

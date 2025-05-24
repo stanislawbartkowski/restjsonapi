@@ -1,20 +1,22 @@
 import { restaction } from "../../services/api";
 import { callJSFunction, commonVars, makeMessage } from "../../ts/j";
-import { fatalexceptionerror } from "../../ts/l";
-import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAction, RowData } from "../../ts/typing";
+import { erralert, fatalexceptionerror } from "../../ts/l";
+import { TRow, OneRowData, HTTPMETHOD, TComponentProps, FieldValue, VAction, RAction, RowData, AppData } from "../../ts/typing";
 import openNotification from "../Notification";
 import { IIRefCall } from "../ModalForm/ModalFormDialog";
-import { clickAction, istrue } from "./helper";
+import { clickAction, emptys, istrue } from "./helper";
 import { NotificationKind, type ButtonAction, type ClickAction, type FRereadRest, type FRetAction, type FieldError, type TAction, type TNotification } from "./typing";
 import { FAction, ClickActionProps } from '../../ts/typing'
 import analyzeresponse from './anayzeresponse'
 import { setPrintContent } from './helper'
 import defaults from "../../ts/defaults";
-import { history } from '../../ts/CustomRouter'
+import { pushBrowserPath } from '../../ts/CustomRouter'
 import { ErrorMessages, ErrorMessage } from "../ModalForm/formview/types";
 import fileDownload from "js-file-download";
 import { RequestOptionsInit } from "umi-request";
 import { getRouterRoot } from "../../ts/url";
+import { dajPathNames } from "../../ts/headernotifier";
+import { getAppData } from "../../ts/readresource";
 
 export type IIButtonAction = {
     res: TAction
@@ -74,7 +76,17 @@ interface IClickParams extends ClickActionProps {
     i: IIRefCall
 }
 
-
+export function redirectLink(redirectid: string) {
+    const app: AppData = getAppData()
+    if (app.links != undefined) {
+        const path: string | undefined = app.links[redirectid]
+        if (!emptys(path)) {
+            pushBrowserPath(getRouterRoot() + path)
+            return
+        }
+    }
+    erralert(`${redirectid} - unknown redirect identifier`)
+}
 
 function clickButton(props: IClickParams, button?: TAction, t?: TRow, tt?: RowData): TComponentProps | undefined {
 
@@ -103,7 +115,11 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow, tt?: RowDa
             if (button?.print || r.print) {
                 close()
                 setPrintContent({ result: r, content: (presult as string), button: (button as ButtonAction) });
-                history.push(getRouterRoot() + defaults.displayprintrouterid);
+                //history.push(getRouterRoot() + defaults.displayprintrouterid);
+                pushBrowserPath(getRouterRoot() + defaults.displayprintrouterid)
+            }
+            if (r.redirect !== undefined) {
+                redirectLink(r.redirect)
             }
         }
         if (props.i.doAction) props.i.doAction(r)

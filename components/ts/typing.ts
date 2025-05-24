@@ -149,6 +149,7 @@ export type ActionResult = {
     printlink?: string
     excellink?: string
     iframe?: IFrameProp
+    redirect?: string
 }
 
 
@@ -399,6 +400,7 @@ export type TListItems = PropSupportedType & {
     footer?: FormMessage
     lprops?: PropsType
     vprops?: PropsType
+    linkprops?: PropsType
     iprops?: PropsType
 }
 
@@ -469,6 +471,10 @@ export type TTab = PropSupportedType & {
 
 export type TToolTip = PropSupportedType & FormMessage
 
+export type TRedirectLnk = ButtonElem & {
+    redirect: string
+}
+
 export type TField = PropSupportedType & TFieldBase & {
     items?: TField[]
     iprops?: PropsType
@@ -510,6 +516,7 @@ export type TField = PropSupportedType & TFieldBase & {
     colwidth?: string | number
     tooltip?: TToolTip,
     hidden?: TBooleanField
+    redirect?: TRedirectLnk
 }
 
 // the whole form

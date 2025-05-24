@@ -1,13 +1,15 @@
-import { List, Space } from "antd"
+import { Descriptions, List, Space } from "antd"
 import { ReactNode } from "react"
 
 import { isnotdefined, makeMessage, toS } from "../../../ts/j"
 import lstring from "../../../ts/localize"
-import { TRow, FIELDTYPE, FieldValue } from "../../../ts/typing"
+import { TRow, FIELDTYPE, FieldValue, ButtonElem, FButtonAction, FormMessage } from "../../../ts/typing"
 import { fieldType, fieldTitle } from "../../ts/transcol"
-import { TListItems, TRadioCheckItem } from "../../ts/typing"
+import { ButtonAction, TListItems, TRadioCheckItem } from "../../ts/typing"
 import { itemName } from "./helper"
 import { IFieldContext, FField, ErrorMessages } from "./types"
+import { constructButtonElem } from "../../ts/constructbutton"
+import { redirectLink } from "../../ts/executeaction"
 
 // -------------------------------
 // data as display list
@@ -30,6 +32,13 @@ function transformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, l
         return item ? itemName(item) as string : value as string
     }
 
+    function genButton(): ReactNode {
+        const action: FButtonAction = () => {
+            redirectLink(t.redirect?.redirect as string)
+        }
+        return constructButtonElem(t.redirect as ButtonElem, action, { r: {} })
+    }
+
     if (!isnot) {
         if (t.radio) {
             const i: TRadioCheckItem[] = t.radio.items as TRadioCheckItem[]
@@ -45,11 +54,13 @@ function transformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, l
                     "")
             }
         }
-
     }
 
+    const rnode = t.redirect !== undefined ? <Space  {...li.vprops}>{title}</Space> : undefined
 
-    return <List.Item {...li.iprops}><Space {...li.lprops}>{title}</Space><Space {...li.vprops}> {values}</Space></List.Item>
+    const actionlink = t.redirect !== undefined ? <Space {...li.linkprops}>{genButton()}</Space> : undefined
+
+    return <List.Item {...li.iprops}><Space  {...li.lprops}>{rnode}</Space><Space {...li.vprops}> {values}</Space>{actionlink}</List.Item>
 }
 
 export function createItemList(ir: IFieldContext, t: FField, err: ErrorMessages): ReactNode {

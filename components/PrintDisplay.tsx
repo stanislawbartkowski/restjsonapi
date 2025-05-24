@@ -2,10 +2,9 @@ import React, { ReactNode } from 'react';
 import { Button, Card } from 'antd'
 
 import { combineProps, getPrintContent, PrintResult } from './ts/helper'
-import { getPrevious } from '../ts/CustomRouter'
+import { backBrowserPath, getPrevious } from '../ts/CustomRouter'
 import { getMenuNameByLocation } from '../ts/layoutmenu';
 import getIcon from '../ts/icons'
-import { history } from '../ts/CustomRouter';
 import { enhanceLink } from '../services/api';
 import lstring from '../ts/localize';
 import { PropsType } from '../ts/typing';
@@ -55,7 +54,7 @@ const PrintDisplay: React.FC = (props) => {
     const excellink: ReactNode | undefined = p.result.excellink ? <Button type="link" icon={excel}><a href={enhanceLink(p.result.excellink)} target="_blank">{lstring("downloadexcelbutton")}</a></Button> : undefined
 
 
-    const extra = <React.Fragment>{excellink} {link}  <Button type="primary" icon={back} onClick={() => history.back()} />  </React.Fragment>
+    const extra = <React.Fragment>{excellink} {link}  <Button type="primary" icon={back} onClick={() => backBrowserPath()} />  </React.Fragment>
 
     return <Card title={name} extra={extra}  >
         {body}
