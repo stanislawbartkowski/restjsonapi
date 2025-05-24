@@ -6,7 +6,19 @@ import { log } from "./l";
 import { pathNotify } from "./headernotifier";
 
 
-export const history = createBrowserHistory();
+const history = createBrowserHistory();
+
+export function getBrowserHistory() {
+  return history
+}
+
+export function pushBrowserPath(path) {
+  history.push(path)
+}
+
+export function backBrowserPath() {
+  history.back()
+}
 
 let previous = "";
 let current = "";
@@ -27,8 +39,8 @@ const CustomRouter = ({ basename, children, history }) => {
   const [state, setState] = React.useState({
     action: history.action,
     location: history.location,
-  }); 
-  
+  });
+
   if (state.location.pathname !== current) {
     previous = current;
     current = state.location.pathname;

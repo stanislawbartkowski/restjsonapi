@@ -279,5 +279,6 @@ export interface AppData {
   getcacheexclude: string[]
   welcome?: RestTableParam
   notbreadcrumb?: boolean
+  links?: Record<string,string>
 }
 
