@@ -56,7 +56,7 @@ function transformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, l
         }
     }
 
-    const rnode = t.redirect !== undefined ? <Space  {...li.vprops}>{title}</Space> : undefined
+    const rnode = <Space  {...li.vprops}>{title}</Space>
 
     const actionlink = t.redirect !== undefined ? <Space {...li.linkprops}>{genButton()}</Space> : undefined
 
