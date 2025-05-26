@@ -1,11 +1,11 @@
-import { Descriptions, List, Space } from "antd"
+import { List, Space, Tooltip } from "antd"
 import { ReactNode } from "react"
 
 import { isnotdefined, makeMessage, toS } from "../../../ts/j"
 import lstring from "../../../ts/localize"
-import { TRow, FIELDTYPE, FieldValue, ButtonElem, FButtonAction, FormMessage } from "../../../ts/typing"
+import { TRow, FIELDTYPE, FieldValue, ButtonElem, FButtonAction, PropsType, OneRowData } from "../../../ts/typing"
 import { fieldType, fieldTitle } from "../../ts/transcol"
-import { ButtonAction, TListItems, TRadioCheckItem } from "../../ts/typing"
+import { TListItems, TRadioCheckItem } from "../../ts/typing"
 import { itemName } from "./helper"
 import { IFieldContext, FField, ErrorMessages } from "./types"
 import { constructButtonElem } from "../../ts/constructbutton"
@@ -32,11 +32,13 @@ function transformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, l
         return item ? itemName(item) as string : value as string
     }
 
+    const rr: OneRowData = { r: {} }
+
     function genButton(): ReactNode {
         const action: FButtonAction = () => {
             redirectLink(t.redirect?.redirect as string)
         }
-        return constructButtonElem(t.redirect as ButtonElem, action, { r: {} })
+        return constructButtonElem(t.redirect as ButtonElem, action, rr)
     }
 
     if (!isnot) {
@@ -56,9 +58,19 @@ function transformToListItem(ir: IFieldContext, t: FField, err: ErrorMessages, l
         }
     }
 
-    const rnode = <Space  {...li.vprops}>{title}</Space>
+    let tooltiptitle: string | undefined = undefined
+    let tooltipprops: PropsType | undefined = undefined
+    if (t.tooltip !== undefined) {
+        tooltipprops = t.tooltip.props
+        tooltiptitle = makeMessage(t.tooltip, rr)
+    }
+
+    const rtitle = <Space  {...li.vprops}>{title}</Space>
+
+    const rnode = tooltiptitle === undefined ? rtitle : <Tooltip {...tooltipprops} fresh destroyTooltipOnHide title={tooltiptitle}>{rtitle}</Tooltip>
 
     const actionlink = t.redirect !== undefined ? <Space {...li.linkprops}>{genButton()}</Space> : undefined
+
 
     return <List.Item {...li.iprops}><Space  {...li.lprops}>{rnode}</Space><Space {...li.vprops}> {values}</Space>{actionlink}</List.Item>
 }
