@@ -56,7 +56,7 @@ async function resolveRest(tl: TField[], row: TRow, vars: TRow): Promise<TField[
 
         const tr: TRadioCheck | undefined = c.checkbox ? c.checkbox : c.radio ? c.radio : undefined
         if (c.dynamiccollapse) {
-            const data = await readvalsdata(c.dynamiccollapse, {})
+            const data = await readvalsdata(c.dynamiccollapse, row, vars)
             const headers: TPanelHeader[] = data.res
             c.collapse = headers.map(h => {
                 const he: TPanelHeader = { ...h }
