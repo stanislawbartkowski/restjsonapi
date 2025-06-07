@@ -2,7 +2,7 @@ import React, { CSSProperties } from "react";
 
 import { callJSFunction, isNumericString, isObject, isString, isnotdefined, makeMessage } from "../../ts/j";
 import { FieldValue, OneRowData, PropsType, RowData, TBooleanField, TRow } from "../../ts/typing";
-import { ActionResult, ButtonAction, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColumn, TColumns, TField, TForm, TPreseEnum } from "./typing";
+import { ActionResult, ButtonAction, ColumnList, ColumnValue, PreseForms, ShowDetails, StepsForm, TAction, TCard, TColSortType, TColumn, TColumns, TField, TForm, TPreseEnum } from "./typing";
 import defaults from "../../ts/defaults";
 import { HTMLElem } from "./transcol";
 
@@ -342,4 +342,11 @@ export function combineProps(p1?: PropsType, p2?: PropsType): PropsType {
         ...p2.style
     }
     return { ...p1, ...p2, style: style }
+}
+
+// ===============
+
+export function dajTList(t: TColSortType): string[] {
+    if (isString(t)) return [t as string]
+    return t as string[]
 }

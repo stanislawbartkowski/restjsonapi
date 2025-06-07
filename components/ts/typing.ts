@@ -245,6 +245,7 @@ export interface IColumnFilter {
 
 export type TResizeColumn = (c: TColumn, newwidth: number) => void
 
+export type TColSortType = string|string[]
 
 export type TColumn = TFieldBase & PropSupportedType & {
     showdetails?: ShowDetails | boolean;
@@ -263,7 +264,7 @@ export type TColumn = TFieldBase & PropSupportedType & {
     width?: string | number
     moneydot?: string
     moneydotcol?: string,
-    coltosort?: string
+    coltosort?: TColSortType
 };
 
 // ===============================
@@ -496,7 +497,7 @@ export type TField = PropSupportedType & TFieldBase & {
     upload?: UploadType
     multichoice?: MultiChoiceButton
     restlist?: FieldRestList
-    restdialog?: FieldRestList    
+    restdialog?: FieldRestList
     toupper?: boolean
     tolower?: boolean
     actions?: TActions

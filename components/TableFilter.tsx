@@ -3,17 +3,18 @@ import { Button, DatePicker, Input, InputNumber, Space } from "antd";
 import dayjs from 'dayjs';
 import { FilterConfirmProps, FilterDropdownProps } from "antd/lib/table/interface";
 
-import type { IColumnFilter, TColumn } from './ts/typing'
+import type { IColumnFilter, TColSortType, TColumn } from './ts/typing'
 import { FIELDTYPE } from '../ts/typing'
 import lstring from '../ts/localize'
 import defaults from '../ts/defaults'
 import { datetoS, dateparseS } from '../ts/d'
-import type { TRow } from '../ts/typing'
+import type { FieldValue, TRow } from '../ts/typing'
 import { Key, ReactNode } from "react";
 import { internalerrorlog } from "../ts/l";
 import { fieldType } from "./ts/transcol";
 import { toS } from "../ts/j";
 import { valueType } from "antd/es/statistic/utils";
+import { dajTList } from "./ts/helper";
 
 // ========================
 // filter/search
@@ -29,33 +30,49 @@ export type ColumnFilterSearch = {
 
 
 
-function eqString(row: TRow, field: string, filter: string): boolean {
+function eqString(row: TRow, field: string, ffilter: FieldValue): boolean {
+  const filter: string = ffilter as string
   if (row === undefined || row[field] === undefined || row[field] === null) return false
   const f: string = toS(row[field])
   return f.toString().toUpperCase().indexOf(filter.toUpperCase()) !== -1;
 }
 
-function eqNumber(row: TRow, field: string, filter: string): boolean {
+function eqNumber(row: TRow, field: string, ffilter: FieldValue): boolean {
+  const filter: string = ffilter as string
   if (row === undefined || row[field] === undefined || row[field] === null) return false
   const fieldnum: number = +(row[field] as string | number)
   const res: boolean = fieldnum === +filter
   return res
 }
 
-function eqBoolean(row: TRow, field: string, filter: boolean): boolean {
+function eqBoolean(row: TRow, field: string, ffilter: FieldValue): boolean {
+  const filter: boolean = ffilter as boolean
   if (row === undefined || row[field] === undefined || row[field] === null) return false
   const fieldbool: boolean = (row[field] as boolean)
   return fieldbool === filter
 }
 
+type TCompare = (record: TRow, col: string, value: FieldValue) => boolean
+
+function eqProc(record: TRow, col: TColSortType, value: FieldValue, proc: TCompare): boolean {
+
+  const sortcols: string[] = dajTList(col)
+
+  for (let col of sortcols) {
+    if (proc(record, col, value)) return true
+  }
+  return false
+
+}
 
 export type FFilter = (value: Key | boolean, record: TRow) => boolean
 
-export function constructTableFilter(c: TColumn): FFilter {
+/*
+export function REMOVEconstructTableFilter(c: TColumn): FFilter {
 
   const t: FIELDTYPE = fieldType(c);
 
-  const filtercol: string = c.coltosort === undefined ? c.field : c.coltosort
+  const filtercol: TColSortType = c.coltosort === undefined ? c.field : c.coltosort
 
   switch (t) {
     case FIELDTYPE.NUMBER:
@@ -67,6 +84,29 @@ export function constructTableFilter(c: TColumn): FFilter {
       return (value: Key | boolean, record: TRow) => eqString(record, filtercol, value as string);
     case FIELDTYPE.BOOLEAN:
       return (value: Key | boolean, record: TRow) => eqBoolean(record, filtercol, value as boolean);
+    default:
+      internalerrorlog(`No filter function supported for this type: ${t} !`)
+      return (value: Key | boolean, record: TRow) => true;
+  }
+}
+*/
+
+export function constructTableFilter(c: TColumn): FFilter {
+
+  const t: FIELDTYPE = fieldType(c);
+
+  const filtercol: TColSortType = c.coltosort === undefined ? c.field : c.coltosort
+
+  switch (t) {
+    case FIELDTYPE.NUMBER:
+    case FIELDTYPE.INT:
+    case FIELDTYPE.MONEY: return (value: Key | boolean, record: TRow) => eqProc(record, filtercol, value as string, eqNumber);
+    case FIELDTYPE.STRING:
+    case FIELDTYPE.DATE:
+    case FIELDTYPE.TIME:
+      return (value: Key | boolean, record: TRow) => eqProc(record, filtercol, value as string, eqString);
+    case FIELDTYPE.BOOLEAN:
+      return (value: Key | boolean, record: TRow) => eqProc(record, filtercol, value as boolean, eqBoolean);
     default:
       internalerrorlog(`No filter function supported for this type: ${t} !`)
       return (value: Key | boolean, record: TRow) => true;

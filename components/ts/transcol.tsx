@@ -7,7 +7,7 @@ import { CSSProperties, ReactElement } from "react";
 
 import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
-import { AddStyle, ButtonAction, ColumnList, ColumnSortType, ColumnValue, IColumnFilter, IColumnSort, StatisticType, TableHookParam, TAction, TActions, TBadge, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
+import { AddStyle, ButtonAction, ColumnList, ColumnSortType, ColumnValue, IColumnFilter, IColumnSort, StatisticType, TableHookParam, TAction, TActions, TBadge, TColSortType, TColumn, TDivider, TFieldBase, TResizeColumn, TTag, TTags } from "./typing";
 import TableFilterProps, { ColumnFilterSearch } from "../TableFilter";
 import { clickAction, getValue, getafterdot, istrue, stoint, tomoney, } from "./helper";
 import { callJSFunction, isNumber, isnotdefined, makeMessage } from "../../ts/j";
@@ -47,7 +47,7 @@ function sortfilter(c: TColumn): boolean {
     if (c.actions) {
         return istrue(c.actions.showindetails)
     }
-    if (c.tags) return false;
+    if (c.tags && c.coltosort === undefined) return false; 
     return true;
 }
 
@@ -311,7 +311,7 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
     modifyColProps(c, p);
     if (sort(c, cols)) {
         if (c.props === undefined) c.props = {};
-        const sortfield: string = c.coltosort === undefined ? c.field : c.coltosort
+        const sortfield: TColSortType = c.coltosort === undefined ? c.field : c.coltosort
         switch (fieldtype) {
             case FIELDTYPE.NUMBER:
             case FIELDTYPE.MONEY:

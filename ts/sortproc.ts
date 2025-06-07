@@ -1,3 +1,5 @@
+import { dajTList } from "../components/ts/helper";
+import { TColSortType } from "../components/ts/typing";
 import { isString, isnotdefined } from "./j";
 import { warn } from "./l";
 import { TRow } from "./typing";
@@ -8,6 +10,59 @@ function toS(a: string): string {
     return a.toString()
 }
 
+type FCompare = (a: TRow, b: TRow, field: string) => number
+
+function fsortinc(a: TRow, b: TRow, field: string): number {
+    const fielda: string | undefined = a[field] as string | undefined;
+    if (isnotdefined(fielda)) return 1;
+    const fieldb: string = b[field] as string;
+    if (isnotdefined(fieldb)) return -1;
+    const fieldas: string = toS(fielda as string)
+    const fieldbs: string = toS(fieldb as string)
+    return (fieldas as string).localeCompare(fieldbs);
+}
+
+function fsortnumberinc(a: TRow, b: TRow, field: string): number {
+    const fielda: number | undefined = a[field] as number | undefined;
+    if (isnotdefined(fielda)) return 1;
+    const fieldb: number = b[field] as number;
+    if (isnotdefined(fieldb)) return -1;
+    return (fielda as number) - fieldb;
+}
+
+function fsortboolinc(a: TRow, b: TRow, field: string): number {
+    const fielda: boolean | undefined = a[field] as boolean | undefined;
+    if (isnotdefined(fielda)) return 1;
+    const fieldb: boolean = b[field] as boolean;
+    if (isnotdefined(fieldb)) return -1;
+    if (fielda && fieldb) return 0;
+    if (fielda) return 1;
+    return -1;
+}
+
+
+function compareProc(a: TRow, b: TRow, field: TColSortType, compare: FCompare): number {
+    const fields: string[] = dajTList(field)
+
+    for (let field of fields) {
+        const res = compare(a, b, field)
+        if (res != 0) return res
+    }
+    return 0
+}
+
+export function sortinc(a: TRow, b: TRow, field: TColSortType): number {
+    return compareProc(a, b, field, fsortinc)
+}
+
+export function sortnumberinc(a: TRow, b: TRow, field: TColSortType): number {
+    return compareProc(a, b, field, fsortnumberinc)
+}
+
+export function sortboolinc(a: TRow, b: TRow, field: TColSortType): number {
+    return compareProc(a, b, field, fsortboolinc)
+}
+/*
 export function sortinc(a: TRow, b: TRow, field: string): number {
     const fielda: string | undefined = a[field] as string | undefined;
     if (isnotdefined(fielda)) return 1;
@@ -35,3 +90,5 @@ export function sortboolinc(a: TRow, b: TRow, field: string): number {
     if (fielda) return 1;
     return -1;
 }
+*/
+
