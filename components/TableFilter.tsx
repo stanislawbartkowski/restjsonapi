@@ -12,9 +12,9 @@ import type { FieldValue, TRow } from '../ts/typing'
 import { Key, ReactNode } from "react";
 import { internalerrorlog } from "../ts/l";
 import { fieldType } from "./ts/transcol";
-import { toS } from "../ts/j";
+import { getFieldValue, toS } from "../ts/j";
 import { valueType } from "antd/es/statistic/utils";
-import { dajTList } from "./ts/helper";
+import { dajTList, emptys } from "./ts/helper";
 
 // ========================
 // filter/search
@@ -32,23 +32,29 @@ export type ColumnFilterSearch = {
 
 function eqString(row: TRow, field: string, ffilter: FieldValue): boolean {
   const filter: string = ffilter as string
-  if (row === undefined || row[field] === undefined || row[field] === null) return false
-  const f: string = toS(row[field])
+  //if (row === undefined || row[field] === undefined || row[field] === null) return false
+  const value: string = getFieldValue(row, field) as string
+  if (emptys(value)) return false
+  const f: string = toS(value)
   return f.toString().toUpperCase().indexOf(filter.toUpperCase()) !== -1;
 }
 
 function eqNumber(row: TRow, field: string, ffilter: FieldValue): boolean {
   const filter: string = ffilter as string
-  if (row === undefined || row[field] === undefined || row[field] === null) return false
-  const fieldnum: number = +(row[field] as string | number)
+  //if (row === undefined || row[field] === undefined || row[field] === null) return false
+  const value: string = getFieldValue(row, field) as string
+  if (emptys(value)) return false
+  const fieldnum: number = +value
   const res: boolean = fieldnum === +filter
   return res
 }
 
 function eqBoolean(row: TRow, field: string, ffilter: FieldValue): boolean {
   const filter: boolean = ffilter as boolean
-  if (row === undefined || row[field] === undefined || row[field] === null) return false
-  const fieldbool: boolean = (row[field] as boolean)
+  //  if (row === undefined || row[field] === undefined || row[field] === null) return false
+  const value: string = getFieldValue(row, field) as string
+  if (emptys(value)) return false
+  const fieldbool: boolean = ((value as any) as boolean)
   return fieldbool === filter
 }
 

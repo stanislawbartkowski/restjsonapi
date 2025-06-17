@@ -1,6 +1,6 @@
 import { dajTList } from "../components/ts/helper";
 import { TColSortType } from "../components/ts/typing";
-import { isString, isnotdefined } from "./j";
+import { getFieldValue, isString, isnotdefined } from "./j";
 import { warn } from "./l";
 import { TRow } from "./typing";
 
@@ -12,10 +12,11 @@ function toS(a: string): string {
 
 type FCompare = (a: TRow, b: TRow, field: string) => number
 
+
 function fsortinc(a: TRow, b: TRow, field: string): number {
-    const fielda: string | undefined = a[field] as string | undefined;
+    const fielda: string | undefined = getFieldValue(a, field) as string | undefined;
     if (isnotdefined(fielda)) return 1;
-    const fieldb: string = b[field] as string;
+    const fieldb: string = getFieldValue(b, field) as string;
     if (isnotdefined(fieldb)) return -1;
     const fieldas: string = toS(fielda as string)
     const fieldbs: string = toS(fieldb as string)
@@ -23,17 +24,17 @@ function fsortinc(a: TRow, b: TRow, field: string): number {
 }
 
 function fsortnumberinc(a: TRow, b: TRow, field: string): number {
-    const fielda: number | undefined = a[field] as number | undefined;
+    const fielda: number | undefined = getFieldValue(a, field) as number | undefined;
     if (isnotdefined(fielda)) return 1;
-    const fieldb: number = b[field] as number;
+    const fieldb: number = getFieldValue(b, field) as number;
     if (isnotdefined(fieldb)) return -1;
     return (fielda as number) - fieldb;
 }
 
 function fsortboolinc(a: TRow, b: TRow, field: string): number {
-    const fielda: boolean | undefined = a[field] as boolean | undefined;
+    const fielda: boolean | undefined = getFieldValue(a, field) as boolean | undefined;
     if (isnotdefined(fielda)) return 1;
-    const fieldb: boolean = b[field] as boolean;
+    const fieldb: boolean = getFieldValue(b, field) as boolean;
     if (isnotdefined(fieldb)) return -1;
     if (fielda && fieldb) return 0;
     if (fielda) return 1;
@@ -64,9 +65,9 @@ export function sortboolinc(a: TRow, b: TRow, field: TColSortType): number {
 }
 /*
 export function sortinc(a: TRow, b: TRow, field: string): number {
-    const fielda: string | undefined = a[field] as string | undefined;
+    const fielda: string | undefined = getValue(a,field) as string | undefined;
     if (isnotdefined(fielda)) return 1;
-    const fieldb: string = b[field] as string;
+    const fieldb: string = getValue(b,field) as string;
     if (isnotdefined(fieldb)) return -1;
     const fieldas: string = toS(fielda as string)
     const fieldbs: string = toS(fieldb as string)
@@ -74,17 +75,17 @@ export function sortinc(a: TRow, b: TRow, field: string): number {
 }
 
 export function sortnumberinc(a: TRow, b: TRow, field: string): number {
-    const fielda: number | undefined = a[field] as number | undefined;
+    const fielda: number | undefined = getValue(a,field) as number | undefined;
     if (isnotdefined(fielda)) return 1;
-    const fieldb: number = b[field] as number;
+    const fieldb: number = getValue(b,field) as number;
     if (isnotdefined(fieldb)) return -1;
     return (fielda as number) - fieldb;
 }
 
 export function sortboolinc(a: TRow, b: TRow, field: string): number {
-    const fielda: boolean | undefined = a[field] as boolean | undefined;
+    const fielda: boolean | undefined = getValue(a,field) as boolean | undefined;
     if (isnotdefined(fielda)) return 1;
-    const fieldb: boolean = b[field] as boolean;
+    const fieldb: boolean = getValue(b,field) as boolean;
     if (isnotdefined(fieldb)) return -1;
     if (fielda && fieldb) return 0;
     if (fielda) return 1;

@@ -262,3 +262,16 @@ export function removeDomain(id: string): string {
   const r: string = getRouterRoot()
   return id.substring(r.length)
 }
+
+// ==================
+export function getFieldValue(r: TRow, field: string): FieldValue | undefined {
+
+    if (r == undefined || field === undefined) return undefined
+    const i: number = field.indexOf('.')
+    if (i === -1) return r[field]
+    const zmie: string = field.slice(0, i)
+    const fie: string = field.slice(i + 1)
+    const o: TRow = (r[zmie] as any) as TRow
+    if (o === undefined || !isObject(o)) return undefined
+    return o[fie]
+}
