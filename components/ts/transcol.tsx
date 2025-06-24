@@ -47,7 +47,7 @@ function sortfilter(c: TColumn): boolean {
     if (c.actions) {
         return istrue(c.actions.showindetails)
     }
-    if (c.tags && c.coltosort === undefined) return false; 
+    if (c.tags && c.coltosort === undefined) return false;
     return true;
 }
 
@@ -201,7 +201,7 @@ function moneydot(c: TColumn, props: OneRowData): number {
     }
     if (c.moneydotcol !== undefined) {
         const afterdot: number | undefined = (props.r[c.moneydotcol] as number)
-        if (afterdot !== undefined) return afterdot
+        if (!isnotdefined(afterdot)) return afterdot
     }
     return defaults.moneydot
 }

@@ -4,6 +4,7 @@
 
 import { dateNormalizeS } from "../../ts/d"
 import defaults from "../../ts/defaults"
+import { isnotdefined } from "../../ts/j"
 import { FIELDTYPE, TRow, FieldValue, OneRowData, RowData } from "../../ts/typing"
 import { getValue, getafterdot, tomoney } from "./helper"
 import { fieldType, getVal } from "./transcol"
@@ -23,7 +24,7 @@ function moneydot(c: TColumn, props: OneRowData): number {
     }
     if (c.moneydotcol !== undefined) {
         const afterdot: number | undefined = (props.r[c.moneydotcol] as number)
-        if (afterdot !== undefined) return afterdot
+        if (!isnotdefined(afterdot)) return afterdot
     }
     return defaults.moneydot
 }
