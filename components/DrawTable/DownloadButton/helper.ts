@@ -52,10 +52,31 @@ function createSchema(cols: ColumnList, r_cols?: ColumnsT, vars?: TRow): SchemaE
 
 }
 
+function cloneRow(cols: ColumnList, srow: TRow): TRow {
+    const drow: TRow = { ...srow }
+
+    for (var c of cols.columns) {
+        if (c.actions && c.coltosort) {
+            drow[c.field] = srow[c.coltosort as string]
+        }
+    }
+
+    return drow
+}
+
+function regenerateRows(cols: ColumnList, rows: RowData): RowData {
+    const outr: RowData = []
+    for (let i = 0; i < rows.length; i++) {
+        const row: TRow = cloneRow(cols, rows[i])
+        outr.push(row)
+    }
+    return outr
+}
+
 export function generateExcelData(cols: ColumnList, rows: RowData, r_cols?: ColumnsT, vars?: TRow): ExcelData {
     return {
         schema: createSchema(cols, r_cols, vars),
-        list: rows,
+        list: regenerateRows(cols, rows),
         params: {
             withheader: true
         }
