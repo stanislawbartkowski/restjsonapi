@@ -178,12 +178,17 @@ export type TAction = ClickAction & FormMessage & PropsType & {
     noaction?: boolean
 }
 
+type PopoverAction = PropsType & {
+    message: FormMessage
+}
+
 // list actions e.g. action columne
 export type TActions = JSSupportedType & PropSupportedType & {
     dropdown?: boolean
     actions?: TAction[]
     dprops?: PropsType
     showindetails?: boolean
+    popover?: PopoverAction
 }
 
 

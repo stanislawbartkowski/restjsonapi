@@ -36,6 +36,7 @@ interface Defaults {
   settabprefix: string,
   autocompleteprefix: string,
   currentvalue: string,
+  defaultactions: string
 };
 
 const defaults: Defaults = {
@@ -76,6 +77,7 @@ const defaults: Defaults = {
   settabprefix: "set_",
   autocompleteprefix: "autocomplete_",
   currentvalue: "currentvalue",
+  defaultactions : "actions"
 };
 
 export default defaults;

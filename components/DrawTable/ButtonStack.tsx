@@ -6,8 +6,9 @@ import { extractActionHook, getActions, IActionHook } from "../ts/transcol"
 import { TableHookParam, TAction, TActions, TColumn, TColumns } from "../ts/typing"
 import { blue, cyan, green, yellow, gold, purple } from '@ant-design/colors';
 import { emptys } from "../ts/helper"
+import { toButton } from "../ts/stackButtons"
 
-function toButton(i: number, t: TAction, r: TableHookParam, pars: OneRowData) {
+function remove_toButton(i: number, t: TAction, r: TableHookParam, pars: OneRowData) {
 
   const h: IActionHook = extractActionHook(t, r, pars)
 

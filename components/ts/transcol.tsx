@@ -1,9 +1,8 @@
 import { ColumnType, ColumnsType } from "antd/lib/table";
 import { GetComponentProps } from 'rc-table/lib/interface'
 import React, { ReactNode } from "react";
-import { Badge, Button, Divider, Dropdown, MenuProps, Space, Statistic, Switch, Tag } from "antd";
+import { Badge, Button, Divider, Dropdown, MenuProps, Popover, Space, Statistic, Switch, Tag, Typography } from "antd";
 import { CSSProperties, ReactElement } from "react";
-//import { ItemType } from "antd/lib/menu/hooks/useItems";
 
 import lstring from "../../ts/localize";
 import { FIELDTYPE, FieldValue, FormMessage, OneRowData, PropsType, TRow } from "../../ts/typing";
@@ -15,6 +14,9 @@ import defaults from "../../ts/defaults";
 import getIcon from '../../ts/icons'
 import constructButton from "./constructbutton";
 import { sortboolinc, sortinc, sortnumberinc } from "../../ts/sortproc";
+import { toButton } from "./stackButtons";
+
+const { Text } = Typography;
 
 
 // =====================
@@ -115,6 +117,11 @@ export function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRow
     const actions: TAction[] = act.actions as TAction[]
     if (actions.length === 0) return undefined
 
+    const spacecontent = <Space size="middle">{actions.map((t) => constructAction(numb++, t, r, pars))}</Space>
+    
+    let i = 0
+    const stackButtons = <Space.Compact direction="vertical">{actions.map(e => toButton(i++, e, r, pars))}</Space.Compact>
+
     if (act.dropdown) {
         const items: MenuProps['items'] = actions.map(e => constructMenuAction(numb++, e, r, pars))
         return (
@@ -123,9 +130,19 @@ export function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRow
             </Dropdown>
         )
     }
-    return (
-        <Space size="middle">{actions.map((t) => constructAction(numb++, t, r, pars))}</Space>
-    );
+    if (act.popover) {
+        const mess = (act.popover?.message !== undefined) ? act.popover?.message : defaults.defaultactions
+        const text: string | undefined = makeMessage(act.popover?.message, pars)
+        return (
+            <Popover content={stackButtons}>
+                <Text {...act.popover.props} >
+                    {text}
+                </Text>
+
+            </Popover>
+        )
+    }
+    return spacecontent
 }
 
 
