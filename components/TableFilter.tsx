@@ -12,7 +12,7 @@ import type { FieldValue, TRow } from '../ts/typing'
 import { Key, ReactNode } from "react";
 import { internalerrorlog } from "../ts/l";
 import { fieldType } from "./ts/transcol";
-import { getFieldValue, toS } from "../ts/j";
+import { getFieldValue, isnotdefined, isNumber, toS } from "../ts/j";
 import { valueType } from "antd/es/statistic/utils";
 import { dajTList, emptys } from "./ts/helper";
 
@@ -41,10 +41,16 @@ function eqString(row: TRow, field: string, ffilter: FieldValue): boolean {
 
 function eqNumber(row: TRow, field: string, ffilter: FieldValue): boolean {
   const filter: string = ffilter as string
-  //if (row === undefined || row[field] === undefined || row[field] === null) return false
-  const value: string = getFieldValue(row, field) as string
-  if (emptys(value)) return false
-  const fieldnum: number = +value
+  const value: FieldValue = getFieldValue(row, field)
+  let fieldnum: number | undefined = undefined
+  if (isNumber(value)) {
+    if (isnotdefined(value)) return false
+    fieldnum = value as number
+  }
+  else {
+    if (emptys(value as string)) return false
+    fieldnum = + (value as string)
+  }
   const res: boolean = fieldnum === +filter
   return res
 }
