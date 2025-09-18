@@ -135,6 +135,20 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         return transformValuesFrom(r, props.list, props.initvals)
     }
 
+    function frefreshTable(field: string, searchD: TRefreshTable | undefined) {
+
+        const ntableR: TableRefresh = copyMap(tableR)
+        const tableRE: TableRefreshData | undefined = ntableR.get(field)
+        // 2023/11/08 start with refreshno=1 (not 0)
+        const refreshno = istrue(searchD?.notwaitrefresh) ? tableRE?.refreshno : tableRE === undefined || tableRE.refreshno === undefined ? 1 : tableRE.refreshno + 1
+        const newTableRE: TableRefreshData = {
+            searchR: searchD,
+            refreshno: refreshno
+        }
+        ntableR.set(field, newTableRE)
+        setTableRefresh(ntableR)
+    }
+
     useImperativeHandle(ref, () => ({
         getValues: () => {
             return getVals()
@@ -147,18 +161,23 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
             }).catch(() => { })
         },
         refreshTable(field: string, searchD: TRefreshTable | undefined) {
+            frefreshTable(field, searchD)
 
-            const ntableR: TableRefresh = copyMap(tableR)
-            const tableRE: TableRefreshData | undefined = ntableR.get(field)
-            // 2023/11/08 start with refreshno=1 (not 0)
-            const refreshno = istrue(searchD?.notwaitrefresh) ? tableRE?.refreshno : tableRE === undefined || tableRE.refreshno === undefined ? 1 : tableRE.refreshno + 1
-            const newTableRE: TableRefreshData = {
-                searchR: searchD,
-                refreshno: refreshno
-            }
-            ntableR.set(field, newTableRE)
-            setTableRefresh(ntableR)
-        },
+        }
+
+        //        refreshTable(field: string, searchD: TRefreshTable | undefined) {
+        //
+        //            const ntableR: TableRefresh = copyMap(tableR)
+        //            const tableRE: TableRefreshData | undefined = ntableR.get(field)
+        //            // 2023/11/08 start with refreshno=1 (not 0)
+        //            const refreshno = istrue(searchD?.notwaitrefresh) ? tableRE?.refreshno : tableRE === undefined || tableRE.refreshno === undefined ? 1 : tableRE.refreshno + 1
+        //            const newTableRE: TableRefreshData = {
+        //                searchR: searchD,
+        //                refreshno: refreshno
+        //            }
+        //            ntableR.set(field, newTableRE)
+        //            setTableRefresh(ntableR)
+        //        },
     }));
 
     useEffect(() => {
@@ -467,8 +486,15 @@ const ModalFormView = forwardRef<IRefCall, TFormView & { restapiinitname?: strin
         vars: hvalues
     }
 
+    const refreshT = () => {
+        for (var f of props.fields) {
+            if (f.restlist !== undefined)
+                frefreshTable(f.field, undefined)
+        }
+    }
+
     const header: ReactNode | undefined = props.header ?
-        <HeaderTable {...props.header} pars={pars} refreshaction={() => { }} fbutton={closeF} r={{}} selectedM={[]} setTitle={props.setTitle} rereadRest={props.rereadRest} closeAction={closeF} switchDisplay={props.switchDisplay}></HeaderTable> :
+        <HeaderTable {...props.header} pars={pars} refreshaction={refreshT} fbutton={closeF} r={{}} selectedM={[]} setTitle={props.setTitle} rereadRest={props.rereadRest} closeAction={closeF} switchDisplay={props.switchDisplay}></HeaderTable> :
         undefined
 
     return <React.Fragment>

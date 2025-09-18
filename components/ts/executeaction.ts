@@ -124,9 +124,8 @@ function clickButton(props: IClickParams, button?: TAction, t?: TRow, tt?: RowDa
         }
         if (props.i.doAction) props.i.doAction(r)
         if (r.vars) props.i.setVals(r.vars)
-        if (istrue(r.rereadrest) && props.i.rereadRest !== undefined) props.i.rereadRest()
         if (r.retprops && props.i.retAction) props.i.retAction(r.retprops, r.retprops.vars as TRow)
-        if (r.reread && props.i.rereadRest) props.i.rereadRest()
+        if (istrue(r.reread) && props.i.rereadRest) props.i.rereadRest()
     }
 
 
