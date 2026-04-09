@@ -1,5 +1,5 @@
 import { ColumnType, ColumnsType } from "antd/lib/table";
-import { GetComponentProps } from 'rc-table/lib/interface'
+// import { GetComponentProps } from '@rc-table/lib/interface'
 import React, { ReactNode } from "react";
 import { Badge, Button, Divider, Dropdown, MenuProps, Popover, Space, Statistic, Switch, Tag, Typography } from "antd";
 import { CSSProperties, ReactElement } from "react";
@@ -118,7 +118,7 @@ export function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRow
     if (actions.length === 0) return undefined
 
     const spacecontent = <Space size="middle">{actions.map((t) => constructAction(numb++, t, r, pars))}</Space>
-    
+
     let i = 0
     const stackButtons = <Space.Compact direction="vertical">{actions.map(e => toButton(i++, e, r, pars))}</Space.Compact>
 
@@ -358,7 +358,7 @@ export function transformOneColumn(c: TColumn, r: TableHookParam, cols: ColumnLi
     const isresize: boolean = (resizeF !== undefined && width !== undefined && isNumber(width))
     const issort: boolean = sortColumn !== undefined
 
-    const headerFunc: GetComponentProps<ColumnsType<any>[number]> = (column: any) => {
+    const headerFunc = (column: any) => {
         const presize = isresize ? {
             width: width as number,
             onResize: handleResize

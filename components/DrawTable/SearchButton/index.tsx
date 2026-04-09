@@ -1,5 +1,5 @@
 import { Button, Divider, Tooltip } from "antd";
-import { BaseButtonProps } from "antd/lib/button/button";
+import { BaseButtonProps } from "antd/lib/button/Button";
 import React, { MutableRefObject, useRef, useState } from "react";
 
 import lstring from '../../../ts/localize';
