@@ -1,5 +1,5 @@
 import { Button, Divider, Tooltip } from "antd";
-import { BaseButtonProps } from "antd/lib/button/button";
+import { BaseButtonProps } from "antd/es/button/Button";
 import React, { MutableRefObject, useRef, useState } from "react";
 
 import lstring from '../../../ts/localize';
@@ -24,7 +24,7 @@ const SearchButton: React.FC<SearchButtonType & { refreshFilter: FSetFilter, sea
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [refreshnumber, setRefreshNumber] = useState<number>(0);
-  const ref: MutableRefObject<IIRefCall> = useRef<IIRefCall>() as MutableRefObject<IIRefCall>
+  const ref = useRef<IIRefCall>(null) as MutableRefObject<IIRefCall>
 
 
   const isFilterEmpty: boolean = isFilterSetEmpty(ref.current ? ref.current.getValues() : props.filtervalues)

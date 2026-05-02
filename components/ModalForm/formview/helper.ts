@@ -1,4 +1,4 @@
-import { isString } from "antd/es/button";
+const isString = (val: unknown): val is string => typeof val === 'string';
 import { makeMessage } from "../../../ts/j";
 import { TCookie, TCookieO, TField, TRadioCheckItem } from "../../ts/typing";
 import { ErrorMessages, ErrorMessage, FField, IFieldContext, TFieldsProps } from "./types";

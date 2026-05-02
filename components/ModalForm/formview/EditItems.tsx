@@ -1,4 +1,4 @@
-import React, { FocusEventHandler, ReactNode } from 'react';
+import React, { FocusEventHandler, ReactNode, FormEventHandler } from 'react';
 
 import {
     Form,
@@ -182,7 +182,7 @@ function changetoMoney(val: string): string {
     return val.replace(',', '.')
 }
 
-function onTextInput(c: React.FocusEvent, t: TField) {
+function onTextInput(c: React.SyntheticEvent, t: TField) {
 
     const inputVal: string = (fieldType(t) === FIELDTYPE.MONEY) ?
         changetoMoney((c.target as HTMLInputElement).value) :
@@ -196,18 +196,16 @@ function onTextInput(c: React.FocusEvent, t: TField) {
 
 }
 
-function curryOnInput(t: TField) {
-    const onInput: FocusEventHandler<HTMLInputElement> = (c: React.FocusEvent) => {
+function curryOnInput(t: TField): FormEventHandler<HTMLInputElement> {
+    return (c: React.SyntheticEvent) => {
         onTextInput(c, t)
     }
-    return onInput
 }
 
-function curryOnTextAreaInput(t: TField) {
-    const onInput: FocusEventHandler<HTMLTextAreaElement> = (c: React.FocusEvent) => {
+function curryOnTextAreaInput(t: TField): FormEventHandler<HTMLTextAreaElement> {
+    return (c: React.SyntheticEvent) => {
         onTextInput(c, t)
     }
-    return onInput
 }
 
 

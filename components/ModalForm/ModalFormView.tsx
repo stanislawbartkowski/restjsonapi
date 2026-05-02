@@ -1,14 +1,14 @@
 import React, { forwardRef, ReactNode, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import {
-    //    Form,
     Space,
     Divider,
-    FormListFieldData
+    FormListFieldData,
 } from 'antd';
 
 import Form from 'antd/lib/form'
-import { FieldData, NamePath } from 'rc-field-form/lib/interface';
+import type { NamePath } from 'antd/lib/form/interface';
+import type { FieldData } from  '@rc-component/form/lib/interface'
 
 
 import { FormInstance } from 'antd/es/form';

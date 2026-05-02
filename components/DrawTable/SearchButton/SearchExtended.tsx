@@ -30,7 +30,7 @@ export const noExtendedFilter: ExtendedFilter = { isfilter: false, filtervalues:
 const SearchExtended = forwardRef<IIRefCall, SearchDialog>((props, iref) => {
 
 
-    const refm: MutableRefObject<IRefCall> = useRef<IRefCall>() as MutableRefObject<IRefCall>
+    const refm = useRef<IRefCall>(null) as MutableRefObject<IRefCall>
 
     useImperativeHandle(iref, () => ({
         getValues: () => refm.current.getValues()

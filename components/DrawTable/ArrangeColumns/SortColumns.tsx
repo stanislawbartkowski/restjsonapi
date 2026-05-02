@@ -73,15 +73,15 @@ const Row = ({ children, ...props }: RowProps) => {
     <tr {...props} ref={setNodeRef} style={style} {...attributes}>
       {React.Children.map(children, (child) => {
         if ((child as React.ReactElement).key === 'sort') {
-          return React.cloneElement(child as React.ReactElement, {
-            children: (
-              <MenuOutlined
-                ref={setActivatorNodeRef}
-                style={{ touchAction: 'none', cursor: 'move' }}
-                {...listeners}
-              />
-            ),
-          });
+          return React.cloneElement(
+            child as React.ReactElement,
+            {},
+            <MenuOutlined
+              ref={setActivatorNodeRef}
+              style={{ touchAction: 'none', cursor: 'move' }}
+              {...listeners}
+            />
+          );
         }
         return child;
       })}

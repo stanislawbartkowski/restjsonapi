@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useRef, MutableRefObject, useImperativeHandle } from "react"
-import { StepProps, Steps } from 'antd'
+import { StepsProps, Steps } from 'antd'
 
 import type { ClickResult, StepsElem, StepsForm } from "../ts/typing"
 import { makeMessage } from "../../ts/j"
@@ -8,13 +8,31 @@ import { log } from "../../ts/l"
 import { FSetTitle, TRow } from "../../ts/typing"
 import { ErrorMessages } from "./formview/types"
 
+/*
 function constructStep(p: StepsElem, key: number, last: boolean, errorstep: boolean): React.ReactNode {
 
   const title: string = makeMessage(p.title) as string
 
-  const c: StepProps | undefined = errorstep ? { status: 'error' } : last ? { status: 'finish' } : undefined
+  const c: StepsProps | undefined = errorstep ? { status: 'error' } : last ? { status: 'finish' } : undefined
 
   return <Steps.Step key={key} title={title} {...p.props} {...c} />
+}
+  */
+
+function constructItem(p: StepsElem, key: number, last: boolean, errorstep: boolean) {
+
+  const title: string = makeMessage(p.title) as string
+
+  const c: StepsProps | undefined = errorstep ? { status: 'error' } : last ? { status: 'finish' } : undefined
+
+  const status: 'wait' | 'process' | 'finish' | 'error' | undefined = errorstep ? 'error' : last ? 'finish' : undefined
+
+  return {
+    title: title,
+    status: status
+  }
+
+
 }
 
 type TData = {
@@ -28,7 +46,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks & ModalHooks>((p
   const [c, setCurrent] = useState<TData>({ current: 0, errorstep: undefined, visited: new Set<number>() });
   let key: number = 0
 
-  const ref: MutableRefObject<IIRefCall | undefined> = useRef<IIRefCall>();
+  const ref = useRef<IIRefCall>(null) as MutableRefObject<IIRefCall>;
 
   function setC(current: number, vars: TRow | undefined, b: ClickResult, visited: Set<number>) {
     setCurrent({ current: current, errorstep: b.steperror ? current : undefined, visited: visited })
@@ -91,8 +109,17 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks & ModalHooks>((p
     }
   }
 
+
+  const items = props.steps.map(e => constructItem(e, key++, c.current === props.steps.length - 1, c.errorstep ? (key - 1) === c.errorstep : false))
+
+  /* 
   return <React.Fragment><Steps current={c.current}>
     {props.steps.map(e => constructStep(e, key++, c.current === props.steps.length - 1, c.errorstep ? (key - 1) === c.errorstep : false))}
+  </Steps>
+    <ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} visible ispage initvals={initvals} ignorerestapivals={c.visited.has(c.current)} mhooks={ihooks} />
+  </React.Fragment>
+  */
+  return <React.Fragment><Steps current={c.current} items={items}>
   </Steps>
     <ModalFormDialog {...props} ref={ref as any} {...props.steps[c.current]} visible ispage initvals={initvals} ignorerestapivals={c.visited.has(c.current)} mhooks={ihooks} />
   </React.Fragment>

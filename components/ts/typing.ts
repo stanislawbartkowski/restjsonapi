@@ -1,3 +1,4 @@
+import React from 'react';
 import type {
     PropsType, RestTableParam, ButtonElem, FIELDTYPE, FieldValue, TRow, FIsSelected, OnRowClick, OneRowData, JSSupportedType,
     FormMessage, PropSupportedType, RESTMETH, RowData, ListToolbar,
@@ -616,7 +617,7 @@ export enum BUTTONACTION {
 
 export type TOptionLine = {
     value: string
-    label?: string | JSX.Element
+    label?: string | React.JSX.Element
 }
 
 export type TAutoCompleteMap = Map<string, RowData>
