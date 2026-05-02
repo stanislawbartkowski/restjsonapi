@@ -1,6 +1,6 @@
 import React from "react";
 import { Router } from "react-router";
-import { createBrowserHistory } from "history";
+import { createBrowserHistory, BrowserHistory, Action, Location } from "history";
 
 import { log } from "./l";
 import { pathNotify } from "./headernotifier";
@@ -12,7 +12,7 @@ export function getBrowserHistory() {
   return history
 }
 
-export function pushBrowserPath(path) {
+export function pushBrowserPath(path: string) {
   history.push(path)
 }
 
@@ -27,15 +27,21 @@ export function getPrevious() {
   return previous;
 }
 
-let canD = () => {
+let canD = (_action: Action, _path: string) => {
   return true;
 };
 
-export function setCanD(f) {
+export function setCanD(f: typeof canD) {
   canD = f;
 }
 
-const CustomRouter = ({ basename, children, history }) => {
+interface CustomRouterProps {
+  basename: string;
+  children: React.ReactNode;
+  history: BrowserHistory;
+}
+
+const CustomRouter = ({ basename, children, history }: CustomRouterProps) => {
   const [state, setState] = React.useState({
     action: history.action,
     location: history.location,
@@ -46,12 +52,11 @@ const CustomRouter = ({ basename, children, history }) => {
     current = state.location.pathname;
   }
 
-  function onChange(history) {
-    const action = history.action;
-    const pathname = history.location.pathname;
+  function onChange({ action, location }: { action: Action; location: Location }) {
+    const pathname = location.pathname;
     log(action + " : " + pathname);
     pathNotify(pathname)
-    if (canD(action, pathname)) setState(history);
+    if (canD(action, pathname)) setState({ action, location });
   }
 
   React.useLayoutEffect(() => history.listen(onChange), [history]);

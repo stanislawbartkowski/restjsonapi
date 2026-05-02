@@ -46,7 +46,7 @@ const StepsComponent = forwardRef<IIRefCall, StepsForm & THooks & ModalHooks>((p
   const [c, setCurrent] = useState<TData>({ current: 0, errorstep: undefined, visited: new Set<number>() });
   let key: number = 0
 
-  const ref: MutableRefObject<IIRefCall | undefined> = useRef<IIRefCall>();
+  const ref = useRef<IIRefCall>(null) as MutableRefObject<IIRefCall>;
 
   function setC(current: number, vars: TRow | undefined, b: ClickResult, visited: Set<number>) {
     setCurrent({ current: current, errorstep: b.steperror ? current : undefined, visited: visited })

@@ -18,7 +18,7 @@ import ReadDefError from '../errors/ReadDefError';
 import StepsFormView from './StepsFormView';
 import executeAction from '../ts/executeaction'
 import { readvalsdata } from "../ts/readdefs";
-import { callJSFunction, commonVars, isBool, isOArray, isString, toS } from '../../ts/j';
+import { callJSFunction, commonVars, isBool, isOArray, isString, isnotdefined, toS } from '../../ts/j';
 import RestComponent from '../RestComponent';
 import { findErrField } from './formview/helper';
 import { ErrorMessages, FField } from './formview/types';
@@ -113,8 +113,8 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
     const [buttontrigger, setButtonTrigger] = useState<ButtonAction | undefined>()
 
-    const ref: MutableRefObject<IRefCall> = useRef<IRefCall>() as MutableRefObject<IRefCall>
-    const sref: MutableRefObject<IIRefCall> = useRef<IIRefCall>() as MutableRefObject<IIRefCall>
+    const ref = useRef<IRefCall>(null) as MutableRefObject<IRefCall>
+    const sref = useRef<IIRefCall>(null) as MutableRefObject<IIRefCall>
 
     const formd: TForm = (formdef.tabledata as TForm)
 
@@ -145,7 +145,7 @@ const ModalFormDialog = forwardRef<IIRefCall, MModalFormProps & THooks>((props, 
 
     const setvarsaction: VAction = (vars: TRow) => {
         // Data: 2025/04/01 - aby zadziało {lista: true} w Steps
-        if (sref !== undefined && sref.current !== undefined) {
+        if (!isnotdefined(sref) && !isnotdefined(sref.current)) {
             sref.current.setVals(vars)
         }
         if (formdef.tabledata?.fields)

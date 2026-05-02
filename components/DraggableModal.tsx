@@ -99,11 +99,12 @@ const ModalDialog: React.FC<DraggablePros> = (props) => {
     }
 
 
-    return <Modal destroyOnHidden open={props.open} title={title} maskClosable={false}
+    return <Modal destroyOnClose open={props.open} title={title} maskClosable={false}
         onCancel={(e) => { cbreadPop(e); props.onClose(e as React.MouseEvent<HTMLElement, MouseEvent>) }} {...props.modalprops} footer={props.buttons}
         onOk={(e) => { cbreadPop(e as React.MouseEvent<HTMLButtonElement, MouseEvent>); if (props.onOk) props.onOk(e) }}
         modalRender={(modal) => (
             <Draggable
+                nodeRef={draggleRef}
                 disabled={disabled}
                 bounds={bounds}
                 onStart={(event, uiData) => onStart(event, uiData)}
