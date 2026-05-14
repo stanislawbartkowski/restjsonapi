@@ -1,6 +1,7 @@
 import { Button } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import { blue, cyan, green, yellow, gold, purple } from '@ant-design/colors';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { extractActionHook, IActionHook } from "./transcol"
 import { TableHookParam, TAction } from './typing';
@@ -15,14 +16,15 @@ function StackButton({ idx, t, r, pars }: { idx: number; t: TAction; r: TableHoo
 
     if (emptys(h.text)) return null
 
-    const handleClick = async () => {
+    const handleClick = async (e: React.MouseEvent) => {
+        e.stopPropagation()
         setLoading(true)
         await h.onClick()
         setLoading(false)
     }
 
     return <Button
-        loading={loading}
+        icon={<LoadingOutlined style={{ visibility: loading ? 'visible' : 'hidden' }} />}
         onClick={handleClick}
         style={{ border: "0", margin: "4px", backgroundColor: colors[idx % colors.length], color: "white" }}>
         {h.text}

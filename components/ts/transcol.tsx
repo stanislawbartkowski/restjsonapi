@@ -120,7 +120,7 @@ export function constructactionsCol(a: TActions, r: TableHookParam, pars: OneRow
     const spacecontent = <Space size="middle">{actions.map((t) => constructAction(numb++, t, r, pars))}</Space>
 
     let i = 0
-    const stackButtons = <Space.Compact direction="vertical">{actions.map(e => toButton(i++, e, r, pars))}</Space.Compact>
+    const stackButtons = <div style={{ display: 'flex', flexDirection: 'column' }}>{actions.map(e => toButton(i++, e, r, pars))}</div>
 
     if (act.dropdown) {
         const items: MenuProps['items'] = actions.map(e => constructMenuAction(numb++, e, r, pars))
