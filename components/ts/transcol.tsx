@@ -67,9 +67,9 @@ function sort(c: TColumn, cols: ColumnList): boolean {
 // render cell
 // ==============================
 
-function clickActionHook(t: TAction, r: TableHookParam, pars: OneRowData) {
+async function clickActionHook(t: TAction, r: TableHookParam, pars: OneRowData): Promise<void> {
     const res: TAction = clickAction(t, pars);
-    if (r.fresult) r.fresult(pars.r, res);
+    if (r.fresult) await r.fresult(pars.r, res);
 }
 
 function genButtonFromAction(t: TAction, key: number): ButtonAction {
@@ -86,7 +86,7 @@ function constructAction(key: number, t: TAction, r: TableHookParam, pars: OneRo
 }
 
 export interface IActionHook {
-    onClick: () => void,
+    onClick: () => Promise<void>,
     text: string | undefined
 }
 

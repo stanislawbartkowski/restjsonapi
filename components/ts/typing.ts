@@ -22,7 +22,7 @@ export enum Status {
 // ===========================
 
 export type FShowDetails = (entity: TRow) => void
-export type FActionResult = (entity: TRow, r: TAction) => void
+export type FActionResult = (entity: TRow, r: TAction) => Promise<void> | void
 
 export type TableHookParam = {
     fdetails?: FShowDetails;
