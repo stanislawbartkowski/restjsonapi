@@ -197,11 +197,13 @@ const RestTableView: React.FC<RestTableParam & ColumnList & ClickActionProps & {
 
     }
 
-    const fresult: FActionResult = (entity: TRow, r: TAction) => {
+    const fresult: FActionResult = (entity: TRow, r: TAction): Promise<void> | void => {
         if (r.button) {
-            const ii: IIButtonAction = createII(r.button, { ...props.vars, ...datasource.vars, ...entity }, undefined, retAction, props.rereadRest)
-            executeB(ii, undefined, () => refreshtable())
-            return
+            const button = r.button
+            return new Promise<void>(resolve => {
+                const ii: IIButtonAction = createII(button, { ...props.vars, ...datasource.vars, ...entity }, undefined, retAction, props.rereadRest)
+                executeB(ii, undefined, () => { refreshtable(); resolve() })
+            })
         }
         setIsModalVisible({
             visible: true,
